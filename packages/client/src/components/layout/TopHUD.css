@@ -1,0 +1,60 @@
+.top-hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--top-hud-height);
+  padding: 0 16px;
+  background: rgba(10, 15, 30, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 200;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hud-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.hud-player-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.hud-floor {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+.hud-right {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.hud-resource {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.hud-energy-icon {
+  color: #ffd700;
+  font-size: 0.85rem;
+}
+
+.hud-pokeball-icon {
+  color: var(--accent);
+  font-size: 0.7rem;
+}

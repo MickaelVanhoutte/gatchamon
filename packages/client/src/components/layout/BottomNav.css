@@ -1,0 +1,38 @@
+.bottom-toolbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--bottom-nav-height);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: rgba(10, 15, 30, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  z-index: 200;
+}
+
+.toolbar-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+}
+
+.toolbar-btn.active {
+  color: var(--accent);
+  background: rgba(233, 69, 96, 0.15);
+}
+
+.toolbar-icon {
+  font-size: 1.4rem;
+}

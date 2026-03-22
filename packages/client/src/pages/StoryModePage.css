@@ -1,0 +1,93 @@
+.story-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.story-page h2 {
+  font-size: 1.5rem;
+}
+
+.story-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.floor-list {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+}
+
+.floor-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  background: var(--bg-secondary);
+  border: 2px solid transparent;
+  border-radius: 10px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.floor-card:hover:not(:disabled) {
+  border-color: var(--accent);
+  transform: translateX(4px);
+}
+
+.floor-card.current {
+  border-color: var(--accent);
+  background: var(--bg-card);
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+.floor-card.locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.floor-number {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg-card);
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.current .floor-number {
+  background: var(--accent);
+}
+
+.floor-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.floor-enemies {
+  font-size: 0.9rem;
+}
+
+.floor-lock {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.floor-current {
+  font-size: 0.75rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(233, 69, 96, 0.3); }
+  50% { box-shadow: 0 0 16px rgba(233, 69, 96, 0.5); }
+}

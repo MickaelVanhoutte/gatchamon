@@ -1,0 +1,275 @@
+.island-scene {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg,
+    #0a1628 0%,
+    #12254a 18%,
+    #1a3568 30%,
+    #1a5a7a 38%,
+    #1a7a9a 46%,
+    #2090b0 55%,
+    #28a8cc 70%,
+    #30b8d8 100%
+  );
+}
+
+/* Water wave animation at the bottom */
+.island-water-waves {
+  position: absolute;
+  bottom: 0;
+  left: -10%;
+  width: 120%;
+  height: 30%;
+  z-index: 0;
+}
+
+.island-wave {
+  position: absolute;
+  bottom: 0;
+  left: -5%;
+  width: 110%;
+  height: 100%;
+  border-radius: 45% 48% 0 0;
+  opacity: 0.15;
+}
+
+.island-wave:nth-child(1) {
+  background: rgba(255, 255, 255, 0.08);
+  animation: wave-drift 6s ease-in-out infinite;
+}
+
+.island-wave:nth-child(2) {
+  background: rgba(255, 255, 255, 0.05);
+  animation: wave-drift 8s ease-in-out infinite reverse;
+  bottom: -5%;
+}
+
+@keyframes wave-drift {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(15px); }
+}
+
+/* Island landmass */
+.island-landmass {
+  position: absolute;
+  left: 8%;
+  top: 28%;
+  width: 84%;
+  height: 55%;
+  z-index: 1;
+}
+
+/* Sandy beach border */
+.island-beach {
+  position: absolute;
+  inset: -6px;
+  background: linear-gradient(160deg, #c4984a 0%, #d4a853 40%, #b8903c 100%);
+  border-radius: 48% 44% 52% 40% / 38% 48% 42% 50%;
+  z-index: 0;
+}
+
+/* Green terrain */
+.island-terrain {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(145deg,
+    #2d5a1e 0%,
+    #3a7a2a 25%,
+    #4a8a38 50%,
+    #3d7530 75%,
+    #2f6520 100%
+  );
+  border-radius: 48% 44% 52% 40% / 38% 48% 42% 50%;
+  box-shadow:
+    inset 0 -20px 40px rgba(0, 0, 0, 0.3),
+    inset 0 10px 20px rgba(255, 255, 255, 0.08);
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Grass patches */
+.island-terrain::before {
+  content: '';
+  position: absolute;
+  top: 15%;
+  left: 10%;
+  width: 30%;
+  height: 25%;
+  background: radial-gradient(ellipse, rgba(90, 154, 72, 0.5) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.island-terrain::after {
+  content: '';
+  position: absolute;
+  bottom: 20%;
+  right: 15%;
+  width: 25%;
+  height: 20%;
+  background: radial-gradient(ellipse, rgba(74, 138, 56, 0.5) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+/* Rock formation */
+.island-rock {
+  position: absolute;
+  top: 8%;
+  right: 12%;
+  width: 50px;
+  height: 35px;
+  background: linear-gradient(160deg, #5a5a6a 0%, #3a3a4a 100%);
+  border-radius: 40% 50% 30% 45%;
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.1),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+}
+
+.island-rock::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 8px;
+  width: 28px;
+  height: 22px;
+  background: linear-gradient(160deg, #6a6a7a 0%, #4a4a5a 100%);
+  border-radius: 45% 50% 35% 40%;
+}
+
+/* Pond */
+.island-pond {
+  position: absolute;
+  bottom: 18%;
+  left: 14%;
+  width: 32px;
+  height: 18px;
+  background: radial-gradient(ellipse, #3aa8d0 0%, #2090b0 60%, #1a7a9a 100%);
+  border-radius: 50%;
+  box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.2);
+  z-index: 2;
+}
+
+/* Tiny trees */
+.island-tree {
+  position: absolute;
+  z-index: 2;
+}
+
+.island-tree::before {
+  content: '';
+  display: block;
+  width: 18px;
+  height: 20px;
+  background: radial-gradient(ellipse at 50% 60%, #2a6a1a 0%, #1a5010 100%);
+  border-radius: 50% 50% 40% 40%;
+}
+
+.island-tree::after {
+  content: '';
+  display: block;
+  width: 4px;
+  height: 6px;
+  background: #5a3a1a;
+  margin: -2px auto 0;
+  border-radius: 0 0 2px 2px;
+}
+
+.island-tree.tree-1 { top: 20%; left: 22%; }
+.island-tree.tree-2 { top: 25%; right: 25%; transform: scale(0.8); }
+.island-tree.tree-3 { bottom: 30%; left: 8%; transform: scale(0.9); }
+.island-tree.tree-4 { top: 12%; left: 45%; transform: scale(0.7); }
+
+/* Path between buildings */
+.island-path {
+  position: absolute;
+  top: 50%;
+  left: 25%;
+  width: 50%;
+  height: 8px;
+  background: rgba(180, 150, 80, 0.3);
+  border-radius: 4px;
+  transform: rotate(-5deg);
+  z-index: 1;
+}
+
+/* Stars / sparkles in the sky */
+.island-stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 30%;
+  z-index: 0;
+}
+
+.island-star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+.island-star:nth-child(1) { top: 8%; left: 15%; animation-delay: 0s; }
+.island-star:nth-child(2) { top: 12%; left: 45%; animation-delay: 1s; }
+.island-star:nth-child(3) { top: 5%; left: 72%; animation-delay: 0.5s; }
+.island-star:nth-child(4) { top: 18%; left: 88%; animation-delay: 1.5s; }
+.island-star:nth-child(5) { top: 15%; left: 30%; animation-delay: 2s; }
+.island-star:nth-child(6) { top: 6%; left: 60%; animation-delay: 0.8s; }
+.island-star:nth-child(7) { top: 20%; left: 10%; animation-delay: 1.8s; }
+.island-star:nth-child(8) { top: 3%; left: 82%; animation-delay: 2.5s; }
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* Building positions on the landmass */
+.island-buildings {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.island-buildings > * {
+  pointer-events: auto;
+}
+
+/* Monster layer */
+.island-monsters {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.island-monsters > * {
+  pointer-events: auto;
+}
+
+/* Empty state prompt */
+.island-empty-prompt {
+  position: absolute;
+  bottom: 22%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--accent);
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+  z-index: 4;
+  animation: prompt-pulse 2s ease-in-out infinite;
+}
+
+@keyframes prompt-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}

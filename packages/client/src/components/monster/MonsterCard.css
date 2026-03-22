@@ -1,0 +1,84 @@
+.monster-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.monster-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.monster-card.selected {
+  box-shadow: 0 0 0 3px var(--accent), 0 4px 12px rgba(233, 69, 96, 0.3);
+}
+
+.monster-card.compact {
+  padding: 8px;
+  gap: 4px;
+}
+
+.card-sprite {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-sprite img {
+  image-rendering: pixelated;
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.card-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.compact .card-name {
+  font-size: 0.8rem;
+}
+
+.card-stars {
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+}
+
+.card-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.card-level {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.card-types {
+  display: flex;
+  gap: 4px;
+}
+
+.type-pill {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+}

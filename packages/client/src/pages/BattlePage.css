@@ -1,0 +1,369 @@
+.battle-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Turn order bar — translucent overlay at top */
+.turn-bar {
+  display: flex;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.5);
+  overflow-x: auto;
+  z-index: 10;
+}
+
+.turn-portrait {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid transparent;
+  flex-shrink: 0;
+}
+
+.turn-portrait img {
+  image-rendering: pixelated;
+}
+
+.turn-portrait.active {
+  border-color: var(--star-gold);
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+.turn-portrait.enemy {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+/* Arena — fills remaining space, centers monsters vertically */
+.battle-arena {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+/* Floating log */
+.floating-log {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.75);
+  padding: 6px 14px;
+  border-radius: 8px;
+  z-index: 50;
+  animation: fadeInOut 0.6s ease;
+}
+
+.log-text {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.log-text.crit {
+  color: var(--star-gold);
+  font-weight: 700;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translate(-50%, -40%); }
+  20% { opacity: 1; transform: translate(-50%, -50%); }
+  80% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+/* Battle fields — no background, monsters float on arena */
+.battle-field {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  padding: 8px;
+  flex-wrap: wrap;
+}
+
+.enemy-field {
+  align-items: flex-end;
+  padding-bottom: 16px;
+}
+
+.player-field {
+  align-items: flex-start;
+  padding-bottom: 24px;
+}
+
+/* Battle mon */
+.battle-mon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: clamp(80px, 12vw, 140px);
+  transition: all 0.2s;
+}
+
+.battle-mon.dead {
+  opacity: 0.25;
+  filter: grayscale(1);
+}
+
+.battle-mon.targetable {
+  cursor: pointer;
+  animation: target-pulse 0.8s ease-in-out infinite;
+}
+
+.battle-mon.targetable:hover {
+  transform: scale(1.1);
+}
+
+.battle-mon.active-mon {
+  transform: scale(1.1);
+}
+
+.active-mon .battle-sprite {
+  filter: drop-shadow(0 0 8px var(--star-gold));
+}
+
+@keyframes target-pulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.4); }
+}
+
+/* Effectiveness arrows */
+.eff-arrow {
+  font-size: clamp(0.9rem, 2vw, 1.3rem);
+  font-weight: 900;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  animation: eff-bounce 0.4s ease;
+}
+
+.eff-super {
+  color: #ff4444;
+}
+
+.eff-advantage {
+  color: #ff8844;
+}
+
+.eff-neutral {
+  color: #cccc44;
+}
+
+.eff-resist {
+  color: #44aaff;
+}
+
+.eff-immune {
+  color: #888;
+}
+
+@keyframes eff-bounce {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+/* HP bar */
+.mon-hp-bar-bg {
+  width: 80%;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mon-hp-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.mon-hp-text {
+  font-size: 0.6rem;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.battle-sprite {
+  width: clamp(64px, 10vw, 120px);
+  height: clamp(64px, 10vw, 120px);
+  object-fit: contain;
+}
+
+.mon-name {
+  font-size: 0.7rem;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  font-weight: 600;
+}
+
+/* Skill panel — bottom-right overlay like SW */
+.skill-panel {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+  z-index: 20;
+  align-items: center;
+}
+
+.skill-btn {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.skill-btn:hover:not(:disabled) {
+  background: var(--accent);
+  transform: scale(1.1);
+}
+
+.skill-btn.on-cd {
+  border-color: var(--text-secondary);
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.skill-name {
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.cd-overlay {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.target-hint {
+  color: var(--star-gold);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+}
+
+.cancel-btn {
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid var(--text-secondary);
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.waiting-text {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Victory / Defeat overlay */
+.battle-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  animation: fadeIn 0.5s ease;
+}
+
+.overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px;
+}
+
+.overlay-content h2 {
+  font-size: 2.5rem;
+}
+
+.overlay-content h2.victory {
+  color: var(--star-gold);
+}
+
+.overlay-content h2.defeat {
+  color: var(--accent);
+}
+
+.rewards {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.level-ups {
+  color: var(--star-gold);
+  font-weight: 600;
+}
+
+.return-btn {
+  padding: 12px 48px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.return-btn:hover {
+  background: var(--accent-hover);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
