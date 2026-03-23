@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import type { Player, PokemonInstance, PokemonTemplate } from '@gatchamon/shared';
-import { api } from '../api/client';
+import { POKEDEX } from '@gatchamon/shared';
+import * as storage from '../services/storage';
+import * as playerService from '../services/player.service';
+import * as gachaService from '../services/gacha.service';
 
 export interface OwnedPokemon {
   instance: PokemonInstance;
@@ -12,10 +15,11 @@ interface GameState {
   collection: OwnedPokemon[];
   isLoading: boolean;
 
-  createPlayer: (name: string) => Promise<void>;
-  loadPlayer: (id: string) => Promise<void>;
-  summon: (count: 1 | 10) => Promise<OwnedPokemon[]>;
-  loadCollection: () => Promise<void>;
+  createPlayer: (name: string) => void;
+  loadPlayer: () => void;
+  refreshPlayer: () => void;
+  summon: (count: 1 | 10) => OwnedPokemon[];
+  loadCollection: () => void;
 }
 
 export const useGameStore = create<GameState>((set, get) => ({
@@ -23,37 +27,38 @@ export const useGameStore = create<GameState>((set, get) => ({
   collection: [],
   isLoading: false,
 
-  createPlayer: async (name: string) => {
-    const player = await api.post<Player>('/player', { name });
+  createPlayer: (name: string) => {
+    const player = playerService.createPlayer(name);
     set({ player });
-    localStorage.setItem('playerId', player.id);
   },
 
-  loadPlayer: async (id: string) => {
-    try {
-      const player = await api.get<Player>(`/player/${id}`);
+  loadPlayer: () => {
+    const player = storage.loadPlayer();
+    if (player) {
       set({ player });
-    } catch {
-      localStorage.removeItem('playerId');
     }
   },
 
-  summon: async (count: 1 | 10) => {
+  refreshPlayer: () => {
+    const player = storage.loadPlayer();
+    set({ player });
+  },
+
+  summon: (count: 1 | 10) => {
     const { player } = get();
     if (!player) throw new Error('No player');
 
-    const data = await api.post<{ results: Array<{ pokemon: PokemonInstance; template: PokemonTemplate }> }>(
-      '/summon',
-      { playerId: player.id, count }
-    );
+    const results = count === 10
+      ? gachaService.summonMulti()
+      : [gachaService.summonSingle()];
 
-    const newPokemon: OwnedPokemon[] = data.results.map(r => ({
+    const newPokemon: OwnedPokemon[] = results.map(r => ({
       instance: r.pokemon,
       template: r.template,
     }));
 
-    // Update player pokeballs
-    const updatedPlayer = await api.get<Player>(`/player/${player.id}`);
+    // Reload player from storage (pokeballs were deducted)
+    const updatedPlayer = storage.loadPlayer()!;
     set(state => ({
       player: updatedPlayer,
       collection: [...state.collection, ...newPokemon],
@@ -62,15 +67,20 @@ export const useGameStore = create<GameState>((set, get) => ({
     return newPokemon;
   },
 
-  loadCollection: async () => {
+  loadCollection: () => {
     const { player } = get();
     if (!player) return;
     set({ isLoading: true });
-    try {
-      const data = await api.get<{ collection: OwnedPokemon[] }>(`/collection/${player.id}`);
-      set({ collection: data.collection, isLoading: false });
-    } catch {
-      set({ isLoading: false });
-    }
+
+    const instances = storage.loadCollection();
+    const collection: OwnedPokemon[] = instances
+      .map(inst => ({
+        instance: inst,
+        template: POKEDEX.find(p => p.id === inst.templateId)!,
+      }))
+      .filter(item => item.template != null)
+      .sort((a, b) => b.instance.stars - a.instance.stars || b.instance.level - a.instance.level);
+
+    set({ collection, isLoading: false });
   },
 }));

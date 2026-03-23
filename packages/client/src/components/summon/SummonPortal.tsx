@@ -47,6 +47,10 @@ export function SummonPortal({ resultsReady, onComplete }: Props) {
   useEffect(() => {
     if (!orbRef.current || !ringRef.current || !circleRef.current || !containerRef.current) return;
 
+    // Reset refs in case of strict mode re-mount
+    animDoneRef.current = false;
+    completedRef.current = false;
+
     const tl = gsap.timeline();
 
     // Backdrop fade in

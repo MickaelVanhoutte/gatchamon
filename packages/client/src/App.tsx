@@ -19,10 +19,7 @@ export function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const savedId = localStorage.getItem('playerId');
-    if (savedId) {
-      loadPlayer(savedId);
-    }
+    loadPlayer();
   }, [loadPlayer]);
 
   if (showLoading) {

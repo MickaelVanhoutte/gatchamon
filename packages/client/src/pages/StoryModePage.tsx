@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { POKEDEX, REGIONS } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
-import { api } from '../api/client';
+import { getFloorDefsForRegion } from '../services/floor.service';
 import './StoryModePage.css';
 
 interface FloorEnemy {
@@ -40,8 +40,16 @@ export function StoryModePage() {
 
   useEffect(() => {
     if (selectedRegionId) {
-      api.get<{ floors: FloorInfo[] }>(`/battle/floors/list?region=${selectedRegionId}&difficulty=${difficulty}`)
-        .then(data => setFloors(data.floors));
+      const defs = getFloorDefsForRegion(selectedRegionId, difficulty);
+      const floorList: FloorInfo[] = Object.entries(defs).map(([floorNum, def]) => ({
+        region: selectedRegionId,
+        floor: Number(floorNum),
+        difficulty,
+        enemyCount: def.enemies.length,
+        isBoss: def.isBoss,
+        enemies: def.enemies.map(e => ({ templateId: e.templateId, level: e.level, stars: e.stars })),
+      }));
+      setFloors(floorList);
     }
   }, [selectedRegionId, difficulty]);
 

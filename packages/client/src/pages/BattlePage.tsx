@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { api } from '../api/client';
+import { getBattleState as fetchBattleState, resolvePlayerAction } from '../services/battle.service';
 import { useGameStore } from '../stores/gameStore';
 import { useBattleAnimation } from '../battle/useBattleAnimation';
 import { useAutoBattle } from '../battle/useAutoBattle';
@@ -17,7 +17,7 @@ const LEVEL_BACKGROUNDS: Record<number, string> = {
 export function BattlePage() {
   const { battleId } = useParams();
   const navigate = useNavigate();
-  const { player, loadPlayer } = useGameStore();
+  const { player, refreshPlayer, loadCollection } = useGameStore();
   const [state, setState] = useState<BattleState | null>(null);
   const [phase, setPhase] = useState<Phase>('animating');
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
@@ -31,13 +31,14 @@ export function BattlePage() {
 
   const getTemplate = (templateId: number) => POKEDEX.find(p => p.id === templateId);
 
-  const loadBattle = useCallback(async () => {
+  const loadBattle = useCallback(() => {
     if (!battleId) return;
-    const data = await api.get<{ state: BattleState }>(`/battle/${battleId}`);
-    setState(data.state);
-    setLogEntries(data.state.log);
-    if (data.state.status === 'victory') setPhase('victory');
-    else if (data.state.status === 'defeat') setPhase('defeat');
+    const battleState = fetchBattleState(battleId);
+    if (!battleState) return;
+    setState(battleState);
+    setLogEntries(battleState.log);
+    if (battleState.status === 'victory') setPhase('victory');
+    else if (battleState.status === 'defeat') setPhase('defeat');
     else setPhase('player_turn');
   }, [battleId]);
 
@@ -51,8 +52,8 @@ export function BattlePage() {
     setSelectedSkill(null);
 
     try {
-      const result = await api.post<BattleResult>(`/battle/${battleId}/action`, {
-        actorInstanceId: state.currentActorId,
+      const result = resolvePlayerAction(battleId, {
+        actorInstanceId: state.currentActorId!,
         skillId,
         targetInstanceId: targetId,
       });
@@ -252,7 +253,8 @@ export function BattlePage() {
             <button
               className="return-btn"
               onClick={() => {
-                if (player) loadPlayer(player.id);
+                refreshPlayer();
+                loadCollection();
                 navigate('/story');
               }}
             >

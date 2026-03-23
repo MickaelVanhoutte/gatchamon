@@ -4,8 +4,7 @@ import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
 import { MonsterCard } from '../components/monster/MonsterCard';
 import { REGIONS } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
-import { api } from '../api/client';
-import type { BattleResult } from '@gatchamon/shared';
+import { startBattle } from '../services/battle.service';
 import './TeamSelectPage.css';
 
 export function TeamSelectPage() {
@@ -34,15 +33,11 @@ export function TeamSelectPage() {
     });
   };
 
-  const handleStart = async () => {
+  const handleStart = () => {
     if (!player || selected.length === 0) return;
     setIsStarting(true);
     try {
-      const result = await api.post<BattleResult>('/battle/start', {
-        playerId: player.id,
-        teamInstanceIds: selected,
-        floor: { region, floor, difficulty },
-      });
+      const result = startBattle(selected, { region, floor, difficulty });
       navigate(`/battle/${result.state.battleId}`);
     } catch (err: any) {
       alert(err.message);

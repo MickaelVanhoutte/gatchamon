@@ -18,7 +18,7 @@ interface IslandMonsterProps {
 
 export function IslandMonster({ owned, positionIndex }: IslandMonsterProps) {
   const [showLabel, setShowLabel] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const pos = ISLAND_POSITIONS[positionIndex] ?? ISLAND_POSITIONS[0];
 
