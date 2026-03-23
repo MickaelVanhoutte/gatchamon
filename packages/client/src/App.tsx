@@ -10,10 +10,12 @@ import { TeamSelectPage } from './pages/TeamSelectPage';
 import { BattlePage } from './pages/BattlePage';
 import { BottomNav } from './components/layout/BottomNav';
 import { TopHUD } from './components/layout/TopHUD';
+import { LoadingScreen } from './components/LoadingScreen';
 
 export function App() {
   const { player, createPlayer, loadPlayer } = useGameStore();
   const [nameInput, setNameInput] = useState('');
+  const [showLoading, setShowLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,6 +24,10 @@ export function App() {
       loadPlayer(savedId);
     }
   }, [loadPlayer]);
+
+  if (showLoading) {
+    return <LoadingScreen onStart={() => setShowLoading(false)} />;
+  }
 
   if (!player) {
     return (
@@ -56,15 +62,17 @@ export function App() {
   return (
     <div className="app">
       <TopHUD />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/summon" element={<SummonPage />} />
-        <Route path="/collection" element={<CollectionPage />} />
-        <Route path="/collection/:instanceId" element={<MonsterDetail />} />
-        <Route path="/story" element={<StoryModePage />} />
-        <Route path="/battle/team-select" element={<TeamSelectPage />} />
-        <Route path="/battle/:battleId" element={<BattlePage />} />
-      </Routes>
+      <div className="app-content">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/summon" element={<SummonPage />} />
+          <Route path="/collection" element={<CollectionPage />} />
+          <Route path="/collection/:instanceId" element={<MonsterDetail />} />
+          <Route path="/story" element={<StoryModePage />} />
+          <Route path="/battle/team-select" element={<TeamSelectPage />} />
+          <Route path="/battle/:battleId" element={<BattlePage />} />
+        </Routes>
+      </div>
       <BottomNav />
     </div>
   );

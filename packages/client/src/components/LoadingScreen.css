@@ -1,0 +1,273 @@
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  /* Dramatic gradient sky background */
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(255, 180, 50, 0.3) 0%, transparent 60%),
+    linear-gradient(180deg,
+      #0a0a1a 0%,
+      #0d1b3e 20%,
+      #1a3a6e 40%,
+      #c85a20 65%,
+      #e8842a 75%,
+      #f0a040 85%,
+      #ffd080 100%
+    );
+}
+
+/* Floating particles (fireflies / sparkles) */
+.ls-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ls-particle {
+  position: absolute;
+  bottom: -10px;
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 215, 0, 0.8);
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
+  animation: particle-rise linear infinite;
+}
+
+@keyframes particle-rise {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  90% { opacity: 0.6; }
+  100% {
+    transform: translateY(-100vh) scale(0.3);
+    opacity: 0;
+  }
+}
+
+/* Radial glow behind logo */
+.ls-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 500px;
+  height: 500px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(233, 69, 96, 0.25) 0%, transparent 70%);
+  animation: glow-breathe 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes glow-breathe {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+  50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+}
+
+/* Pokemon silhouettes on sides */
+.ls-pokemon {
+  position: absolute;
+  bottom: 8%;
+  pointer-events: none;
+  filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.5));
+}
+
+.ls-pokemon img {
+  height: clamp(120px, 25vh, 220px);
+  image-rendering: pixelated;
+}
+
+.ls-pokemon-left {
+  left: 5%;
+  transform: scaleX(-1);
+  animation: pokemon-float-left 4s ease-in-out infinite;
+}
+
+.ls-pokemon-right {
+  right: 5%;
+  animation: pokemon-float-right 4s ease-in-out infinite 1s;
+}
+
+@keyframes pokemon-float-left {
+  0%, 100% { transform: scaleX(-1) translateY(0); }
+  50% { transform: scaleX(-1) translateY(-10px); }
+}
+
+@keyframes pokemon-float-right {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Center logo area */
+.ls-center {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.ls-logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Pokeball icon */
+.ls-pokeball-icon {
+  width: 60px;
+  height: 60px;
+  position: relative;
+  margin-bottom: 8px;
+  animation: pokeball-spin 2s ease-out 0.5s;
+}
+
+@keyframes pokeball-spin {
+  0% { transform: rotate(0deg) scale(0.5); opacity: 0; }
+  50% { transform: rotate(360deg) scale(1.1); opacity: 1; }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.ls-pokeball-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: #e94560;
+  border-radius: 30px 30px 0 0;
+  border: 3px solid #333;
+  border-bottom: none;
+}
+
+.ls-pokeball-band {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: #333;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.ls-pokeball-button {
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border: 3px solid #333;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.ls-pokeball-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: #fff;
+  border-radius: 0 0 30px 30px;
+  border: 3px solid #333;
+  border-top: none;
+}
+
+/* Title */
+.ls-title {
+  font-size: clamp(2.5rem, 7vw, 4.5rem);
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-shadow:
+    0 0 20px rgba(233, 69, 96, 0.5),
+    0 4px 12px rgba(0, 0, 0, 0.6);
+  animation: title-appear 1s ease-out 0.3s both;
+}
+
+@keyframes title-appear {
+  from {
+    transform: translateY(20px) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.ls-title-gatcha {
+  color: #e94560;
+}
+
+.ls-title-mon {
+  color: #ffd700;
+}
+
+.ls-subtitle {
+  font-size: clamp(0.8rem, 2vw, 1.1rem);
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  animation: title-appear 1s ease-out 0.6s both;
+}
+
+/* Bottom area */
+.ls-bottom {
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  z-index: 2;
+}
+
+.ls-tap-text {
+  font-size: 1.2rem;
+  color: #fff;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  animation: tap-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes tap-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.ls-loading-bar {
+  width: 200px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.ls-loading-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #e94560, #ffd700);
+  border-radius: 3px;
+  animation: load-fill 1.4s ease-out forwards;
+}
+
+@keyframes load-fill {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+.ls-copyright {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 1px;
+}

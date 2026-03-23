@@ -14,7 +14,7 @@ playerRouter.post('/', (req, res) => {
 
   const db = getDb();
   const id = uuidv4();
-  const storyProgress = JSON.stringify({ difficulty: 'normal', level: 1, floor: 1 });
+  const storyProgress = JSON.stringify({ normal: { '1': 1 }, hard: {}, hell: {} });
 
   db.prepare(
     'INSERT INTO players (id, name, pokeballs, energy, story_progress) VALUES (?, ?, 50, 100, ?)'

@@ -1,93 +1,497 @@
 .story-page {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  padding: 0 !important;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
 }
 
-.story-page h2 {
-  font-size: 1.5rem;
+/* ========================================
+   WORLD MAP (left / main area)
+   ======================================== */
+.world-map {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
 }
 
-.story-subtitle {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
+/* Horizontally scrollable inner map */
+.map-scroll {
+  position: relative;
+  min-width: 1100px;
+  height: 100%;
 }
 
-.floor-list {
-  display: flex;
-  flex-direction: column-reverse;
-  gap: 8px;
+/* Enable horizontal scroll on the parent */
+.world-map {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
-.floor-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 14px 16px;
-  background: var(--bg-secondary);
-  border: 2px solid transparent;
-  border-radius: 10px;
-  color: var(--text-primary);
+/* Map background layers */
+.map-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* Base ocean color */
+  background:
+    radial-gradient(ellipse at 30% 80%, rgba(40, 120, 60, 0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 50%, rgba(50, 100, 140, 0.3) 0%, transparent 40%),
+    radial-gradient(ellipse at 55% 15%, rgba(180, 160, 200, 0.2) 0%, transparent 35%),
+    linear-gradient(180deg, #1a2a4a 0%, #1a3a5a 30%, #1a4a6a 60%, #1a3a5a 100%);
+}
+
+.map-water {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      rgba(100, 180, 255, 0.03) 40px,
+      transparent 80px
+    );
+  animation: water-drift 8s linear infinite;
+}
+
+@keyframes water-drift {
+  from { background-position-x: 0; }
+  to { background-position-x: 80px; }
+}
+
+/* Terrain patches */
+.map-terrain {
+  position: absolute;
+  border-radius: 40% 50% 45% 55%;
+  pointer-events: none;
+}
+
+.terrain-grass-1 {
+  left: 5%;
+  top: 35%;
+  width: 35%;
+  height: 45%;
+  background:
+    radial-gradient(ellipse, #2a5a1a 0%, #1a4a10 50%, transparent 80%);
+  opacity: 0.7;
+}
+
+.terrain-grass-2 {
+  left: 55%;
+  top: 30%;
+  width: 35%;
+  height: 40%;
+  background:
+    radial-gradient(ellipse, #1a4a3a 0%, #1a3a2a 50%, transparent 80%);
+  opacity: 0.6;
+  border-radius: 50% 40% 55% 45%;
+}
+
+.terrain-mountain {
+  left: 30%;
+  top: 10%;
+  width: 30%;
+  height: 35%;
+  background:
+    radial-gradient(ellipse, #3a3a4a 0%, #2a2a3a 40%, transparent 75%);
+  opacity: 0.7;
+  border-radius: 45% 55% 40% 50%;
+}
+
+.terrain-snow {
+  left: 40%;
+  top: 2%;
+  width: 20%;
+  height: 18%;
+  background:
+    radial-gradient(ellipse, rgba(200, 210, 230, 0.3) 0%, transparent 70%);
+  opacity: 0.8;
+}
+
+/* SVG paths connecting zones */
+.map-paths {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* ========================================
+   ZONE MARKERS
+   ======================================== */
+.zone-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background: none;
+  border: none;
   cursor: pointer;
-  transition: all 0.2s;
-  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 2;
+  transition: transform 0.2s;
+  padding: 0;
+  color: inherit;
 }
 
-.floor-card:hover:not(:disabled) {
-  border-color: var(--accent);
-  transform: translateX(4px);
+.zone-marker:hover:not(:disabled) {
+  transform: translate(-50%, -50%) scale(1.1);
 }
 
-.floor-card.current {
-  border-color: var(--accent);
-  background: var(--bg-card);
-  animation: glow-pulse 2s ease-in-out infinite;
+.zone-marker.selected {
+  transform: translate(-50%, -50%) scale(1.15);
+  z-index: 3;
 }
 
-.floor-card.locked {
+.zone-marker.locked {
   opacity: 0.4;
   cursor: not-allowed;
+  filter: grayscale(0.8);
 }
 
-.floor-number {
-  width: 50px;
-  height: 50px;
+/* The pin / node on map */
+.zone-pin {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--zone-color, #555);
+  border: 2px solid rgba(255, 255, 255, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  background: var(--bg-card);
-  font-weight: 700;
-  font-size: 0.9rem;
-  flex-shrink: 0;
+  box-shadow:
+    0 0 8px rgba(0, 0, 0, 0.5),
+    0 0 16px color-mix(in srgb, var(--zone-color, #555) 40%, transparent);
+  position: relative;
 }
 
-.current .floor-number {
-  background: var(--accent);
+.zone-icon {
+  font-size: 1.2rem;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
 }
 
-.floor-info {
+.zone-label {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 2px;
 }
 
-.floor-enemies {
-  font-size: 0.9rem;
+.zone-name {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8), 0 0 8px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
 }
 
-.floor-lock {
+.zone-stars {
+  display: flex;
+  gap: 1px;
+}
+
+.zone-star {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.zone-star.filled {
+  color: #ffd700;
+  text-shadow: 0 0 4px rgba(255, 215, 0, 0.5);
+}
+
+.zone-lock-icon {
+  font-size: 0.7rem;
+  position: absolute;
+  top: -4px;
+  right: -4px;
+}
+
+/* Pulse animation for available zones */
+.zone-pulse {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--zone-color, #fff);
+  animation: zone-ring-pulse 2s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes zone-ring-pulse {
+  0% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateX(-50%) scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* Map header overlay */
+.map-header {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 4;
+}
+
+/* Difficulty tabs */
+.difficulty-tabs {
+  display: flex;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 4px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.difficulty-tab {
+  padding: 5px 14px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.difficulty-tab:hover:not(:disabled) {
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.difficulty-tab.active {
+  color: var(--diff-color, #78c850);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid color-mix(in srgb, var(--diff-color, #78c850) 40%, transparent);
+}
+
+.difficulty-tab.locked {
+  opacity: 0.3;
+  cursor: not-allowed;
+  font-size: 0.7rem;
+}
+
+/* ========================================
+   FLOOR SELECTION PANEL (right side)
+   ======================================== */
+.floor-panel {
+  width: 320px;
+  background: linear-gradient(180deg, #1a1a2e 0%, #0f0f20 100%);
+  border-left: 2px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  z-index: 5;
+  animation: panel-slide-in 0.3s ease-out;
+}
+
+@keyframes panel-slide-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.floor-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.floor-panel-header h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.floor-panel-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  padding: 0;
+}
+
+.floor-panel-close:hover {
+  background: rgba(233, 69, 96, 0.3);
+}
+
+.floor-panel-difficulty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.difficulty-label {
   font-size: 0.75rem;
   color: var(--text-secondary);
 }
 
-.floor-current {
-  font-size: 0.75rem;
-  color: var(--accent);
+.difficulty-value {
+  font-size: 0.8rem;
+  color: #78c850;
   font-weight: 600;
+  cursor: pointer;
 }
 
-@keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 8px rgba(233, 69, 96, 0.3); }
-  50% { box-shadow: 0 0 16px rgba(233, 69, 96, 0.5); }
+/* Floor list */
+.floor-panel-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.floor-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+
+.floor-entry.current {
+  border-color: var(--accent);
+  background: rgba(233, 69, 96, 0.1);
+  box-shadow: 0 0 12px rgba(233, 69, 96, 0.15);
+}
+
+.floor-entry.completed {
+  border-color: rgba(120, 200, 80, 0.3);
+}
+
+.floor-entry.locked {
+  opacity: 0.35;
+}
+
+.floor-entry-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.floor-entry-number {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.floor-entry.current .floor-entry-number {
+  color: var(--accent);
+}
+
+/* Enemy portraits row */
+.floor-entry-enemies {
+  display: flex;
+  gap: 4px;
+}
+
+.floor-enemy-portrait {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.floor-enemy-portrait img {
+  width: 30px;
+  height: 30px;
+  image-rendering: pixelated;
+  object-fit: contain;
+}
+
+/* GO button */
+.floor-go-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  background: linear-gradient(135deg, #2a5a1a, #3a7a2a);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.floor-go-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #3a7a2a, #4a9a3a);
+  border-color: rgba(120, 200, 80, 0.5);
+  transform: scale(1.05);
+}
+
+.floor-go-btn:disabled {
+  background: rgba(255, 255, 255, 0.05);
+  cursor: not-allowed;
+}
+
+.go-energy {
+  font-size: 0.65rem;
+  opacity: 0.8;
+}
+
+.go-text {
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.go-lock {
+  font-size: 1rem;
+}
+
+/* Scrollbar styling */
+.floor-panel-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.floor-panel-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.floor-panel-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
 }

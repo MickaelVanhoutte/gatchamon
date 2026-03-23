@@ -27,23 +27,30 @@ const TYPE_COLORS: Record<string, string> = {
 export function MonsterCard({ owned, compact, onClick, selected }: Props) {
   const { instance, template } = owned;
   const starColor = STAR_COLORS[instance.stars] ?? STAR_COLORS[1];
+  const isShiny = instance.isShiny ?? false;
+  const spriteUrl = isShiny
+    ? `/monsters/ani-shiny/${template.name.toLowerCase()}.gif`
+    : template.spriteUrl;
+  const spriteSize = compact ? 64 : 80;
 
   return (
     <div
-      className={`monster-card ${compact ? 'compact' : ''} ${selected ? 'selected' : ''}`}
+      className={`monster-card ${compact ? 'compact' : ''} ${selected ? 'selected' : ''} ${isShiny ? 'shiny' : ''}`}
       style={{ borderColor: starColor }}
       onClick={onClick}
     >
-      <div className="card-sprite">
+      <div className="card-sprite" style={{ width: spriteSize, height: spriteSize }}>
         <img
-          src={template.spriteUrl}
+          src={spriteUrl}
           alt={template.name}
-          width={compact ? 64 : 80}
-          height={compact ? 64 : 80}
         />
+        {isShiny && <div className="card-shiny-sparkle" />}
       </div>
       <div className="card-info">
-        <span className="card-name">{template.name}</span>
+        <span className="card-name">
+          {template.name}
+          {isShiny && <span className="shiny-icon">✦</span>}
+        </span>
         <div className="card-stars" style={{ color: starColor }}>
           {'★'.repeat(instance.stars)}
         </div>

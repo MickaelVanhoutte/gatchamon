@@ -52,6 +52,10 @@ export function MonsterDetail() {
   const { instance, template } = owned;
   const stats = computeStats(template, instance.level, instance.stars);
   const starColor = STAR_COLORS[instance.stars] ?? STAR_COLORS[1];
+  const isShiny = instance.isShiny ?? false;
+  const spriteUrl = isShiny
+    ? `/monsters/ani-shiny/${template.name.toLowerCase()}.gif`
+    : template.spriteUrl;
 
   return (
     <div className="page detail-page">
@@ -59,16 +63,18 @@ export function MonsterDetail() {
         ← Back
       </button>
 
-      <div className="detail-sprite">
+      <div className={`detail-sprite ${isShiny ? 'shiny' : ''}`}>
         <img
-          src={template.spriteUrl}
+          src={spriteUrl}
           alt={template.name}
-          width={120}
-          height={120}
+          style={{ maxWidth: 120, maxHeight: 120, objectFit: 'contain' }}
         />
       </div>
 
-      <h2 className="detail-name">{template.name}</h2>
+      <h2 className="detail-name">
+        {template.name}
+        {isShiny && <span style={{ color: '#ffd700', marginLeft: 6, fontSize: '0.8em' }}>✦</span>}
+      </h2>
       <div className="detail-stars" style={{ color: starColor }}>
         {'★'.repeat(instance.stars)}
       </div>

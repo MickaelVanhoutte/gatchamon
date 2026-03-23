@@ -1,34 +1,47 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
-import { SummonAnimation } from '../components/summon/SummonAnimation';
+import { SummonPortal } from '../components/summon/SummonPortal';
+import { SummonRevealSequence } from '../components/summon/SummonRevealSequence';
 import { SummonResult } from '../components/summon/SummonResult';
 import './SummonPage.css';
 
-type Phase = 'idle' | 'animating' | 'revealing';
+type Phase = 'idle' | 'summoning' | 'revealing' | 'done';
 
 export function SummonPage() {
   const { player, summon } = useGameStore();
   const [phase, setPhase] = useState<Phase>('idle');
   const [results, setResults] = useState<OwnedPokemon[]>([]);
+  const [resultsReady, setResultsReady] = useState(false);
   const [error, setError] = useState('');
 
   const handleSummon = async (count: 1 | 10) => {
     setError('');
-    setPhase('animating');
+    setResultsReady(false);
+    setPhase('summoning');
+
     try {
       const newPokemon = await summon(count);
       setResults(newPokemon);
-      setTimeout(() => setPhase('revealing'), 1500);
+      setResultsReady(true);
     } catch (err: any) {
       setError(err.message);
       setPhase('idle');
     }
   };
 
-  const handleDone = () => {
+  const handlePortalComplete = useCallback(() => {
+    setPhase('revealing');
+  }, []);
+
+  const handleAllRevealed = useCallback(() => {
+    setPhase('done');
+  }, []);
+
+  const handleDone = useCallback(() => {
     setPhase('idle');
     setResults([]);
-  };
+    setResultsReady(false);
+  }, []);
 
   if (!player) return null;
 
@@ -43,8 +56,8 @@ export function SummonPage() {
       </div>
 
       {phase === 'idle' && (
-        <div className="summon-portal">
-          <div className="portal-orb" />
+        <div className="summon-idle">
+          <div className="idle-portal-orb" />
           <div className="summon-buttons">
             <button
               className="summon-btn summon-single"
@@ -67,9 +80,21 @@ export function SummonPage() {
         </div>
       )}
 
-      {phase === 'animating' && <SummonAnimation />}
+      {phase === 'summoning' && (
+        <SummonPortal
+          resultsReady={resultsReady}
+          onComplete={handlePortalComplete}
+        />
+      )}
 
-      {phase === 'revealing' && (
+      {phase === 'revealing' && results.length > 0 && (
+        <SummonRevealSequence
+          results={results}
+          onAllRevealed={handleAllRevealed}
+        />
+      )}
+
+      {phase === 'done' && (
         <SummonResult results={results} onDone={handleDone} />
       )}
     </div>

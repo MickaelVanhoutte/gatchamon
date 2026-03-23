@@ -1,3 +1,5 @@
+export type Difficulty = 'normal' | 'hard' | 'hell';
+
 export interface Player {
   id: string;
   name: string;
@@ -7,8 +9,16 @@ export interface Player {
   createdAt: string;
 }
 
+/**
+ * Maps regionId → next floor to beat (1-10).
+ * Key absent = region locked. Value 11 = region completed.
+ */
+export interface RegionProgress {
+  [regionId: number]: number;
+}
+
 export interface StoryProgress {
-  difficulty: 'normal' | 'hard' | 'hell';
-  level: number;
-  floor: number;
+  normal: RegionProgress;
+  hard: RegionProgress;
+  hell: RegionProgress;
 }

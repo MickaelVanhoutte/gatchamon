@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { startBattle, resolvePlayerAction, getBattleState, FLOOR_DEFINITIONS } from '../services/battle.service.js';
+import { startBattle, resolvePlayerAction, getBattleState, getFloorDefsForRegion } from '../services/battle.service.js';
+import type { Difficulty } from '@gatchamon/shared';
 
 export const battleRouter = Router();
 
@@ -16,12 +17,44 @@ battleRouter.post('/start', (req, res) => {
     return;
   }
 
+  if (!floor.region || !floor.floor || !floor.difficulty) {
+    res.status(400).json({ error: 'floor must include region, floor, and difficulty' });
+    return;
+  }
+
   try {
     const result = startBattle(playerId, teamInstanceIds, floor);
     res.json(result);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }
+});
+
+// Must be above /:battleId to avoid being caught by the param route
+battleRouter.get('/floors/list', (req, res) => {
+  const region = Number(req.query.region ?? 1);
+  const difficulty = (req.query.difficulty as Difficulty) ?? 'normal';
+
+  if (region < 1 || region > 11) {
+    res.status(400).json({ error: 'region must be between 1 and 11' });
+    return;
+  }
+
+  if (!['normal', 'hard', 'hell'].includes(difficulty)) {
+    res.status(400).json({ error: 'difficulty must be normal, hard, or hell' });
+    return;
+  }
+
+  const defs = getFloorDefsForRegion(region, difficulty);
+  const floors = Object.entries(defs).map(([floorNum, floor]) => ({
+    region,
+    floor: Number(floorNum),
+    difficulty,
+    enemyCount: floor.enemies.length,
+    isBoss: floor.isBoss,
+    enemies: floor.enemies.map(e => ({ templateId: e.templateId, level: e.level, stars: e.stars })),
+  }));
+  res.json({ floors });
 });
 
 battleRouter.post('/:battleId/action', (req, res) => {
@@ -51,14 +84,4 @@ battleRouter.get('/:battleId', (req, res) => {
     return;
   }
   res.json({ state });
-});
-
-battleRouter.get('/floors/list', (_req, res) => {
-  const floors = Object.entries(FLOOR_DEFINITIONS).map(([floorNum, floor]) => ({
-    level: 1,
-    floor: Number(floorNum),
-    enemyCount: floor.enemies.length,
-    isBoss: floor.isBoss,
-  }));
-  res.json({ floors });
 });

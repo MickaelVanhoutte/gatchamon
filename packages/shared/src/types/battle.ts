@@ -1,4 +1,5 @@
 import type { BaseStats } from './pokemon.js';
+import type { Difficulty } from './player.js';
 
 export interface BattleMon {
   instanceId: string;
@@ -30,7 +31,7 @@ export interface BattleState {
   turnNumber: number;
   status: 'active' | 'victory' | 'defeat';
   log: BattleLogEntry[];
-  floor: { level: number; floor: number };
+  floor: { region: number; floor: number; difficulty: Difficulty };
 }
 
 export interface BattleLogEntry {

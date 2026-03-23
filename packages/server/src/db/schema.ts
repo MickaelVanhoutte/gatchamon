@@ -15,6 +15,8 @@ export function getDb(): Database.Database {
   return db;
 }
 
+const DEFAULT_STORY_PROGRESS = '{"normal":{"1":1},"hard":{},"hell":{}}';
+
 export function initDb(): void {
   const database = getDb();
 
@@ -24,7 +26,7 @@ export function initDb(): void {
       name TEXT NOT NULL,
       pokeballs INTEGER NOT NULL DEFAULT 50,
       energy INTEGER NOT NULL DEFAULT 100,
-      story_progress TEXT NOT NULL DEFAULT '{"difficulty":"normal","level":1,"floor":1}',
+      story_progress TEXT NOT NULL DEFAULT '${DEFAULT_STORY_PROGRESS}',
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
@@ -35,11 +37,57 @@ export function initDb(): void {
       level INTEGER NOT NULL DEFAULT 1,
       stars INTEGER NOT NULL,
       exp INTEGER NOT NULL DEFAULT 0,
+      is_shiny INTEGER NOT NULL DEFAULT 0,
       FOREIGN KEY (owner_id) REFERENCES players(id)
     );
 
     CREATE INDEX IF NOT EXISTS idx_pokemon_owner ON pokemon_instances(owner_id);
   `);
 
+  // Migrate old story_progress format to new region-based format
+  migrateStoryProgress(database);
+
+  // Add is_shiny column to existing databases
+  migrateAddShiny(database);
+
   console.log('Database initialized');
+}
+
+function migrateAddShiny(database: Database.Database): void {
+  try {
+    database.exec('ALTER TABLE pokemon_instances ADD COLUMN is_shiny INTEGER NOT NULL DEFAULT 0');
+  } catch {
+    // Column already exists
+  }
+}
+
+function migrateStoryProgress(database: Database.Database): void {
+  const rows = database.prepare('SELECT id, story_progress FROM players').all() as Array<{ id: string; story_progress: string }>;
+
+  for (const row of rows) {
+    try {
+      const progress = JSON.parse(row.story_progress);
+      // Detect old format: has 'difficulty' key at top level
+      if (progress.difficulty !== undefined) {
+        const oldFloor = progress.floor ?? 1;
+        // Build new format preserving the floor the player was on
+        const regionProgress: Record<number, number> = {};
+        // Figure out which region they were in (old system was flat 1-10 floors = region 1)
+        regionProgress[1] = Math.min(oldFloor, 11);
+        // If they completed region 1, unlock region 2
+        if (oldFloor > 10) {
+          regionProgress[1] = 11;
+          regionProgress[2] = 1;
+        }
+
+        const newProgress = { normal: regionProgress, hard: {}, hell: {} };
+        database.prepare('UPDATE players SET story_progress = ? WHERE id = ?')
+          .run(JSON.stringify(newProgress), row.id);
+      }
+    } catch {
+      // If parsing fails, reset to default
+      database.prepare('UPDATE players SET story_progress = ? WHERE id = ?')
+        .run(DEFAULT_STORY_PROGRESS, row.id);
+    }
+  }
 }

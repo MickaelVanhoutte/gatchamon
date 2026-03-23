@@ -1,7 +1,9 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import { useGameStore } from '../stores/gameStore';
+import { useBattleAnimation } from '../battle/useBattleAnimation';
+import { useAutoBattle } from '../battle/useAutoBattle';
 import { POKEDEX, SKILLS, getTypeEffectiveness } from '@gatchamon/shared';
 import type { BattleState, BattleMon, BattleLogEntry, BattleResult, PokemonType } from '@gatchamon/shared';
 import './BattlePage.css';
@@ -22,6 +24,10 @@ export function BattlePage() {
   const [logEntries, setLogEntries] = useState<BattleLogEntry[]>([]);
   const [animatingLog, setAnimatingLog] = useState<BattleLogEntry | null>(null);
   const [rewards, setRewards] = useState<BattleResult['rewards']>(undefined);
+  const [arenaEl, setArenaEl] = useState<HTMLDivElement | null>(null);
+  const monRefs = useRef<Map<string, HTMLElement>>(new Map());
+
+  const { playLogEntry } = useBattleAnimation(arenaEl, monRefs);
 
   const getTemplate = (templateId: number) => POKEDEX.find(p => p.id === templateId);
 
@@ -54,8 +60,12 @@ export function BattlePage() {
       // Animate log entries one by one
       const newEntries = result.state.log;
       for (let i = logEntries.length; i < newEntries.length; i++) {
-        setAnimatingLog(newEntries[i]);
-        await new Promise(r => setTimeout(r, 600));
+        const entry = newEntries[i];
+        // Play visual + audio animation
+        await playLogEntry(entry);
+        // Show floating text after animation
+        setAnimatingLog(entry);
+        await new Promise(r => setTimeout(r, 400));
       }
       setAnimatingLog(null);
 
@@ -75,6 +85,8 @@ export function BattlePage() {
       setPhase('player_turn');
     }
   };
+
+  const { isAutoOn, toggleAuto } = useAutoBattle(state, phase, handleAction);
 
   const handleSkillSelect = (skillId: string) => {
     if (!state) return;
@@ -106,7 +118,7 @@ export function BattlePage() {
 
   const isPlayerTurn = phase === 'player_turn' && currentActor?.isPlayerOwned;
 
-  const backgroundUrl = LEVEL_BACKGROUNDS[state.floor.level] ?? LEVEL_BACKGROUNDS[1];
+  const backgroundUrl = LEVEL_BACKGROUNDS[state.floor.region] ?? LEVEL_BACKGROUNDS[1];
 
   return (
     <div
@@ -130,10 +142,13 @@ export function BattlePage() {
               </div>
             );
           })}
+        <button className={`auto-toggle ${isAutoOn ? 'active' : ''}`} onClick={toggleAuto}>
+          Auto
+        </button>
       </div>
 
       {/* Arena area */}
-      <div className="battle-arena">
+      <div className="battle-arena" ref={setArenaEl}>
         {/* Floating damage/log */}
         {animatingLog && (
           <div className="floating-log">
@@ -158,6 +173,10 @@ export function BattlePage() {
                 isTargetable={isPlayerTurn && selectedSkill !== null}
                 onClick={() => selectedSkill && handleAction(selectedSkill, mon.instanceId)}
                 skillType={skill?.type}
+                registerRef={(el) => {
+                  if (el) monRefs.current.set(mon.instanceId, el);
+                  else monRefs.current.delete(mon.instanceId);
+                }}
               />
             );
           })}
@@ -170,13 +189,17 @@ export function BattlePage() {
               key={mon.instanceId}
               mon={mon}
               isActive={mon.instanceId === state.currentActorId}
+              registerRef={(el) => {
+                if (el) monRefs.current.set(mon.instanceId, el);
+                else monRefs.current.delete(mon.instanceId);
+              }}
             />
           ))}
         </div>
       </div>
 
       {/* Skill panel */}
-      {isPlayerTurn && currentActor && (
+      {isPlayerTurn && currentActor && !isAutoOn && (
         <div className="skill-panel">
           {selectedSkill ? (
             <>
@@ -262,12 +285,14 @@ function BattleMonSprite({
   isActive,
   onClick,
   skillType,
+  registerRef,
 }: {
   mon: BattleMon;
   isTargetable?: boolean;
   isActive?: boolean;
   onClick?: () => void;
   skillType?: PokemonType;
+  registerRef?: (el: HTMLDivElement | null) => void;
 }) {
   const tmpl = POKEDEX.find(p => p.id === mon.templateId);
   if (!tmpl) return null;
@@ -284,6 +309,7 @@ function BattleMonSprite({
 
   return (
     <div
+      ref={registerRef}
       className={`battle-mon ${!mon.isAlive ? 'dead' : ''} ${isTargetable ? 'targetable' : ''} ${isActive ? 'active-mon' : ''}`}
       onClick={mon.isAlive && isTargetable ? onClick : undefined}
     >

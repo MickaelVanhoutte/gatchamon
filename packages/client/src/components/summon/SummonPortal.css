@@ -1,0 +1,154 @@
+.summon-portal-container {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.portal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(10, 10, 30, 0.85) 0%, rgba(0, 0, 0, 0.95) 100%);
+  opacity: 0;
+}
+
+.portal-flash {
+  position: absolute;
+  inset: 0;
+  background: white;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* Summoning circle on "ground" */
+.portal-circle {
+  position: absolute;
+  bottom: 15%;
+  width: min(320px, 50vw);
+  height: min(100px, 15vw);
+  opacity: 0;
+}
+
+.portal-circle-inner {
+  width: 100%;
+  height: 100%;
+  border: 2px solid rgba(100, 160, 255, 0.6);
+  border-radius: 50%;
+  transform: perspective(200px) rotateX(60deg);
+  box-shadow:
+    0 0 20px rgba(100, 160, 255, 0.3),
+    inset 0 0 20px rgba(100, 160, 255, 0.1);
+  animation: circle-pulse 2s ease-in-out infinite;
+}
+
+.portal-circle-runes {
+  position: absolute;
+  inset: -10px;
+  border: 1px dashed rgba(100, 160, 255, 0.3);
+  border-radius: 50%;
+  transform: perspective(200px) rotateX(60deg);
+  animation: circle-spin 8s linear infinite;
+}
+
+@keyframes circle-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(100, 160, 255, 0.3), inset 0 0 20px rgba(100, 160, 255, 0.1); }
+  50% { box-shadow: 0 0 40px rgba(100, 160, 255, 0.5), inset 0 0 30px rgba(100, 160, 255, 0.2); }
+}
+
+@keyframes circle-spin {
+  from { transform: perspective(200px) rotateX(60deg) rotateZ(0deg); }
+  to { transform: perspective(200px) rotateX(60deg) rotateZ(360deg); }
+}
+
+/* Center area for orb + ring + particles */
+.portal-center {
+  position: relative;
+  width: min(160px, 25vw);
+  height: min(160px, 25vw);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Rotating ring */
+.portal-ring {
+  position: absolute;
+  width: 140%;
+  height: 140%;
+  border: 2px solid rgba(100, 160, 255, 0.4);
+  border-top-color: rgba(180, 200, 255, 0.8);
+  border-radius: 50%;
+  opacity: 0;
+  animation: ring-spin 1.5s linear infinite;
+}
+
+@keyframes ring-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Main orb */
+.portal-orb-main {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  position: relative;
+}
+
+.portal-orb-core {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 35%,
+    rgba(180, 200, 255, 0.9),
+    rgba(80, 120, 255, 0.8) 40%,
+    rgba(40, 40, 180, 0.9) 70%,
+    rgba(20, 10, 80, 1)
+  );
+  box-shadow:
+    0 0 40px rgba(80, 120, 255, 0.6),
+    0 0 80px rgba(80, 120, 255, 0.3),
+    inset 0 0 30px rgba(180, 200, 255, 0.3);
+  animation: orb-breathe 1.5s ease-in-out infinite;
+}
+
+@keyframes orb-breathe {
+  0%, 100% {
+    box-shadow:
+      0 0 40px rgba(80, 120, 255, 0.6),
+      0 0 80px rgba(80, 120, 255, 0.3),
+      inset 0 0 30px rgba(180, 200, 255, 0.3);
+  }
+  50% {
+    box-shadow:
+      0 0 60px rgba(80, 120, 255, 0.8),
+      0 0 120px rgba(80, 120, 255, 0.4),
+      inset 0 0 40px rgba(180, 200, 255, 0.5);
+  }
+}
+
+/* Particles */
+.portal-particles {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.portal-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: hsl(var(--hue, 220), 80%, 70%);
+  box-shadow: 0 0 6px hsl(var(--hue, 220), 80%, 60%);
+  opacity: 0;
+}

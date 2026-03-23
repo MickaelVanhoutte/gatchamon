@@ -5,3 +5,5 @@ export * from './constants/type-chart.js';
 export * from './constants/formulas.js';
 export { POKEDEX } from './data/pokedex.js';
 export { SKILLS, getSkillsForPokemon } from './data/skills.js';
+export { REGIONS, TOTAL_REGIONS } from './data/regions.js';
+export type { RegionDef } from './data/regions.js';

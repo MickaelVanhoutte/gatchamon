@@ -4,7 +4,7 @@
     {
       "name": "gatchamon-server",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["tsx", "packages/server/src/index.ts"],
+      "runtimeArgs": ["tsx", "--env-file=.env", "packages/server/src/index.ts"],
       "port": 3001
     },
     {

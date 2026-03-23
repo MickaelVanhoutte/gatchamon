@@ -50,9 +50,9 @@ body {
 .app {
   width: 100vw;
   height: 100vh;
-  position: relative;
-  overflow-y: auto;
-  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* Force landscape: rotate the app when device is in portrait */
@@ -68,10 +68,14 @@ body {
   }
 }
 
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .page {
   padding: 16px;
-  padding-top: calc(var(--top-hud-height) + 16px);
-  padding-bottom: calc(var(--bottom-nav-height) + 16px);
 }
 
 .page.island-page {

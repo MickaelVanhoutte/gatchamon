@@ -2,10 +2,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { POKEDEX } from '@gatchamon/shared';
 import type { PokemonTemplate, PokemonInstance } from '@gatchamon/shared';
 import { getDb } from '../db/schema.js';
+import { DEBUG_MODE } from '../config.js';
 
 const SINGLE_COST = 5;
 const MULTI_COST = 45;
 const MULTI_COUNT = 10;
+const SHINY_RATE = DEBUG_MODE ? 0.5 : 0.001; // Debug: 50%, Prod: 0.1% (1 in 1000)
 
 function rollStarRating(guaranteeMinTwo = false): 1 | 2 | 3 {
   const roll = Math.random() * 100;
@@ -17,12 +19,17 @@ function rollStarRating(guaranteeMinTwo = false): 1 | 2 | 3 {
   return 3;
 }
 
+function rollShiny(): boolean {
+  return Math.random() < SHINY_RATE;
+}
+
 function pickFromPool(stars: 1 | 2 | 3): PokemonTemplate {
   const pool = POKEDEX.filter(p => p.naturalStars === stars);
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
 function createInstance(template: PokemonTemplate, ownerId: string): PokemonInstance {
+  const isShiny = rollShiny();
   const instance: PokemonInstance = {
     instanceId: uuidv4(),
     templateId: template.id,
@@ -30,12 +37,13 @@ function createInstance(template: PokemonTemplate, ownerId: string): PokemonInst
     level: 1,
     stars: template.naturalStars,
     exp: 0,
+    isShiny,
   };
 
   const db = getDb();
   db.prepare(
-    'INSERT INTO pokemon_instances (instance_id, template_id, owner_id, level, stars, exp) VALUES (?, ?, ?, ?, ?, ?)'
-  ).run(instance.instanceId, instance.templateId, instance.ownerId, instance.level, instance.stars, instance.exp);
+    'INSERT INTO pokemon_instances (instance_id, template_id, owner_id, level, stars, exp, is_shiny) VALUES (?, ?, ?, ?, ?, ?, ?)'
+  ).run(instance.instanceId, instance.templateId, instance.ownerId, instance.level, instance.stars, instance.exp, isShiny ? 1 : 0);
 
   return instance;
 }

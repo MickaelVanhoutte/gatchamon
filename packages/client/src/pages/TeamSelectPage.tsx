@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
 import { MonsterCard } from '../components/monster/MonsterCard';
+import { REGIONS } from '@gatchamon/shared';
+import type { Difficulty } from '@gatchamon/shared';
 import { api } from '../api/client';
 import type { BattleResult } from '@gatchamon/shared';
 import './TeamSelectPage.css';
@@ -13,8 +15,10 @@ export function TeamSelectPage() {
   const [selected, setSelected] = useState<string[]>([]);
   const [isStarting, setIsStarting] = useState(false);
 
-  const level = Number(searchParams.get('level') ?? 1);
+  const region = Number(searchParams.get('region') ?? 1);
   const floor = Number(searchParams.get('floor') ?? 1);
+  const difficulty = (searchParams.get('difficulty') as Difficulty) ?? 'normal';
+  const regionDef = REGIONS.find(r => r.id === region);
 
   useEffect(() => {
     loadCollection();
@@ -37,7 +41,7 @@ export function TeamSelectPage() {
       const result = await api.post<BattleResult>('/battle/start', {
         playerId: player.id,
         teamInstanceIds: selected,
-        floor: { level, floor },
+        floor: { region, floor, difficulty },
       });
       navigate(`/battle/${result.state.battleId}`);
     } catch (err: any) {
@@ -47,11 +51,16 @@ export function TeamSelectPage() {
   };
 
   const sorted = [...collection].sort((a, b) => b.instance.stars - a.instance.stars || b.instance.level - a.instance.level);
+  const regionName = regionDef?.name ?? `Region ${region}`;
+  const floorName = regionDef?.floorNames[(floor - 1)] ?? `Floor ${floor}`;
+  const diffLabel = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
 
   return (
     <div className="page team-select-page">
       <h2>Select Team</h2>
-      <p className="team-info">Floor {floor} — Pick up to 4 monsters ({selected.length}/4)</p>
+      <p className="team-info">
+        {regionName} - {floor === 10 ? 'BOSS' : floorName} ({diffLabel}) — Pick up to 4 monsters ({selected.length}/4)
+      </p>
 
       <div className="team-grid">
         {sorted.map(mon => (

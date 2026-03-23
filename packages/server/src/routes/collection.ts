@@ -23,6 +23,7 @@ collectionRouter.get('/:playerId', (req, res) => {
       level: row.level,
       stars: row.stars,
       exp: row.exp,
+      isShiny: !!row.is_shiny,
     };
     return {
       instance,

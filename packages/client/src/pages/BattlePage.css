@@ -35,6 +35,34 @@
   image-rendering: pixelated;
 }
 
+/* Auto toggle button */
+.auto-toggle {
+  margin-left: auto;
+  padding: 4px 12px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid var(--text-secondary);
+  border-radius: 16px;
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+.auto-toggle.active {
+  border-color: var(--star-gold);
+  color: var(--star-gold);
+  background: rgba(255, 215, 0, 0.15);
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+.auto-toggle:hover {
+  transform: scale(1.05);
+}
+
 .turn-portrait.active {
   border-color: var(--star-gold);
   box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
@@ -51,6 +79,7 @@
   flex-direction: column;
   justify-content: center;
   position: relative;
+  overflow: hidden;
 }
 
 /* Floating log */
@@ -102,6 +131,12 @@
   padding-bottom: 24px;
 }
 
+/* Sprite effect elements created by EffectPool */
+.battle-arena > [data-effect-name] {
+  pointer-events: none;
+  image-rendering: pixelated;
+}
+
 /* Battle mon */
 .battle-mon {
   display: flex;
@@ -110,6 +145,7 @@
   gap: 2px;
   width: clamp(80px, 12vw, 140px);
   transition: all 0.2s;
+  will-change: transform;
 }
 
 .battle-mon.dead {

@@ -1,0 +1,41 @@
+.reveal-sequence {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(10, 10, 30, 0.95);
+}
+
+.reveal-progress {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 4px 16px;
+  border-radius: 12px;
+  z-index: 20;
+  letter-spacing: 2px;
+}
+
+.reveal-skip-btn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-secondary);
+  padding: 4px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  z-index: 20;
+  transition: all 0.2s;
+}
+
+.reveal-skip-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+}

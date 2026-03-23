@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { POKEDEX, computeStats, calculateDamage, xpToNextLevel } from '@gatchamon/shared';
 import { SKILLS, getSkillsForPokemon } from '@gatchamon/shared';
+import { REGIONS, TOTAL_REGIONS } from '@gatchamon/shared';
 import type {
   BattleState,
   BattleMon,
@@ -8,8 +9,9 @@ import type {
   BattleAction,
   BattleRewards,
   BattleResult,
+  Difficulty,
 } from '@gatchamon/shared';
-import type { PokemonInstance, PokemonTemplate, SkillDefinition, BaseStats } from '@gatchamon/shared';
+import type { PokemonInstance, PokemonTemplate, SkillDefinition, BaseStats, StoryProgress } from '@gatchamon/shared';
 import { getDb } from '../db/schema.js';
 
 // ---------------------------------------------------------------------------
@@ -18,7 +20,7 @@ import { getDb } from '../db/schema.js';
 const activeBattles = new Map<string, BattleState>();
 
 // ---------------------------------------------------------------------------
-// Floor definitions — Level 1, 10 floors
+// Floor definitions — Region-based with difficulty scaling
 // ---------------------------------------------------------------------------
 interface FloorEnemy {
   templateId: number;
@@ -26,41 +28,90 @@ interface FloorEnemy {
   stars: 1 | 2 | 3;
 }
 
-interface FloorDef {
+export interface FloorDef {
   enemies: FloorEnemy[];
   isBoss: boolean;
 }
 
-// Pick a few common 1-star templateIds for floor enemies
-const COMMON_IDS = [16, 19, 21, 41, 74, 129, 13, 10, 69, 43];
+const DIFFICULTY_LEVEL_BONUS: Record<Difficulty, number> = {
+  normal: 0,
+  hard: 10,
+  hell: 25,
+};
 
-function pickRandom<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
+const DIFFICULTY_REWARD_MULT: Record<Difficulty, number> = {
+  normal: 1,
+  hard: 1.5,
+  hell: 2.5,
+};
+
+function pickSeeded(arr: number[], regionId: number, floor: number, slot: number): number {
+  const idx = ((regionId * 31) + (floor * 7) + (slot * 13)) % arr.length;
+  return arr[idx];
 }
 
-function buildFloorEnemies(floor: number): FloorDef {
+function getBaseStars(regionId: number, isBoss: boolean): 1 | 2 | 3 {
+  if (isBoss) {
+    return regionId >= 7 ? 3 : 2;
+  }
+  return regionId >= 7 ? 2 : 1;
+}
+
+function clampStars(stars: number): 1 | 2 | 3 {
+  return Math.min(3, Math.max(1, stars)) as 1 | 2 | 3;
+}
+
+export function buildFloorEnemies(regionId: number, floor: number, difficulty: Difficulty): FloorDef {
+  const region = REGIONS.find(r => r.id === regionId);
+  if (!region) throw new Error(`Unknown region ${regionId}`);
+
+  const regionBase = (regionId - 1) * 5 + 1;
+  const floorBonus = Math.ceil(floor / 2);
+  const difficultyBonus = DIFFICULTY_LEVEL_BONUS[difficulty];
+
   if (floor === 10) {
     // Boss floor — single strong enemy
+    const bossLevel = regionBase + floorBonus + difficultyBonus + 5;
+    const baseStars = getBaseStars(regionId, true);
+    const starBoost = difficulty === 'hell' ? 1 : difficulty === 'hard' ? 1 : 0;
+    const bossStars = clampStars(baseStars + starBoost);
+
     return {
-      enemies: [{ templateId: pickRandom(COMMON_IDS), level: 5, stars: 3 as const }],
+      enemies: [{
+        templateId: pickSeeded(region.bossPool, regionId, floor, 0),
+        level: bossLevel,
+        stars: bossStars,
+      }],
       isBoss: true,
     };
   }
-  // Normal floors: 3 enemies, levels scale slightly with floor
-  const level = Math.min(3, 1 + Math.floor((floor - 1) / 3));
-  return {
-    enemies: [
-      { templateId: pickRandom(COMMON_IDS), level, stars: 1 as const },
-      { templateId: pickRandom(COMMON_IDS), level, stars: 1 as const },
-      { templateId: pickRandom(COMMON_IDS), level, stars: 1 as const },
-    ],
-    isBoss: false,
-  };
+
+  // Normal floors
+  const enemyLevel = regionBase + floorBonus + difficultyBonus;
+  const baseStars = getBaseStars(regionId, false);
+  const starBoost = difficulty === 'hell' ? 1 : 0;
+  const stars = clampStars(baseStars + starBoost);
+  const enemyCount = difficulty === 'hell' ? 4 : 3;
+
+  const enemies: FloorEnemy[] = [];
+  for (let slot = 0; slot < enemyCount; slot++) {
+    enemies.push({
+      templateId: pickSeeded(region.commonPool, regionId, floor, slot),
+      level: enemyLevel,
+      stars,
+    });
+  }
+
+  return { enemies, isBoss: false };
 }
 
-export const FLOOR_DEFINITIONS: Record<number, FloorDef> = {};
-for (let f = 1; f <= 10; f++) {
-  FLOOR_DEFINITIONS[f] = buildFloorEnemies(f);
+/** Get all 10 floor definitions for a region + difficulty. */
+export function getFloorDefsForRegion(regionId: number, difficulty: Difficulty): Record<number, FloorDef> {
+  const defs: Record<number, FloorDef> = {};
+  for (let f = 1; f <= 10; f++) {
+    defs[f] = buildFloorEnemies(regionId, f, difficulty);
+  }
+  return defs;
 }
 
 // ---------------------------------------------------------------------------
@@ -271,8 +322,6 @@ function resolveSkill(
           const buffTarget = (skill.target === 'self' || skill.target === 'single_ally' || skill.target === 'all_allies')
             ? actor
             : actor; // buffs from offensive skills still go on the caster
-          // Actually, buffs in skill effects on offensive skills buff the attacker
-          // But if the effect is in the skill definition, apply buff to actor
           buffTarget.buffs.push({
             type: 'buff',
             stat: effect.stat,
@@ -495,9 +544,19 @@ function autoResolveEnemyTurns(state: BattleState): BattleLogEntry[] {
 // ---------------------------------------------------------------------------
 
 function calculateRewards(state: BattleState): BattleRewards {
-  const isBoss = state.floor.floor === 10;
-  const pokeballs = isBoss ? 10 : 3;
-  const xpPerMon = state.floor.floor * 10;
+  const { region: regionId, floor: floorNum, difficulty } = state.floor;
+  const isBoss = floorNum === 10;
+  const diffMult = DIFFICULTY_REWARD_MULT[difficulty];
+  const bossMult = isBoss ? 3 : 1;
+
+  // Pokeballs: base scales with region and floor
+  const pokeballBase = 2 + regionId + Math.floor(floorNum / 3);
+  const pokeballs = Math.floor(pokeballBase * diffMult * bossMult);
+
+  // XP: scales with region and floor
+  const xpBase = regionId * 10 + floorNum * 5;
+  const xpBossMult = isBoss ? 2 : 1;
+  const xpPerMon = Math.floor(xpBase * diffMult * xpBossMult);
 
   const db = getDb();
   const levelUps: Array<{ instanceId: string; newLevel: number }> = [];
@@ -535,15 +594,53 @@ function calculateRewards(state: BattleState): BattleRewards {
   // Advance story progress
   const player = db.prepare('SELECT story_progress FROM players WHERE id = ?').get(state.playerId) as any;
   if (player) {
-    const progress = JSON.parse(player.story_progress);
-    if (state.floor.floor >= progress.floor && state.floor.floor < 10) {
-      progress.floor = state.floor.floor + 1;
-      db.prepare('UPDATE players SET story_progress = ? WHERE id = ?')
-        .run(JSON.stringify(progress), state.playerId);
-    }
+    const storyProgress: StoryProgress = JSON.parse(player.story_progress);
+    advanceStoryProgress(storyProgress, regionId, floorNum, difficulty);
+    db.prepare('UPDATE players SET story_progress = ? WHERE id = ?')
+      .run(JSON.stringify(storyProgress), state.playerId);
   }
 
   return { pokeballs, xpPerMon, levelUps };
+}
+
+function advanceStoryProgress(
+  storyProgress: StoryProgress,
+  regionId: number,
+  floor: number,
+  difficulty: Difficulty,
+): void {
+  const progress = storyProgress[difficulty];
+  const currentFloor = progress[regionId] ?? 0;
+
+  // Only advance if this is the floor the player needs to beat
+  if (floor !== currentFloor) return;
+
+  if (floor < 10) {
+    progress[regionId] = floor + 1;
+  } else {
+    // Beat the boss — mark region complete
+    progress[regionId] = 11;
+    // Unlock next region if not already
+    if (regionId < TOTAL_REGIONS && !progress[regionId + 1]) {
+      progress[regionId + 1] = 1;
+    }
+    // Check if all regions complete → unlock next difficulty
+    checkDifficultyUnlock(storyProgress, difficulty);
+  }
+}
+
+function checkDifficultyUnlock(storyProgress: StoryProgress, difficulty: Difficulty): void {
+  const progress = storyProgress[difficulty];
+  const allComplete = Array.from({ length: TOTAL_REGIONS }, (_, i) => i + 1)
+    .every(rId => progress[rId] === 11);
+
+  if (!allComplete) return;
+
+  if (difficulty === 'normal' && Object.keys(storyProgress.hard).length === 0) {
+    storyProgress.hard[1] = 1;
+  } else if (difficulty === 'hard' && Object.keys(storyProgress.hell).length === 0) {
+    storyProgress.hell[1] = 1;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -553,7 +650,7 @@ function calculateRewards(state: BattleState): BattleRewards {
 export function startBattle(
   playerId: string,
   teamInstanceIds: string[],
-  floor: { level: number; floor: number },
+  floor: { region: number; floor: number; difficulty: Difficulty },
 ): BattleResult {
   const db = getDb();
 
@@ -571,9 +668,8 @@ export function startBattle(
 
   if (playerTeam.length === 0) throw new Error('Team cannot be empty');
 
-  // Build enemy team from floor definition
-  const floorDef = FLOOR_DEFINITIONS[floor.floor];
-  if (!floorDef) throw new Error(`Floor ${floor.floor} not found`);
+  // Build enemy team from region floor definition
+  const floorDef = buildFloorEnemies(floor.region, floor.floor, floor.difficulty);
 
   const enemyTeam: BattleMon[] = floorDef.enemies.map(e => {
     const id = `enemy_${uuidv4()}`;
