@@ -4,6 +4,8 @@ import { POKEDEX } from '@gatchamon/shared';
 import * as storage from '../services/storage';
 import * as playerService from '../services/player.service';
 import * as gachaService from '../services/gacha.service';
+import * as mergeService from '../services/merge.service';
+import * as evolutionService from '../services/evolution.service';
 
 export interface OwnedPokemon {
   instance: PokemonInstance;
@@ -20,6 +22,8 @@ interface GameState {
   refreshPlayer: () => void;
   summon: (count: 1 | 10) => OwnedPokemon[];
   loadCollection: () => void;
+  mergePokemon: (baseId: string, fodderId: string) => void;
+  evolvePokemon: (instanceId: string, targetTemplateId: number) => void;
 }
 
 export const useGameStore = create<GameState>((set, get) => ({
@@ -82,5 +86,17 @@ export const useGameStore = create<GameState>((set, get) => ({
       .sort((a, b) => b.instance.stars - a.instance.stars || b.instance.level - a.instance.level);
 
     set({ collection, isLoading: false });
+  },
+
+  mergePokemon: (baseId: string, fodderId: string) => {
+    mergeService.performMerge(baseId, fodderId);
+    get().loadCollection();
+  },
+
+  evolvePokemon: (instanceId: string, targetTemplateId: number) => {
+    evolutionService.performEvolution(instanceId, targetTemplateId);
+    const updatedPlayer = storage.loadPlayer();
+    set({ player: updatedPlayer });
+    get().loadCollection();
   },
 }));

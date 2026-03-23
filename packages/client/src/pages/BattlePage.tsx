@@ -4,7 +4,7 @@ import { getBattleState as fetchBattleState, resolvePlayerAction } from '../serv
 import { useGameStore } from '../stores/gameStore';
 import { useBattleAnimation } from '../battle/useBattleAnimation';
 import { useAutoBattle } from '../battle/useAutoBattle';
-import { POKEDEX, SKILLS, getTypeEffectiveness } from '@gatchamon/shared';
+import { POKEDEX, SKILLS, getTypeEffectiveness, ESSENCES } from '@gatchamon/shared';
 import type { BattleState, BattleMon, BattleLogEntry, BattleResult, PokemonType } from '@gatchamon/shared';
 import './BattlePage.css';
 
@@ -241,12 +241,25 @@ export function BattlePage() {
             <h2 className={phase}>{phase === 'victory' ? 'Victory!' : 'Defeat'}</h2>
             {rewards && (
               <div className="rewards">
-                <p>+ {rewards.pokeballs} Pokeballs</p>
+                {rewards.pokeballs > 0 && <p>+ {rewards.pokeballs} Pokeballs</p>}
                 <p>+ {rewards.xpPerMon} XP per monster</p>
                 {rewards.levelUps.length > 0 && (
                   <p className="level-ups">
                     {rewards.levelUps.length} monster(s) leveled up!
                   </p>
+                )}
+                {rewards.essences && Object.keys(rewards.essences).length > 0 && (
+                  <div className="essence-drops">
+                    <p className="essence-title">Materials Obtained:</p>
+                    {Object.entries(rewards.essences).map(([essId, qty]) => {
+                      const ess = ESSENCES[essId];
+                      return (
+                        <p key={essId} className="essence-item">
+                          {ess?.icon ?? ''} {ess?.name ?? essId} x{qty}
+                        </p>
+                      );
+                    })}
+                  </div>
                 )}
               </div>
             )}
@@ -255,7 +268,7 @@ export function BattlePage() {
               onClick={() => {
                 refreshPlayer();
                 loadCollection();
-                navigate('/story');
+                navigate(state?.mode === 'dungeon' ? '/dungeons' : '/story');
               }}
             >
               Continue

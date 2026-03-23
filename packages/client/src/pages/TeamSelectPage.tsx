@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
 import { MonsterCard } from '../components/monster/MonsterCard';
-import { REGIONS } from '@gatchamon/shared';
+import { REGIONS, DUNGEONS } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
-import { startBattle } from '../services/battle.service';
+import { startBattle, startDungeonBattle } from '../services/battle.service';
 import './TeamSelectPage.css';
 
 export function TeamSelectPage() {
@@ -14,10 +14,15 @@ export function TeamSelectPage() {
   const [selected, setSelected] = useState<string[]>([]);
   const [isStarting, setIsStarting] = useState(false);
 
+  const mode = searchParams.get('mode') ?? 'story';
   const region = Number(searchParams.get('region') ?? 1);
   const floor = Number(searchParams.get('floor') ?? 1);
   const difficulty = (searchParams.get('difficulty') as Difficulty) ?? 'normal';
+  const dungeonId = Number(searchParams.get('dungeonId') ?? 0);
+  const dungeonFloor = Number(searchParams.get('floor') ?? 0);
+
   const regionDef = REGIONS.find(r => r.id === region);
+  const dungeonDef = DUNGEONS.find(d => d.id === dungeonId);
 
   useEffect(() => {
     loadCollection();
@@ -37,8 +42,13 @@ export function TeamSelectPage() {
     if (!player || selected.length === 0) return;
     setIsStarting(true);
     try {
-      const result = startBattle(selected, { region, floor, difficulty });
-      navigate(`/battle/${result.state.battleId}`);
+      if (mode === 'dungeon') {
+        const result = startDungeonBattle(selected, dungeonId, dungeonFloor);
+        navigate(`/battle/${result.state.battleId}`);
+      } else {
+        const result = startBattle(selected, { region, floor, difficulty });
+        navigate(`/battle/${result.state.battleId}`);
+      }
     } catch (err: any) {
       alert(err.message);
       setIsStarting(false);
@@ -46,15 +56,22 @@ export function TeamSelectPage() {
   };
 
   const sorted = [...collection].sort((a, b) => b.instance.stars - a.instance.stars || b.instance.level - a.instance.level);
-  const regionName = regionDef?.name ?? `Region ${region}`;
-  const floorName = regionDef?.floorNames[(floor - 1)] ?? `Floor ${floor}`;
-  const diffLabel = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+
+  let headerText: string;
+  if (mode === 'dungeon' && dungeonDef) {
+    headerText = `${dungeonDef.name} - B${dungeonFloor + 1} (Lv.${dungeonDef.floors[dungeonFloor]?.enemyLevel ?? '?'})`;
+  } else {
+    const regionName = regionDef?.name ?? `Region ${region}`;
+    const floorName = regionDef?.floorNames[(floor - 1)] ?? `Floor ${floor}`;
+    const diffLabel = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+    headerText = `${regionName} - ${floor === 10 ? 'BOSS' : floorName} (${diffLabel})`;
+  }
 
   return (
     <div className="page team-select-page">
       <h2>Select Team</h2>
       <p className="team-info">
-        {regionName} - {floor === 10 ? 'BOSS' : floorName} ({diffLabel}) — Pick up to 4 monsters ({selected.length}/4)
+        {headerText} — Pick up to 4 monsters ({selected.length}/4)
       </p>
 
       <div className="team-grid">

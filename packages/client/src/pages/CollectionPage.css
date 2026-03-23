@@ -444,6 +444,232 @@
   font-size: 0.6rem;
 }
 
+/* ========== MAX badge ========== */
+.box-detail-max-badge {
+  flex: 1;
+  height: 12px;
+  line-height: 12px;
+  background: linear-gradient(90deg, #f59e0b, #ef4444);
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.55rem;
+  font-weight: 800;
+  color: white;
+  letter-spacing: 2px;
+}
+
+/* ========== Power Up button ========== */
+.box-powerup-btn {
+  width: 100%;
+  padding: 8px;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.box-powerup-btn:hover {
+  opacity: 0.85;
+}
+
+.box-max-stars-badge {
+  text-align: center;
+  padding: 6px;
+  background: rgba(255, 107, 107, 0.15);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ff6b6b;
+}
+
+/* ========== Merge mode grid ========== */
+.box-cell--merge-mode {
+  cursor: pointer;
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.box-cell--merge-mode:hover {
+  border-color: #f59e0b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+}
+
+.box-cell--fodder {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.5) !important;
+}
+
+.box-empty-merge {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 20px;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+/* ========== Evolution section ========== */
+.box-evolution {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.box-evo-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.box-evo-option {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.box-evo-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.box-evo-sprite {
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+  object-fit: contain;
+}
+
+.box-evo-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.box-evo-reqs {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.box-evo-req-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+}
+
+.req-met {
+  color: #4ade80 !important;
+  font-weight: 700;
+}
+
+.req-unmet {
+  color: #f87171 !important;
+  font-weight: 700;
+}
+
+.box-evo-btn {
+  padding: 6px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  transition: opacity 0.15s;
+}
+
+.box-evo-btn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.box-evo-btn:disabled {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+/* ========== Merge confirmation overlay ========== */
+.merge-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.merge-dialog {
+  background: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 340px;
+  width: 90%;
+}
+
+.merge-dialog h3 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.merge-dialog p {
+  margin: 6px 0;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.merge-result {
+  color: #4ade80 !important;
+  font-weight: 600;
+}
+
+.merge-warning {
+  color: #f87171 !important;
+  font-size: 0.75rem !important;
+}
+
+.merge-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.merge-cancel,
+.merge-confirm {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.merge-cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+}
+
+.merge-confirm {
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: white;
+}
+
 /* ========== Responsive ========== */
 @media (max-width: 600px) {
   .box-grid {

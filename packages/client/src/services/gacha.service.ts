@@ -23,7 +23,7 @@ function rollShiny(): boolean {
 }
 
 function pickFromPool(stars: 1 | 2 | 3): PokemonTemplate {
-  const pool = POKEDEX.filter(p => p.naturalStars === stars);
+  const pool = POKEDEX.filter(p => p.naturalStars === stars && p.summonable !== false);
   return pool[Math.floor(Math.random() * pool.length)];
 }
 

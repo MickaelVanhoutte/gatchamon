@@ -14,6 +14,7 @@ const STAR_COLORS: Record<number, string> = {
   3: '#60a5fa',
   4: '#c084fc',
   5: '#fbbf24',
+  6: '#ff6b6b',
 };
 
 const TYPE_COLORS: Record<string, string> = {

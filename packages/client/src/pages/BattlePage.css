@@ -383,6 +383,24 @@
   font-weight: 600;
 }
 
+.essence-drops {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.essence-title {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.essence-item {
+  font-size: 0.85rem;
+  color: #a78bfa;
+}
+
 .return-btn {
   padding: 12px 48px;
   background: var(--accent);

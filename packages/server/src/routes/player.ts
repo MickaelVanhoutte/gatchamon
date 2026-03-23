@@ -28,6 +28,7 @@ playerRouter.post('/', (req, res) => {
     pokeballs: player.pokeballs,
     energy: player.energy,
     storyProgress: JSON.parse(player.story_progress),
+    materials: {},
     createdAt: player.created_at,
   };
 
@@ -49,6 +50,7 @@ playerRouter.get('/:id', (req, res) => {
     pokeballs: player.pokeballs,
     energy: player.energy,
     storyProgress: JSON.parse(player.story_progress),
+    materials: {},
     createdAt: player.created_at,
   };
 

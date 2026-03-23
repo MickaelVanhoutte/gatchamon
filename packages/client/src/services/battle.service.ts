@@ -1,4 +1,4 @@
-import { POKEDEX, computeStats, calculateDamage, xpToNextLevel } from '@gatchamon/shared';
+import { POKEDEX, computeStats, calculateDamage, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel } from '@gatchamon/shared';
 import { SKILLS, getSkillsForPokemon } from '@gatchamon/shared';
 import { TOTAL_REGIONS } from '@gatchamon/shared';
 import type {
@@ -13,6 +13,7 @@ import type {
 import type { PokemonTemplate, SkillDefinition, BaseStats, StoryProgress } from '@gatchamon/shared';
 import { loadPlayer, savePlayer, loadCollection, updateInstance } from './storage';
 import { buildFloorEnemies, DIFFICULTY_REWARD_MULT } from './floor.service';
+import { getDungeon } from '@gatchamon/shared';
 
 // ---------------------------------------------------------------------------
 // In-memory battle store
@@ -431,7 +432,70 @@ function autoResolveEnemyTurns(state: BattleState): BattleLogEntry[] {
 // Reward calculation and application
 // ---------------------------------------------------------------------------
 
+function calculateDungeonRewards(state: BattleState): BattleRewards {
+  const dungeonDef = getDungeon(state.dungeonId!);
+  if (!dungeonDef) throw new Error('Dungeon not found');
+
+  const floorIndex = state.floor.floor - 1;
+  const floor = dungeonDef.floors[floorIndex];
+
+  // Roll material drops
+  const essences: Record<string, number> = {};
+  for (const drop of floor.drops) {
+    if (Math.random() > drop.chance) continue;
+    const [min, max] = drop.quantity;
+    const qty = min + Math.floor(Math.random() * (max - min + 1));
+    if (qty > 0) {
+      essences[drop.essenceId] = (essences[drop.essenceId] ?? 0) + qty;
+    }
+  }
+
+  const xpPerMon = Math.floor(floor.enemyLevel * 8);
+  const levelUps: Array<{ instanceId: string; newLevel: number }> = [];
+
+  // Apply XP
+  const collection = loadCollection();
+  for (const mon of state.playerTeam) {
+    const inst = collection.find(p => p.instanceId === mon.instanceId);
+    if (!inst) continue;
+
+    if (isMaxLevel(inst.level, inst.stars)) continue;
+    const maxLevel = MAX_LEVEL_BY_STARS[inst.stars] ?? 99;
+    let currentLevel = inst.level;
+    let currentExp = inst.exp + xpPerMon;
+    let needed = xpToNextLevel(currentLevel);
+
+    while (currentExp >= needed && currentLevel < maxLevel) {
+      currentExp -= needed;
+      currentLevel++;
+      needed = xpToNextLevel(currentLevel);
+      levelUps.push({ instanceId: mon.instanceId, newLevel: currentLevel });
+    }
+
+    if (currentLevel >= maxLevel) {
+      currentLevel = maxLevel;
+      currentExp = 0;
+    }
+
+    updateInstance(mon.instanceId, { level: currentLevel, exp: currentExp });
+  }
+
+  // Add essences to player inventory
+  const player = loadPlayer()!;
+  const materials = { ...(player.materials ?? {}) };
+  for (const [essId, qty] of Object.entries(essences)) {
+    materials[essId] = (materials[essId] ?? 0) + qty;
+  }
+  savePlayer({ ...player, materials });
+
+  return { pokeballs: 0, xpPerMon, levelUps, essences };
+}
+
 function calculateRewards(state: BattleState): BattleRewards {
+  if (state.mode === 'dungeon') {
+    return calculateDungeonRewards(state);
+  }
+
   const { region: regionId, floor: floorNum, difficulty } = state.floor;
   const isBoss = floorNum === 10;
   const diffMult = DIFFICULTY_REWARD_MULT[difficulty];
@@ -454,15 +518,26 @@ function calculateRewards(state: BattleState): BattleRewards {
     const inst = collection.find(p => p.instanceId === mon.instanceId);
     if (!inst) continue;
 
+    const maxLevel = MAX_LEVEL_BY_STARS[inst.stars] ?? 99;
+
+    // Skip XP if already at max level
+    if (isMaxLevel(inst.level, inst.stars)) continue;
+
     let currentLevel = inst.level;
     let currentExp = inst.exp + xpPerMon;
 
     let needed = xpToNextLevel(currentLevel);
-    while (currentExp >= needed) {
+    while (currentExp >= needed && currentLevel < maxLevel) {
       currentExp -= needed;
       currentLevel++;
       needed = xpToNextLevel(currentLevel);
       levelUps.push({ instanceId: mon.instanceId, newLevel: currentLevel });
+    }
+
+    // Cap at max level
+    if (currentLevel >= maxLevel) {
+      currentLevel = maxLevel;
+      currentExp = 0;
     }
 
     updateInstance(mon.instanceId, { level: currentLevel, exp: currentExp });
@@ -559,9 +634,88 @@ export function startBattle(
     status: 'active',
     log: [],
     floor,
+    mode: 'story',
   };
 
   // Determine first actor
+  const firstActorId = advanceToNextActor(state);
+  const allMons = [...state.playerTeam, ...state.enemyTeam];
+  const firstActor = allMons.find(m => m.instanceId === firstActorId);
+
+  if (firstActor && !firstActor.isPlayerOwned) {
+    state.currentActorId = firstActorId;
+    const enemyLogs = autoResolveEnemyTurns(state);
+    state.log.push(...enemyLogs);
+  } else {
+    state.currentActorId = firstActorId;
+  }
+
+  activeBattles.set(battleId, state);
+
+  const result: BattleResult = { state };
+  if (getStatus(state) === 'victory') {
+    result.rewards = calculateRewards(state);
+  }
+
+  return result;
+}
+
+export function startDungeonBattle(
+  teamInstanceIds: string[],
+  dungeonId: number,
+  floorIndex: number,
+): BattleResult {
+  const player = loadPlayer();
+  if (!player) throw new Error('Player not found');
+
+  const dungeonDef = getDungeon(dungeonId);
+  if (!dungeonDef) throw new Error('Dungeon not found');
+
+  if (player.energy < dungeonDef.energyCost) {
+    throw new Error('Not enough energy');
+  }
+
+  // Deduct energy
+  savePlayer({ ...player, energy: player.energy - dungeonDef.energyCost });
+
+  const collection = loadCollection();
+  const playerTeam: BattleMon[] = [];
+  for (const instId of teamInstanceIds) {
+    const inst = collection.find(p => p.instanceId === instId && p.ownerId === player.id);
+    if (!inst) throw new Error(`Pokemon instance ${instId} not found`);
+    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true));
+  }
+
+  if (playerTeam.length === 0) throw new Error('Team cannot be empty');
+
+  // Build enemy team from dungeon definition
+  const floor = dungeonDef.floors[floorIndex];
+  if (!floor) throw new Error(`Invalid dungeon floor ${floorIndex}`);
+
+  const enemyTeam: BattleMon[] = [];
+  for (let i = 0; i < 3; i++) {
+    const pool = dungeonDef.enemyPool;
+    const templateId = pool[Math.floor(Math.random() * pool.length)];
+    const template = getTemplate(templateId);
+    const id = `dungeon_enemy_${crypto.randomUUID()}`;
+    enemyTeam.push(makeBattleMon(id, templateId, floor.enemyLevel, template.naturalStars, false));
+  }
+
+  const battleId = crypto.randomUUID();
+  const state: BattleState = {
+    battleId,
+    playerId: player.id,
+    playerTeam,
+    enemyTeam,
+    currentActorId: null,
+    turnNumber: 0,
+    status: 'active',
+    log: [],
+    floor: { region: 0, floor: floorIndex + 1, difficulty: 'normal' },
+    mode: 'dungeon',
+    dungeonId,
+  };
+
   const firstActorId = advanceToNextActor(state);
   const allMons = [...state.playerTeam, ...state.enemyTeam];
   const firstActor = allMons.find(m => m.instanceId === firstActorId);

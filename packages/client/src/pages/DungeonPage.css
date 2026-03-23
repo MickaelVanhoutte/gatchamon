@@ -1,0 +1,229 @@
+.dungeon-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0 !important;
+  height: 100%;
+  overflow: hidden;
+}
+
+.dungeon-title {
+  padding: 10px 16px;
+  margin: 0;
+  font-size: 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dungeon-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Left: Dungeon list */
+.dungeon-list {
+  width: 200px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.dungeon-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border-left: 4px solid;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.dungeon-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dungeon-card--selected {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 8px rgba(79, 195, 247, 0.3);
+}
+
+.dungeon-card-icon {
+  font-size: 1.3rem;
+}
+
+.dungeon-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dungeon-card-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.dungeon-card-cost {
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+}
+
+/* Right: Detail panel */
+.dungeon-detail {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dungeon-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid;
+}
+
+.dungeon-detail-icon {
+  font-size: 1.5rem;
+}
+
+.dungeon-detail-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.dungeon-desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Floor selector */
+.dungeon-floors {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dungeon-floors-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.dungeon-floor-btns {
+  display: flex;
+  gap: 4px;
+}
+
+.dungeon-floor-btn {
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dungeon-floor-btn--active {
+  background: rgba(79, 195, 247, 0.15);
+  border-color: #4fc3f7;
+  color: #4fc3f7;
+}
+
+/* Floor info */
+.dungeon-floor-info {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.dungeon-info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.dungeon-info-row span:last-child {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* Drops */
+.dungeon-drops {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dungeon-drops-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.dungeon-drops-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.dungeon-drop-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  font-size: 0.6rem;
+}
+
+.drop-icon {
+  font-size: 0.8rem;
+}
+
+.drop-name {
+  color: var(--text-secondary);
+}
+
+.drop-owned {
+  color: #4ade80;
+  font-weight: 700;
+}
+
+/* Enter button */
+.dungeon-enter-btn {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  margin-top: auto;
+}
+
+.dungeon-enter-btn:hover {
+  opacity: 0.85;
+}
+
+.dungeon-enter-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

@@ -52,6 +52,7 @@ collectionRouter.get('/:playerId/:instanceId', (req, res) => {
     level: row.level,
     stars: row.stars,
     exp: row.exp,
+    isShiny: !!row.is_shiny,
   };
 
   res.json({ instance, template: getTemplateById(row.template_id) });

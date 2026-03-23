@@ -32,6 +32,8 @@ export interface BattleState {
   status: 'active' | 'victory' | 'defeat';
   log: BattleLogEntry[];
   floor: { region: number; floor: number; difficulty: Difficulty };
+  mode: 'story' | 'dungeon';
+  dungeonId?: number;
 }
 
 export interface BattleLogEntry {
@@ -58,6 +60,7 @@ export interface BattleRewards {
   pokeballs: number;
   xpPerMon: number;
   levelUps: Array<{ instanceId: string; newLevel: number }>;
+  essences?: Record<string, number>;
 }
 
 export interface BattleResult {

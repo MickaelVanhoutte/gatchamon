@@ -6,6 +6,7 @@ export interface Player {
   pokeballs: number;
   energy: number;
   storyProgress: StoryProgress;
+  materials: Record<string, number>;
   createdAt: string;
 }
 

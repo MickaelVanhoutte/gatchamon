@@ -7,7 +7,21 @@ const STAR_MULTIPLIERS: Record<number, number> = {
   3: 1.3,
   4: 1.5,
   5: 1.75,
+  6: 2.0,
 };
+
+export const MAX_LEVEL_BY_STARS: Record<number, number> = {
+  1: 20,
+  2: 20,
+  3: 30,
+  4: 40,
+  5: 50,
+  6: 60,
+};
+
+export function isMaxLevel(level: number, stars: number): boolean {
+  return level >= (MAX_LEVEL_BY_STARS[stars] ?? 99);
+}
 
 export function computeStats(template: PokemonTemplate, level: number, stars: number): BaseStats {
   const starMult = STAR_MULTIPLIERS[stars] ?? 1.0;

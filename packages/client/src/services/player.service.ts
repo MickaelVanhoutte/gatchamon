@@ -12,6 +12,7 @@ export function createPlayer(name: string): Player {
     pokeballs: STARTING_POKEBALLS,
     energy: STARTING_ENERGY,
     storyProgress: structuredClone(DEFAULT_STORY_PROGRESS),
+    materials: {},
     createdAt: new Date().toISOString(),
   };
   savePlayer(player);

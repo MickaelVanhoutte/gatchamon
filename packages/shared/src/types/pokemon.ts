@@ -22,6 +22,7 @@ export interface PokemonTemplate {
   naturalStars: 1 | 2 | 3;
   spriteUrl: string;
   skillIds: [string, string, string];
+  summonable?: boolean;
 }
 
 export interface PokemonInstance {
@@ -29,7 +30,7 @@ export interface PokemonInstance {
   templateId: number;
   ownerId: string;
   level: number;
-  stars: 1 | 2 | 3 | 4 | 5;
+  stars: 1 | 2 | 3 | 4 | 5 | 6;
   exp: number;
   isShiny: boolean;
 }
