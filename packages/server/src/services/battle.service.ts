@@ -687,6 +687,7 @@ export function startBattle(
     status: 'active',
     log: [],
     floor,
+    mode: 'story',
   };
 
   // Determine first actor by simulating gauge fills
