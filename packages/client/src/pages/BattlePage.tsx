@@ -28,7 +28,7 @@ export function BattlePage() {
   const [arenaEl, setArenaEl] = useState<HTMLDivElement | null>(null);
   const monRefs = useRef<Map<string, HTMLElement>>(new Map());
 
-  const { playLogEntry } = useBattleAnimation(arenaEl, monRefs);
+  const { playLogEntry, playMultiTargetEntries } = useBattleAnimation(arenaEl, monRefs);
 
   const getTemplate = (templateId: number) => POKEDEX.find(p => p.id === templateId);
 
@@ -54,27 +54,77 @@ export function BattlePage() {
 
     try {
       const prevLogLength = logEntries.length;
+      const allMons = [...state.playerTeam, ...state.enemyTeam];
+
+      // Snapshot current HP before resolution mutates everything
+      const hpSnapshot = new Map<string, { currentHp: number; isAlive: boolean }>();
+      for (const mon of allMons) {
+        hpSnapshot.set(mon.instanceId, { currentHp: mon.currentHp, isAlive: mon.isAlive });
+      }
+
       const result = resolvePlayerAction(battleId, {
         actorInstanceId: state.currentActorId!,
         skillId,
         targetInstanceId: targetId,
       });
 
-      // Animate log entries one by one
-      const newEntries = result.state.log;
-      for (let i = prevLogLength; i < newEntries.length; i++) {
-        const entry = newEntries[i];
-        // Play visual + audio animation (with timeout guard to prevent hangs)
-        await Promise.race([
-          playLogEntry(entry),
-          new Promise(r => setTimeout(r, 2000)),
-        ]);
-        // Show floating text after animation
-        setAnimatingLog(entry);
+      // Save final HP values, then restore pre-attack values for progressive display
+      const finalSnapshot = new Map<string, { currentHp: number; isAlive: boolean }>();
+      for (const mon of allMons) {
+        finalSnapshot.set(mon.instanceId, { currentHp: mon.currentHp, isAlive: mon.isAlive });
+      }
+      for (const mon of allMons) {
+        const snap = hpSnapshot.get(mon.instanceId);
+        if (snap) { mon.currentHp = snap.currentHp; mon.isAlive = snap.isAlive; }
+      }
+
+      // Group consecutive entries by same actor + skill (multi-target moves)
+      const newEntries = result.state.log.slice(prevLogLength);
+      const groups: BattleLogEntry[][] = [];
+      for (const entry of newEntries) {
+        const last = groups[groups.length - 1];
+        if (last && last[0].actorId === entry.actorId && last[0].skillUsed === entry.skillUsed && last[0].turn === entry.turn) {
+          last.push(entry);
+        } else {
+          groups.push([entry]);
+        }
+      }
+
+      // Animate each group, applying HP changes after each animation
+      for (const group of groups) {
+        if (group.length > 1) {
+          // Multi-target: play animation once on all targets
+          await Promise.race([
+            playMultiTargetEntries(group),
+            new Promise(r => setTimeout(r, 2000)),
+          ]);
+        } else {
+          await Promise.race([
+            playLogEntry(group[0]),
+            new Promise(r => setTimeout(r, 2000)),
+          ]);
+        }
+
+        // Apply HP changes for all entries in this group
+        for (const entry of group) {
+          const mon = allMons.find(m => m.instanceId === entry.targetId);
+          if (mon) {
+            mon.currentHp = Math.max(0, mon.currentHp - entry.damage);
+            if (mon.currentHp <= 0) mon.isAlive = false;
+          }
+        }
+
+        setAnimatingLog(group[0]);
+        setState({ ...result.state });
         await new Promise(r => setTimeout(r, 400));
       }
       setAnimatingLog(null);
 
+      // Restore final computed HP (catches heals, buffs, and other effects)
+      for (const mon of allMons) {
+        const final = finalSnapshot.get(mon.instanceId);
+        if (final) { mon.currentHp = final.currentHp; mon.isAlive = final.isAlive; }
+      }
       setState({ ...result.state });
       setLogEntries([...result.state.log]);
 

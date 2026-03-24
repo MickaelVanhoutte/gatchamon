@@ -8,6 +8,7 @@ import type { BattleLogEntry } from '@gatchamon/shared';
 
 interface UseBattleAnimationReturn {
 	playLogEntry: (entry: BattleLogEntry) => Promise<void>;
+	playMultiTargetEntries: (entries: BattleLogEntry[]) => Promise<void>;
 }
 
 export function useBattleAnimation(
@@ -101,5 +102,64 @@ export function useBattleAnimation(
 		}
 	}, [monRefs]);
 
-	return { playLogEntry };
+	const playMultiTargetEntries = useCallback(async (entries: BattleLogEntry[]) => {
+		const engine = engineRef.current;
+		const audio = audioRef.current;
+		const refs = monRefs.current;
+		if (!engine || !refs || entries.length === 0) return;
+
+		const firstEntry = entries[0];
+		const skillDef = SKILLS[firstEntry.skillUsed];
+		const slug = skillNameToSlug(firstEntry.skillName);
+		const moveCategory = resolveAnimationCategory(slug, skillDef);
+		const moveType = skillDef?.type ?? 'normal';
+
+		const attackerEl = refs.get(firstEntry.actorId);
+		if (!attackerEl) return;
+
+		const attacker = {
+			instanceId: firstEntry.actorId,
+			element: attackerEl,
+			isPlayer: !!attackerEl.closest('.player-field'),
+		};
+
+		const defenders = entries
+			.map(entry => {
+				const el = refs.get(entry.targetId);
+				if (!el) return null;
+				return {
+					instanceId: entry.targetId,
+					element: el,
+					isPlayer: !!el.closest('.player-field'),
+				};
+			})
+			.filter((d): d is NonNullable<typeof d> => d !== null);
+
+		if (defenders.length === 0) return;
+
+		audio?.playMoveSound(slug);
+
+		await engine.playMove({
+			attacker,
+			defender: defenders,
+			moveName: slug,
+			moveCategory,
+			moveType,
+		});
+
+		// Play best effectiveness SFX
+		const hasDamage = entries.some(e => e.damage > 0);
+		if (hasDamage) {
+			const bestEffectiveness = Math.max(...entries.map(e => e.effectiveness));
+			if (bestEffectiveness > 1) {
+				audio?.playBattleSound('hit-super-effective');
+			} else if (bestEffectiveness < 1 && bestEffectiveness > 0) {
+				audio?.playBattleSound('hit-not-very-effective');
+			} else if (bestEffectiveness === 1) {
+				audio?.playBattleSound('hit-normal');
+			}
+		}
+	}, [monRefs]);
+
+	return { playLogEntry, playMultiTargetEntries };
 }
