@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { useGameStore } from './stores/gameStore';
 import { HomePage } from './pages/HomePage';
@@ -12,12 +12,15 @@ import { DungeonPage } from './pages/DungeonPage';
 import { BottomNav } from './components/layout/BottomNav';
 import { TopHUD } from './components/layout/TopHUD';
 import { LoadingScreen } from './components/LoadingScreen';
+import { useRotatedScroll } from './hooks/useRotatedScroll';
 
 export function App() {
   const { player, createPlayer, loadPlayer } = useGameStore();
   const [nameInput, setNameInput] = useState('');
   const [showLoading, setShowLoading] = useState(true);
   const navigate = useNavigate();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useRotatedScroll(scrollRef);
 
   useEffect(() => {
     loadPlayer();
@@ -60,7 +63,7 @@ export function App() {
   return (
     <div className="app">
       <TopHUD />
-      <div className="app-content">
+      <div className="app-content" ref={scrollRef}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/summon" element={<SummonPage />} />

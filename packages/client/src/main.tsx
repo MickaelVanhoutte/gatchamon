@@ -17,3 +17,8 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js');
   });
 }
+
+const orientation = screen.orientation as any;
+if (orientation?.lock) {
+  orientation.lock('landscape').catch(() => {});
+}
