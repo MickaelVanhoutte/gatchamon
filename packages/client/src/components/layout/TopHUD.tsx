@@ -8,6 +8,7 @@ export function TopHUD() {
 
   if (!player) return null;
   if (location.pathname.startsWith('/battle/')) return null;
+  if (location.pathname.startsWith('/collection')) return null;
 
   return (
     <header className="top-hud">
