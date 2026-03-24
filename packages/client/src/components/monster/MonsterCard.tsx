@@ -24,6 +24,7 @@ const TYPE_COLORS: Record<string, string> = {
   fighting: 'var(--type-fighting)', poison: 'var(--type-poison)', ground: 'var(--type-ground)',
   flying: 'var(--type-flying)', psychic: 'var(--type-psychic)', bug: 'var(--type-bug)',
   rock: 'var(--type-rock)', ghost: 'var(--type-ghost)', dragon: 'var(--type-dragon)',
+  fairy: 'var(--type-fairy)', dark: 'var(--type-dark)', steel: 'var(--type-steel)',
 };
 
 export function MonsterCard({ owned, compact, onClick, selected }: Props) {

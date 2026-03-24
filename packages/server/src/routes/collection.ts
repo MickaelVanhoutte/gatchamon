@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { getDb } from '../db/schema.js';
-import { POKEDEX } from '@gatchamon/shared';
+import { getTemplate } from '@gatchamon/shared';
 import type { PokemonInstance } from '@gatchamon/shared';
 
 export const collectionRouter = Router();
 
 function getTemplateById(id: number) {
-  return POKEDEX.find(p => p.id === id);
+  return getTemplate(id);
 }
 
 collectionRouter.get('/:playerId', (req, res) => {

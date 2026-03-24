@@ -37,6 +37,9 @@
   --type-ghost: #705898;
   --type-dragon: #7038f8;
   --type-normal: #a8a878;
+  --type-fairy: #ee99ac;
+  --type-dark: #705848;
+  --type-steel: #b8b8d0;
 }
 
 body {

@@ -1,0 +1,74 @@
+{
+  "normal": {
+    "basic": ["Tackle", "Scratch", "Pound", "Quick Attack", "Headbutt", "Body Slam", "Slam", "Take Down", "Fury Swipes", "Slash"],
+    "active": ["Hyper Beam", "Giga Impact", "Return", "Double-Edge", "Thrash", "Mega Punch", "Mega Kick", "Tri Attack", "Crush Claw", "Extreme Speed", "Facade", "Retaliate", "Last Resort", "Boomburst"]
+  },
+  "fire": {
+    "basic": ["Ember", "Fire Fang", "Fire Punch", "Flame Wheel", "Incinerate", "Fire Spin", "Flame Charge"],
+    "active": ["Flamethrower", "Fire Blast", "Heat Wave", "Inferno", "Lava Plume", "Overheat", "Blaze Kick", "Sacred Fire", "Blue Flare", "Eruption", "Magma Storm", "Mystical Fire", "Fiery Dance", "Pyro Ball"]
+  },
+  "water": {
+    "basic": ["Water Gun", "Aqua Jet", "Bubble", "Water Pulse", "Bubble Beam", "Waterfall"],
+    "active": ["Surf", "Hydro Pump", "Scald", "Muddy Water", "Aqua Tail", "Liquidation", "Origin Pulse", "Hydro Cannon", "Water Spout", "Crabhammer", "Razor Shell", "Flip Turn", "Wave Crash"]
+  },
+  "grass": {
+    "basic": ["Vine Whip", "Razor Leaf", "Absorb", "Bullet Seed", "Magical Leaf", "Leafage", "Mega Drain"],
+    "active": ["Solar Beam", "Energy Ball", "Leaf Storm", "Giga Drain", "Petal Blizzard", "Power Whip", "Wood Hammer", "Leaf Blade", "Frenzy Plant", "Seed Bomb", "Petal Dance", "Horn Leech", "Grass Knot"]
+  },
+  "electric": {
+    "basic": ["Thunder Shock", "Spark", "Charge Beam", "Volt Switch", "Nuzzle", "Electro Ball"],
+    "active": ["Thunderbolt", "Thunder", "Discharge", "Wild Charge", "Volt Tackle", "Zap Cannon", "Bolt Strike", "Fusion Bolt", "Thunder Punch", "Overdrive", "Parabolic Charge", "Zing Zap"]
+  },
+  "ice": {
+    "basic": ["Ice Shard", "Powder Snow", "Icy Wind", "Frost Breath", "Ice Fang", "Avalanche"],
+    "active": ["Ice Beam", "Blizzard", "Ice Punch", "Freeze-Dry", "Icicle Crash", "Glaciate", "Freeze Shock", "Ice Burn", "Triple Axel", "Icicle Spear", "Sheer Cold"]
+  },
+  "fighting": {
+    "basic": ["Karate Chop", "Low Kick", "Mach Punch", "Rock Smash", "Force Palm", "Power-Up Punch"],
+    "active": ["Close Combat", "Aura Sphere", "Focus Blast", "Dynamic Punch", "Cross Chop", "Superpower", "High Jump Kick", "Drain Punch", "Sacred Sword", "Brick Break", "Sky Uppercut", "Hammer Arm", "Meteor Assault"]
+  },
+  "poison": {
+    "basic": ["Poison Sting", "Acid", "Poison Jab", "Venoshock", "Cross Poison", "Poison Fang"],
+    "active": ["Sludge Bomb", "Sludge Wave", "Gunk Shot", "Poison Jab", "Toxic", "Acid Spray", "Belch", "Shell Side Arm", "Dire Claw", "Malignant Chain", "Noxious Torque"]
+  },
+  "ground": {
+    "basic": ["Mud-Slap", "Mud Shot", "Bulldoze", "Sand Attack", "Bone Rush", "Bone Club"],
+    "active": ["Earthquake", "Earth Power", "Drill Run", "High Horsepower", "Precipice Blades", "Land's Wrath", "Stomping Tantrum", "Scorching Sands", "Thousand Arrows", "Headlong Rush"]
+  },
+  "flying": {
+    "basic": ["Gust", "Peck", "Wing Attack", "Air Cutter", "Aerial Ace", "Pluck"],
+    "active": ["Brave Bird", "Hurricane", "Air Slash", "Fly", "Sky Attack", "Drill Peck", "Acrobatics", "Oblivion Wing", "Aeroblast", "Dragon Ascent", "Bleakwind Storm"]
+  },
+  "psychic": {
+    "basic": ["Confusion", "Psybeam", "Zen Headbutt", "Extrasensory", "Heart Stamp", "Psywave"],
+    "active": ["Psychic", "Psyshock", "Future Sight", "Psycho Boost", "Luster Purge", "Mist Ball", "Photon Geyser", "Prismatic Laser", "Stored Power", "Expanding Force", "Psycho Cut", "Dream Eater"]
+  },
+  "bug": {
+    "basic": ["Bug Bite", "Fury Cutter", "Struggle Bug", "Pin Missile", "Fell Stinger", "Infestation"],
+    "active": ["X-Scissor", "Bug Buzz", "Signal Beam", "Megahorn", "U-Turn", "Lunge", "First Impression", "Pollen Puff", "Leech Life", "Attack Order"]
+  },
+  "rock": {
+    "basic": ["Rock Throw", "Rollout", "Smack Down", "Rock Blast", "Accelerock", "Ancient Power"],
+    "active": ["Stone Edge", "Rock Slide", "Power Gem", "Head Smash", "Diamond Storm", "Meteor Beam", "Rock Wrecker"]
+  },
+  "ghost": {
+    "basic": ["Lick", "Astonish", "Shadow Sneak", "Hex", "Shadow Punch", "Ominous Wind"],
+    "active": ["Shadow Ball", "Shadow Claw", "Phantom Force", "Spirit Shackle", "Moongeist Beam", "Spectral Thief", "Poltergeist", "Astral Barrage", "Shadow Force", "Bitter Malice"]
+  },
+  "dragon": {
+    "basic": ["Dragon Breath", "Dragon Tail", "Dragon Claw", "Twister", "Dragon Rage", "Dual Chop"],
+    "active": ["Dragon Pulse", "Draco Meteor", "Outrage", "Dragon Rush", "Spacial Rend", "Roar of Time", "Eternabeam", "Core Enforcer", "Clanging Scales", "Dragon Darts", "Dragon Energy"]
+  },
+  "fairy": {
+    "basic": ["Fairy Wind", "Disarming Voice", "Draining Kiss", "Baby-Doll Eyes", "Sweet Kiss", "Play Rough"],
+    "active": ["Moonblast", "Dazzling Gleam", "Play Rough", "Fleur Cannon", "Light of Ruin", "Spirit Break", "Nature's Madness", "Strange Steam", "Sparkly Swirl", "Springtide Storm", "Decorate"]
+  },
+  "dark": {
+    "basic": ["Bite", "Feint Attack", "Pursuit", "Snarl", "Assurance", "Payback"],
+    "active": ["Dark Pulse", "Crunch", "Night Slash", "Foul Play", "Sucker Punch", "Knock Off", "Night Daze", "Hyperspace Fury", "Darkest Lariat", "Wicked Blow", "Fiery Wrath", "Kowtow Cleave"]
+  },
+  "steel": {
+    "basic": ["Metal Claw", "Bullet Punch", "Iron Head", "Steel Wing", "Gear Grind", "Smart Strike"],
+    "active": ["Flash Cannon", "Iron Tail", "Meteor Mash", "Heavy Slam", "Doom Desire", "Sunsteel Strike", "Behemoth Blade", "Behemoth Bash", "Steel Beam", "Double Iron Bash", "Make It Rain", "Tachyon Cutter"]
+  }
+}

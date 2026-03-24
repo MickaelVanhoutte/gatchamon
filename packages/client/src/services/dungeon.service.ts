@@ -1,4 +1,4 @@
-import { POKEDEX, computeStats, getDungeon, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel } from '@gatchamon/shared';
+import { getTemplate as getTemplateShared, computeStats, getDungeon, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel } from '@gatchamon/shared';
 import { getSkillsForPokemon } from '@gatchamon/shared';
 import type { BattleState, BattleMon, BattleAction, BattleResult, BattleRewards } from '@gatchamon/shared';
 import type { DungeonRewards, DungeonDef } from '@gatchamon/shared';
@@ -8,7 +8,7 @@ import { loadPlayer, savePlayer, loadCollection, updateInstance } from './storag
 const activeBattles = new Map<string, BattleState>();
 
 function getTemplate(templateId: number): PokemonTemplate {
-  const t = POKEDEX.find(p => p.id === templateId);
+  const t = getTemplateShared(templateId);
   if (!t) throw new Error(`Unknown templateId ${templateId}`);
   return t;
 }

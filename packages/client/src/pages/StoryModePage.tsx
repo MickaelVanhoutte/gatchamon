@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
-import { POKEDEX, REGIONS } from '@gatchamon/shared';
+import { getTemplate, REGIONS } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
 import { getFloorDefsForRegion } from '../services/floor.service';
 import { getFloorRewardPreview } from '../services/reward.service';
@@ -32,7 +32,7 @@ const DIFFICULTIES: { key: Difficulty; label: string; color: string }[] = [
 ];
 
 function getMonsterName(templateId: number): string {
-  return POKEDEX.find(p => p.id === templateId)?.name ?? `#${templateId}`;
+  return getTemplate(templateId)?.name ?? `#${templateId}`;
 }
 
 export function StoryModePage() {
@@ -235,7 +235,7 @@ export function StoryModePage() {
                     <div className="floor-entry-enemies">
                       {floor.enemies.map((enemy, i) => (
                         <div key={i} className="floor-enemy-portrait" title={`${getMonsterName(enemy.templateId)} Lv.${enemy.level}`}>
-                          <img src={assetUrl(`sprites/${enemy.templateId}.png`)} alt={getMonsterName(enemy.templateId)} />
+                          <img src={assetUrl(getTemplate(enemy.templateId)?.spriteUrl ?? `sprites/${enemy.templateId}.png`)} alt={getMonsterName(enemy.templateId)} />
                         </div>
                       ))}
                     </div>

@@ -1,4 +1,4 @@
-import { POKEDEX, computeStats, computeStatsWithItems, getActiveSetEffects, calculateDamage, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel } from '@gatchamon/shared';
+import { getTemplate as getTemplateShared, computeStats, computeStatsWithItems, getActiveSetEffects, calculateDamage, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel } from '@gatchamon/shared';
 import { SKILLS, getSkillsForPokemon } from '@gatchamon/shared';
 import { TOTAL_REGIONS } from '@gatchamon/shared';
 import type {
@@ -39,7 +39,7 @@ const activeBattles = new Map<string, BattleState>();
 // ---------------------------------------------------------------------------
 
 function getTemplate(templateId: number): PokemonTemplate {
-  const t = POKEDEX.find(p => p.id === templateId);
+  const t = getTemplateShared(templateId);
   if (!t) throw new Error(`Unknown templateId ${templateId}`);
   return t;
 }
@@ -69,6 +69,7 @@ function makeBattleMon(
 
   const cooldowns: Record<string, number> = {};
   for (const sk of skills) {
+    if (sk.category === 'passive') continue;
     cooldowns[sk.id] = 0;
   }
 
@@ -89,6 +90,51 @@ function makeBattleMon(
 
 function allDead(team: BattleMon[]): boolean {
   return team.every(m => !m.isAlive);
+}
+
+/** Apply passive skills for all mons at battle start. */
+function applyPassives(state: BattleState): void {
+  const allMons = [...state.playerTeam, ...state.enemyTeam];
+  for (const mon of allMons) {
+    const template = getTemplate(mon.templateId);
+    const skills = getSkillsForPokemon(template.skillIds);
+    for (const skill of skills) {
+      if (skill.category !== 'passive') continue;
+      for (const effect of skill.effects) {
+        const roll = Math.random() * 100;
+        if (roll >= effect.chance) continue;
+
+        let targets: BattleMon[];
+        if (skill.target === 'self') {
+          targets = [mon];
+        } else if (skill.target === 'all_allies') {
+          targets = mon.isPlayerOwned
+            ? state.playerTeam.filter(m => m.isAlive)
+            : state.enemyTeam.filter(m => m.isAlive);
+        } else if (skill.target === 'all_enemies') {
+          targets = mon.isPlayerOwned
+            ? state.enemyTeam.filter(m => m.isAlive)
+            : state.playerTeam.filter(m => m.isAlive);
+        } else {
+          targets = [mon];
+        }
+
+        for (const target of targets) {
+          const activeEffect = {
+            type: effect.type as 'buff' | 'debuff' | 'dot' | 'heal' | 'stun',
+            stat: effect.stat,
+            value: effect.value,
+            remainingTurns: 999,
+          };
+          if (effect.type === 'buff' || effect.type === 'heal') {
+            target.buffs.push(activeEffect);
+          } else {
+            target.debuffs.push(activeEffect);
+          }
+        }
+      }
+    }
+  }
 }
 
 function getEffectiveStats(mon: BattleMon): BaseStats {
@@ -358,7 +404,7 @@ function resolveSkill(
 
 function pickEnemyAction(actor: BattleMon, state: BattleState): { skill: SkillDefinition; targets: BattleMon[] } {
   const template = getTemplate(actor.templateId);
-  const skills = getSkillsForPokemon(template.skillIds);
+  const skills = getSkillsForPokemon(template.skillIds).filter(s => s.category !== 'passive');
 
   let chosenSkill: SkillDefinition | null = null;
   for (let i = skills.length - 1; i >= 0; i--) {
@@ -785,6 +831,8 @@ export function startBattle(
     mode: 'story',
   };
 
+  applyPassives(state);
+
   // Determine first actor
   const firstActorId = advanceToNextActor(state);
   const allMons = [...state.playerTeam, ...state.enemyTeam];
@@ -864,6 +912,8 @@ export function startDungeonBattle(
     dungeonId,
   };
 
+  applyPassives(state);
+
   const firstActorId = advanceToNextActor(state);
   const allMons = [...state.playerTeam, ...state.enemyTeam];
   const firstActor = allMons.find(m => m.instanceId === firstActorId);
@@ -940,6 +990,8 @@ export function startItemDungeonBattle(
     mode: 'item-dungeon',
     dungeonId,
   };
+
+  applyPassives(state);
 
   const firstActorId = advanceToNextActor(state);
   const allMons = [...state.playerTeam, ...state.enemyTeam];

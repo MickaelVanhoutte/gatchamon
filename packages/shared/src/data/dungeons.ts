@@ -328,6 +328,189 @@ export const DUNGEONS: DungeonDef[] = [
       },
     ],
   },
+  // ============================================================
+  // NEW DUNGEONS — Fairy, Dark, Steel
+  // ============================================================
+  {
+    id: 6,
+    name: 'Moonlit Grove',
+    icon: '\u{1F9DA}',
+    color: '#ee99ac',
+    description: 'An enchanted forest bathed in moonlight. Drops Fairy, Normal, and Grass essences.',
+    energyCost: 5,
+    floors: [
+      {
+        enemyLevel: 10,
+        enemies: [174, 209, 39],  // Igglybuff, Snubbull, Jigglypuff
+        drops: [
+          { essenceId: 'fairy_low', quantity: [1, 3], chance: 0.8 },
+          { essenceId: 'normal_low', quantity: [1, 2], chance: 0.6 },
+          { essenceId: 'grass_low', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'magic_low', quantity: [0, 1], chance: 0.3 },
+        ],
+      },
+      {
+        enemyLevel: 18,
+        enemies: [209, 546, 174],  // Snubbull, Cottonee, Igglybuff
+        drops: [
+          { essenceId: 'fairy_low', quantity: [2, 4], chance: 0.9 },
+          { essenceId: 'normal_low', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'fairy_mid', quantity: [0, 1], chance: 0.3 },
+          { essenceId: 'magic_low', quantity: [0, 2], chance: 0.5 },
+        ],
+      },
+      {
+        enemyLevel: 25,
+        enemies: [546, 684, 209],  // Cottonee, Swirlix, Snubbull
+        drops: [
+          { essenceId: 'fairy_low', quantity: [2, 5], chance: 1.0 },
+          { essenceId: 'fairy_mid', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'normal_mid', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'magic_low', quantity: [1, 2], chance: 0.6 },
+        ],
+      },
+      {
+        enemyLevel: 33,
+        enemies: [684, 282, 546],  // Swirlix, Gardevoir, Cottonee
+        drops: [
+          { essenceId: 'fairy_mid', quantity: [2, 4], chance: 0.8 },
+          { essenceId: 'normal_mid', quantity: [1, 3], chance: 0.6 },
+          { essenceId: 'fairy_high', quantity: [0, 1], chance: 0.2 },
+          { essenceId: 'magic_mid', quantity: [0, 2], chance: 0.5 },
+        ],
+      },
+      {
+        enemyLevel: 42,
+        enemies: [282, 684, 174],  // Gardevoir, Swirlix, Igglybuff
+        drops: [
+          { essenceId: 'fairy_mid', quantity: [3, 5], chance: 1.0 },
+          { essenceId: 'fairy_high', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'normal_high', quantity: [0, 1], chance: 0.25 },
+          { essenceId: 'magic_mid', quantity: [1, 2], chance: 0.6 },
+        ],
+      },
+    ],
+  },
+  {
+    id: 7,
+    name: 'Shadow Crypt',
+    icon: '\u{1F311}',
+    color: '#705848',
+    description: 'A crypt shrouded in perpetual darkness. Drops Dark, Ghost, and Psychic essences.',
+    energyCost: 5,
+    floors: [
+      {
+        enemyLevel: 10,
+        enemies: [198, 261, 215],  // Murkrow, Poochyena, Sneasel
+        drops: [
+          { essenceId: 'dark_low', quantity: [1, 3], chance: 0.8 },
+          { essenceId: 'ghost_low', quantity: [1, 2], chance: 0.6 },
+          { essenceId: 'psychic_low', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'magic_low', quantity: [0, 1], chance: 0.3 },
+        ],
+      },
+      {
+        enemyLevel: 18,
+        enemies: [261, 302, 198],  // Poochyena, Sableye, Murkrow
+        drops: [
+          { essenceId: 'dark_low', quantity: [2, 4], chance: 0.9 },
+          { essenceId: 'ghost_low', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'dark_mid', quantity: [0, 1], chance: 0.3 },
+          { essenceId: 'magic_low', quantity: [0, 2], chance: 0.5 },
+        ],
+      },
+      {
+        enemyLevel: 25,
+        enemies: [302, 215, 261],  // Sableye, Sneasel, Poochyena
+        drops: [
+          { essenceId: 'dark_low', quantity: [2, 5], chance: 1.0 },
+          { essenceId: 'dark_mid', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'ghost_mid', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'magic_low', quantity: [1, 2], chance: 0.6 },
+        ],
+      },
+      {
+        enemyLevel: 33,
+        enemies: [359, 302, 198],  // Absol, Sableye, Murkrow
+        drops: [
+          { essenceId: 'dark_mid', quantity: [2, 4], chance: 0.8 },
+          { essenceId: 'ghost_mid', quantity: [1, 3], chance: 0.6 },
+          { essenceId: 'dark_high', quantity: [0, 1], chance: 0.2 },
+          { essenceId: 'magic_mid', quantity: [0, 2], chance: 0.5 },
+        ],
+      },
+      {
+        enemyLevel: 42,
+        enemies: [359, 215, 302],  // Absol, Sneasel, Sableye
+        drops: [
+          { essenceId: 'dark_mid', quantity: [3, 5], chance: 1.0 },
+          { essenceId: 'dark_high', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'ghost_high', quantity: [0, 1], chance: 0.25 },
+          { essenceId: 'magic_mid', quantity: [1, 2], chance: 0.6 },
+        ],
+      },
+    ],
+  },
+  {
+    id: 8,
+    name: 'Iron Forge',
+    icon: '\u{2699}\u{FE0F}',
+    color: '#b8b8d0',
+    description: 'An ancient foundry where metal Pokemon dwell. Drops Steel, Rock, and Electric essences.',
+    energyCost: 5,
+    floors: [
+      {
+        enemyLevel: 10,
+        enemies: [81, 304, 436],  // Magnemite, Aron, Bronzor
+        drops: [
+          { essenceId: 'steel_low', quantity: [1, 3], chance: 0.8 },
+          { essenceId: 'rock_low', quantity: [1, 2], chance: 0.6 },
+          { essenceId: 'electric_low', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'magic_low', quantity: [0, 1], chance: 0.3 },
+        ],
+      },
+      {
+        enemyLevel: 18,
+        enemies: [304, 436, 81],  // Aron, Bronzor, Magnemite
+        drops: [
+          { essenceId: 'steel_low', quantity: [2, 4], chance: 0.9 },
+          { essenceId: 'rock_low', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'steel_mid', quantity: [0, 1], chance: 0.3 },
+          { essenceId: 'magic_low', quantity: [0, 2], chance: 0.5 },
+        ],
+      },
+      {
+        enemyLevel: 25,
+        enemies: [436, 304, 374],  // Bronzor, Aron, Beldum
+        drops: [
+          { essenceId: 'steel_low', quantity: [2, 5], chance: 1.0 },
+          { essenceId: 'steel_mid', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'rock_mid', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'magic_low', quantity: [1, 2], chance: 0.6 },
+        ],
+      },
+      {
+        enemyLevel: 33,
+        enemies: [374, 304, 436],  // Beldum, Aron, Bronzor
+        drops: [
+          { essenceId: 'steel_mid', quantity: [2, 4], chance: 0.8 },
+          { essenceId: 'rock_mid', quantity: [1, 3], chance: 0.6 },
+          { essenceId: 'steel_high', quantity: [0, 1], chance: 0.2 },
+          { essenceId: 'magic_mid', quantity: [0, 2], chance: 0.5 },
+        ],
+      },
+      {
+        enemyLevel: 42,
+        enemies: [376, 374, 304],  // Metagross, Beldum, Aron
+        drops: [
+          { essenceId: 'steel_mid', quantity: [3, 5], chance: 1.0 },
+          { essenceId: 'steel_high', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'electric_high', quantity: [0, 1], chance: 0.25 },
+          { essenceId: 'magic_mid', quantity: [1, 2], chance: 0.6 },
+        ],
+      },
+    ],
+  },
 ];
 
 export function getDungeon(id: number): DungeonDef | undefined {

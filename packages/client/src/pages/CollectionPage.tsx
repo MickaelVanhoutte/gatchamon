@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import type { OwnedPokemon } from '../stores/gameStore';
-import { computeStats, getSkillsForPokemon, MAX_LEVEL_BY_STARS, isMaxLevel, POKEDEX, ESSENCES, getEvolutionsFrom } from '@gatchamon/shared';
+import { computeStats, getSkillsForPokemon, MAX_LEVEL_BY_STARS, isMaxLevel, getTemplate, ESSENCES, getEvolutionsFrom } from '@gatchamon/shared';
 import { canMerge } from '../services/merge.service';
 import { canEvolveInstance } from '../services/evolution.service';
 import type { PokemonType, BaseStats, SkillDefinition, EvolutionChain } from '@gatchamon/shared';
@@ -264,7 +264,7 @@ export function CollectionPage() {
                     <div className="box-evolution">
                       <span className="box-evo-label">Evolution</span>
                       {evolutionOptions.map(chain => {
-                        const targetTemplate = POKEDEX.find(p => p.id === chain.to);
+                        const targetTemplate = getTemplate(chain.to);
                         if (!targetTemplate) return null;
                         const validation = canEvolveInstance(selected.instance, player, chain.to);
                         const materials = player.materials ?? {};

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
-import { REGIONS, DUNGEONS, ITEM_DUNGEONS, POKEDEX } from '@gatchamon/shared';
+import { REGIONS, DUNGEONS, ITEM_DUNGEONS, getTemplate } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
 import { startBattle, startDungeonBattle, startItemDungeonBattle } from '../services/battle.service';
 import { buildFloorEnemies } from '../services/floor.service';
@@ -71,7 +71,7 @@ export function TeamSelectPage() {
       const floorData = itemDungeonDef.floors[dungeonFloor];
       const level = floorData?.enemyLevel ?? 10;
       return (floorData?.enemies ?? []).map(tid => {
-        const tmpl = POKEDEX.find(p => p.id === tid);
+        const tmpl = getTemplate(tid);
         return {
           templateId: tid,
           name: tmpl?.name ?? '???',
@@ -85,7 +85,7 @@ export function TeamSelectPage() {
       const floorData = dungeonDef.floors[dungeonFloor];
       const level = floorData?.enemyLevel ?? 10;
       return (floorData?.enemies ?? []).map(tid => {
-        const tmpl = POKEDEX.find(p => p.id === tid);
+        const tmpl = getTemplate(tid);
         return {
           templateId: tid,
           name: tmpl?.name ?? '???',
@@ -98,7 +98,7 @@ export function TeamSelectPage() {
     // Story mode
     const floorDef = buildFloorEnemies(region, floor, difficulty);
     return floorDef.enemies.map(e => {
-      const tmpl = POKEDEX.find(p => p.id === e.templateId);
+      const tmpl = getTemplate(e.templateId);
       return {
         templateId: e.templateId,
         name: tmpl?.name ?? '???',

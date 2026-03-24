@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { Player, PokemonInstance, PokemonTemplate, HeldItemInstance } from '@gatchamon/shared';
-import { POKEDEX } from '@gatchamon/shared';
+import { getTemplate } from '@gatchamon/shared';
 import * as storage from '../services/storage';
 import * as playerService from '../services/player.service';
 import * as gachaService from '../services/gacha.service';
@@ -94,7 +94,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     const collection: OwnedPokemon[] = instances
       .map(inst => ({
         instance: inst,
-        template: POKEDEX.find(p => p.id === inst.templateId)!,
+        template: getTemplate(inst.templateId)!,
       }))
       .filter(item => item.template != null)
       .sort((a, b) => b.instance.stars - a.instance.stars || b.instance.level - a.instance.level);

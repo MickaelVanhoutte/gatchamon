@@ -14,7 +14,7 @@ import {
   getTrophyStat,
   defaultLifetimeStats,
   firstClearKey,
-  POKEDEX,
+  getTemplate,
   TOTAL_REGIONS,
 } from '@gatchamon/shared';
 import {
@@ -259,7 +259,7 @@ export function rollMonsterLoot(
   for (const enemy of enemies) {
     const rate = (STAR_LOOT_RATES[enemy.stars] ?? 0.10) + diffBonus;
     if (Math.random() < rate) {
-      const template = POKEDEX.find(p => p.id === enemy.templateId);
+      const template = getTemplate(enemy.templateId);
       if (!template) continue;
 
       const instance: PokemonInstance = {

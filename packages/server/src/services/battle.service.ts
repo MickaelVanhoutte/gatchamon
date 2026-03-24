@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { POKEDEX, computeStats, calculateDamage, xpToNextLevel } from '@gatchamon/shared';
+import { getTemplate as getTemplateShared, computeStats, calculateDamage, xpToNextLevel } from '@gatchamon/shared';
 import { SKILLS, getSkillsForPokemon } from '@gatchamon/shared';
 import { REGIONS, TOTAL_REGIONS } from '@gatchamon/shared';
 import type {
@@ -119,7 +119,7 @@ export function getFloorDefsForRegion(regionId: number, difficulty: Difficulty):
 // ---------------------------------------------------------------------------
 
 function getTemplate(templateId: number): PokemonTemplate {
-  const t = POKEDEX.find(p => p.id === templateId);
+  const t = getTemplateShared(templateId);
   if (!t) throw new Error(`Unknown templateId ${templateId}`);
   return t;
 }
@@ -137,6 +137,8 @@ function makeBattleMon(
 
   const cooldowns: Record<string, number> = {};
   for (const sk of skills) {
+    // Passives are auto-applied, not selectable — skip them from cooldowns
+    if (sk.category === 'passive') continue;
     cooldowns[sk.id] = 0;
   }
 
@@ -153,6 +155,52 @@ function makeBattleMon(
     isAlive: true,
     actionGauge: 0,
   };
+}
+
+/** Apply passive skills for all mons at battle start. */
+function applyPassives(state: BattleState): void {
+  const allMons = [...state.playerTeam, ...state.enemyTeam];
+  for (const mon of allMons) {
+    const template = getTemplate(mon.templateId);
+    const skills = getSkillsForPokemon(template.skillIds);
+    for (const skill of skills) {
+      if (skill.category !== 'passive') continue;
+      for (const effect of skill.effects) {
+        const roll = Math.random() * 100;
+        if (roll >= effect.chance) continue;
+
+        // Determine targets for the passive
+        let targets: BattleMon[];
+        if (skill.target === 'self') {
+          targets = [mon];
+        } else if (skill.target === 'all_allies') {
+          targets = mon.isPlayerOwned
+            ? state.playerTeam.filter(m => m.isAlive)
+            : state.enemyTeam.filter(m => m.isAlive);
+        } else if (skill.target === 'all_enemies') {
+          targets = mon.isPlayerOwned
+            ? state.enemyTeam.filter(m => m.isAlive)
+            : state.playerTeam.filter(m => m.isAlive);
+        } else {
+          targets = [mon];
+        }
+
+        for (const target of targets) {
+          const activeEffect = {
+            type: effect.type as 'buff' | 'debuff' | 'dot' | 'heal' | 'stun',
+            stat: effect.stat,
+            value: effect.value,
+            remainingTurns: 999, // Passives last the entire battle
+          };
+          if (effect.type === 'buff' || effect.type === 'heal') {
+            target.buffs.push(activeEffect);
+          } else {
+            target.debuffs.push(activeEffect);
+          }
+        }
+      }
+    }
+  }
 }
 
 function allDead(team: BattleMon[]): boolean {
@@ -414,9 +462,9 @@ function resolveSkill(
 
 function pickEnemyAction(actor: BattleMon, state: BattleState): { skill: SkillDefinition; targets: BattleMon[] } {
   const template = getTemplate(actor.templateId);
-  const skills = getSkillsForPokemon(template.skillIds);
+  const skills = getSkillsForPokemon(template.skillIds).filter(s => s.category !== 'passive');
 
-  // Pick highest-numbered available skill (prefer skill3 > skill2 > skill1)
+  // Pick highest-numbered available skill (prefer skill2 > skill1)
   let chosenSkill: SkillDefinition | null = null;
   for (let i = skills.length - 1; i >= 0; i--) {
     const sk = skills[i];
@@ -689,6 +737,9 @@ export function startBattle(
     floor,
     mode: 'story',
   };
+
+  // Apply passive abilities at battle start
+  applyPassives(state);
 
   // Determine first actor by simulating gauge fills
   const firstActorId = advanceToNextActor(state);

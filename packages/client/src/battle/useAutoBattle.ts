@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { POKEDEX, SKILLS, getTypeEffectiveness } from '@gatchamon/shared';
+import { getTemplate, SKILLS, getTypeEffectiveness } from '@gatchamon/shared';
 import type { BattleState, BattleMon, PokemonType, BaseStats } from '@gatchamon/shared';
 
 type Phase = 'player_turn' | 'animating' | 'victory' | 'defeat';
@@ -78,7 +78,7 @@ function scoreEffects(
 }
 
 function pickBestAction(actor: BattleMon, state: BattleState): AutoAction | null {
-  const template = POKEDEX.find(p => p.id === actor.templateId);
+  const template = getTemplate(actor.templateId);
   if (!template) return null;
 
   const attackerTypes = template.types as PokemonType[];
@@ -86,7 +86,7 @@ function pickBestAction(actor: BattleMon, state: BattleState): AutoAction | null
 
   const availableSkills = template.skillIds
     .map(id => SKILLS[id])
-    .filter(s => s && (actor.skillCooldowns[s.id] ?? 0) === 0);
+    .filter(s => s && s.category !== 'passive' && (actor.skillCooldowns[s.id] ?? 0) === 0);
 
   if (availableSkills.length === 0) return null;
 
@@ -105,7 +105,7 @@ function pickBestAction(actor: BattleMon, state: BattleState): AutoAction | null
       }
     } else if (skill.target === 'single_enemy') {
       for (const enemy of state.enemyTeam.filter(e => e.isAlive)) {
-        const enemyTemplate = POKEDEX.find(p => p.id === enemy.templateId);
+        const enemyTemplate = getTemplate(enemy.templateId);
         if (!enemyTemplate) continue;
         const defenderTypes = enemyTemplate.types as PokemonType[];
         const defenderStats = getEffectiveStats(enemy);
@@ -124,7 +124,7 @@ function pickBestAction(actor: BattleMon, state: BattleState): AutoAction | null
       const aliveEnemies = state.enemyTeam.filter(e => e.isAlive);
       let totalScore = 0;
       for (const enemy of aliveEnemies) {
-        const enemyTemplate = POKEDEX.find(p => p.id === enemy.templateId);
+        const enemyTemplate = getTemplate(enemy.templateId);
         if (!enemyTemplate) continue;
         const defenderTypes = enemyTemplate.types as PokemonType[];
         const defenderStats = getEffectiveStats(enemy);

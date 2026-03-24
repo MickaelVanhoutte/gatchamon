@@ -1,5 +1,5 @@
 import type { PokemonInstance, Player } from '@gatchamon/shared';
-import { POKEDEX, getEvolutionsFrom } from '@gatchamon/shared';
+import { getTemplate, getEvolutionsFrom } from '@gatchamon/shared';
 import type { EvolutionChain } from '@gatchamon/shared';
 import { loadPlayer, savePlayer, loadCollection, saveCollection } from './storage';
 import { trackStat, incrementMission, checkAndUpdateTrophies } from './reward.service';
@@ -46,7 +46,7 @@ export function canEvolveInstance(
   }
 
   // Check target template exists
-  const targetTemplate = POKEDEX.find(p => p.id === targetTemplateId);
+  const targetTemplate = getTemplate(targetTemplateId);
   if (!targetTemplate) {
     return { valid: false, reason: 'Target evolution form not found' };
   }

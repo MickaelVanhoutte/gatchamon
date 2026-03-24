@@ -4,7 +4,7 @@ import { getBattleState as fetchBattleState, resolvePlayerAction } from '../serv
 import { useGameStore } from '../stores/gameStore';
 import { useBattleAnimation } from '../battle/useBattleAnimation';
 import { useAutoBattle } from '../battle/useAutoBattle';
-import { POKEDEX, SKILLS, getTypeEffectiveness, ESSENCES, ITEM_SETS } from '@gatchamon/shared';
+import { getTemplate, SKILLS, getTypeEffectiveness, ESSENCES, ITEM_SETS } from '@gatchamon/shared';
 import type { BattleState, BattleMon, BattleLogEntry, BattleResult, PokemonType } from '@gatchamon/shared';
 import { assetUrl } from '../utils/asset-url';
 import './BattlePage.css';
@@ -29,8 +29,6 @@ export function BattlePage() {
   const monRefs = useRef<Map<string, HTMLElement>>(new Map());
 
   const { playLogEntry, playMultiTargetEntries } = useBattleAnimation(arenaEl, monRefs);
-
-  const getTemplate = (templateId: number) => POKEDEX.find(p => p.id === templateId);
 
   const loadBattle = useCallback(() => {
     if (!battleId) return;
@@ -265,7 +263,7 @@ export function BattlePage() {
           ) : (
             Object.entries(currentActor.skillCooldowns).map(([skillId, cd]) => {
               const skill = SKILLS[skillId];
-              if (!skill) return null;
+              if (!skill || skill.category === 'passive') return null;
               const isReady = cd === 0;
               return (
                 <button
@@ -311,7 +309,7 @@ export function BattlePage() {
                     <p className="loot-title">{'\u{1F340}'} Monster Captured!</p>
                     <div className="loot-monster-display">
                       <img
-                        src={assetUrl(`sprites/${rewards.monsterLoot.templateId}.png`)}
+                        src={assetUrl(getTemplate(rewards.monsterLoot.templateId)?.spriteUrl ?? `sprites/${rewards.monsterLoot.templateId}.png`)}
                         alt={getTemplate(rewards.monsterLoot.templateId)?.name ?? ''}
                         className="loot-sprite"
                       />
@@ -404,7 +402,7 @@ function BattleMonSprite({
   skillType?: PokemonType;
   registerRef?: (el: HTMLDivElement | null) => void;
 }) {
-  const tmpl = POKEDEX.find(p => p.id === mon.templateId);
+  const tmpl = getTemplate(mon.templateId);
   if (!tmpl) return null;
 
   const hpPct = mon.maxHp > 0 ? (mon.currentHp / mon.maxHp) * 100 : 0;
