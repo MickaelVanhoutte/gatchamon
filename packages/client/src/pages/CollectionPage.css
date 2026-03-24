@@ -65,7 +65,7 @@
   border: 2px solid rgba(255, 255, 255, 0.08);
   cursor: pointer;
   padding: 1px;
-  height: 60px;
+  height: 72px;
   overflow: hidden;
   transition: border-color 0.15s;
 }
@@ -91,9 +91,9 @@
 /* Sprite */
 .box-cell-sprite {
   width: 80%;
-  height: auto;
   image-rendering: pixelated;
   flex: 1;
+  min-height: 0;
   object-fit: contain;
 }
 
@@ -673,20 +673,20 @@
 /* ========== Responsive ========== */
 @media (max-width: 600px) {
   .box-grid {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(5, 1fr);
   }
 
   .box-detail-panel {
-    width: 240px;
+    width: 300px;
   }
 }
 
 @media (max-width: 420px) {
   .box-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .box-detail-panel {
-    width: 200px;
+    width: 45%;
   }
 }
