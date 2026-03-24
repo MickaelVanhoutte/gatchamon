@@ -39,11 +39,8 @@ function generateDungeonEnemies(dungeonDef: DungeonDef, floorIndex: number): Bat
   const floor = dungeonDef.floors[floorIndex];
   if (!floor) throw new Error(`Invalid floor ${floorIndex}`);
 
-  const enemyCount = 3;
   const enemies: BattleMon[] = [];
-  for (let i = 0; i < enemyCount; i++) {
-    const pool = dungeonDef.enemyPool;
-    const templateId = pool[Math.floor(Math.random() * pool.length)];
+  for (const templateId of floor.enemies) {
     const template = getTemplate(templateId);
     const id = `dungeon_enemy_${crypto.randomUUID()}`;
     const stars = template.naturalStars;

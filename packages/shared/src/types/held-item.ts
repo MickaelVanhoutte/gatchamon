@@ -81,6 +81,7 @@ export interface ItemDungeonDrop {
 
 export interface ItemDungeonFloor {
   enemyLevel: number;
+  enemies: number[];
   drops: ItemDungeonDrop[];
   stardustReward: [number, number];
 }
@@ -91,7 +92,6 @@ export interface ItemDungeonDef {
   icon: string;
   color: string;
   description: string;
-  enemyPool: number[];
   energyCost: number;
   floors: ItemDungeonFloor[];
 }

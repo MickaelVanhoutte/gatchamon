@@ -33,6 +33,7 @@ export interface DungeonDrop {
 
 export interface DungeonFloor {
   enemyLevel: number;
+  enemies: number[];
   drops: DungeonDrop[];
 }
 
@@ -42,7 +43,6 @@ export interface DungeonDef {
   icon: string;
   color: string;
   description: string;
-  enemyPool: number[];
   energyCost: number;
   floors: DungeonFloor[];
 }

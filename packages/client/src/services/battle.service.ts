@@ -843,9 +843,7 @@ export function startDungeonBattle(
   if (!floor) throw new Error(`Invalid dungeon floor ${floorIndex}`);
 
   const enemyTeam: BattleMon[] = [];
-  for (let i = 0; i < 3; i++) {
-    const pool = dungeonDef.enemyPool;
-    const templateId = pool[Math.floor(Math.random() * pool.length)];
+  for (const templateId of floor.enemies) {
     const template = getTemplate(templateId);
     const id = `dungeon_enemy_${crypto.randomUUID()}`;
     enemyTeam.push(makeBattleMon(id, templateId, floor.enemyLevel, template.naturalStars, false));
@@ -922,9 +920,7 @@ export function startItemDungeonBattle(
   if (!floor) throw new Error(`Invalid dungeon floor ${floorIndex}`);
 
   const enemyTeam: BattleMon[] = [];
-  for (let i = 0; i < 3; i++) {
-    const pool = dungeonDef.enemyPool;
-    const templateId = pool[Math.floor(Math.random() * pool.length)];
+  for (const templateId of floor.enemies) {
     const template = getTemplate(templateId);
     const id = `item_dungeon_enemy_${crypto.randomUUID()}`;
     enemyTeam.push(makeBattleMon(id, templateId, floor.enemyLevel, template.naturalStars, false));

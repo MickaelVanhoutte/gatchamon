@@ -7,11 +7,11 @@ export const DUNGEONS: DungeonDef[] = [
     icon: '\u{1F33F}',
     color: '#3a7a2a',
     description: 'A lush cave teeming with plant and insect life. Drops Grass, Poison, and Bug essences.',
-    enemyPool: [10, 13, 43, 69, 127],  // Caterpie, Weedle, Oddish, Bellsprout, Pinsir
     energyCost: 5,
     floors: [
       {
         enemyLevel: 8,
+        enemies: [10, 13, 43],  // Caterpie, Weedle, Oddish
         drops: [
           { essenceId: 'grass_low', quantity: [1, 3], chance: 0.8 },
           { essenceId: 'poison_low', quantity: [1, 2], chance: 0.6 },
@@ -21,6 +21,7 @@ export const DUNGEONS: DungeonDef[] = [
       },
       {
         enemyLevel: 15,
+        enemies: [13, 43, 69],  // Weedle, Oddish, Bellsprout
         drops: [
           { essenceId: 'grass_low', quantity: [2, 4], chance: 0.9 },
           { essenceId: 'poison_low', quantity: [1, 3], chance: 0.7 },
@@ -31,6 +32,7 @@ export const DUNGEONS: DungeonDef[] = [
       },
       {
         enemyLevel: 22,
+        enemies: [43, 69, 10],  // Oddish, Bellsprout, Caterpie
         drops: [
           { essenceId: 'grass_low', quantity: [2, 5], chance: 1.0 },
           { essenceId: 'poison_low', quantity: [2, 4], chance: 0.8 },
@@ -42,6 +44,7 @@ export const DUNGEONS: DungeonDef[] = [
       },
       {
         enemyLevel: 30,
+        enemies: [69, 127, 43],  // Bellsprout, Pinsir, Oddish
         drops: [
           { essenceId: 'grass_mid', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'poison_mid', quantity: [1, 3], chance: 0.7 },
@@ -52,6 +55,7 @@ export const DUNGEONS: DungeonDef[] = [
       },
       {
         enemyLevel: 40,
+        enemies: [127, 69, 13],  // Pinsir, Bellsprout, Weedle
         drops: [
           { essenceId: 'grass_mid', quantity: [3, 5], chance: 1.0 },
           { essenceId: 'poison_mid', quantity: [2, 4], chance: 0.8 },
@@ -69,11 +73,11 @@ export const DUNGEONS: DungeonDef[] = [
     icon: '\u{1F525}',
     color: '#d04040',
     description: 'Scorching tunnels of magma and stone. Drops Fire, Rock, and Ground essences.',
-    enemyPool: [4, 58, 74, 107],  // Charmander, Growlithe, Geodude, Hitmonchan
     energyCost: 5,
     floors: [
       {
         enemyLevel: 8,
+        enemies: [4, 74, 58],  // Charmander, Geodude, Growlithe
         drops: [
           { essenceId: 'fire_low', quantity: [1, 3], chance: 0.8 },
           { essenceId: 'rock_low', quantity: [1, 2], chance: 0.6 },
@@ -83,6 +87,7 @@ export const DUNGEONS: DungeonDef[] = [
       },
       {
         enemyLevel: 15,
+        enemies: [58, 4, 74],  // Growlithe, Charmander, Geodude
         drops: [
           { essenceId: 'fire_low', quantity: [2, 4], chance: 0.9 },
           { essenceId: 'rock_low', quantity: [1, 3], chance: 0.7 },
@@ -93,6 +98,7 @@ export const DUNGEONS: DungeonDef[] = [
       },
       {
         enemyLevel: 22,
+        enemies: [74, 107, 4],  // Geodude, Hitmonchan, Charmander
         drops: [
           { essenceId: 'fire_low', quantity: [2, 5], chance: 1.0 },
           { essenceId: 'rock_mid', quantity: [1, 2], chance: 0.5 },
@@ -103,6 +109,7 @@ export const DUNGEONS: DungeonDef[] = [
       },
       {
         enemyLevel: 30,
+        enemies: [107, 58, 74],  // Hitmonchan, Growlithe, Geodude
         drops: [
           { essenceId: 'fire_mid', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'rock_mid', quantity: [1, 3], chance: 0.7 },
@@ -113,6 +120,7 @@ export const DUNGEONS: DungeonDef[] = [
       },
       {
         enemyLevel: 40,
+        enemies: [107, 4, 58],  // Hitmonchan, Charmander, Growlithe
         drops: [
           { essenceId: 'fire_mid', quantity: [3, 5], chance: 1.0 },
           { essenceId: 'rock_mid', quantity: [2, 4], chance: 0.8 },
@@ -130,11 +138,11 @@ export const DUNGEONS: DungeonDef[] = [
     icon: '\u{1F30A}',
     color: '#4a8ab0',
     description: 'Dark ocean depths hiding ancient power. Drops Water, Ice, and Dragon essences.',
-    enemyPool: [7, 60, 129, 131, 147],  // Squirtle, Poliwag, Magikarp, Lapras, Dratini
     energyCost: 5,
     floors: [
       {
         enemyLevel: 8,
+        enemies: [7, 60, 129],  // Squirtle, Poliwag, Magikarp
         drops: [
           { essenceId: 'water_low', quantity: [1, 3], chance: 0.8 },
           { essenceId: 'ice_low', quantity: [1, 2], chance: 0.5 },
@@ -144,6 +152,7 @@ export const DUNGEONS: DungeonDef[] = [
       },
       {
         enemyLevel: 15,
+        enemies: [60, 7, 129],  // Poliwag, Squirtle, Magikarp
         drops: [
           { essenceId: 'water_low', quantity: [2, 4], chance: 0.9 },
           { essenceId: 'ice_low', quantity: [1, 3], chance: 0.6 },
@@ -154,6 +163,7 @@ export const DUNGEONS: DungeonDef[] = [
       },
       {
         enemyLevel: 22,
+        enemies: [129, 131, 60],  // Magikarp, Lapras, Poliwag
         drops: [
           { essenceId: 'water_low', quantity: [2, 5], chance: 1.0 },
           { essenceId: 'ice_mid', quantity: [0, 2], chance: 0.4 },
@@ -164,6 +174,7 @@ export const DUNGEONS: DungeonDef[] = [
       },
       {
         enemyLevel: 30,
+        enemies: [131, 147, 7],  // Lapras, Dratini, Squirtle
         drops: [
           { essenceId: 'water_mid', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'ice_mid', quantity: [1, 3], chance: 0.6 },
@@ -174,6 +185,7 @@ export const DUNGEONS: DungeonDef[] = [
       },
       {
         enemyLevel: 40,
+        enemies: [147, 131, 60],  // Dratini, Lapras, Poliwag
         drops: [
           { essenceId: 'water_mid', quantity: [3, 5], chance: 1.0 },
           { essenceId: 'ice_mid', quantity: [2, 3], chance: 0.7 },
@@ -191,11 +203,11 @@ export const DUNGEONS: DungeonDef[] = [
     icon: '\u26A1',
     color: '#f0c030',
     description: 'A fortress crackling with elemental energy. Drops Electric, Flying, Normal, and Psychic essences.',
-    enemyPool: [25, 16, 63, 39, 133],  // Pikachu, Pidgey, Abra, Jigglypuff, Eevee
     energyCost: 5,
     floors: [
       {
         enemyLevel: 8,
+        enemies: [16, 39, 25],  // Pidgey, Jigglypuff, Pikachu
         drops: [
           { essenceId: 'electric_low', quantity: [1, 3], chance: 0.7 },
           { essenceId: 'flying_low', quantity: [1, 2], chance: 0.6 },
@@ -206,6 +218,7 @@ export const DUNGEONS: DungeonDef[] = [
       },
       {
         enemyLevel: 15,
+        enemies: [25, 16, 133],  // Pikachu, Pidgey, Eevee
         drops: [
           { essenceId: 'electric_low', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'flying_low', quantity: [1, 3], chance: 0.7 },
@@ -216,6 +229,7 @@ export const DUNGEONS: DungeonDef[] = [
       },
       {
         enemyLevel: 22,
+        enemies: [63, 39, 25],  // Abra, Jigglypuff, Pikachu
         drops: [
           { essenceId: 'electric_mid', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'flying_mid', quantity: [0, 2], chance: 0.4 },
@@ -227,6 +241,7 @@ export const DUNGEONS: DungeonDef[] = [
       },
       {
         enemyLevel: 30,
+        enemies: [133, 63, 16],  // Eevee, Abra, Pidgey
         drops: [
           { essenceId: 'electric_mid', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'flying_mid', quantity: [1, 3], chance: 0.6 },
@@ -237,6 +252,7 @@ export const DUNGEONS: DungeonDef[] = [
       },
       {
         enemyLevel: 40,
+        enemies: [63, 133, 25],  // Abra, Eevee, Pikachu
         drops: [
           { essenceId: 'electric_mid', quantity: [3, 5], chance: 1.0 },
           { essenceId: 'flying_mid', quantity: [2, 4], chance: 0.7 },
@@ -254,11 +270,11 @@ export const DUNGEONS: DungeonDef[] = [
     icon: '\u{1F47B}',
     color: '#6a5acd',
     description: 'A haunted temple of dark power. Drops Ghost, Fighting, and Magic essences.',
-    enemyPool: [92, 66, 106, 107, 41],  // Gastly, Machop, Hitmonlee, Hitmonchan, Zubat
     energyCost: 6,
     floors: [
       {
         enemyLevel: 10,
+        enemies: [92, 41, 66],  // Gastly, Zubat, Machop
         drops: [
           { essenceId: 'ghost_low', quantity: [1, 3], chance: 0.7 },
           { essenceId: 'fighting_low', quantity: [1, 2], chance: 0.6 },
@@ -268,6 +284,7 @@ export const DUNGEONS: DungeonDef[] = [
       },
       {
         enemyLevel: 18,
+        enemies: [66, 92, 41],  // Machop, Gastly, Zubat
         drops: [
           { essenceId: 'ghost_low', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'fighting_low', quantity: [1, 3], chance: 0.7 },
@@ -277,6 +294,7 @@ export const DUNGEONS: DungeonDef[] = [
       },
       {
         enemyLevel: 26,
+        enemies: [41, 106, 92],  // Zubat, Hitmonlee, Gastly
         drops: [
           { essenceId: 'ghost_mid', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'fighting_mid', quantity: [0, 2], chance: 0.4 },
@@ -287,6 +305,7 @@ export const DUNGEONS: DungeonDef[] = [
       },
       {
         enemyLevel: 35,
+        enemies: [106, 107, 92],  // Hitmonlee, Hitmonchan, Gastly
         drops: [
           { essenceId: 'ghost_mid', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'fighting_mid', quantity: [1, 3], chance: 0.7 },
@@ -297,6 +316,7 @@ export const DUNGEONS: DungeonDef[] = [
       },
       {
         enemyLevel: 45,
+        enemies: [107, 106, 66],  // Hitmonchan, Hitmonlee, Machop
         drops: [
           { essenceId: 'ghost_mid', quantity: [3, 5], chance: 1.0 },
           { essenceId: 'fighting_mid', quantity: [2, 4], chance: 0.8 },

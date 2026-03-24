@@ -67,7 +67,7 @@ export function TeamSelectPage() {
     if (mode === 'item-dungeon' && itemDungeonDef) {
       const floorData = itemDungeonDef.floors[dungeonFloor];
       const level = floorData?.enemyLevel ?? 10;
-      return itemDungeonDef.enemyPool.slice(0, 3).map(tid => {
+      return (floorData?.enemies ?? []).map(tid => {
         const tmpl = POKEDEX.find(p => p.id === tid);
         return {
           templateId: tid,
@@ -81,7 +81,7 @@ export function TeamSelectPage() {
     if (mode === 'dungeon' && dungeonDef) {
       const floorData = dungeonDef.floors[dungeonFloor];
       const level = floorData?.enemyLevel ?? 10;
-      return dungeonDef.enemyPool.slice(0, 3).map(tid => {
+      return (floorData?.enemies ?? []).map(tid => {
         const tmpl = POKEDEX.find(p => p.id === tid);
         return {
           templateId: tid,
