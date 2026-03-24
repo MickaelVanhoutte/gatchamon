@@ -327,6 +327,9 @@ function BattleMonSprite({
     ? getTypeEffectiveness(skillType, tmpl.types as PokemonType[])
     : null;
 
+  // Scale sprite based on species height: small Pokemon ~0.6x, large ~1.3x
+  const sizeScale = Math.min(1.3, Math.max(0.6, 0.4 + (tmpl.height ?? 1) * 0.4));
+
   return (
     <div
       ref={registerRef}
@@ -344,6 +347,7 @@ function BattleMonSprite({
         src={animatedSpriteUrl}
         alt={tmpl.name}
         className="battle-sprite"
+        style={{ transform: `scale(${sizeScale})` }}
       />
       <span className="mon-name">{tmpl.name}</span>
     </div>

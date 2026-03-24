@@ -393,10 +393,10 @@ export async function aerialAnimation(
 	const hue = TYPE_HUE_ANGLES[moveType] ?? 0;
 	const typeColor = engine.getTypeColor(moveType);
 
-	const attackerRect = attacker.element.getBoundingClientRect();
-	const targetRect = target.element.getBoundingClientRect();
-	const deltaX = targetRect.left - attackerRect.left;
-	const deltaY = targetRect.top - attackerRect.top;
+	const attackerPos = engine.getLocalCenter(attacker.element);
+	const targetPos = engine.getLocalCenter(target.element);
+	const deltaX = targetPos.x - attackerPos.x;
+	const deltaY = targetPos.y - attackerPos.y;
 	const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 	const stopDistance = Math.max(0, distance - 15);
 	const ratio = distance > 0 ? stopDistance / distance : 0;

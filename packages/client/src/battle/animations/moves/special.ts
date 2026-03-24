@@ -81,19 +81,18 @@ async function projectileAnimation(engine: AnimationEngine, context: MoveContext
 		z-index: 100;
 	`;
 
-	const attackerRect = attacker.element.getBoundingClientRect();
-	const targetRect = target.element.getBoundingClientRect();
-	const container = attacker.element.closest('.battle-arena') as HTMLElement;
-	const containerRect = container?.getBoundingClientRect() ?? { left: 0, top: 0 };
+	const attackerCenter = engine.getLocalCenter(attacker.element);
+	const targetCenter = engine.getLocalCenter(target.element);
+	const container = engine.getContainer();
 
-	projectile.style.left = `${attackerRect.left - containerRect.left + attackerRect.width / 2}px`;
-	projectile.style.top = `${attackerRect.top - containerRect.top + attackerRect.height / 2}px`;
-	container?.appendChild(projectile);
+	projectile.style.left = `${attackerCenter.x}px`;
+	projectile.style.top = `${attackerCenter.y}px`;
+	container.appendChild(projectile);
 
 	await new Promise<void>((resolve) => {
 		gsap.to(projectile, {
-			left: targetRect.left - containerRect.left + targetRect.width / 2,
-			top: targetRect.top - containerRect.top + targetRect.height / 2,
+			left: targetCenter.x,
+			top: targetCenter.y,
 			duration: 0.3,
 			ease: 'power2.in',
 			onComplete: () => {
@@ -184,18 +183,17 @@ async function drainAnimation(engine: AnimationEngine, context: MoveContext): Pr
 			z-index: 100;
 		`;
 
-		const targetRect = target.element.getBoundingClientRect();
-		const attackerRect = attacker.element.getBoundingClientRect();
-		const container = target.element.closest('.battle-arena') as HTMLElement;
-		const containerRect = container?.getBoundingClientRect() ?? { left: 0, top: 0 };
+		const targetCenter = engine.getLocalCenter(target.element);
+		const attackerCenter = engine.getLocalCenter(attacker.element);
+		const container = engine.getContainer();
 
-		orb.style.left = `${targetRect.left - containerRect.left + targetRect.width / 2 + (i - 1) * 20}px`;
-		orb.style.top = `${targetRect.top - containerRect.top + targetRect.height / 2}px`;
-		container?.appendChild(orb);
+		orb.style.left = `${targetCenter.x + (i - 1) * 20}px`;
+		orb.style.top = `${targetCenter.y}px`;
+		container.appendChild(orb);
 
 		gsap.to(orb, {
-			left: attackerRect.left - containerRect.left + attackerRect.width / 2,
-			top: attackerRect.top - containerRect.top + attackerRect.height / 2,
+			left: attackerCenter.x,
+			top: attackerCenter.y,
 			duration: 0.5,
 			delay: i * 0.1,
 			ease: 'power2.inOut',
@@ -337,19 +335,18 @@ export async function throwAnimation(engine: AnimationEngine, context: MoveConte
 		z-index: 100;
 	`;
 
-	const attackerRect = attacker.element.getBoundingClientRect();
-	const targetRect = target.element.getBoundingClientRect();
-	const container = attacker.element.closest('.battle-arena') as HTMLElement;
-	const containerRect = container?.getBoundingClientRect() ?? { left: 0, top: 0 };
+	const attackerCenter = engine.getLocalCenter(attacker.element);
+	const targetCenter = engine.getLocalCenter(target.element);
+	const container = engine.getContainer();
 
-	const startX = attackerRect.left - containerRect.left + attackerRect.width / 2;
-	const startY = attackerRect.top - containerRect.top + attackerRect.height / 2;
-	const endX = targetRect.left - containerRect.left + targetRect.width / 2;
-	const endY = targetRect.top - containerRect.top + targetRect.height / 2;
+	const startX = attackerCenter.x;
+	const startY = attackerCenter.y;
+	const endX = targetCenter.x;
+	const endY = targetCenter.y;
 
 	projectile.style.left = `${startX}px`;
 	projectile.style.top = `${startY}px`;
-	container?.appendChild(projectile);
+	container.appendChild(projectile);
 
 	const midY = Math.min(startY, endY) - 60;
 

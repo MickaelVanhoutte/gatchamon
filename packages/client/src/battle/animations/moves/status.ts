@@ -123,13 +123,12 @@ async function protectAnimation(engine: AnimationEngine, context: MoveContext): 
 		transform: scale(0);
 	`;
 
-	const attackerRect = attacker.element.getBoundingClientRect();
-	const container = attacker.element.closest('.battle-arena') as HTMLElement;
-	const containerRect = container?.getBoundingClientRect() ?? { left: 0, top: 0 };
+	const attackerCenter = engine.getLocalCenter(attacker.element);
+	const container = engine.getContainer();
 
-	shield.style.left = `${attackerRect.left - containerRect.left + attackerRect.width / 2 - 60}px`;
-	shield.style.top = `${attackerRect.top - containerRect.top + attackerRect.height / 2 - 60}px`;
-	container?.appendChild(shield);
+	shield.style.left = `${attackerCenter.x - 60}px`;
+	shield.style.top = `${attackerCenter.y - 60}px`;
+	container.appendChild(shield);
 
 	await new Promise<void>((resolve) => {
 		const tl = gsap.timeline({ onComplete: resolve });

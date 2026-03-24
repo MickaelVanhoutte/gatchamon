@@ -22,6 +22,7 @@ export interface PokemonTemplate {
   naturalStars: 1 | 2 | 3;
   spriteUrl: string;
   skillIds: [string, string, string];
+  height: number; // meters, from official Pokedex
   summonable?: boolean;
 }
 

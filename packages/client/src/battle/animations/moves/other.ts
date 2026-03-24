@@ -82,22 +82,21 @@ async function hazardAnimation(engine: AnimationEngine, context: MoveContext): P
 	}
 
 	const container = engine.getContainer();
-	const sceneRect = container.getBoundingClientRect();
 
 	let startX: number;
 	let startY: number;
 
 	if (attacker.element) {
-		const attackerRect = attacker.element.getBoundingClientRect();
-		startX = attackerRect.left - sceneRect.left + attackerRect.width / 2;
-		startY = attackerRect.top - sceneRect.top + attackerRect.height / 2;
+		const attackerCenter = engine.getLocalCenter(attacker.element);
+		startX = attackerCenter.x;
+		startY = attackerCenter.y;
 	} else {
-		startX = attacker.isPlayer ? sceneRect.width * 0.25 : sceneRect.width * 0.75;
-		startY = sceneRect.height * 0.6;
+		startX = attacker.isPlayer ? container.offsetWidth * 0.25 : container.offsetWidth * 0.75;
+		startY = container.offsetHeight * 0.6;
 	}
 
-	const endX = attacker.isPlayer ? sceneRect.width * 0.75 : sceneRect.width * 0.25;
-	const endY = sceneRect.height * 0.75;
+	const endX = attacker.isPlayer ? container.offsetWidth * 0.75 : container.offsetWidth * 0.25;
+	const endY = container.offsetHeight * 0.75;
 
 	const projectile = document.createElement('img');
 	projectile.src = spriteUrl;

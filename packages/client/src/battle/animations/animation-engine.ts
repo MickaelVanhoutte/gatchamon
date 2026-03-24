@@ -172,11 +172,11 @@ export class AnimationEngine {
 		hueAngle: number,
 		effectName: string
 	): Promise<void> {
-		const attackerRect = attacker.element.getBoundingClientRect();
-		const defenderRect = defender.element.getBoundingClientRect();
+		const attackerPos = this.getLocalCenter(attacker.element);
+		const defenderPos = this.getLocalCenter(defender.element);
 
-		const deltaX = defenderRect.left - attackerRect.left;
-		const deltaY = defenderRect.top - attackerRect.top;
+		const deltaX = defenderPos.x - attackerPos.x;
+		const deltaY = defenderPos.y - attackerPos.y;
 
 		const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 		const stopDistance = Math.max(0, distance - 30);
@@ -286,11 +286,7 @@ export class AnimationEngine {
 		}
 
 		const targetElement = 'element' in target ? target.element : target;
-		const targetRect = targetElement.getBoundingClientRect();
-		const containerRect = this.container.getBoundingClientRect();
-
-		const centerX = targetRect.left - containerRect.left + targetRect.width / 2;
-		const centerY = targetRect.top - containerRect.top + targetRect.height / 2;
+		const { x: centerX, y: centerY } = this.getLocalCenter(targetElement);
 
 		const duration = options.duration ?? 400;
 		const scale = options.scale ?? 1;
@@ -334,21 +330,21 @@ export class AnimationEngine {
 		const returnEasing = options.returnEasing ?? 'power2.out';
 		const overshoot = options.overshoot ?? 30;
 
-		const attackerRect = sprite.element.getBoundingClientRect();
+		const spritePos = this.getLocalCenter(sprite.element);
 		let targetX: number;
 		let targetY: number;
 
 		if ('element' in target) {
-			const targetRect = target.element.getBoundingClientRect();
-			targetX = targetRect.left;
-			targetY = targetRect.top;
+			const targetPos = this.getLocalCenter(target.element);
+			targetX = targetPos.x;
+			targetY = targetPos.y;
 		} else {
 			targetX = target.x;
 			targetY = target.y;
 		}
 
-		const deltaX = targetX - attackerRect.left;
-		const deltaY = targetY - attackerRect.top;
+		const deltaX = targetX - spritePos.x;
+		const deltaY = targetY - spritePos.y;
 		const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 		const stopDistance = Math.max(0, distance - overshoot);
 		const ratio = distance > 0 ? stopDistance / distance : 0;
@@ -507,6 +503,19 @@ export class AnimationEngine {
 
 	getContainer(): HTMLElement {
 		return this.container;
+	}
+
+	/** Compute element center in the container's local coordinate system (immune to CSS transforms). */
+	getLocalCenter(element: HTMLElement): { x: number; y: number } {
+		let x = 0;
+		let y = 0;
+		let el: HTMLElement | null = element;
+		while (el && el !== this.container) {
+			x += el.offsetLeft;
+			y += el.offsetTop;
+			el = el.offsetParent as HTMLElement | null;
+		}
+		return { x: x + element.offsetWidth / 2, y: y + element.offsetHeight / 2 };
 	}
 
 	private async animateSpriteSheet(
