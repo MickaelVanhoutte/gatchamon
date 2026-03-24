@@ -1,0 +1,135 @@
+import { useState } from 'react';
+import type { HeldItemInstance, HeldItemSlot, BaseStats } from '@gatchamon/shared';
+import { getItemSet, computeStatsWithItems, computeStats, getActiveSetEffects } from '@gatchamon/shared';
+import type { OwnedPokemon } from '../stores/gameStore';
+import { RuneCard } from '../components/rune/RuneCard';
+import { RuneSelectModal } from './RuneSelectModal';
+import { RuneUpgradeModal } from './RuneUpgradeModal';
+import './RuneEquipPanel.css';
+
+const STAT_LABELS: Record<keyof BaseStats, string> = {
+  hp: 'HP', atk: 'ATK', def: 'DEF', spd: 'SPD',
+  critRate: 'CRI Rate', critDmg: 'CRI Dmg', acc: 'Accuracy', res: 'Resistance',
+};
+
+const PCT_STATS: Array<keyof BaseStats> = ['critRate', 'critDmg', 'acc', 'res'];
+
+interface RuneEquipPanelProps {
+  pokemon: OwnedPokemon;
+  heldItems: HeldItemInstance[];
+  player: { stardust: number };
+}
+
+export function RuneEquipPanel({ pokemon, heldItems, player }: RuneEquipPanelProps) {
+  const [selectSlot, setSelectSlot] = useState<HeldItemSlot | null>(null);
+  const [upgradeItem, setUpgradeItem] = useState<HeldItemInstance | null>(null);
+
+  const equippedItems = heldItems.filter(i => i.equippedTo === pokemon.instance.instanceId);
+  const equippedBySlot: Record<number, HeldItemInstance | undefined> = {};
+  for (const item of equippedItems) {
+    equippedBySlot[item.slot] = item;
+  }
+
+  // Stats comparison
+  const baseStats = computeStats(pokemon.template, pokemon.instance.level, pokemon.instance.stars);
+  const totalStats = computeStatsWithItems(pokemon.template, pokemon.instance.level, pokemon.instance.stars, equippedItems);
+
+  // Active set bonuses
+  const activeEffects = getActiveSetEffects(equippedItems);
+
+  function handleSlotClick(slot: HeldItemSlot) {
+    const equipped = equippedBySlot[slot];
+    if (equipped) {
+      setUpgradeItem(equipped);
+    } else {
+      setSelectSlot(slot);
+    }
+  }
+
+  return (
+    <div className="rune-equip-panel">
+      {/* 6-slot grid */}
+      <div className="rune-slots-grid">
+        {([1, 2, 3, 4, 5, 6] as HeldItemSlot[]).map(slot => {
+          const equipped = equippedBySlot[slot];
+          return (
+            <div key={slot} className="rune-slot" onClick={() => handleSlotClick(slot)}>
+              {equipped ? (
+                <RuneCard item={equipped} compact />
+              ) : (
+                <div className="rune-slot-empty">
+                  <span className="rune-slot-num">{slot}</span>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Set bonuses */}
+      {activeEffects.length > 0 && (
+        <div className="rune-set-bonuses">
+          {activeEffects.map(eff => {
+            const setDef = getItemSet(eff.setId);
+            return (
+              <div key={eff.setId} className="rune-set-bonus" style={{ borderColor: setDef?.color }}>
+                <span className="rune-set-icon">{setDef?.icon}</span>
+                <span className="rune-set-name">{eff.setName} ({setDef?.pieces})</span>
+                <span className="rune-set-desc">
+                  {eff.effectType === 'stat'
+                    ? `${eff.bonusStat?.toUpperCase()} +${eff.bonusValue}${eff.bonusType === 'percent' ? '%' : ''}`
+                    : setDef?.procDescription}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Stats with item bonuses */}
+      <div className="rune-stats">
+        {(Object.keys(STAT_LABELS) as Array<keyof BaseStats>).map(key => {
+          const base = baseStats[key];
+          const total = totalStats[key];
+          const diff = total - base;
+          const isPct = PCT_STATS.includes(key);
+          return (
+            <div key={key} className="rune-stat-row">
+              <span className="rune-stat-label">{STAT_LABELS[key]}</span>
+              <span className="rune-stat-value">
+                {total}{isPct ? '%' : ''}
+                {diff > 0 && <span className="rune-stat-bonus"> (+{diff})</span>}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Equip button for empty slots */}
+      <button className="rune-equip-btn" onClick={() => setSelectSlot(1)}>
+        Manage Items
+      </button>
+
+      {/* Modals */}
+      {selectSlot !== null && (
+        <RuneSelectModal
+          pokemon={pokemon}
+          slot={selectSlot}
+          heldItems={heldItems}
+          equippedItems={equippedItems}
+          playerStardust={player.stardust ?? 0}
+          onClose={() => setSelectSlot(null)}
+        />
+      )}
+
+      {upgradeItem && (
+        <RuneUpgradeModal
+          item={upgradeItem}
+          playerStardust={player.stardust ?? 0}
+          onClose={() => setUpgradeItem(null)}
+          onEquipSlot={(slot) => { setUpgradeItem(null); setSelectSlot(slot); }}
+        />
+      )}
+    </div>
+  );
+}

@@ -50,6 +50,11 @@
   font-size: 0.85rem;
 }
 
+.hud-stardust-icon {
+  color: #c084fc;
+  font-size: 0.85rem;
+}
+
 .hud-resource .pokeball-icon {
   width: 12px;
   height: 12px;

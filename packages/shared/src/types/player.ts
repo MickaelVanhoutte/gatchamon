@@ -5,6 +5,7 @@ export interface Player {
   name: string;
   pokeballs: number;
   energy: number;
+  stardust: number;
   storyProgress: StoryProgress;
   materials: Record<string, number>;
   createdAt: string;

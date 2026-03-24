@@ -1,11 +1,12 @@
 import { create } from 'zustand';
-import type { Player, PokemonInstance, PokemonTemplate } from '@gatchamon/shared';
+import type { Player, PokemonInstance, PokemonTemplate, HeldItemInstance } from '@gatchamon/shared';
 import { POKEDEX } from '@gatchamon/shared';
 import * as storage from '../services/storage';
 import * as playerService from '../services/player.service';
 import * as gachaService from '../services/gacha.service';
 import * as mergeService from '../services/merge.service';
 import * as evolutionService from '../services/evolution.service';
+import * as runeService from '../services/rune.service';
 import { getUnclaimedMissionCount, getUnclaimedTrophyCount } from '../services/reward.service';
 
 export interface OwnedPokemon {
@@ -16,6 +17,7 @@ export interface OwnedPokemon {
 interface GameState {
   player: Player | null;
   collection: OwnedPokemon[];
+  heldItems: HeldItemInstance[];
   isLoading: boolean;
   unclaimedRewardCount: number;
 
@@ -27,11 +29,16 @@ interface GameState {
   mergePokemon: (baseId: string, fodderId: string) => void;
   evolvePokemon: (instanceId: string, targetTemplateId: number) => void;
   refreshRewards: () => void;
+  loadHeldItems: () => void;
+  equipItem: (itemId: string, pokemonInstanceId: string) => void;
+  unequipItem: (itemId: string) => void;
+  upgradeItem: (itemId: string) => runeService.UpgradeResult;
 }
 
 export const useGameStore = create<GameState>((set, get) => ({
   player: null,
   collection: [],
+  heldItems: [],
   isLoading: false,
   unclaimedRewardCount: 0,
 
@@ -112,5 +119,28 @@ export const useGameStore = create<GameState>((set, get) => ({
   refreshRewards: () => {
     const count = getUnclaimedMissionCount() + getUnclaimedTrophyCount();
     set({ unclaimedRewardCount: count });
+  },
+
+  loadHeldItems: () => {
+    const items = storage.loadHeldItems();
+    set({ heldItems: items });
+  },
+
+  equipItem: (itemId: string, pokemonInstanceId: string) => {
+    runeService.equipItem(itemId, pokemonInstanceId);
+    set({ heldItems: storage.loadHeldItems() });
+  },
+
+  unequipItem: (itemId: string) => {
+    runeService.unequipItem(itemId);
+    const updatedPlayer = storage.loadPlayer();
+    set({ player: updatedPlayer, heldItems: storage.loadHeldItems() });
+  },
+
+  upgradeItem: (itemId: string) => {
+    const result = runeService.upgradeItem(itemId);
+    const updatedPlayer = storage.loadPlayer();
+    set({ player: updatedPlayer, heldItems: storage.loadHeldItems() });
+    return result;
   },
 }));

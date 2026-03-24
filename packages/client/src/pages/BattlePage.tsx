@@ -4,7 +4,7 @@ import { getBattleState as fetchBattleState, resolvePlayerAction } from '../serv
 import { useGameStore } from '../stores/gameStore';
 import { useBattleAnimation } from '../battle/useBattleAnimation';
 import { useAutoBattle } from '../battle/useAutoBattle';
-import { POKEDEX, SKILLS, getTypeEffectiveness, ESSENCES } from '@gatchamon/shared';
+import { POKEDEX, SKILLS, getTypeEffectiveness, ESSENCES, ITEM_SETS } from '@gatchamon/shared';
 import type { BattleState, BattleMon, BattleLogEntry, BattleResult, PokemonType } from '@gatchamon/shared';
 import { assetUrl } from '../utils/asset-url';
 import './BattlePage.css';
@@ -320,6 +320,9 @@ export function BattlePage() {
                     </div>
                   </div>
                 )}
+                {rewards.stardust != null && rewards.stardust > 0 && (
+                  <p>+ {rewards.stardust.toLocaleString()} <span style={{color:'#c084fc'}}>✦</span> Stardust</p>
+                )}
                 {rewards.essences && Object.keys(rewards.essences).length > 0 && (
                   <div className="essence-drops">
                     <p className="essence-title">Materials Obtained:</p>
@@ -333,6 +336,19 @@ export function BattlePage() {
                     })}
                   </div>
                 )}
+                {rewards.itemDrops && rewards.itemDrops.length > 0 && (
+                  <div className="essence-drops">
+                    <p className="essence-title">Held Items Obtained:</p>
+                    {rewards.itemDrops.map((drop, i) => {
+                      const setDef = ITEM_SETS.find(s => s.id === drop.setId);
+                      return (
+                        <p key={i} className="essence-item">
+                          {setDef?.icon ?? '?'} {setDef?.name ?? drop.setId} {'★'.repeat(drop.stars)} ({drop.grade})
+                        </p>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
             <button
@@ -340,7 +356,7 @@ export function BattlePage() {
               onClick={() => {
                 refreshPlayer();
                 loadCollection();
-                navigate(state?.mode === 'dungeon' ? '/dungeons' : '/story');
+                navigate(state?.mode === 'dungeon' || state?.mode === 'item-dungeon' ? '/dungeons' : '/story');
               }}
             >
               Continue

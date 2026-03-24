@@ -1,42 +1,92 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
-import { DUNGEONS, ESSENCES } from '@gatchamon/shared';
+import { DUNGEONS, ESSENCES, ITEM_DUNGEONS, getItemSet } from '@gatchamon/shared';
+import type { DungeonDef, ItemDungeonDef } from '@gatchamon/shared';
 import './DungeonPage.css';
+
+type DungeonTab = 'essence' | 'items';
 
 export function DungeonPage() {
   const navigate = useNavigate();
   const { player } = useGameStore();
-  const [selectedDungeon, setSelectedDungeon] = useState(DUNGEONS[0]);
+  const [tab, setTab] = useState<DungeonTab>('essence');
+  const [selectedDungeon, setSelectedDungeon] = useState<DungeonDef | ItemDungeonDef>(DUNGEONS[0]);
   const [selectedFloor, setSelectedFloor] = useState(0);
+
+  const isItemDungeon = tab === 'items';
+  const dungeonList = isItemDungeon ? ITEM_DUNGEONS : DUNGEONS;
 
   const handleEnter = () => {
     if (!player) return;
-    if (player.energy < selectedDungeon.energyCost) {
+    const cost = selectedDungeon.energyCost;
+    if (player.energy < cost) {
       alert('Not enough energy!');
       return;
     }
-    navigate(`/battle/team-select?mode=dungeon&dungeonId=${selectedDungeon.id}&floor=${selectedFloor}`);
+    if (isItemDungeon) {
+      navigate(`/battle/team-select?mode=item-dungeon&dungeonId=${selectedDungeon.id}&floor=${selectedFloor}`);
+    } else {
+      navigate(`/battle/team-select?mode=dungeon&dungeonId=${selectedDungeon.id}&floor=${selectedFloor}`);
+    }
   };
 
-  // Gather unique essence types this dungeon drops
+  function handleTabChange(newTab: DungeonTab) {
+    setTab(newTab);
+    const list = newTab === 'items' ? ITEM_DUNGEONS : DUNGEONS;
+    if (list.length > 0) {
+      setSelectedDungeon(list[0]);
+      setSelectedFloor(0);
+    }
+  }
+
+  // Essence dungeon drops
   const droppableEssences = new Set<string>();
-  for (const floor of selectedDungeon.floors) {
-    for (const drop of floor.drops) {
-      droppableEssences.add(drop.essenceId);
+  if (!isItemDungeon && 'floors' in selectedDungeon) {
+    for (const floor of (selectedDungeon as DungeonDef).floors) {
+      for (const drop of floor.drops) {
+        droppableEssences.add(drop.essenceId);
+      }
+    }
+  }
+
+  // Item dungeon drops
+  const droppableItemSets = new Set<string>();
+  if (isItemDungeon) {
+    for (const floor of (selectedDungeon as ItemDungeonDef).floors) {
+      for (const drop of floor.drops) {
+        droppableItemSets.add(drop.setId);
+      }
     }
   }
 
   const materials = player?.materials ?? {};
+  const floor = selectedDungeon.floors[selectedFloor];
 
   return (
     <div className="page dungeon-page">
       <h2 className="dungeon-title">Dungeons</h2>
 
+      {/* Tab toggle */}
+      <div className="dungeon-tab-toggle">
+        <button
+          className={`dungeon-tab-btn ${tab === 'essence' ? 'dungeon-tab-btn--active' : ''}`}
+          onClick={() => handleTabChange('essence')}
+        >
+          Essence
+        </button>
+        <button
+          className={`dungeon-tab-btn ${tab === 'items' ? 'dungeon-tab-btn--active' : ''}`}
+          onClick={() => handleTabChange('items')}
+        >
+          Held Items
+        </button>
+      </div>
+
       <div className="dungeon-layout">
         {/* Left: Dungeon list */}
         <div className="dungeon-list">
-          {DUNGEONS.map(d => (
+          {dungeonList.map(d => (
             <div
               key={d.id}
               className={`dungeon-card ${selectedDungeon.id === d.id ? 'dungeon-card--selected' : ''}`}
@@ -81,19 +131,25 @@ export function DungeonPage() {
           <div className="dungeon-floor-info">
             <div className="dungeon-info-row">
               <span>Enemy Level</span>
-              <span>Lv.{selectedDungeon.floors[selectedFloor].enemyLevel}</span>
+              <span>Lv.{floor?.enemyLevel ?? '?'}</span>
             </div>
             <div className="dungeon-info-row">
               <span>Energy Cost</span>
               <span>{selectedDungeon.energyCost}</span>
             </div>
+            {isItemDungeon && floor && 'stardustReward' in floor && (
+              <div className="dungeon-info-row">
+                <span>Stardust</span>
+                <span>✦ {(floor as any).stardustReward[0]}–{(floor as any).stardustReward[1]}</span>
+              </div>
+            )}
           </div>
 
-          {/* Droppable essences */}
+          {/* Drops */}
           <div className="dungeon-drops">
             <span className="dungeon-drops-label">Possible Drops</span>
             <div className="dungeon-drops-grid">
-              {Array.from(droppableEssences).map(essId => {
+              {!isItemDungeon && Array.from(droppableEssences).map(essId => {
                 const ess = ESSENCES[essId];
                 if (!ess) return null;
                 return (
@@ -101,6 +157,19 @@ export function DungeonPage() {
                     <span className="drop-icon">{ess.icon}</span>
                     <span className="drop-name">{ess.name}</span>
                     <span className="drop-owned">x{materials[essId] ?? 0}</span>
+                  </div>
+                );
+              })}
+              {isItemDungeon && Array.from(droppableItemSets).map(setId => {
+                const setDef = getItemSet(setId);
+                if (!setDef) return null;
+                return (
+                  <div key={setId} className="dungeon-drop-item">
+                    <span className="drop-icon">{setDef.icon}</span>
+                    <span className="drop-name">{setDef.name}</span>
+                    <span className="drop-owned" style={{ color: setDef.color }}>
+                      {setDef.pieces}-set
+                    </span>
                   </div>
                 );
               })}

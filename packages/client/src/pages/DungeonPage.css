@@ -15,6 +15,30 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.dungeon-tab-toggle {
+  display: flex;
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dungeon-tab-btn {
+  flex: 1;
+  padding: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.dungeon-tab-btn--active {
+  color: var(--text-primary);
+  border-bottom-color: #60a5fa;
+}
+
 .dungeon-layout {
   display: flex;
   flex: 1;

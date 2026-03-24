@@ -1,0 +1,126 @@
+.rune-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.rune-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.rune-card--selected {
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
+}
+
+/* Compact mode for slot grid */
+.rune-card--compact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px;
+  min-height: 60px;
+}
+
+.rune-card--compact .rune-card-icon {
+  font-size: 1.2rem;
+}
+
+.rune-card--compact .rune-card-stars {
+  font-size: 0.5rem;
+}
+
+.rune-card--compact .rune-card-level {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+}
+
+/* Full card */
+.rune-card-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.rune-card-icon {
+  font-size: 1rem;
+}
+
+.rune-card-set-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.rune-card-slot {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.rune-card-stars-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.rune-card-stars {
+  font-size: 0.6rem;
+}
+
+.rune-card-grade {
+  font-size: 0.65rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.rune-card-level {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #4ade80;
+  margin-left: auto;
+}
+
+.rune-card-main-stat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  padding: 4px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.rune-card-main-value {
+  color: #4ade80;
+}
+
+.rune-card-subs {
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.rune-card-sub {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  padding: 1px 0;
+}
+
+.rune-card-equipped {
+  font-size: 0.6rem;
+  color: #fbbf24;
+  margin-top: 4px;
+  font-style: italic;
+}

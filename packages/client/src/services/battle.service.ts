@@ -1,4 +1,4 @@
-import { POKEDEX, computeStats, calculateDamage, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel } from '@gatchamon/shared';
+import { POKEDEX, computeStats, computeStatsWithItems, getActiveSetEffects, calculateDamage, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel } from '@gatchamon/shared';
 import { SKILLS, getSkillsForPokemon } from '@gatchamon/shared';
 import { TOTAL_REGIONS } from '@gatchamon/shared';
 import type {
@@ -9,11 +9,12 @@ import type {
   BattleRewards,
   BattleResult,
   Difficulty,
+  ActiveSetEffect,
 } from '@gatchamon/shared';
 import type { PokemonTemplate, SkillDefinition, BaseStats, StoryProgress } from '@gatchamon/shared';
-import { loadPlayer, savePlayer, loadCollection, updateInstance } from './storage';
+import { loadPlayer, savePlayer, loadCollection, updateInstance, getItemsForPokemon } from './storage';
 import { buildFloorEnemies, DIFFICULTY_REWARD_MULT } from './floor.service';
-import { getDungeon } from '@gatchamon/shared';
+import { getDungeon, getItemDungeon as getItemDungeonImport } from '@gatchamon/shared';
 import {
   isFirstClear,
   markFirstClear,
@@ -22,6 +23,11 @@ import {
   incrementMission,
   checkAndUpdateTrophies,
 } from './reward.service';
+import { rollItemDrop } from './rune.service';
+import { addHeldItem } from './storage';
+
+// Map instanceId → active set effects for proc handling in battle
+const battleSetEffects = new Map<string, ActiveSetEffect[]>();
 
 // ---------------------------------------------------------------------------
 // In-memory battle store
@@ -46,7 +52,19 @@ function makeBattleMon(
   isPlayerOwned: boolean,
 ): BattleMon {
   const template = getTemplate(templateId);
-  const stats = computeStats(template, level, stars);
+
+  // For player pokemon, apply held item bonuses
+  let stats: BaseStats;
+  if (isPlayerOwned) {
+    const equippedItems = getItemsForPokemon(instanceId);
+    stats = computeStatsWithItems(template, level, stars, equippedItems);
+    // Store set effects for proc handling during battle
+    const setEffects = getActiveSetEffects(equippedItems);
+    battleSetEffects.set(instanceId, setEffects);
+  } else {
+    stats = computeStats(template, level, stars);
+  }
+
   const skills = getSkillsForPokemon(template.skillIds);
 
   const cooldowns: Record<string, number> = {};
@@ -132,6 +150,24 @@ function advanceToNextActor(state: BattleState): string {
 function processStartOfTurn(mon: BattleMon, state: BattleState): string[] {
   const effects: string[] = [];
   const template = getTemplate(mon.templateId);
+
+  // Leftovers: heal_per_turn proc
+  const setEffects = battleSetEffects.get(mon.instanceId);
+  if (setEffects) {
+    for (const eff of setEffects) {
+      if (eff.procEffect === 'heal_per_turn' && eff.procChance != null && eff.procValue != null) {
+        if (Math.random() < eff.procChance) {
+          const healAmt = Math.floor(mon.maxHp * eff.procValue / 100);
+          const oldHp = mon.currentHp;
+          mon.currentHp = Math.min(mon.maxHp, mon.currentHp + healAmt);
+          const healed = mon.currentHp - oldHp;
+          if (healed > 0) {
+            effects.push(`${template.name} recovered ${healed} HP from Leftovers`);
+          }
+        }
+      }
+    }
+  }
 
   // Process DoTs
   for (const debuff of mon.debuffs) {
@@ -488,23 +524,83 @@ function calculateDungeonRewards(state: BattleState): BattleRewards {
     updateInstance(mon.instanceId, { level: currentLevel, exp: currentExp });
   }
 
-  // Add essences to player inventory
+  // Stardust reward for dungeon
+  const stardustReward = 20 + floor.enemyLevel * 2;
+
+  // Add essences and stardust to player inventory
   const player = loadPlayer()!;
   const materials = { ...(player.materials ?? {}) };
   for (const [essId, qty] of Object.entries(essences)) {
     materials[essId] = (materials[essId] ?? 0) + qty;
   }
-  savePlayer({ ...player, materials });
+  savePlayer({ ...player, materials, stardust: (player.stardust ?? 0) + stardustReward });
 
   // Track stats & missions
   trackStat('totalBattlesDungeon', 1);
   incrementMission('battle_dungeon', 1);
   checkAndUpdateTrophies();
 
-  return { pokeballs: 0, xpPerMon, levelUps, essences };
+  return { pokeballs: 0, xpPerMon, levelUps, essences, stardust: stardustReward };
+}
+
+function calculateItemDungeonRewards(state: BattleState): BattleRewards {
+  const dungeonDef = getItemDungeonImport(state.dungeonId!);
+  if (!dungeonDef) throw new Error('Item dungeon not found');
+
+  const floorIndex = state.floor.floor - 1;
+  const floor = dungeonDef.floors[floorIndex];
+
+  const xpPerMon = Math.floor(floor.enemyLevel * 8);
+  const levelUps: Array<{ instanceId: string; newLevel: number }> = [];
+
+  // Apply XP
+  const collection = loadCollection();
+  for (const mon of state.playerTeam) {
+    const inst = collection.find(p => p.instanceId === mon.instanceId);
+    if (!inst) continue;
+    if (isMaxLevel(inst.level, inst.stars)) continue;
+    const maxLevel = MAX_LEVEL_BY_STARS[inst.stars] ?? 99;
+    let currentLevel = inst.level;
+    let currentExp = inst.exp + xpPerMon;
+    let needed = xpToNextLevel(currentLevel);
+    while (currentExp >= needed && currentLevel < maxLevel) {
+      currentExp -= needed;
+      currentLevel++;
+      needed = xpToNextLevel(currentLevel);
+      levelUps.push({ instanceId: mon.instanceId, newLevel: currentLevel });
+    }
+    if (currentLevel >= maxLevel) { currentLevel = maxLevel; currentExp = 0; }
+    updateInstance(mon.instanceId, { level: currentLevel, exp: currentExp });
+  }
+
+  // Roll item drops (1-2 items per clear)
+  const player = loadPlayer()!;
+  const itemDrops: Array<{ itemId: string; setId: string; stars: number; grade: string }> = [];
+  const numDrops = Math.random() < 0.3 ? 2 : 1;
+  for (let i = 0; i < numDrops; i++) {
+    const dropDef = floor.drops[Math.floor(Math.random() * floor.drops.length)];
+    const item = rollItemDrop(dropDef, player.id);
+    addHeldItem(item);
+    itemDrops.push({ itemId: item.itemId, setId: item.setId, stars: item.stars, grade: item.grade });
+  }
+
+  // Stardust
+  const [minSd, maxSd] = floor.stardustReward;
+  const stardustReward = minSd + Math.floor(Math.random() * (maxSd - minSd + 1));
+  savePlayer({ ...player, stardust: (player.stardust ?? 0) + stardustReward });
+
+  // Track stats
+  trackStat('totalBattlesDungeon', 1);
+  incrementMission('battle_dungeon', 1);
+  checkAndUpdateTrophies();
+
+  return { pokeballs: 0, xpPerMon, levelUps, stardust: stardustReward, itemDrops };
 }
 
 function calculateRewards(state: BattleState): BattleRewards {
+  if (state.mode === 'item-dungeon') {
+    return calculateItemDungeonRewards(state);
+  }
   if (state.mode === 'dungeon') {
     return calculateDungeonRewards(state);
   }
@@ -560,9 +656,19 @@ function calculateRewards(state: BattleState): BattleRewards {
   const firstClear = isFirstClear(regionId, floorNum, difficulty);
   const actualPokeballs = firstClear ? pokeballs : 0;
 
-  if (actualPokeballs > 0) {
+  // Stardust reward
+  const stardustBase = 10 + regionId * 5 + floorNum * 2;
+  const stardustReward = firstClear
+    ? Math.floor(stardustBase * diffMult * bossMult * 3)
+    : Math.floor(stardustBase * diffMult);
+
+  {
     const player = loadPlayer()!;
-    savePlayer({ ...player, pokeballs: player.pokeballs + actualPokeballs });
+    const updates: Partial<typeof player> = { stardust: (player.stardust ?? 0) + stardustReward };
+    if (actualPokeballs > 0) {
+      updates.pokeballs = player.pokeballs + actualPokeballs;
+    }
+    savePlayer({ ...player, ...updates });
   }
 
   if (firstClear) {
@@ -594,6 +700,7 @@ function calculateRewards(state: BattleState): BattleRewards {
     levelUps,
     isFirstClear: firstClear,
     monsterLoot: monsterLoot ?? undefined,
+    stardust: stardustReward,
   };
 }
 
@@ -781,6 +888,85 @@ export function startDungeonBattle(
   return result;
 }
 
+export function startItemDungeonBattle(
+  teamInstanceIds: string[],
+  dungeonId: number,
+  floorIndex: number,
+): BattleResult {
+  const player = loadPlayer();
+  if (!player) throw new Error('Player not found');
+
+  const dungeonDef = getItemDungeonImport(dungeonId);
+  if (!dungeonDef) throw new Error('Item dungeon not found');
+
+  if (player.energy < dungeonDef.energyCost) {
+    throw new Error('Not enough energy');
+  }
+
+  // Deduct energy
+  savePlayer({ ...player, energy: player.energy - dungeonDef.energyCost });
+  trackStat('totalEnergySpent', dungeonDef.energyCost);
+  incrementMission('spend_energy', dungeonDef.energyCost);
+
+  const collection = loadCollection();
+  const playerTeam: BattleMon[] = [];
+  for (const instId of teamInstanceIds) {
+    const inst = collection.find(p => p.instanceId === instId && p.ownerId === player.id);
+    if (!inst) throw new Error(`Pokemon instance ${instId} not found`);
+    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true));
+  }
+
+  if (playerTeam.length === 0) throw new Error('Team cannot be empty');
+
+  const floor = dungeonDef.floors[floorIndex];
+  if (!floor) throw new Error(`Invalid dungeon floor ${floorIndex}`);
+
+  const enemyTeam: BattleMon[] = [];
+  for (let i = 0; i < 3; i++) {
+    const pool = dungeonDef.enemyPool;
+    const templateId = pool[Math.floor(Math.random() * pool.length)];
+    const template = getTemplate(templateId);
+    const id = `item_dungeon_enemy_${crypto.randomUUID()}`;
+    enemyTeam.push(makeBattleMon(id, templateId, floor.enemyLevel, template.naturalStars, false));
+  }
+
+  const battleId = crypto.randomUUID();
+  const state: BattleState = {
+    battleId,
+    playerId: player.id,
+    playerTeam,
+    enemyTeam,
+    currentActorId: null,
+    turnNumber: 0,
+    status: 'active',
+    log: [],
+    floor: { region: 0, floor: floorIndex + 1, difficulty: 'normal' },
+    mode: 'item-dungeon',
+    dungeonId,
+  };
+
+  const firstActorId = advanceToNextActor(state);
+  const allMons = [...state.playerTeam, ...state.enemyTeam];
+  const firstActor = allMons.find(m => m.instanceId === firstActorId);
+
+  if (firstActor && !firstActor.isPlayerOwned) {
+    state.currentActorId = firstActorId;
+    const enemyLogs = autoResolveEnemyTurns(state);
+    state.log.push(...enemyLogs);
+  } else {
+    state.currentActorId = firstActorId;
+  }
+
+  activeBattles.set(battleId, state);
+
+  const result: BattleResult = { state };
+  if (getStatus(state) === 'victory') {
+    result.rewards = calculateRewards(state);
+  }
+
+  return result;
+}
+
 export function resolvePlayerAction(battleId: string, action: BattleAction): BattleResult {
   const state = activeBattles.get(battleId);
   if (!state) throw new Error('Battle not found');
@@ -874,6 +1060,31 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
     actionLogs[0].effects = [...turnEffects, ...actionLogs[0].effects];
   }
   logs.push(...actionLogs);
+
+  // Proc set effects: stun_on_hit and extra_turn
+  const actorSetEffects = battleSetEffects.get(actor.instanceId);
+  if (actorSetEffects && actor.isAlive && skill.target !== 'self' && skill.target !== 'single_ally' && skill.target !== 'all_allies') {
+    for (const eff of actorSetEffects) {
+      // Razor Fang: stun on hit
+      if (eff.procEffect === 'stun_on_hit' && eff.procChance != null) {
+        for (const target of targets) {
+          if (target.isAlive && Math.random() < eff.procChance) {
+            target.debuffs.push({ type: 'stun', value: 0, remainingTurns: eff.procValue ?? 1 });
+            const lastLog = logs[logs.length - 1];
+            if (lastLog) lastLog.effects.push(`${getTemplate(target.templateId).name} was stunned by Razor Fang!`);
+          }
+        }
+      }
+      // King's Rock: extra turn
+      if (eff.procEffect === 'extra_turn' && eff.procChance != null) {
+        if (Math.random() < eff.procChance) {
+          actor.actionGauge = 1000; // Grant immediate extra turn
+          const lastLog = logs[logs.length - 1];
+          if (lastLog) lastLog.effects.push(`${template.name} gains an extra turn from King's Rock!`);
+        }
+      }
+    }
+  }
 
   checkBattleEnd(state);
 

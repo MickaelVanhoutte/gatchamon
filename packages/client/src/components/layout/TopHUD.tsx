@@ -22,6 +22,10 @@ export function TopHUD() {
           <span>{player.energy}</span>
         </div>
         <div className="hud-resource">
+          <span className="hud-stardust-icon">✦</span>
+          <span>{(player.stardust ?? 0).toLocaleString()}</span>
+        </div>
+        <div className="hud-resource">
           <span className="pokeball-icon" />
           <span>{player.pokeballs}</span>
         </div>

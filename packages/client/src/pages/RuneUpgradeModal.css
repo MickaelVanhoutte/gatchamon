@@ -1,0 +1,247 @@
+.rune-upgrade-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.rune-upgrade-modal {
+  background: #1a1f35;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.rune-upgrade-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.rune-upgrade-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.rune-upgrade-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.rune-upgrade-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Card */
+.rune-upgrade-card {
+  border: 2px solid;
+  border-radius: 10px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.rune-upgrading {
+  animation: rune-shake 0.3s ease-in-out;
+}
+
+.rune-upgrade-success {
+  animation: rune-glow 0.5s ease-out;
+}
+
+@keyframes rune-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+@keyframes rune-glow {
+  0% { box-shadow: 0 0 0 rgba(74, 222, 128, 0); }
+  50% { box-shadow: 0 0 20px rgba(74, 222, 128, 0.4); }
+  100% { box-shadow: 0 0 0 rgba(74, 222, 128, 0); }
+}
+
+.rune-upgrade-card-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.rune-upgrade-icon {
+  font-size: 1.2rem;
+}
+
+.rune-upgrade-set {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.rune-upgrade-slot {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.rune-upgrade-stars {
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rune-upgrade-grade {
+  text-transform: capitalize;
+  font-size: 0.7rem;
+}
+
+.rune-upgrade-level {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #4ade80;
+  text-align: center;
+  margin: 6px 0;
+}
+
+.rune-upgrade-main {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  padding: 6px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.rune-upgrade-main-val {
+  color: #4ade80;
+}
+
+.rune-upgrade-subs {
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.rune-upgrade-sub {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  padding: 2px 0;
+}
+
+/* Result message */
+.rune-upgrade-result {
+  text-align: center;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.result-success {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+}
+
+.result-fail {
+  background: rgba(255, 107, 107, 0.15);
+  color: #ff6b6b;
+}
+
+/* Upgrade info */
+.rune-upgrade-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rune-upgrade-info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.rune-upgrade-milestone {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+/* Actions */
+.rune-upgrade-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.rune-upgrade-swap-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-secondary);
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.rune-upgrade-swap-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.rune-upgrade-btn {
+  flex: 2;
+  background: rgba(74, 222, 128, 0.2);
+  border: 1px solid rgba(74, 222, 128, 0.4);
+  color: #4ade80;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.rune-upgrade-btn:hover:not(:disabled) {
+  background: rgba(74, 222, 128, 0.3);
+}
+
+.rune-upgrade-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.rune-upgrade-maxed {
+  flex: 2;
+  text-align: center;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+  font-weight: 700;
+  font-size: 0.85rem;
+}

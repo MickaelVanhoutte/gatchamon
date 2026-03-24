@@ -32,7 +32,7 @@ export interface BattleState {
   status: 'active' | 'victory' | 'defeat';
   log: BattleLogEntry[];
   floor: { region: number; floor: number; difficulty: Difficulty };
-  mode: 'story' | 'dungeon';
+  mode: 'story' | 'dungeon' | 'item-dungeon';
   dungeonId?: number;
 }
 
@@ -63,6 +63,8 @@ export interface BattleRewards {
   essences?: Record<string, number>;
   isFirstClear?: boolean;
   monsterLoot?: { templateId: number; stars: 1 | 2 | 3; instanceId: string };
+  stardust?: number;
+  itemDrops?: Array<{ itemId: string; setId: string; stars: number; grade: string }>;
 }
 
 export interface BattleResult {

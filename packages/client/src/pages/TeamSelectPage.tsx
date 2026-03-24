@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
-import { REGIONS, DUNGEONS, POKEDEX } from '@gatchamon/shared';
+import { REGIONS, DUNGEONS, ITEM_DUNGEONS, POKEDEX } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
-import { startBattle, startDungeonBattle } from '../services/battle.service';
+import { startBattle, startDungeonBattle, startItemDungeonBattle } from '../services/battle.service';
 import { buildFloorEnemies } from '../services/floor.service';
 import { loadLastTeam, saveLastTeam } from '../services/storage';
 import { assetUrl } from '../utils/asset-url';
@@ -43,6 +43,7 @@ export function TeamSelectPage() {
 
   const regionDef = REGIONS.find(r => r.id === region);
   const dungeonDef = DUNGEONS.find(d => d.id === dungeonId);
+  const itemDungeonDef = ITEM_DUNGEONS.find(d => d.id === dungeonId);
 
   useEffect(() => {
     loadCollection();
@@ -63,6 +64,20 @@ export function TeamSelectPage() {
 
   // Build enemy preview
   const enemyPreviews = useMemo((): EnemyPreview[] => {
+    if (mode === 'item-dungeon' && itemDungeonDef) {
+      const floorData = itemDungeonDef.floors[dungeonFloor];
+      const level = floorData?.enemyLevel ?? 10;
+      return itemDungeonDef.enemyPool.slice(0, 3).map(tid => {
+        const tmpl = POKEDEX.find(p => p.id === tid);
+        return {
+          templateId: tid,
+          name: tmpl?.name ?? '???',
+          spriteUrl: tmpl?.spriteUrl ?? '',
+          level,
+          stars: tmpl?.naturalStars ?? 1,
+        };
+      });
+    }
     if (mode === 'dungeon' && dungeonDef) {
       const floorData = dungeonDef.floors[dungeonFloor];
       const level = floorData?.enemyLevel ?? 10;
@@ -104,7 +119,10 @@ export function TeamSelectPage() {
     setIsStarting(true);
     saveLastTeam(selected);
     try {
-      if (mode === 'dungeon') {
+      if (mode === 'item-dungeon') {
+        const result = startItemDungeonBattle(selected, dungeonId, dungeonFloor);
+        navigate(`/battle/${result.state.battleId}`);
+      } else if (mode === 'dungeon') {
         const result = startDungeonBattle(selected, dungeonId, dungeonFloor);
         navigate(`/battle/${result.state.battleId}`);
       } else {
@@ -122,7 +140,9 @@ export function TeamSelectPage() {
   );
 
   let headerText: string;
-  if (mode === 'dungeon' && dungeonDef) {
+  if (mode === 'item-dungeon' && itemDungeonDef) {
+    headerText = `${itemDungeonDef.name} - B${dungeonFloor + 1}`;
+  } else if (mode === 'dungeon' && dungeonDef) {
     headerText = `${dungeonDef.name} - B${dungeonFloor + 1}`;
   } else {
     const regionName = regionDef?.name ?? `Region ${region}`;
@@ -138,7 +158,11 @@ export function TeamSelectPage() {
       : assetUrl(mon.template.spriteUrl);
   };
 
-  const energyCost = mode === 'dungeon' ? (dungeonDef?.energyCost ?? 5) : 0;
+  const energyCost = mode === 'item-dungeon'
+    ? (itemDungeonDef?.energyCost ?? 5)
+    : mode === 'dungeon'
+      ? (dungeonDef?.energyCost ?? 5)
+      : 0;
 
   return (
     <div className="page team-select-page">

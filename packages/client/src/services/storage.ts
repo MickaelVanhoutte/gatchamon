@@ -1,12 +1,18 @@
-import type { Player, PokemonInstance } from '@gatchamon/shared';
+import type { Player, PokemonInstance, HeldItemInstance } from '@gatchamon/shared';
 
 const PLAYER_KEY = 'gatchamon_player';
 const COLLECTION_KEY = 'gatchamon_collection';
+const HELD_ITEMS_KEY = 'gatchamon_held_items';
 
 export function loadPlayer(): Player | null {
   const raw = localStorage.getItem(PLAYER_KEY);
   if (!raw) return null;
-  return JSON.parse(raw) as Player;
+  const player = JSON.parse(raw) as Player;
+  // Migration: add stardust for existing players
+  if (player.stardust === undefined) {
+    player.stardust = 0;
+  }
+  return player;
 }
 
 export function savePlayer(player: Player): void {
@@ -36,6 +42,38 @@ export function updateInstance(instanceId: string, updates: Partial<PokemonInsta
   saveCollection(collection);
 }
 
+// ── Held Items ──────────────────────────────────────────────────────────
+
+export function loadHeldItems(): HeldItemInstance[] {
+  const raw = localStorage.getItem(HELD_ITEMS_KEY);
+  if (!raw) return [];
+  return JSON.parse(raw) as HeldItemInstance[];
+}
+
+export function saveHeldItems(items: HeldItemInstance[]): void {
+  localStorage.setItem(HELD_ITEMS_KEY, JSON.stringify(items));
+}
+
+export function addHeldItem(item: HeldItemInstance): void {
+  const items = loadHeldItems();
+  items.push(item);
+  saveHeldItems(items);
+}
+
+export function updateHeldItem(itemId: string, updates: Partial<HeldItemInstance>): void {
+  const items = loadHeldItems();
+  const idx = items.findIndex(i => i.itemId === itemId);
+  if (idx === -1) return;
+  items[idx] = { ...items[idx], ...updates };
+  saveHeldItems(items);
+}
+
+export function getItemsForPokemon(instanceId: string): HeldItemInstance[] {
+  return loadHeldItems().filter(i => i.equippedTo === instanceId);
+}
+
+// ── Team ────────────────────────────────────────────────────────────────
+
 const LAST_TEAM_KEY = 'gatchamon_last_team';
 
 export function loadLastTeam(): string[] {
@@ -64,4 +102,5 @@ export function clearAll(): void {
   localStorage.removeItem(PLAYER_KEY);
   localStorage.removeItem(COLLECTION_KEY);
   localStorage.removeItem(REWARDS_KEY);
+  localStorage.removeItem(HELD_ITEMS_KEY);
 }

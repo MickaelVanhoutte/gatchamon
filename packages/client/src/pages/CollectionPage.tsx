@@ -6,6 +6,7 @@ import { canMerge } from '../services/merge.service';
 import { canEvolveInstance } from '../services/evolution.service';
 import type { PokemonType, BaseStats, SkillDefinition, EvolutionChain } from '@gatchamon/shared';
 import { assetUrl } from '../utils/asset-url';
+import { RuneEquipPanel } from './RuneEquipPanel';
 import './CollectionPage.css';
 
 const ALL_TYPES: PokemonType[] = [
@@ -15,7 +16,7 @@ const ALL_TYPES: PokemonType[] = [
 ];
 
 type SortBy = 'stars' | 'level' | 'name';
-type DetailTab = 'info' | 'skill';
+type DetailTab = 'info' | 'skill' | 'items';
 
 const STAR_COLORS: Record<number, string> = {
   1: '#aaa',
@@ -38,7 +39,7 @@ const STAT_LABELS: Record<keyof BaseStats, string> = {
 };
 
 export function CollectionPage() {
-  const { collection, loadCollection, mergePokemon, evolvePokemon, player } = useGameStore();
+  const { collection, loadCollection, mergePokemon, evolvePokemon, player, heldItems, loadHeldItems } = useGameStore();
   const [typeFilter, setTypeFilter] = useState<PokemonType | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>('stars');
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -48,7 +49,8 @@ export function CollectionPage() {
 
   useEffect(() => {
     loadCollection();
-  }, [loadCollection]);
+    loadHeldItems();
+  }, [loadCollection, loadHeldItems]);
 
   useEffect(() => {
     if (!selectedId && collection.length > 0) {
@@ -178,10 +180,20 @@ export function CollectionPage() {
                   className={`box-tab ${activeTab === 'skill' ? 'box-tab--active' : ''}`}
                   onClick={() => setActiveTab('skill')}
                 >Skill</button>
+                <button
+                  className={`box-tab ${activeTab === 'items' ? 'box-tab--active' : ''}`}
+                  onClick={() => setActiveTab('items')}
+                >Items</button>
               </div>
 
               <div className="box-detail-content">
-              {activeTab === 'info' ? (
+              {activeTab === 'items' ? (
+                <RuneEquipPanel
+                  pokemon={selected}
+                  heldItems={heldItems}
+                  player={{ stardust: player?.stardust ?? 0 }}
+                />
+              ) : activeTab === 'info' ? (
                 <>
                 {/* Monster info */}
                 <div className="box-detail-info">
