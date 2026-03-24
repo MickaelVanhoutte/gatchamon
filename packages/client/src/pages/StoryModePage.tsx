@@ -4,6 +4,7 @@ import { useGameStore } from '../stores/gameStore';
 import { POKEDEX, REGIONS } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
 import { getFloorDefsForRegion } from '../services/floor.service';
+import { assetUrl } from '../utils/asset-url';
 import './StoryModePage.css';
 
 interface FloorEnemy {
@@ -214,7 +215,7 @@ export function StoryModePage() {
                     <div className="floor-entry-enemies">
                       {floor.enemies.map((enemy, i) => (
                         <div key={i} className="floor-enemy-portrait" title={`${getMonsterName(enemy.templateId)} Lv.${enemy.level}`}>
-                          <img src={`/sprites/${enemy.templateId}.png`} alt={getMonsterName(enemy.templateId)} />
+                          <img src={assetUrl(`sprites/${enemy.templateId}.png`)} alt={getMonsterName(enemy.templateId)} />
                         </div>
                       ))}
                     </div>

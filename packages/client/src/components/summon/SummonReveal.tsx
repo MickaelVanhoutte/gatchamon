@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import type { OwnedPokemon } from '../../stores/gameStore';
+import { assetUrl } from '../../utils/asset-url';
 import './SummonReveal.css';
 
 interface Props {
@@ -28,8 +29,8 @@ export function SummonReveal({ pokemon, onComplete }: Props) {
   const starColor = STAR_COLORS[instance.stars] ?? STAR_COLORS[1];
   const isShiny = instance.isShiny ?? false;
   const spriteUrl = isShiny
-    ? `/monsters/ani-shiny/${template.name.toLowerCase()}.gif`
-    : `/monsters/ani/${template.name.toLowerCase()}.gif`;
+    ? assetUrl(`monsters/ani-shiny/${template.name.toLowerCase()}.gif`)
+    : assetUrl(`monsters/ani/${template.name.toLowerCase()}.gif`);
 
   useEffect(() => {
     if (!containerRef.current) return;

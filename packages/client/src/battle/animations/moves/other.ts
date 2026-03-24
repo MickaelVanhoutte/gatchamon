@@ -5,14 +5,15 @@ import {
 	TYPE_HUE_ANGLES
 } from '../animation-engine';
 import { gsap } from 'gsap';
+import { assetUrl } from '../../../utils/asset-url';
 
 export const otherMoves: Record<string, MoveAnimation> = {};
 
 const HAZARD_SPRITES: Record<string, string> = {
-	spikes: '/fx/caltrop.png',
-	'stealth-rock': '/fx/rock.png',
-	'toxic-spikes': '/fx/poisoncaltrop.png',
-	'sticky-web': '/fx/web.png'
+	spikes: assetUrl('fx/caltrop.png'),
+	'stealth-rock': assetUrl('fx/rock.png'),
+	'toxic-spikes': assetUrl('fx/poisoncaltrop.png'),
+	'sticky-web': assetUrl('fx/web.png')
 };
 
 async function multiHitAnimation(engine: AnimationEngine, context: MoveContext): Promise<void> {

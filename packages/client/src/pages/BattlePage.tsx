@@ -6,12 +6,13 @@ import { useBattleAnimation } from '../battle/useBattleAnimation';
 import { useAutoBattle } from '../battle/useAutoBattle';
 import { POKEDEX, SKILLS, getTypeEffectiveness, ESSENCES } from '@gatchamon/shared';
 import type { BattleState, BattleMon, BattleLogEntry, BattleResult, PokemonType } from '@gatchamon/shared';
+import { assetUrl } from '../utils/asset-url';
 import './BattlePage.css';
 
 type Phase = 'player_turn' | 'animating' | 'victory' | 'defeat';
 
 const LEVEL_BACKGROUNDS: Record<number, string> = {
-  1: '/backgrounds/forest-arena.png',
+  1: assetUrl('backgrounds/forest-arena.png'),
 };
 
 export function BattlePage() {
@@ -139,7 +140,7 @@ export function BattlePage() {
                 key={mon.instanceId}
                 className={`turn-portrait ${mon.instanceId === state.currentActorId ? 'active' : ''} ${mon.isPlayerOwned ? 'player' : 'enemy'}`}
               >
-                <img src={tmpl?.spriteUrl} alt="" width={28} height={28} />
+                <img src={tmpl ? assetUrl(tmpl.spriteUrl) : undefined} alt="" width={28} height={28} />
               </div>
             );
           })}
@@ -316,7 +317,7 @@ function BattleMonSprite({
   const hpColor = hpPct > 50 ? '#4ade80' : hpPct > 20 ? '#fbbf24' : '#ef4444';
 
   const spriteDir = mon.isPlayerOwned ? 'ani-back' : 'ani';
-  const animatedSpriteUrl = `/monsters/${spriteDir}/${tmpl.name.toLowerCase()}.gif`;
+  const animatedSpriteUrl = assetUrl(`monsters/${spriteDir}/${tmpl.name.toLowerCase()}.gif`);
 
   const effectiveness = skillType
     ? getTypeEffectiveness(skillType, tmpl.types as PokemonType[])

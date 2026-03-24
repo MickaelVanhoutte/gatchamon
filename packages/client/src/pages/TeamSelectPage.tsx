@@ -5,6 +5,7 @@ import { MonsterCard } from '../components/monster/MonsterCard';
 import { REGIONS, DUNGEONS } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
 import { startBattle, startDungeonBattle } from '../services/battle.service';
+import { assetUrl } from '../utils/asset-url';
 import './TeamSelectPage.css';
 
 export function TeamSelectPage() {
@@ -93,7 +94,7 @@ export function TeamSelectPage() {
               return (
                 <img
                   key={id}
-                  src={mon.template.spriteUrl}
+                  src={assetUrl(mon.template.spriteUrl)}
                   alt={mon.template.name}
                   width={40}
                   height={40}

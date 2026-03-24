@@ -1,3 +1,5 @@
+import { assetUrl } from '../../utils/asset-url';
+
 export interface EffectDefinition {
 	path: string;
 	frames: number;
@@ -8,127 +10,127 @@ export interface EffectDefinition {
 
 export const EFFECT_MANIFEST: Record<string, EffectDefinition> = {
 	impact: {
-		path: '/fx/impact-sprite.png',
+		path: assetUrl('fx/impact-sprite.png'),
 		frames: 4,
 		frameWidth: 192,
 		frameHeight: 192
 	},
 	fire: {
-		path: '/fx/fire-sprite.png',
+		path: assetUrl('fx/fire-sprite.png'),
 		frames: 8,
 		frameWidth: 192,
 		frameHeight: 192
 	},
 	thunder: {
-		path: '/fx/thunder-sprite.png',
+		path: assetUrl('fx/thunder-sprite.png'),
 		frames: 6,
 		frameWidth: 192,
 		frameHeight: 192
 	},
 	slash: {
-		path: '/fx/slash-sprite.png',
+		path: assetUrl('fx/slash-sprite.png'),
 		frames: 5,
 		frameWidth: 192,
 		frameHeight: 192
 	},
 	water: {
-		path: '/fx/water-sprite.png',
+		path: assetUrl('fx/water-sprite.png'),
 		frames: 6,
 		frameWidth: 192,
 		frameHeight: 192
 	},
 	ice: {
-		path: '/fx/ice-sprite.png',
+		path: assetUrl('fx/ice-sprite.png'),
 		frames: 6,
 		frameWidth: 192,
 		frameHeight: 192
 	},
 	fist: {
-		path: '/fx/fist-sprite.png',
+		path: assetUrl('fx/fist-sprite.png'),
 		frames: 5,
 		frameWidth: 192,
 		frameHeight: 192
 	},
 	foot: {
-		path: '/fx/foot-sprite.png',
+		path: assetUrl('fx/foot-sprite.png'),
 		frames: 5,
 		frameWidth: 192,
 		frameHeight: 192
 	},
 	claws: {
-		path: '/fx/claws-sprite.png',
+		path: assetUrl('fx/claws-sprite.png'),
 		frames: 5,
 		frameWidth: 192,
 		frameHeight: 192
 	},
 	crunch: {
-		path: '/fx/crunch-sprite.png',
+		path: assetUrl('fx/crunch-sprite.png'),
 		frames: 5,
 		frameWidth: 192,
 		frameHeight: 192
 	},
 	heal: {
-		path: '/fx/heal-sprite.png',
+		path: assetUrl('fx/heal-sprite.png'),
 		frames: 6,
 		frameWidth: 192,
 		frameHeight: 192
 	},
 	buff: {
-		path: '/fx/buff-sprite.png',
+		path: assetUrl('fx/buff-sprite.png'),
 		frames: 6,
 		frameWidth: 192,
 		frameHeight: 192
 	},
 	debuff: {
-		path: '/fx/debuff-sprite.png',
+		path: assetUrl('fx/debuff-sprite.png'),
 		frames: 6,
 		frameWidth: 192,
 		frameHeight: 192
 	},
 	psychic: {
-		path: '/fx/debuff-sprite.png',
+		path: assetUrl('fx/debuff-sprite.png'),
 		frames: 6,
 		frameWidth: 192,
 		frameHeight: 192
 	},
 	rock: {
-		path: '/fx/rock-sprite.png',
+		path: assetUrl('fx/rock-sprite.png'),
 		frames: 5,
 		frameWidth: 192,
 		frameHeight: 192
 	},
 	leaf: {
-		path: '/fx/leaf-sprite.png',
+		path: assetUrl('fx/leaf-sprite.png'),
 		frames: 6,
 		frameWidth: 192,
 		frameHeight: 192
 	},
 	poison: {
-		path: '/fx/poison-sprite.png',
+		path: assetUrl('fx/poison-sprite.png'),
 		frames: 6,
 		frameWidth: 192,
 		frameHeight: 192
 	},
 	wind: {
-		path: '/fx/wind-sprite.png',
+		path: assetUrl('fx/wind-sprite.png'),
 		frames: 6,
 		frameWidth: 192,
 		frameHeight: 192
 	},
 	shadowball: {
-		path: '/fx/shadowball-sprite.png',
+		path: assetUrl('fx/shadowball-sprite.png'),
 		frames: 6,
 		frameWidth: 192,
 		frameHeight: 192
 	},
 	lightball: {
-		path: '/fx/lightball-sprite.png',
+		path: assetUrl('fx/lightball-sprite.png'),
 		frames: 8,
 		frameWidth: 192,
 		frameHeight: 192
 	},
 	drain: {
-		path: '/fx/drain-sprite.png',
+		path: assetUrl('fx/drain-sprite.png'),
 		frames: 8,
 		frameWidth: 192,
 		frameHeight: 192

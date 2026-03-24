@@ -1,3 +1,5 @@
+import { assetUrl } from '../../utils/asset-url';
+
 export const MOVE_SFX_MAP: Record<string, string> = {
 	absorb: 'Absorb',
 	acid: 'Acid',
@@ -483,7 +485,7 @@ export function getMoveSFXPath(moveName: string): string | undefined {
 	if (!sfxFile) {
 		return undefined;
 	}
-	return `/audio/move-effects/${sfxFile}.mp3`;
+	return assetUrl(`audio/move-effects/${sfxFile}.mp3`);
 }
 
 export function getBattleSFXPath(key: string): string | undefined {
@@ -491,5 +493,5 @@ export function getBattleSFXPath(key: string): string | undefined {
 	if (!sfxFile) {
 		return undefined;
 	}
-	return `/audio/move-effects/${sfxFile}.mp3`;
+	return assetUrl(`audio/move-effects/${sfxFile}.mp3`);
 }

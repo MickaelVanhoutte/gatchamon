@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { assetUrl } from '../utils/asset-url';
 import './LoadingScreen.css';
 
 interface LoadingScreenProps {
@@ -32,10 +33,10 @@ export function LoadingScreen({ onStart }: LoadingScreenProps) {
 
       {/* Silhouette Pokémon on left and right */}
       <div className="ls-pokemon ls-pokemon-left">
-        <img src="/monsters/ani/charizard.gif" alt="" />
+        <img src={assetUrl('monsters/ani/charizard.gif')} alt="" />
       </div>
       <div className="ls-pokemon ls-pokemon-right">
-        <img src="/monsters/ani/mewtwo.gif" alt="" />
+        <img src={assetUrl('monsters/ani/mewtwo.gif')} alt="" />
       </div>
 
       {/* Center content */}

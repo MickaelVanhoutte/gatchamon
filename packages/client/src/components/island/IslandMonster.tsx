@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import type { OwnedPokemon } from '../../stores/gameStore';
+import { assetUrl } from '../../utils/asset-url';
 import './IslandMonster.css';
 
 const ISLAND_POSITIONS = [
@@ -47,7 +48,7 @@ export function IslandMonster({ owned, positionIndex }: IslandMonsterProps) {
       </div>
       <div className={`island-monster-sprite-wrap roam-${positionIndex % 6}`}>
         <img
-          src={owned.template.spriteUrl}
+          src={assetUrl(owned.template.spriteUrl)}
           alt={owned.template.name}
           draggable={false}
         />

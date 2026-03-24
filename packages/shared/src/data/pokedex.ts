@@ -9,7 +9,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Pidgey',
     types: ['normal', 'flying'],
     naturalStars: 1,
-    spriteUrl: '/sprites/16.png',
+    spriteUrl: 'sprites/16.png',
     skillIds: ['pidgey_skill1', 'pidgey_skill2', 'pidgey_skill3'],
     baseStats: {
       hp: 420,
@@ -27,7 +27,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Rattata',
     types: ['normal'],
     naturalStars: 1,
-    spriteUrl: '/sprites/19.png',
+    spriteUrl: 'sprites/19.png',
     skillIds: ['rattata_skill1', 'rattata_skill2', 'rattata_skill3'],
     baseStats: {
       hp: 380,
@@ -45,7 +45,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Spearow',
     types: ['normal', 'flying'],
     naturalStars: 1,
-    spriteUrl: '/sprites/21.png',
+    spriteUrl: 'sprites/21.png',
     skillIds: ['spearow_skill1', 'spearow_skill2', 'spearow_skill3'],
     baseStats: {
       hp: 400,
@@ -63,7 +63,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Zubat',
     types: ['poison', 'flying'],
     naturalStars: 1,
-    spriteUrl: '/sprites/41.png',
+    spriteUrl: 'sprites/41.png',
     skillIds: ['zubat_skill1', 'zubat_skill2', 'zubat_skill3'],
     baseStats: {
       hp: 400,
@@ -81,7 +81,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Geodude',
     types: ['rock', 'ground'],
     naturalStars: 1,
-    spriteUrl: '/sprites/74.png',
+    spriteUrl: 'sprites/74.png',
     skillIds: ['geodude_skill1', 'geodude_skill2', 'geodude_skill3'],
     baseStats: {
       hp: 450,
@@ -99,7 +99,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Magikarp',
     types: ['water'],
     naturalStars: 1,
-    spriteUrl: '/sprites/129.png',
+    spriteUrl: 'sprites/129.png',
     skillIds: ['magikarp_skill1', 'magikarp_skill2', 'magikarp_skill3'],
     baseStats: {
       hp: 350,
@@ -117,7 +117,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Weedle',
     types: ['bug', 'poison'],
     naturalStars: 1,
-    spriteUrl: '/sprites/13.png',
+    spriteUrl: 'sprites/13.png',
     skillIds: ['weedle_skill1', 'weedle_skill2', 'weedle_skill3'],
     baseStats: {
       hp: 390,
@@ -135,7 +135,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Caterpie',
     types: ['bug'],
     naturalStars: 1,
-    spriteUrl: '/sprites/10.png',
+    spriteUrl: 'sprites/10.png',
     skillIds: ['caterpie_skill1', 'caterpie_skill2', 'caterpie_skill3'],
     baseStats: {
       hp: 410,
@@ -153,7 +153,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Bellsprout',
     types: ['grass', 'poison'],
     naturalStars: 1,
-    spriteUrl: '/sprites/69.png',
+    spriteUrl: 'sprites/69.png',
     skillIds: ['bellsprout_skill1', 'bellsprout_skill2', 'bellsprout_skill3'],
     baseStats: {
       hp: 370,
@@ -171,7 +171,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Oddish',
     types: ['grass', 'poison'],
     naturalStars: 1,
-    spriteUrl: '/sprites/43.png',
+    spriteUrl: 'sprites/43.png',
     skillIds: ['oddish_skill1', 'oddish_skill2', 'oddish_skill3'],
     baseStats: {
       hp: 430,
@@ -193,7 +193,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Bulbasaur',
     types: ['grass', 'poison'],
     naturalStars: 2,
-    spriteUrl: '/sprites/1.png',
+    spriteUrl: 'sprites/1.png',
     skillIds: ['bulbasaur_skill1', 'bulbasaur_skill2', 'bulbasaur_skill3'],
     baseStats: {
       hp: 520,
@@ -211,7 +211,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Charmander',
     types: ['fire'],
     naturalStars: 2,
-    spriteUrl: '/sprites/4.png',
+    spriteUrl: 'sprites/4.png',
     skillIds: ['charmander_skill1', 'charmander_skill2', 'charmander_skill3'],
     baseStats: {
       hp: 480,
@@ -229,7 +229,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Squirtle',
     types: ['water'],
     naturalStars: 2,
-    spriteUrl: '/sprites/7.png',
+    spriteUrl: 'sprites/7.png',
     skillIds: ['squirtle_skill1', 'squirtle_skill2', 'squirtle_skill3'],
     baseStats: {
       hp: 530,
@@ -247,7 +247,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Pikachu',
     types: ['electric'],
     naturalStars: 2,
-    spriteUrl: '/sprites/25.png',
+    spriteUrl: 'sprites/25.png',
     skillIds: ['pikachu_skill1', 'pikachu_skill2', 'pikachu_skill3'],
     baseStats: {
       hp: 450,
@@ -265,7 +265,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Abra',
     types: ['psychic'],
     naturalStars: 2,
-    spriteUrl: '/sprites/63.png',
+    spriteUrl: 'sprites/63.png',
     skillIds: ['abra_skill1', 'abra_skill2', 'abra_skill3'],
     baseStats: {
       hp: 380,
@@ -283,7 +283,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Gastly',
     types: ['ghost', 'poison'],
     naturalStars: 2,
-    spriteUrl: '/sprites/92.png',
+    spriteUrl: 'sprites/92.png',
     skillIds: ['gastly_skill1', 'gastly_skill2', 'gastly_skill3'],
     baseStats: {
       hp: 400,
@@ -301,7 +301,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Machop',
     types: ['fighting'],
     naturalStars: 2,
-    spriteUrl: '/sprites/66.png',
+    spriteUrl: 'sprites/66.png',
     skillIds: ['machop_skill1', 'machop_skill2', 'machop_skill3'],
     baseStats: {
       hp: 540,
@@ -319,7 +319,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Growlithe',
     types: ['fire'],
     naturalStars: 2,
-    spriteUrl: '/sprites/58.png',
+    spriteUrl: 'sprites/58.png',
     skillIds: ['growlithe_skill1', 'growlithe_skill2', 'growlithe_skill3'],
     baseStats: {
       hp: 500,
@@ -337,7 +337,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Poliwag',
     types: ['water'],
     naturalStars: 2,
-    spriteUrl: '/sprites/60.png',
+    spriteUrl: 'sprites/60.png',
     skillIds: ['poliwag_skill1', 'poliwag_skill2', 'poliwag_skill3'],
     baseStats: {
       hp: 470,
@@ -355,7 +355,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Eevee',
     types: ['normal'],
     naturalStars: 2,
-    spriteUrl: '/sprites/133.png',
+    spriteUrl: 'sprites/133.png',
     skillIds: ['eevee_skill1', 'eevee_skill2', 'eevee_skill3'],
     baseStats: {
       hp: 500,
@@ -373,7 +373,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Dratini',
     types: ['dragon'],
     naturalStars: 2,
-    spriteUrl: '/sprites/147.png',
+    spriteUrl: 'sprites/147.png',
     skillIds: ['dratini_skill1', 'dratini_skill2', 'dratini_skill3'],
     baseStats: {
       hp: 490,
@@ -391,7 +391,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Jigglypuff',
     types: ['normal'],
     naturalStars: 2,
-    spriteUrl: '/sprites/39.png',
+    spriteUrl: 'sprites/39.png',
     skillIds: ['jigglypuff_skill1', 'jigglypuff_skill2', 'jigglypuff_skill3'],
     baseStats: {
       hp: 600,
@@ -413,7 +413,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Lapras',
     types: ['water', 'ice'],
     naturalStars: 3,
-    spriteUrl: '/sprites/131.png',
+    spriteUrl: 'sprites/131.png',
     skillIds: ['lapras_skill1', 'lapras_skill2', 'lapras_skill3'],
     baseStats: {
       hp: 780,
@@ -431,7 +431,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Snorlax',
     types: ['normal'],
     naturalStars: 3,
-    spriteUrl: '/sprites/143.png',
+    spriteUrl: 'sprites/143.png',
     skillIds: ['snorlax_skill1', 'snorlax_skill2', 'snorlax_skill3'],
     baseStats: {
       hp: 800,
@@ -449,7 +449,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Aerodactyl',
     types: ['rock', 'flying'],
     naturalStars: 3,
-    spriteUrl: '/sprites/142.png',
+    spriteUrl: 'sprites/142.png',
     skillIds: ['aerodactyl_skill1', 'aerodactyl_skill2', 'aerodactyl_skill3'],
     baseStats: {
       hp: 620,
@@ -467,7 +467,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Hitmonlee',
     types: ['fighting'],
     naturalStars: 3,
-    spriteUrl: '/sprites/106.png',
+    spriteUrl: 'sprites/106.png',
     skillIds: ['hitmonlee_skill1', 'hitmonlee_skill2', 'hitmonlee_skill3'],
     baseStats: {
       hp: 580,
@@ -485,7 +485,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Hitmonchan',
     types: ['fighting'],
     naturalStars: 3,
-    spriteUrl: '/sprites/107.png',
+    spriteUrl: 'sprites/107.png',
     skillIds: ['hitmonchan_skill1', 'hitmonchan_skill2', 'hitmonchan_skill3'],
     baseStats: {
       hp: 600,
@@ -503,7 +503,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Kangaskhan',
     types: ['normal'],
     naturalStars: 3,
-    spriteUrl: '/sprites/115.png',
+    spriteUrl: 'sprites/115.png',
     skillIds: ['kangaskhan_skill1', 'kangaskhan_skill2', 'kangaskhan_skill3'],
     baseStats: {
       hp: 720,
@@ -521,7 +521,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Pinsir',
     types: ['bug'],
     naturalStars: 3,
-    spriteUrl: '/sprites/127.png',
+    spriteUrl: 'sprites/127.png',
     skillIds: ['pinsir_skill1', 'pinsir_skill2', 'pinsir_skill3'],
     baseStats: {
       hp: 640,
@@ -539,7 +539,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Tauros',
     types: ['normal'],
     naturalStars: 3,
-    spriteUrl: '/sprites/128.png',
+    spriteUrl: 'sprites/128.png',
     skillIds: ['tauros_skill1', 'tauros_skill2', 'tauros_skill3'],
     baseStats: {
       hp: 660,
@@ -563,7 +563,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Metapod',
     types: ['bug'],
     naturalStars: 1,
-    spriteUrl: '/sprites/11.png',
+    spriteUrl: 'sprites/11.png',
     skillIds: ['metapod_skill1', 'metapod_skill2', 'metapod_skill3'],
     baseStats: {
       hp: 471,
@@ -582,7 +582,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Butterfree',
     types: ['bug', 'flying'],
     naturalStars: 1,
-    spriteUrl: '/sprites/12.png',
+    spriteUrl: 'sprites/12.png',
     skillIds: ['butterfree_skill1', 'butterfree_skill2', 'butterfree_skill3'],
     baseStats: {
       hp: 612,
@@ -603,7 +603,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Kakuna',
     types: ['bug', 'poison'],
     naturalStars: 1,
-    spriteUrl: '/sprites/14.png',
+    spriteUrl: 'sprites/14.png',
     skillIds: ['kakuna_skill1', 'kakuna_skill2', 'kakuna_skill3'],
     baseStats: {
       hp: 448,
@@ -622,7 +622,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Beedrill',
     types: ['bug', 'poison'],
     naturalStars: 1,
-    spriteUrl: '/sprites/15.png',
+    spriteUrl: 'sprites/15.png',
     skillIds: ['beedrill_skill1', 'beedrill_skill2', 'beedrill_skill3'],
     baseStats: {
       hp: 582,
@@ -643,7 +643,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Pidgeotto',
     types: ['normal', 'flying'],
     naturalStars: 1,
-    spriteUrl: '/sprites/17.png',
+    spriteUrl: 'sprites/17.png',
     skillIds: ['pidgeotto_skill1', 'pidgeotto_skill2', 'pidgeotto_skill3'],
     baseStats: {
       hp: 483,
@@ -662,7 +662,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Pidgeot',
     types: ['normal', 'flying'],
     naturalStars: 1,
-    spriteUrl: '/sprites/18.png',
+    spriteUrl: 'sprites/18.png',
     skillIds: ['pidgeot_skill1', 'pidgeot_skill2', 'pidgeot_skill3'],
     baseStats: {
       hp: 627,
@@ -683,7 +683,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Raticate',
     types: ['normal'],
     naturalStars: 1,
-    spriteUrl: '/sprites/20.png',
+    spriteUrl: 'sprites/20.png',
     skillIds: ['raticate_skill1', 'raticate_skill2', 'raticate_skill3'],
     baseStats: {
       hp: 570,
@@ -704,7 +704,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Fearow',
     types: ['normal', 'flying'],
     naturalStars: 1,
-    spriteUrl: '/sprites/22.png',
+    spriteUrl: 'sprites/22.png',
     skillIds: ['fearow_skill1', 'fearow_skill2', 'fearow_skill3'],
     baseStats: {
       hp: 600,
@@ -725,7 +725,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Golbat',
     types: ['poison', 'flying'],
     naturalStars: 1,
-    spriteUrl: '/sprites/42.png',
+    spriteUrl: 'sprites/42.png',
     skillIds: ['golbat_skill1', 'golbat_skill2', 'golbat_skill3'],
     baseStats: {
       hp: 600,
@@ -746,7 +746,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Gloom',
     types: ['grass', 'poison'],
     naturalStars: 1,
-    spriteUrl: '/sprites/44.png',
+    spriteUrl: 'sprites/44.png',
     skillIds: ['gloom_skill1', 'gloom_skill2', 'gloom_skill3'],
     baseStats: {
       hp: 494,
@@ -765,7 +765,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Vileplume',
     types: ['grass', 'poison'],
     naturalStars: 1,
-    spriteUrl: '/sprites/45.png',
+    spriteUrl: 'sprites/45.png',
     skillIds: ['vileplume_skill1', 'vileplume_skill2', 'vileplume_skill3'],
     baseStats: {
       hp: 642,
@@ -786,7 +786,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Weepinbell',
     types: ['grass', 'poison'],
     naturalStars: 1,
-    spriteUrl: '/sprites/70.png',
+    spriteUrl: 'sprites/70.png',
     skillIds: ['weepinbell_skill1', 'weepinbell_skill2', 'weepinbell_skill3'],
     baseStats: {
       hp: 425,
@@ -805,7 +805,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Victreebel',
     types: ['grass', 'poison'],
     naturalStars: 1,
-    spriteUrl: '/sprites/71.png',
+    spriteUrl: 'sprites/71.png',
     skillIds: ['victreebel_skill1', 'victreebel_skill2', 'victreebel_skill3'],
     baseStats: {
       hp: 552,
@@ -826,7 +826,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Graveler',
     types: ['rock', 'ground'],
     naturalStars: 1,
-    spriteUrl: '/sprites/75.png',
+    spriteUrl: 'sprites/75.png',
     skillIds: ['graveler_skill1', 'graveler_skill2', 'graveler_skill3'],
     baseStats: {
       hp: 517,
@@ -845,7 +845,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Golem',
     types: ['rock', 'ground'],
     naturalStars: 1,
-    spriteUrl: '/sprites/76.png',
+    spriteUrl: 'sprites/76.png',
     skillIds: ['golem_skill1', 'golem_skill2', 'golem_skill3'],
     baseStats: {
       hp: 672,
@@ -866,7 +866,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Gyarados',
     types: ['water', 'flying'],
     naturalStars: 1,
-    spriteUrl: '/sprites/130.png',
+    spriteUrl: 'sprites/130.png',
     skillIds: ['gyarados_skill1', 'gyarados_skill2', 'gyarados_skill3'],
     baseStats: {
       hp: 700,
@@ -891,7 +891,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Ivysaur',
     types: ['grass', 'poison'],
     naturalStars: 2,
-    spriteUrl: '/sprites/2.png',
+    spriteUrl: 'sprites/2.png',
     skillIds: ['ivysaur_skill1', 'ivysaur_skill2', 'ivysaur_skill3'],
     baseStats: {
       hp: 624,
@@ -910,7 +910,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Venusaur',
     types: ['grass', 'poison'],
     naturalStars: 2,
-    spriteUrl: '/sprites/3.png',
+    spriteUrl: 'sprites/3.png',
     skillIds: ['venusaur_skill1', 'venusaur_skill2', 'venusaur_skill3'],
     baseStats: {
       hp: 842,
@@ -931,7 +931,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Charmeleon',
     types: ['fire'],
     naturalStars: 2,
-    spriteUrl: '/sprites/5.png',
+    spriteUrl: 'sprites/5.png',
     skillIds: ['charmeleon_skill1', 'charmeleon_skill2', 'charmeleon_skill3'],
     baseStats: {
       hp: 576,
@@ -950,7 +950,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Charizard',
     types: ['fire', 'flying'],
     naturalStars: 2,
-    spriteUrl: '/sprites/6.png',
+    spriteUrl: 'sprites/6.png',
     skillIds: ['charizard_skill1', 'charizard_skill2', 'charizard_skill3'],
     baseStats: {
       hp: 777,
@@ -971,7 +971,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Wartortle',
     types: ['water'],
     naturalStars: 2,
-    spriteUrl: '/sprites/8.png',
+    spriteUrl: 'sprites/8.png',
     skillIds: ['wartortle_skill1', 'wartortle_skill2', 'wartortle_skill3'],
     baseStats: {
       hp: 636,
@@ -990,7 +990,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Blastoise',
     types: ['water'],
     naturalStars: 2,
-    spriteUrl: '/sprites/9.png',
+    spriteUrl: 'sprites/9.png',
     skillIds: ['blastoise_skill1', 'blastoise_skill2', 'blastoise_skill3'],
     baseStats: {
       hp: 858,
@@ -1011,7 +1011,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Raichu',
     types: ['electric'],
     naturalStars: 2,
-    spriteUrl: '/sprites/26.png',
+    spriteUrl: 'sprites/26.png',
     skillIds: ['raichu_skill1', 'raichu_skill2', 'raichu_skill3'],
     baseStats: {
       hp: 675,
@@ -1032,7 +1032,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Kadabra',
     types: ['psychic'],
     naturalStars: 2,
-    spriteUrl: '/sprites/64.png',
+    spriteUrl: 'sprites/64.png',
     skillIds: ['kadabra_skill1', 'kadabra_skill2', 'kadabra_skill3'],
     baseStats: {
       hp: 456,
@@ -1051,7 +1051,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Alakazam',
     types: ['psychic'],
     naturalStars: 2,
-    spriteUrl: '/sprites/65.png',
+    spriteUrl: 'sprites/65.png',
     skillIds: ['alakazam_skill1', 'alakazam_skill2', 'alakazam_skill3'],
     baseStats: {
       hp: 615,
@@ -1072,7 +1072,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Machoke',
     types: ['fighting'],
     naturalStars: 2,
-    spriteUrl: '/sprites/67.png',
+    spriteUrl: 'sprites/67.png',
     skillIds: ['machoke_skill1', 'machoke_skill2', 'machoke_skill3'],
     baseStats: {
       hp: 648,
@@ -1091,7 +1091,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Machamp',
     types: ['fighting'],
     naturalStars: 2,
-    spriteUrl: '/sprites/68.png',
+    spriteUrl: 'sprites/68.png',
     skillIds: ['machamp_skill1', 'machamp_skill2', 'machamp_skill3'],
     baseStats: {
       hp: 874,
@@ -1112,7 +1112,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Haunter',
     types: ['ghost', 'poison'],
     naturalStars: 2,
-    spriteUrl: '/sprites/93.png',
+    spriteUrl: 'sprites/93.png',
     skillIds: ['haunter_skill1', 'haunter_skill2', 'haunter_skill3'],
     baseStats: {
       hp: 480,
@@ -1131,7 +1131,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Gengar',
     types: ['ghost', 'poison'],
     naturalStars: 2,
-    spriteUrl: '/sprites/94.png',
+    spriteUrl: 'sprites/94.png',
     skillIds: ['gengar_skill1', 'gengar_skill2', 'gengar_skill3'],
     baseStats: {
       hp: 648,
@@ -1152,7 +1152,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Arcanine',
     types: ['fire'],
     naturalStars: 2,
-    spriteUrl: '/sprites/59.png',
+    spriteUrl: 'sprites/59.png',
     skillIds: ['arcanine_skill1', 'arcanine_skill2', 'arcanine_skill3'],
     baseStats: {
       hp: 750,
@@ -1173,7 +1173,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Poliwhirl',
     types: ['water'],
     naturalStars: 2,
-    spriteUrl: '/sprites/61.png',
+    spriteUrl: 'sprites/61.png',
     skillIds: ['poliwhirl_skill1', 'poliwhirl_skill2', 'poliwhirl_skill3'],
     baseStats: {
       hp: 564,
@@ -1192,7 +1192,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Poliwrath',
     types: ['water', 'fighting'],
     naturalStars: 2,
-    spriteUrl: '/sprites/62.png',
+    spriteUrl: 'sprites/62.png',
     skillIds: ['poliwrath_skill1', 'poliwrath_skill2', 'poliwrath_skill3'],
     baseStats: {
       hp: 761,
@@ -1213,7 +1213,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Wigglytuff',
     types: ['normal'],
     naturalStars: 2,
-    spriteUrl: '/sprites/40.png',
+    spriteUrl: 'sprites/40.png',
     skillIds: ['wigglytuff_skill1', 'wigglytuff_skill2', 'wigglytuff_skill3'],
     baseStats: {
       hp: 900,
@@ -1234,7 +1234,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Vaporeon',
     types: ['water'],
     naturalStars: 2,
-    spriteUrl: '/sprites/134.png',
+    spriteUrl: 'sprites/134.png',
     skillIds: ['vaporeon_skill1', 'vaporeon_skill2', 'vaporeon_skill3'],
     baseStats: {
       hp: 750,
@@ -1253,7 +1253,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Jolteon',
     types: ['electric'],
     naturalStars: 2,
-    spriteUrl: '/sprites/135.png',
+    spriteUrl: 'sprites/135.png',
     skillIds: ['jolteon_skill1', 'jolteon_skill2', 'jolteon_skill3'],
     baseStats: {
       hp: 750,
@@ -1272,7 +1272,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Flareon',
     types: ['fire'],
     naturalStars: 2,
-    spriteUrl: '/sprites/136.png',
+    spriteUrl: 'sprites/136.png',
     skillIds: ['flareon_skill1', 'flareon_skill2', 'flareon_skill3'],
     baseStats: {
       hp: 750,
@@ -1293,7 +1293,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Dragonair',
     types: ['dragon'],
     naturalStars: 2,
-    spriteUrl: '/sprites/148.png',
+    spriteUrl: 'sprites/148.png',
     skillIds: ['dragonair_skill1', 'dragonair_skill2', 'dragonair_skill3'],
     baseStats: {
       hp: 588,
@@ -1312,7 +1312,7 @@ export const POKEDEX: PokemonTemplate[] = [
     name: 'Dragonite',
     types: ['dragon', 'flying'],
     naturalStars: 2,
-    spriteUrl: '/sprites/149.png',
+    spriteUrl: 'sprites/149.png',
     skillIds: ['dragonite_skill1', 'dragonite_skill2', 'dragonite_skill3'],
     baseStats: {
       hp: 793,

@@ -5,6 +5,7 @@ import { computeStats, getSkillsForPokemon, MAX_LEVEL_BY_STARS, isMaxLevel, POKE
 import { canMerge } from '../services/merge.service';
 import { canEvolveInstance } from '../services/evolution.service';
 import type { PokemonType, BaseStats, SkillDefinition, EvolutionChain } from '@gatchamon/shared';
+import { assetUrl } from '../utils/asset-url';
 import './CollectionPage.css';
 
 const ALL_TYPES: PokemonType[] = [
@@ -147,7 +148,7 @@ export function CollectionPage() {
                   </div>
                   <img
                     className="box-cell-sprite"
-                    src={mon.template.spriteUrl}
+                    src={assetUrl(mon.template.spriteUrl)}
                     alt={mon.template.name}
                   />
                   <div className="box-cell-level">
@@ -258,7 +259,7 @@ export function CollectionPage() {
                         return (
                           <div key={chain.to} className="box-evo-option">
                             <div className="box-evo-header">
-                              <img src={targetTemplate.spriteUrl} alt={targetTemplate.name} className="box-evo-sprite" />
+                              <img src={assetUrl(targetTemplate.spriteUrl)} alt={targetTemplate.name} className="box-evo-sprite" />
                               <span className="box-evo-name">{targetTemplate.name}</span>
                             </div>
                             <div className="box-evo-reqs">

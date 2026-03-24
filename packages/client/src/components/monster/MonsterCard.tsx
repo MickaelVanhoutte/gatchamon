@@ -1,4 +1,5 @@
 import type { OwnedPokemon } from '../../stores/gameStore';
+import { assetUrl } from '../../utils/asset-url';
 import './MonsterCard.css';
 
 interface Props {
@@ -30,8 +31,8 @@ export function MonsterCard({ owned, compact, onClick, selected }: Props) {
   const starColor = STAR_COLORS[instance.stars] ?? STAR_COLORS[1];
   const isShiny = instance.isShiny ?? false;
   const spriteUrl = isShiny
-    ? `/monsters/ani-shiny/${template.name.toLowerCase()}.gif`
-    : template.spriteUrl;
+    ? assetUrl(`monsters/ani-shiny/${template.name.toLowerCase()}.gif`)
+    : assetUrl(template.spriteUrl);
   const spriteSize = compact ? 64 : 80;
 
   return (

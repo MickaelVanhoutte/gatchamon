@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { computeStats } from '@gatchamon/shared';
 import type { BaseStats } from '@gatchamon/shared';
+import { assetUrl } from '../utils/asset-url';
 import './MonsterDetail.css';
 
 const STAT_LABELS: Record<keyof BaseStats, string> = {
@@ -55,8 +56,8 @@ export function MonsterDetail() {
   const starColor = STAR_COLORS[instance.stars] ?? STAR_COLORS[1];
   const isShiny = instance.isShiny ?? false;
   const spriteUrl = isShiny
-    ? `/monsters/ani-shiny/${template.name.toLowerCase()}.gif`
-    : template.spriteUrl;
+    ? assetUrl(`monsters/ani-shiny/${template.name.toLowerCase()}.gif`)
+    : assetUrl(template.spriteUrl);
 
   return (
     <div className="page detail-page">
