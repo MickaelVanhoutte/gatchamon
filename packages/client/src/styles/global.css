@@ -154,3 +154,29 @@ body {
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+/* ─── Global Pokeball Icon ─── */
+.pokeball-icon {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #e94560 50%, #fff 50%);
+  border: 1.5px solid #333;
+  position: relative;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.pokeball-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1.5px solid #333;
+}

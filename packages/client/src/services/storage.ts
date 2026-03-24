@@ -48,7 +48,20 @@ export function saveLastTeam(instanceIds: string[]): void {
   localStorage.setItem(LAST_TEAM_KEY, JSON.stringify(instanceIds));
 }
 
+const REWARDS_KEY = 'gatchamon_rewards';
+
+export function loadRewardState(): import('@gatchamon/shared').RewardState | null {
+  const raw = localStorage.getItem(REWARDS_KEY);
+  if (!raw) return null;
+  return JSON.parse(raw);
+}
+
+export function saveRewardState(state: import('@gatchamon/shared').RewardState): void {
+  localStorage.setItem(REWARDS_KEY, JSON.stringify(state));
+}
+
 export function clearAll(): void {
   localStorage.removeItem(PLAYER_KEY);
   localStorage.removeItem(COLLECTION_KEY);
+  localStorage.removeItem(REWARDS_KEY);
 }

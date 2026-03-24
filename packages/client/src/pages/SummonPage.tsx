@@ -50,7 +50,7 @@ export function SummonPage() {
       <div className="summon-header">
         <h2>Summon</h2>
         <div className="pokeball-count">
-          <span className="pokeball-icon">●</span>
+          <span className="pokeball-icon" />
           {player.pokeballs}
         </div>
       </div>
@@ -65,7 +65,7 @@ export function SummonPage() {
               disabled={player.pokeballs < 5}
             >
               <span className="btn-label">Summon x1</span>
-              <span className="btn-cost">5 ●</span>
+              <span className="btn-cost">5 <span className="pokeball-icon" /></span>
             </button>
             <button
               className="summon-btn summon-multi"
@@ -73,7 +73,7 @@ export function SummonPage() {
               disabled={player.pokeballs < 45}
             >
               <span className="btn-label">Summon x10</span>
-              <span className="btn-cost">45 ●</span>
+              <span className="btn-cost">45 <span className="pokeball-icon" /></span>
             </button>
           </div>
           {error && <p className="summon-error">{error}</p>}

@@ -1,0 +1,242 @@
+import { useState, useCallback } from 'react';
+import { useGameStore } from '../stores/gameStore';
+import {
+  getDailyMissions,
+  claimMissionReward,
+  claimAllDailiesBonus,
+  getUnclaimedMissionCount,
+  getUnclaimedTrophyCount,
+  claimTrophyTier,
+  loadOrInitRewardState,
+} from '../services/reward.service';
+import {
+  selectDailyMissions,
+  TROPHIES,
+  getTrophyStat,
+} from '@gatchamon/shared';
+import type { MissionReward, TrophyDefinition, TrophyProgress } from '@gatchamon/shared';
+import './MissionsPage.css';
+
+type Tab = 'daily' | 'trophies';
+
+export function MissionsPage() {
+  const { refreshPlayer } = useGameStore();
+  const [tab, setTab] = useState<Tab>('daily');
+  const [claimedReward, setClaimedReward] = useState<MissionReward | null>(null);
+  const [, setTick] = useState(0);
+  const forceUpdate = useCallback(() => setTick(t => t + 1), []);
+
+  const dailyState = getDailyMissions();
+  const dailyDefs = selectDailyMissions(dailyState.date);
+  const rewardState = loadOrInitRewardState();
+
+  const handleClaimMission = (missionId: string) => {
+    const reward = claimMissionReward(missionId);
+    if (reward) {
+      setClaimedReward(reward);
+      refreshPlayer();
+      forceUpdate();
+      setTimeout(() => setClaimedReward(null), 2000);
+    }
+  };
+
+  const handleClaimAllBonus = () => {
+    const reward = claimAllDailiesBonus();
+    if (reward) {
+      setClaimedReward(reward);
+      refreshPlayer();
+      forceUpdate();
+      setTimeout(() => setClaimedReward(null), 2000);
+    }
+  };
+
+  const handleClaimTrophy = (trophyId: string, tierIndex: number) => {
+    const reward = claimTrophyTier(trophyId, tierIndex);
+    if (reward) {
+      setClaimedReward(reward);
+      refreshPlayer();
+      forceUpdate();
+      setTimeout(() => setClaimedReward(null), 2000);
+    }
+  };
+
+  const completedCount = dailyState.missions.filter(m => m.claimed).length;
+
+  return (
+    <div className="page missions-page">
+      {/* Tabs */}
+      <div className="missions-tabs">
+        <button
+          className={`missions-tab ${tab === 'daily' ? 'active' : ''}`}
+          onClick={() => setTab('daily')}
+        >
+          Daily Missions
+          {getUnclaimedMissionCount() > 0 && (
+            <span className="tab-badge">{getUnclaimedMissionCount()}</span>
+          )}
+        </button>
+        <button
+          className={`missions-tab ${tab === 'trophies' ? 'active' : ''}`}
+          onClick={() => setTab('trophies')}
+        >
+          Trophies
+          {getUnclaimedTrophyCount() > 0 && (
+            <span className="tab-badge">{getUnclaimedTrophyCount()}</span>
+          )}
+        </button>
+      </div>
+
+      {/* Content */}
+      <div className="missions-content">
+        {tab === 'daily' && (
+          <div className="daily-missions">
+            {dailyState.missions.map(mission => {
+              const def = dailyDefs.find(d => d.id === mission.missionId);
+              if (!def) return null;
+              const isComplete = mission.current >= def.target;
+              const isClaimed = mission.claimed;
+
+              return (
+                <div
+                  key={mission.missionId}
+                  className={`mission-card ${isClaimed ? 'claimed' : ''} ${isComplete && !isClaimed ? 'ready' : ''}`}
+                >
+                  <div className="mission-icon">{def.icon}</div>
+                  <div className="mission-info">
+                    <div className="mission-desc">{def.description}</div>
+                    <div className="mission-progress-bar">
+                      <div
+                        className="mission-progress-fill"
+                        style={{ width: `${Math.min(100, (mission.current / def.target) * 100)}%` }}
+                      />
+                    </div>
+                    <div className="mission-progress-text">
+                      {mission.current}/{def.target}
+                    </div>
+                  </div>
+                  <div className="mission-reward-info">
+                    {def.reward.pokeballs && <span className="reward-pokeballs">{def.reward.pokeballs} <span className="pokeball-icon" /></span>}
+                    {def.reward.energy && <span className="reward-energy">{def.reward.energy} {'\u26A1'}</span>}
+                  </div>
+                  <button
+                    className="mission-claim-btn"
+                    disabled={!isComplete || isClaimed}
+                    onClick={() => handleClaimMission(mission.missionId)}
+                  >
+                    {isClaimed ? '\u2713' : 'Claim'}
+                  </button>
+                </div>
+              );
+            })}
+
+            {/* All dailies bonus */}
+            <div className={`all-dailies-bonus ${completedCount === dailyState.missions.length && !dailyState.allClaimedBonus ? 'ready' : ''} ${dailyState.allClaimedBonus ? 'claimed' : ''}`}>
+              <div className="bonus-info">
+                <span className="bonus-icon">{'\u{1F381}'}</span>
+                <span className="bonus-text">Complete All Missions</span>
+                <span className="bonus-progress">{completedCount}/{dailyState.missions.length}</span>
+              </div>
+              <div className="bonus-reward">
+                <span>25 <span className="pokeball-icon" /> + 10 {'\u26A1'}</span>
+              </div>
+              <button
+                className="mission-claim-btn bonus-claim"
+                disabled={completedCount < dailyState.missions.length || dailyState.allClaimedBonus}
+                onClick={handleClaimAllBonus}
+              >
+                {dailyState.allClaimedBonus ? '\u2713' : 'Claim'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {tab === 'trophies' && (
+          <div className="trophies-list">
+            {TROPHIES.map(trophy => {
+              const progress = rewardState.trophyProgress.find(t => t.trophyId === trophy.id);
+              if (!progress) return null;
+
+              return (
+                <TrophyCard
+                  key={trophy.id}
+                  trophy={trophy}
+                  progress={progress}
+                  onClaim={handleClaimTrophy}
+                />
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Claim toast */}
+      {claimedReward && (
+        <div className="claim-toast">
+          <span>Reward claimed!</span>
+          {claimedReward.pokeballs && <span> +{claimedReward.pokeballs} <span className="pokeball-icon" /></span>}
+          {claimedReward.energy && <span> +{claimedReward.energy} {'\u26A1'}</span>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TrophyCard({
+  trophy,
+  progress,
+  onClaim,
+}: {
+  trophy: TrophyDefinition;
+  progress: TrophyProgress;
+  onClaim: (trophyId: string, tierIndex: number) => void;
+}) {
+  // Find the current active tier (first unclaimed one where threshold is reachable)
+  const currentTierIndex = trophy.tiers.findIndex(
+    (_, i) => !progress.claimedTiers.includes(i)
+  );
+  const nextTier = currentTierIndex >= 0 ? trophy.tiers[currentTierIndex] : null;
+
+  return (
+    <div className="trophy-card">
+      <div className="trophy-header">
+        <span className="trophy-icon">{trophy.icon}</span>
+        <div className="trophy-name-area">
+          <span className="trophy-name">{trophy.name}</span>
+          <span className="trophy-desc">
+            {trophy.description.replace('{threshold}', nextTier ? String(nextTier.threshold) : 'MAX')}
+          </span>
+        </div>
+        <span className="trophy-current">{progress.current}</span>
+      </div>
+      <div className="trophy-tiers">
+        {trophy.tiers.map((tier, i) => {
+          const claimed = progress.claimedTiers.includes(i);
+          const reached = progress.current >= tier.threshold;
+
+          return (
+            <div
+              key={i}
+              className={`trophy-tier ${claimed ? 'claimed' : ''} ${reached && !claimed ? 'ready' : ''}`}
+            >
+              <span className="tier-threshold">{tier.threshold}</span>
+              <div className="tier-progress-bar">
+                <div
+                  className="tier-progress-fill"
+                  style={{ width: `${Math.min(100, (progress.current / tier.threshold) * 100)}%` }}
+                />
+              </div>
+              <span className="tier-reward">{tier.reward.pokeballs} <span className="pokeball-icon" /></span>
+              <button
+                className="tier-claim-btn"
+                disabled={!reached || claimed}
+                onClick={() => onClaim(trophy.id, i)}
+              >
+                {claimed ? '\u2713' : reached ? 'Claim' : '\u{1F512}'}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

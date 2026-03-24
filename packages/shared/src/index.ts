@@ -11,3 +11,6 @@ export type { RegionDef } from './data/regions.js';
 export { ESSENCES, getEssence } from './data/essences.js';
 export { EVOLUTION_CHAINS, getEvolutionsFrom, canEvolve, getEvolutionLineage } from './data/evolutions.js';
 export { DUNGEONS, getDungeon } from './data/dungeons.js';
+export * from './types/rewards.js';
+export { MISSION_POOL, ALL_DAILIES_BONUS, DAILY_MISSION_COUNT, selectDailyMissions } from './data/missions.js';
+export { TROPHIES, getTrophyStat } from './data/trophies.js';

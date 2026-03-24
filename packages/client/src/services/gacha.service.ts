@@ -1,6 +1,8 @@
 import { POKEDEX } from '@gatchamon/shared';
 import type { PokemonTemplate, PokemonInstance } from '@gatchamon/shared';
-import { loadPlayer, savePlayer, addToCollection } from './storage';
+import { loadPlayer, savePlayer, addToCollection, loadCollection } from './storage';
+import { trackStat, incrementMission, checkAndUpdateTrophies } from './reward.service';
+import { loadRewardState, saveRewardState } from './storage';
 
 const SINGLE_COST = 5;
 const MULTI_COST = 45;
@@ -59,6 +61,14 @@ export function summonSingle(): SummonResult {
   const pokemon = createInstance(template, player.id);
   addToCollection([pokemon]);
 
+  // Track rewards
+  trackStat('totalSummons', 1);
+  trackStat('totalMonstersCollected', 1);
+  incrementMission('summon_any', 1);
+  incrementMission('collect_monster', 1);
+  updateUniqueCount();
+  checkAndUpdateTrophies();
+
   return { pokemon, template };
 }
 
@@ -82,5 +92,24 @@ export function summonMulti(): SummonResult[] {
   }
 
   addToCollection(instances);
+
+  // Track rewards
+  trackStat('totalSummons', MULTI_COUNT);
+  trackStat('totalMonstersCollected', MULTI_COUNT);
+  incrementMission('summon_any', MULTI_COUNT);
+  incrementMission('collect_monster', MULTI_COUNT);
+  updateUniqueCount();
+  checkAndUpdateTrophies();
+
   return results;
+}
+
+function updateUniqueCount(): void {
+  const collection = loadCollection();
+  const uniqueIds = new Set(collection.map(c => c.templateId));
+  const state = loadRewardState();
+  if (state) {
+    state.stats.uniqueMonstersOwned = uniqueIds.size;
+    saveRewardState(state);
+  }
 }

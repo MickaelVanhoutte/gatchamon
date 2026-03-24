@@ -1,6 +1,7 @@
 import type { PokemonInstance } from '@gatchamon/shared';
 import { isMaxLevel } from '@gatchamon/shared';
 import { loadCollection, saveCollection } from './storage';
+import { trackStat, incrementMission, checkAndUpdateTrophies } from './reward.service';
 
 export interface MergeValidation {
   valid: boolean;
@@ -50,5 +51,11 @@ export function performMerge(baseInstanceId: string, fodderInstanceId: string): 
   collection.splice(fodderIdx > baseIdx ? fodderIdx : fodderIdx, 1);
 
   saveCollection(collection);
+
+  // Track rewards
+  trackStat('totalMerges', 1);
+  incrementMission('merge_monster', 1);
+  checkAndUpdateTrophies();
+
   return collection.find(p => p.instanceId === baseInstanceId)!;
 }

@@ -2,6 +2,7 @@ import type { PokemonInstance, Player } from '@gatchamon/shared';
 import { POKEDEX, getEvolutionsFrom } from '@gatchamon/shared';
 import type { EvolutionChain } from '@gatchamon/shared';
 import { loadPlayer, savePlayer, loadCollection, saveCollection } from './storage';
+import { trackStat, incrementMission, checkAndUpdateTrophies } from './reward.service';
 
 export interface EvolutionValidation {
   valid: boolean;
@@ -80,6 +81,11 @@ export function performEvolution(instanceId: string, targetTemplateId: number): 
     templateId: targetTemplateId,
   };
   saveCollection(collection);
+
+  // Track rewards
+  trackStat('totalEvolutions', 1);
+  incrementMission('evolve_monster', 1);
+  checkAndUpdateTrophies();
 
   return collection[idx];
 }

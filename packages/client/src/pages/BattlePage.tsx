@@ -246,12 +246,29 @@ export function BattlePage() {
             <h2 className={phase}>{phase === 'victory' ? 'Victory!' : 'Defeat'}</h2>
             {rewards && (
               <div className="rewards">
-                {rewards.pokeballs > 0 && <p>+ {rewards.pokeballs} Pokeballs</p>}
+                {rewards.isFirstClear && (
+                  <p className="first-clear-banner">{'\u2728'} First Clear Bonus!</p>
+                )}
+                {rewards.pokeballs > 0 && <p>+ {rewards.pokeballs} <span className="pokeball-icon" /></p>}
                 <p>+ {rewards.xpPerMon} XP per monster</p>
                 {rewards.levelUps.length > 0 && (
                   <p className="level-ups">
                     {rewards.levelUps.length} monster(s) leveled up!
                   </p>
+                )}
+                {rewards.monsterLoot && (
+                  <div className="monster-loot-reward">
+                    <p className="loot-title">{'\u{1F340}'} Monster Captured!</p>
+                    <div className="loot-monster-display">
+                      <img
+                        src={assetUrl(`sprites/${rewards.monsterLoot.templateId}.png`)}
+                        alt={getTemplate(rewards.monsterLoot.templateId)?.name ?? ''}
+                        className="loot-sprite"
+                      />
+                      <span className="loot-name">{getTemplate(rewards.monsterLoot.templateId)?.name}</span>
+                      <span className="loot-stars">{'\u2605'.repeat(rewards.monsterLoot.stars)}</span>
+                    </div>
+                  </div>
                 )}
                 {rewards.essences && Object.keys(rewards.essences).length > 0 && (
                   <div className="essence-drops">

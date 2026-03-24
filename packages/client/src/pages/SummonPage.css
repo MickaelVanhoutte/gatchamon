@@ -32,9 +32,9 @@
   border-radius: 20px;
 }
 
-.pokeball-icon {
-  color: var(--accent);
-  font-size: 1.2rem;
+.pokeball-count .pokeball-icon {
+  width: 16px;
+  height: 16px;
 }
 
 /* Idle state */

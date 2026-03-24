@@ -1,0 +1,398 @@
+.missions-page {
+  display: flex;
+  flex-direction: column;
+  padding: 0 !important;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ─── Tabs ─── */
+.missions-tabs {
+  display: flex;
+  background: rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.missions-tab {
+  flex: 1;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.missions-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.tab-badge {
+  position: absolute;
+  top: 6px;
+  right: 16px;
+  background: var(--accent);
+  color: white;
+  font-size: 0.65rem;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+/* ─── Content ─── */
+.missions-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+/* ─── Daily Missions ─── */
+.daily-missions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mission-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border-left: 3px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.2s;
+}
+
+.mission-card.ready {
+  border-left-color: #4ade80;
+  background: rgba(74, 222, 128, 0.08);
+}
+
+.mission-card.claimed {
+  opacity: 0.5;
+  border-left-color: rgba(255, 255, 255, 0.05);
+}
+
+.mission-icon {
+  font-size: 1.3rem;
+  width: 32px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.mission-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mission-desc {
+  font-size: 0.82rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.mission-progress-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 2px;
+}
+
+.mission-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #ff8a9e);
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+.mission-card.ready .mission-progress-fill {
+  background: linear-gradient(90deg, #4ade80, #22c55e);
+}
+
+.mission-progress-text {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+.mission-reward-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.reward-pokeballs {
+  color: #fbbf24;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.reward-energy {
+  color: #60a5fa;
+}
+
+.mission-claim-btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--accent);
+  color: white;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.mission-claim-btn:disabled {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  cursor: default;
+}
+
+.mission-claim-btn:not(:disabled):hover {
+  background: var(--accent-hover);
+}
+
+/* ─── All Dailies Bonus ─── */
+.all-dailies-bonus {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  margin-top: 4px;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(233, 69, 96, 0.1));
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 10px;
+}
+
+.all-dailies-bonus.ready {
+  border-color: #fbbf24;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(233, 69, 96, 0.15));
+  animation: bonus-pulse 1.5s ease-in-out infinite;
+}
+
+.all-dailies-bonus.claimed {
+  opacity: 0.5;
+}
+
+@keyframes bonus-pulse {
+  0%, 100% { box-shadow: 0 0 0 rgba(251, 191, 36, 0); }
+  50% { box-shadow: 0 0 12px rgba(251, 191, 36, 0.3); }
+}
+
+.bonus-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bonus-icon {
+  font-size: 1.3rem;
+}
+
+.bonus-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.bonus-progress {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.bonus-reward {
+  font-size: 0.8rem;
+  color: #fbbf24;
+  flex-shrink: 0;
+}
+
+.bonus-claim {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #1a1a2e;
+}
+
+.bonus-claim:not(:disabled):hover {
+  background: linear-gradient(135deg, #fcd34d, #fbbf24);
+}
+
+/* ─── Trophies ─── */
+.trophies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.trophy-card {
+  background: var(--bg-card);
+  border-radius: 10px;
+  padding: 12px;
+  border-left: 4px solid rgba(255, 255, 255, 0.1);
+}
+
+.trophy-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.trophy-icon {
+  font-size: 1.4rem;
+  width: 32px;
+  text-align: center;
+}
+
+.trophy-name-area {
+  flex: 1;
+  min-width: 0;
+}
+
+.trophy-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: block;
+}
+
+.trophy-desc {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.trophy-current {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fbbf24;
+  flex-shrink: 0;
+}
+
+.trophy-tiers {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.trophy-tier {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.2);
+  font-size: 0.75rem;
+}
+
+.trophy-tier.ready {
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.trophy-tier.claimed {
+  opacity: 0.4;
+}
+
+.tier-threshold {
+  font-weight: 600;
+  width: 36px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.tier-progress-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.tier-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+
+.trophy-tier.ready .tier-progress-fill {
+  background: #4ade80;
+}
+
+.tier-reward {
+  color: #fbbf24;
+  font-size: 0.7rem;
+  width: 50px;
+  text-align: right;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+}
+
+.tier-claim-btn {
+  padding: 3px 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--accent);
+  color: white;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.tier-claim-btn:disabled {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  cursor: default;
+}
+
+.tier-claim-btn:not(:disabled):hover {
+  background: var(--accent-hover);
+}
+
+/* ─── Claim Toast ─── */
+.claim-toast {
+  position: fixed;
+  bottom: calc(var(--bottom-nav-height) + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  animation: toast-in 0.3s ease-out;
+  z-index: 100;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+

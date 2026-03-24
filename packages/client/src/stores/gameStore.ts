@@ -6,6 +6,7 @@ import * as playerService from '../services/player.service';
 import * as gachaService from '../services/gacha.service';
 import * as mergeService from '../services/merge.service';
 import * as evolutionService from '../services/evolution.service';
+import { getUnclaimedMissionCount, getUnclaimedTrophyCount } from '../services/reward.service';
 
 export interface OwnedPokemon {
   instance: PokemonInstance;
@@ -16,6 +17,7 @@ interface GameState {
   player: Player | null;
   collection: OwnedPokemon[];
   isLoading: boolean;
+  unclaimedRewardCount: number;
 
   createPlayer: (name: string) => void;
   loadPlayer: () => void;
@@ -24,12 +26,14 @@ interface GameState {
   loadCollection: () => void;
   mergePokemon: (baseId: string, fodderId: string) => void;
   evolvePokemon: (instanceId: string, targetTemplateId: number) => void;
+  refreshRewards: () => void;
 }
 
 export const useGameStore = create<GameState>((set, get) => ({
   player: null,
   collection: [],
   isLoading: false,
+  unclaimedRewardCount: 0,
 
   createPlayer: (name: string) => {
     const player = playerService.createPlayer(name);
@@ -40,12 +44,14 @@ export const useGameStore = create<GameState>((set, get) => ({
     const player = storage.loadPlayer();
     if (player) {
       set({ player });
+      get().refreshRewards();
     }
   },
 
   refreshPlayer: () => {
     const player = storage.loadPlayer();
     set({ player });
+    get().refreshRewards();
   },
 
   summon: (count: 1 | 10) => {
@@ -68,6 +74,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       collection: [...state.collection, ...newPokemon],
     }));
 
+    get().refreshRewards();
     return newPokemon;
   },
 
@@ -91,6 +98,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   mergePokemon: (baseId: string, fodderId: string) => {
     mergeService.performMerge(baseId, fodderId);
     get().loadCollection();
+    get().refreshRewards();
   },
 
   evolvePokemon: (instanceId: string, targetTemplateId: number) => {
@@ -98,5 +106,11 @@ export const useGameStore = create<GameState>((set, get) => ({
     const updatedPlayer = storage.loadPlayer();
     set({ player: updatedPlayer });
     get().loadCollection();
+    get().refreshRewards();
+  },
+
+  refreshRewards: () => {
+    const count = getUnclaimedMissionCount() + getUnclaimedTrophyCount();
+    set({ unclaimedRewardCount: count });
   },
 }));

@@ -4,6 +4,8 @@ import { useGameStore } from '../stores/gameStore';
 import { POKEDEX, REGIONS } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
 import { getFloorDefsForRegion } from '../services/floor.service';
+import { getFloorRewardPreview } from '../services/reward.service';
+import type { FloorRewardPreview } from '../services/reward.service';
 import { assetUrl } from '../utils/asset-url';
 import './StoryModePage.css';
 
@@ -20,6 +22,7 @@ interface FloorInfo {
   enemyCount: number;
   isBoss: boolean;
   enemies: FloorEnemy[];
+  rewardPreview: FloorRewardPreview;
 }
 
 const DIFFICULTIES: { key: Difficulty; label: string; color: string }[] = [
@@ -42,14 +45,19 @@ export function StoryModePage() {
   useEffect(() => {
     if (selectedRegionId) {
       const defs = getFloorDefsForRegion(selectedRegionId, difficulty);
-      const floorList: FloorInfo[] = Object.entries(defs).map(([floorNum, def]) => ({
-        region: selectedRegionId,
-        floor: Number(floorNum),
-        difficulty,
-        enemyCount: def.enemies.length,
-        isBoss: def.isBoss,
-        enemies: def.enemies.map(e => ({ templateId: e.templateId, level: e.level, stars: e.stars })),
-      }));
+      const floorList: FloorInfo[] = Object.entries(defs).map(([floorNum, def]) => {
+        const fn = Number(floorNum);
+        const enemies = def.enemies.map(e => ({ templateId: e.templateId, level: e.level, stars: e.stars }));
+        return {
+          region: selectedRegionId,
+          floor: fn,
+          difficulty,
+          enemyCount: def.enemies.length,
+          isBoss: def.isBoss,
+          enemies,
+          rewardPreview: getFloorRewardPreview(selectedRegionId, fn, difficulty, def.enemies),
+        };
+      });
       setFloors(floorList);
     }
   }, [selectedRegionId, difficulty]);
@@ -219,6 +227,20 @@ export function StoryModePage() {
                         </div>
                       ))}
                     </div>
+                    {isUnlocked && (
+                      <div className="floor-reward-preview">
+                        {floor.rewardPreview.isFirstClear ? (
+                          <span className="reward-tag first-clear">
+                            {'\u2728'} +{floor.rewardPreview.pokeballs} <span className="pokeball-icon" />
+                          </span>
+                        ) : (
+                          <span className="reward-tag replay">XP only</span>
+                        )}
+                        <span className="reward-tag loot-hint">
+                          {'\u{1F340}'} Drop
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <button
                     className="floor-go-btn"

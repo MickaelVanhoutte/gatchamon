@@ -9,6 +9,7 @@ import { StoryModePage } from './pages/StoryModePage';
 import { TeamSelectPage } from './pages/TeamSelectPage';
 import { BattlePage } from './pages/BattlePage';
 import { DungeonPage } from './pages/DungeonPage';
+import { MissionsPage } from './pages/MissionsPage';
 import { BottomNav } from './components/layout/BottomNav';
 import { TopHUD } from './components/layout/TopHUD';
 import { LoadingScreen } from './components/LoadingScreen';
@@ -69,6 +70,7 @@ export function App() {
           <Route path="/summon" element={<SummonPage />} />
           <Route path="/collection" element={<CollectionPage />} />
           <Route path="/collection/:instanceId" element={<MonsterDetail />} />
+          <Route path="/missions" element={<MissionsPage />} />
           <Route path="/story" element={<StoryModePage />} />
           <Route path="/dungeons" element={<DungeonPage />} />
           <Route path="/battle/team-select" element={<TeamSelectPage />} />

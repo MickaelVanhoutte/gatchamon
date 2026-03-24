@@ -14,6 +14,14 @@ import type { PokemonTemplate, SkillDefinition, BaseStats, StoryProgress } from 
 import { loadPlayer, savePlayer, loadCollection, updateInstance } from './storage';
 import { buildFloorEnemies, DIFFICULTY_REWARD_MULT } from './floor.service';
 import { getDungeon } from '@gatchamon/shared';
+import {
+  isFirstClear,
+  markFirstClear,
+  rollMonsterLoot,
+  trackStat,
+  incrementMission,
+  checkAndUpdateTrophies,
+} from './reward.service';
 
 // ---------------------------------------------------------------------------
 // In-memory battle store
@@ -488,6 +496,11 @@ function calculateDungeonRewards(state: BattleState): BattleRewards {
   }
   savePlayer({ ...player, materials });
 
+  // Track stats & missions
+  trackStat('totalBattlesDungeon', 1);
+  incrementMission('battle_dungeon', 1);
+  checkAndUpdateTrophies();
+
   return { pokeballs: 0, xpPerMon, levelUps, essences };
 }
 
@@ -543,9 +556,18 @@ function calculateRewards(state: BattleState): BattleRewards {
     updateInstance(mon.instanceId, { level: currentLevel, exp: currentExp });
   }
 
-  // Award pokeballs
-  const player = loadPlayer()!;
-  savePlayer({ ...player, pokeballs: player.pokeballs + pokeballs });
+  // First-clear: only award pokeballs on first completion
+  const firstClear = isFirstClear(regionId, floorNum, difficulty);
+  const actualPokeballs = firstClear ? pokeballs : 0;
+
+  if (actualPokeballs > 0) {
+    const player = loadPlayer()!;
+    savePlayer({ ...player, pokeballs: player.pokeballs + actualPokeballs });
+  }
+
+  if (firstClear) {
+    markFirstClear(regionId, floorNum, difficulty);
+  }
 
   // Advance story progress
   const updatedPlayer = loadPlayer()!;
@@ -553,7 +575,26 @@ function calculateRewards(state: BattleState): BattleRewards {
   advanceStoryProgress(storyProgress, regionId, floorNum, difficulty);
   savePlayer({ ...updatedPlayer, storyProgress });
 
-  return { pokeballs, xpPerMon, levelUps };
+  // Monster loot roll
+  const floorDef = buildFloorEnemies(regionId, floorNum, difficulty);
+  const monsterLoot = rollMonsterLoot(floorDef.enemies, difficulty);
+
+  // Track stats & missions
+  trackStat('totalBattlesStory', 1);
+  incrementMission('battle_story', 1);
+  if (isBoss) {
+    trackStat('totalBossesDefeated', 1);
+    incrementMission('clear_boss', 1);
+  }
+  checkAndUpdateTrophies();
+
+  return {
+    pokeballs: actualPokeballs,
+    xpPerMon,
+    levelUps,
+    isFirstClear: firstClear,
+    monsterLoot: monsterLoot ?? undefined,
+  };
 }
 
 function advanceStoryProgress(
@@ -677,6 +718,8 @@ export function startDungeonBattle(
 
   // Deduct energy
   savePlayer({ ...player, energy: player.energy - dungeonDef.energyCost });
+  trackStat('totalEnergySpent', dungeonDef.energyCost);
+  incrementMission('spend_energy', dungeonDef.energyCost);
 
   const collection = loadCollection();
   const playerTeam: BattleMon[] = [];

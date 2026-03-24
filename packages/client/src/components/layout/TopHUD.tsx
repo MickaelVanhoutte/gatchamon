@@ -21,7 +21,7 @@ export function TopHUD() {
           <span>{player.energy}</span>
         </div>
         <div className="hud-resource">
-          <span className="hud-pokeball-icon">●</span>
+          <span className="pokeball-icon" />
           <span>{player.pokeballs}</span>
         </div>
       </div>

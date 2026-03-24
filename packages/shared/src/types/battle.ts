@@ -61,6 +61,8 @@ export interface BattleRewards {
   xpPerMon: number;
   levelUps: Array<{ instanceId: string; newLevel: number }>;
   essences?: Record<string, number>;
+  isFirstClear?: boolean;
+  monsterLoot?: { templateId: number; stars: 1 | 2 | 3; instanceId: string };
 }
 
 export interface BattleResult {
