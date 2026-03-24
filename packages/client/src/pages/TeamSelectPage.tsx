@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
 import { REGIONS, DUNGEONS, ITEM_DUNGEONS, POKEDEX } from '@gatchamon/shared';
@@ -6,6 +6,7 @@ import type { Difficulty } from '@gatchamon/shared';
 import { startBattle, startDungeonBattle, startItemDungeonBattle } from '../services/battle.service';
 import { buildFloorEnemies } from '../services/floor.service';
 import { loadLastTeam, saveLastTeam } from '../services/storage';
+import { useRotatedHorizontalScroll } from '../hooks/useRotatedHorizontalScroll';
 import { assetUrl } from '../utils/asset-url';
 import './TeamSelectPage.css';
 
@@ -33,6 +34,8 @@ export function TeamSelectPage() {
   const [selected, setSelected] = useState<string[]>([]);
   const [isStarting, setIsStarting] = useState(false);
   const [teamRestored, setTeamRestored] = useState(false);
+  const rosterRef = useRef<HTMLDivElement>(null);
+  useRotatedHorizontalScroll(rosterRef);
 
   const mode = searchParams.get('mode') ?? 'story';
   const region = Number(searchParams.get('region') ?? 1);
@@ -234,7 +237,7 @@ export function TeamSelectPage() {
 
       {/* Bottom panel: roster + actions */}
       <div className="ts-bottom-panel">
-        <div className="ts-roster">
+        <div className="ts-roster" ref={rosterRef} data-horizontal-scroll>
           <div className="ts-roster-scroll">
             {sorted.map(mon => {
               const isSelected = selected.includes(mon.instance.instanceId);

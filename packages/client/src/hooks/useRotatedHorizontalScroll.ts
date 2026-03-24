@@ -2,10 +2,11 @@ import { useEffect, useRef } from 'react';
 
 /**
  * When the app is CSS-rotated 90deg (portrait media query),
- * physical vertical swipes don't map to overflow-y scroll.
- * This hook intercepts touch events and translates them.
+ * physical vertical swipes don't map to overflow-x scroll.
+ * This hook intercepts touch events and translates them
+ * to horizontal scroll (scrollLeft).
  */
-export function useRotatedScroll(containerRef: React.RefObject<HTMLElement | null>) {
+export function useRotatedHorizontalScroll(containerRef: React.RefObject<HTMLElement | null>) {
   const isRotated = useRef(false);
 
   useEffect(() => {
@@ -21,22 +22,20 @@ export function useRotatedScroll(containerRef: React.RefObject<HTMLElement | nul
     if (!el) return;
 
     let startY = 0;
-    let startScrollTop = 0;
+    let startScrollLeft = 0;
 
     const onTouchStart = (e: TouchEvent) => {
       if (!isRotated.current) return;
       startY = e.touches[0].clientY;
-      startScrollTop = el.scrollTop;
+      startScrollLeft = el.scrollLeft;
     };
 
     const onTouchMove = (e: TouchEvent) => {
       if (!isRotated.current) return;
-      // Skip if target is in a horizontally-scrollable container
-      const target = e.target as HTMLElement;
-      if (target.closest('[data-horizontal-scroll]')) return;
       e.preventDefault();
+      e.stopPropagation();
       const deltaY = e.touches[0].clientY - startY;
-      el.scrollTop = startScrollTop - deltaY;
+      el.scrollLeft = startScrollLeft + deltaY;
     };
 
     el.addEventListener('touchstart', onTouchStart, { passive: true });

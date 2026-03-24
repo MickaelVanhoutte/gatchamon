@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { POKEDEX, REGIONS } from '@gatchamon/shared';
@@ -41,6 +41,7 @@ export function StoryModePage() {
   const [floors, setFloors] = useState<FloorInfo[]>([]);
   const [selectedRegionId, setSelectedRegionId] = useState<number | null>(null);
   const [difficulty, setDifficulty] = useState<Difficulty>('normal');
+  const floorListRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (selectedRegionId) {
@@ -61,6 +62,17 @@ export function StoryModePage() {
       setFloors(floorList);
     }
   }, [selectedRegionId, difficulty]);
+
+  // Auto-scroll to first non-finished level when opening a region
+  useEffect(() => {
+    if (!floorListRef.current || floors.length === 0 || !selectedRegionId) return;
+    setTimeout(() => {
+      const currentEl = floorListRef.current?.querySelector('.floor-entry.current');
+      if (currentEl) {
+        currentEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 50);
+  }, [floors, selectedRegionId]);
 
   if (!player) return null;
 
@@ -202,7 +214,7 @@ export function StoryModePage() {
               {DIFFICULTIES.find(d => d.key === difficulty)?.label}
             </span>
           </div>
-          <div className="floor-panel-list">
+          <div className="floor-panel-list" ref={floorListRef}>
             {selectedFloors.map(floor => {
               const currentFloor = regionProgress[selectedRegion.id] ?? 0;
               const isUnlocked = floor.floor <= currentFloor;

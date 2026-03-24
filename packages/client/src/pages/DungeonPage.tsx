@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { DUNGEONS, ESSENCES, ITEM_DUNGEONS, getItemSet } from '@gatchamon/shared';
 import type { DungeonDef, ItemDungeonDef } from '@gatchamon/shared';
@@ -7,12 +7,25 @@ import './DungeonPage.css';
 
 type DungeonTab = 'essence' | 'items';
 
+function resolveInitialState(searchParams: URLSearchParams) {
+  const tab = (searchParams.get('tab') as DungeonTab) || 'essence';
+  const dungeonId = Number(searchParams.get('dungeonId') || 0);
+  const floor = Number(searchParams.get('floor') || 0);
+  const list = tab === 'items' ? ITEM_DUNGEONS : DUNGEONS;
+  const dungeon = (dungeonId
+    ? [...DUNGEONS, ...ITEM_DUNGEONS].find(d => d.id === dungeonId)
+    : list[0]) ?? list[0];
+  return { tab, dungeon, floor };
+}
+
 export function DungeonPage() {
   const navigate = useNavigate();
   const { player } = useGameStore();
-  const [tab, setTab] = useState<DungeonTab>('essence');
-  const [selectedDungeon, setSelectedDungeon] = useState<DungeonDef | ItemDungeonDef>(DUNGEONS[0]);
-  const [selectedFloor, setSelectedFloor] = useState(0);
+  const [searchParams] = useSearchParams();
+  const initial = resolveInitialState(searchParams);
+  const [tab, setTab] = useState<DungeonTab>(initial.tab);
+  const [selectedDungeon, setSelectedDungeon] = useState<DungeonDef | ItemDungeonDef>(initial.dungeon);
+  const [selectedFloor, setSelectedFloor] = useState(initial.floor);
 
   const isItemDungeon = tab === 'items';
   const dungeonList = isItemDungeon ? ITEM_DUNGEONS : DUNGEONS;

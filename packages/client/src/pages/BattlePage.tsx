@@ -356,7 +356,14 @@ export function BattlePage() {
               onClick={() => {
                 refreshPlayer();
                 loadCollection();
-                navigate(state?.mode === 'dungeon' || state?.mode === 'item-dungeon' ? '/dungeons' : '/story');
+                if (state?.mode === 'dungeon' || state?.mode === 'item-dungeon') {
+                  const tab = state.mode === 'item-dungeon' ? 'items' : 'essence';
+                  const dungeonId = state.dungeonId ?? '';
+                  const floor = (state.floor?.floor ?? 1) - 1;
+                  navigate(`/dungeons?tab=${tab}&dungeonId=${dungeonId}&floor=${floor}`);
+                } else {
+                  navigate('/story');
+                }
               }}
             >
               Continue
