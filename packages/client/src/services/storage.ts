@@ -36,6 +36,18 @@ export function updateInstance(instanceId: string, updates: Partial<PokemonInsta
   saveCollection(collection);
 }
 
+const LAST_TEAM_KEY = 'gatchamon_last_team';
+
+export function loadLastTeam(): string[] {
+  const raw = localStorage.getItem(LAST_TEAM_KEY);
+  if (!raw) return [];
+  return JSON.parse(raw) as string[];
+}
+
+export function saveLastTeam(instanceIds: string[]): void {
+  localStorage.setItem(LAST_TEAM_KEY, JSON.stringify(instanceIds));
+}
+
 export function clearAll(): void {
   localStorage.removeItem(PLAYER_KEY);
   localStorage.removeItem(COLLECTION_KEY);

@@ -1,12 +1,30 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
-import { MonsterCard } from '../components/monster/MonsterCard';
-import { REGIONS, DUNGEONS } from '@gatchamon/shared';
+import { REGIONS, DUNGEONS, POKEDEX } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
 import { startBattle, startDungeonBattle } from '../services/battle.service';
+import { buildFloorEnemies } from '../services/floor.service';
+import { loadLastTeam, saveLastTeam } from '../services/storage';
 import { assetUrl } from '../utils/asset-url';
 import './TeamSelectPage.css';
+
+const STAR_COLORS: Record<number, string> = {
+  1: '#aaa',
+  2: '#4ade80',
+  3: '#60a5fa',
+  4: '#c084fc',
+  5: '#fbbf24',
+  6: '#ff6b6b',
+};
+
+interface EnemyPreview {
+  templateId: number;
+  name: string;
+  spriteUrl: string;
+  level: number;
+  stars: number;
+}
 
 export function TeamSelectPage() {
   const { player, collection, loadCollection } = useGameStore();
@@ -14,6 +32,7 @@ export function TeamSelectPage() {
   const [searchParams] = useSearchParams();
   const [selected, setSelected] = useState<string[]>([]);
   const [isStarting, setIsStarting] = useState(false);
+  const [teamRestored, setTeamRestored] = useState(false);
 
   const mode = searchParams.get('mode') ?? 'story';
   const region = Number(searchParams.get('region') ?? 1);
@@ -29,11 +48,52 @@ export function TeamSelectPage() {
     loadCollection();
   }, [loadCollection]);
 
+  // Restore last team once collection is loaded
+  useEffect(() => {
+    if (teamRestored || collection.length === 0) return;
+    const saved = loadLastTeam();
+    const validIds = saved
+      .filter(id => collection.some(m => m.instance.instanceId === id))
+      .slice(0, 4);
+    if (validIds.length > 0) {
+      setSelected(validIds);
+    }
+    setTeamRestored(true);
+  }, [collection, teamRestored]);
+
+  // Build enemy preview
+  const enemyPreviews = useMemo((): EnemyPreview[] => {
+    if (mode === 'dungeon' && dungeonDef) {
+      const floorData = dungeonDef.floors[dungeonFloor];
+      const level = floorData?.enemyLevel ?? 10;
+      return dungeonDef.enemyPool.slice(0, 3).map(tid => {
+        const tmpl = POKEDEX.find(p => p.id === tid);
+        return {
+          templateId: tid,
+          name: tmpl?.name ?? '???',
+          spriteUrl: tmpl?.spriteUrl ?? '',
+          level,
+          stars: tmpl?.naturalStars ?? 1,
+        };
+      });
+    }
+    // Story mode
+    const floorDef = buildFloorEnemies(region, floor, difficulty);
+    return floorDef.enemies.map(e => {
+      const tmpl = POKEDEX.find(p => p.id === e.templateId);
+      return {
+        templateId: e.templateId,
+        name: tmpl?.name ?? '???',
+        spriteUrl: tmpl?.spriteUrl ?? '',
+        level: e.level,
+        stars: e.stars,
+      };
+    });
+  }, [mode, region, floor, difficulty, dungeonId, dungeonFloor, dungeonDef]);
+
   const toggleSelect = (instanceId: string) => {
     setSelected(prev => {
-      if (prev.includes(instanceId)) {
-        return prev.filter(id => id !== instanceId);
-      }
+      if (prev.includes(instanceId)) return prev.filter(id => id !== instanceId);
       if (prev.length >= 4) return prev;
       return [...prev, instanceId];
     });
@@ -42,6 +102,7 @@ export function TeamSelectPage() {
   const handleStart = () => {
     if (!player || selected.length === 0) return;
     setIsStarting(true);
+    saveLastTeam(selected);
     try {
       if (mode === 'dungeon') {
         const result = startDungeonBattle(selected, dungeonId, dungeonFloor);
@@ -56,62 +117,147 @@ export function TeamSelectPage() {
     }
   };
 
-  const sorted = [...collection].sort((a, b) => b.instance.stars - a.instance.stars || b.instance.level - a.instance.level);
+  const sorted = [...collection].sort(
+    (a, b) => b.instance.stars - a.instance.stars || b.instance.level - a.instance.level,
+  );
 
   let headerText: string;
   if (mode === 'dungeon' && dungeonDef) {
-    headerText = `${dungeonDef.name} - B${dungeonFloor + 1} (Lv.${dungeonDef.floors[dungeonFloor]?.enemyLevel ?? '?'})`;
+    headerText = `${dungeonDef.name} - B${dungeonFloor + 1}`;
   } else {
     const regionName = regionDef?.name ?? `Region ${region}`;
-    const floorName = regionDef?.floorNames[(floor - 1)] ?? `Floor ${floor}`;
+    const floorName = regionDef?.floorNames[floor - 1] ?? `Floor ${floor}`;
     const diffLabel = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
     headerText = `${regionName} - ${floor === 10 ? 'BOSS' : floorName} (${diffLabel})`;
   }
 
+  const getSpriteUrl = (mon: OwnedPokemon) => {
+    const isShiny = mon.instance.isShiny ?? false;
+    return isShiny
+      ? assetUrl(`monsters/ani-shiny/${mon.template.name.toLowerCase()}.gif`)
+      : assetUrl(mon.template.spriteUrl);
+  };
+
+  const energyCost = mode === 'dungeon' ? (dungeonDef?.energyCost ?? 5) : 0;
+
   return (
     <div className="page team-select-page">
-      <h2>Select Team</h2>
-      <p className="team-info">
-        {headerText} — Pick up to 4 monsters ({selected.length}/4)
-      </p>
-
-      <div className="team-grid">
-        {sorted.map(mon => (
-          <MonsterCard
-            key={mon.instance.instanceId}
-            owned={mon}
-            selected={selected.includes(mon.instance.instanceId)}
-            onClick={() => toggleSelect(mon.instance.instanceId)}
-          />
-        ))}
+      {/* Header */}
+      <div className="ts-header">
+        <span className="ts-stage-name">{headerText}</span>
+        <span className="ts-pick-count">{selected.length}/4</span>
       </div>
 
-      {selected.length > 0 && (
-        <div className="team-dock">
-          <div className="dock-previews">
-            {selected.map(id => {
-              const mon = collection.find(m => m.instance.instanceId === id)!;
+      {/* VS Panel */}
+      <div className="ts-vs-panel">
+        {/* Player team slots */}
+        <div className="ts-team-side ts-player-side">
+          {[0, 1, 2, 3].map(i => {
+            const mon = selected[i]
+              ? collection.find(m => m.instance.instanceId === selected[i])
+              : null;
+            return (
+              <div
+                key={i}
+                className={`ts-slot ${mon ? 'filled' : 'empty'}`}
+                style={mon ? { borderColor: STAR_COLORS[mon.instance.stars] } : undefined}
+                onClick={() => mon && toggleSelect(mon.instance.instanceId)}
+              >
+                {mon ? (
+                  <>
+                    <img
+                      src={getSpriteUrl(mon)}
+                      alt={mon.template.name}
+                      className="ts-slot-sprite"
+                    />
+                    <div className="ts-slot-stars" style={{ color: STAR_COLORS[mon.instance.stars] }}>
+                      {'★'.repeat(mon.instance.stars)}
+                    </div>
+                    <div className="ts-slot-level">Lv.{mon.instance.level}</div>
+                  </>
+                ) : (
+                  <span className="ts-slot-empty-icon">+</span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* VS divider */}
+        <div className="ts-vs-divider">VS</div>
+
+        {/* Enemy preview */}
+        <div className="ts-team-side ts-enemy-side">
+          {enemyPreviews.map((enemy, i) => (
+            <div
+              key={i}
+              className="ts-slot ts-enemy-slot"
+              style={{ borderColor: STAR_COLORS[enemy.stars] }}
+            >
+              <img
+                src={assetUrl(enemy.spriteUrl)}
+                alt={enemy.name}
+                className="ts-slot-sprite"
+              />
+              <div className="ts-slot-stars" style={{ color: STAR_COLORS[enemy.stars] }}>
+                {'★'.repeat(enemy.stars)}
+              </div>
+              <div className="ts-slot-level">Lv.{enemy.level}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom panel: roster + actions */}
+      <div className="ts-bottom-panel">
+        <div className="ts-roster">
+          <div className="ts-roster-scroll">
+            {sorted.map(mon => {
+              const isSelected = selected.includes(mon.instance.instanceId);
+              const starColor = STAR_COLORS[mon.instance.stars] ?? STAR_COLORS[1];
               return (
-                <img
-                  key={id}
-                  src={assetUrl(mon.template.spriteUrl)}
-                  alt={mon.template.name}
-                  width={40}
-                  height={40}
-                  className="dock-sprite"
-                />
+                <div
+                  key={mon.instance.instanceId}
+                  className={`ts-mini-card ${isSelected ? 'selected' : ''}`}
+                  style={{ borderColor: starColor }}
+                  onClick={() => toggleSelect(mon.instance.instanceId)}
+                >
+                  <img
+                    src={getSpriteUrl(mon)}
+                    alt={mon.template.name}
+                    className="ts-mini-sprite"
+                  />
+                  <span className="ts-mini-name">{mon.template.name}</span>
+                  <span className="ts-mini-stars" style={{ color: starColor }}>
+                    {'★'.repeat(mon.instance.stars)}
+                  </span>
+                  <span className="ts-mini-level">Lv.{mon.instance.level}</span>
+                  {isSelected && <div className="ts-checkmark">✓</div>}
+                </div>
               );
             })}
           </div>
+        </div>
+
+        <div className="ts-actions">
+          {energyCost > 0 && (
+            <div className="ts-energy-cost">
+              <span>⚡</span>
+              <span>{energyCost}</span>
+            </div>
+          )}
           <button
-            className="start-battle-btn"
+            className="ts-go-btn"
             onClick={handleStart}
-            disabled={isStarting}
+            disabled={selected.length === 0 || isStarting}
           >
-            {isStarting ? 'Starting...' : 'Battle!'}
+            {isStarting ? '...' : 'GO'}
+          </button>
+          <button className="ts-cancel-btn" onClick={() => navigate(-1)}>
+            Cancel
           </button>
         </div>
-      )}
+      </div>
     </div>
   );
 }

@@ -53,6 +53,7 @@ export function BattlePage() {
     setSelectedSkill(null);
 
     try {
+      const prevLogLength = logEntries.length;
       const result = resolvePlayerAction(battleId, {
         actorInstanceId: state.currentActorId!,
         skillId,
@@ -61,18 +62,21 @@ export function BattlePage() {
 
       // Animate log entries one by one
       const newEntries = result.state.log;
-      for (let i = logEntries.length; i < newEntries.length; i++) {
+      for (let i = prevLogLength; i < newEntries.length; i++) {
         const entry = newEntries[i];
-        // Play visual + audio animation
-        await playLogEntry(entry);
+        // Play visual + audio animation (with timeout guard to prevent hangs)
+        await Promise.race([
+          playLogEntry(entry),
+          new Promise(r => setTimeout(r, 2000)),
+        ]);
         // Show floating text after animation
         setAnimatingLog(entry);
         await new Promise(r => setTimeout(r, 400));
       }
       setAnimatingLog(null);
 
-      setState(result.state);
-      setLogEntries(result.state.log);
+      setState({ ...result.state });
+      setLogEntries([...result.state.log]);
 
       if (result.state.status === 'victory') {
         setRewards(result.rewards);
@@ -83,7 +87,7 @@ export function BattlePage() {
         setPhase('player_turn');
       }
     } catch (err: any) {
-      alert(err.message);
+      console.error('[Battle error]', err.message);
       setPhase('player_turn');
     }
   };
