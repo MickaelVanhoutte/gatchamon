@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
+import { GameIcon, StarRating } from '../components/icons';
 import {
   POKEDEX,
   computeStats,
@@ -114,7 +115,7 @@ export function PokedexPage() {
         <span className="box-title">
           Pokedex {ownedCount}/{totalCount}
         </span>
-        <button className="box-close" onClick={() => navigate('/collection')}>&#x2715;</button>
+        <button className="box-close" onClick={() => navigate('/collection')}><GameIcon id="close" size={18} /></button>
       </div>
 
       <div className="box-layout">
@@ -172,7 +173,7 @@ export function PokedexPage() {
                 >
                   {owned && <div className="pdex-owned-badge" />}
                   <div className="box-cell-stars" style={{ color: starColor }}>
-                    {'★'.repeat(template.naturalStars)}
+                    <StarRating count={template.naturalStars} size={10} />
                   </div>
                   <img
                     className="box-cell-sprite"
@@ -210,7 +211,7 @@ export function PokedexPage() {
                     <div className="box-detail-header">
                       <span className="box-detail-name">{selected.name}</span>
                       <span className="box-detail-stars" style={{ color: STAR_COLORS[selected.naturalStars] }}>
-                        {'★'.repeat(selected.naturalStars)}
+                        <StarRating count={selected.naturalStars} size={10} />
                       </span>
                     </div>
 
@@ -243,7 +244,7 @@ export function PokedexPage() {
                       <div className="box-stat-row">
                         <span className="box-stat-label">Base (Lv.1)</span>
                         <span className="box-stat-value" style={{ fontSize: '0.6rem', color: 'var(--text-secondary)' }}>
-                          {'★'.repeat(selected.naturalStars)}
+                          <StarRating count={selected.naturalStars} size={10} />
                         </span>
                       </div>
                       {(Object.keys(STAT_LABELS) as Array<keyof BaseStats>).map(key => (
@@ -269,7 +270,7 @@ export function PokedexPage() {
                             const isOwned = ownedTemplateIds.has(id);
                             return (
                               <span key={id} style={{ display: 'contents' }}>
-                                {i > 0 && <span className="pdex-evo-arrow">→</span>}
+                                {i > 0 && <span className="pdex-evo-arrow"><GameIcon id="arrow_right" size={12} /></span>}
                                 <div
                                   className={`pdex-evo-node ${id === selected.id ? 'pdex-evo-node--current' : ''} ${isOwned ? 'pdex-evo-node--owned' : 'pdex-evo-node--unowned'}`}
                                   onClick={() => setSelectedId(id)}

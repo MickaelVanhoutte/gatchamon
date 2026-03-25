@@ -15,6 +15,7 @@ import {
   getTrophyStat,
 } from '@gatchamon/shared';
 import type { MissionReward, TrophyDefinition, TrophyProgress } from '@gatchamon/shared';
+import { GameIcon, StarRating } from '../components/icons';
 import './MissionsPage.css';
 
 type Tab = 'daily' | 'trophies';
@@ -101,7 +102,7 @@ export function MissionsPage() {
                   key={mission.missionId}
                   className={`mission-card ${isClaimed ? 'claimed' : ''} ${isComplete && !isClaimed ? 'ready' : ''}`}
                 >
-                  <div className="mission-icon">{def.icon}</div>
+                  <div className="mission-icon"><GameIcon id={def.icon} size={16} /></div>
                   <div className="mission-info">
                     <div className="mission-desc">{def.description}</div>
                     <div className="mission-progress-bar">
@@ -116,14 +117,14 @@ export function MissionsPage() {
                   </div>
                   <div className="mission-reward-info">
                     {def.reward.pokeballs && <span className="reward-pokeballs">{def.reward.pokeballs} <span className="pokeball-icon" /></span>}
-                    {def.reward.energy && <span className="reward-energy">{def.reward.energy} {'\u26A1'}</span>}
+                    {def.reward.energy && <span className="reward-energy">{def.reward.energy} <GameIcon id="energy" size={14} /></span>}
                   </div>
                   <button
                     className="mission-claim-btn"
                     disabled={!isComplete || isClaimed}
                     onClick={() => handleClaimMission(mission.missionId)}
                   >
-                    {isClaimed ? '\u2713' : 'Claim'}
+                    {isClaimed ? <GameIcon id="check" size={14} /> : 'Claim'}
                   </button>
                 </div>
               );
@@ -132,19 +133,19 @@ export function MissionsPage() {
             {/* All dailies bonus */}
             <div className={`all-dailies-bonus ${completedCount === dailyState.missions.length && !dailyState.allClaimedBonus ? 'ready' : ''} ${dailyState.allClaimedBonus ? 'claimed' : ''}`}>
               <div className="bonus-info">
-                <span className="bonus-icon">{'\u{1F381}'}</span>
+                <span className="bonus-icon"><GameIcon id="gift" size={16} /></span>
                 <span className="bonus-text">Complete All Missions</span>
                 <span className="bonus-progress">{completedCount}/{dailyState.missions.length}</span>
               </div>
               <div className="bonus-reward">
-                <span>25 <span className="pokeball-icon" /> + 10 {'\u26A1'}</span>
+                <span>25 <span className="pokeball-icon" /> + 10 <GameIcon id="energy" size={14} /></span>
               </div>
               <button
                 className="mission-claim-btn bonus-claim"
                 disabled={completedCount < dailyState.missions.length || dailyState.allClaimedBonus}
                 onClick={handleClaimAllBonus}
               >
-                {dailyState.allClaimedBonus ? '\u2713' : 'Claim'}
+                {dailyState.allClaimedBonus ? <GameIcon id="check" size={14} /> : 'Claim'}
               </button>
             </div>
           </div>
@@ -174,7 +175,7 @@ export function MissionsPage() {
         <div className="claim-toast">
           <span>Reward claimed!</span>
           {claimedReward.pokeballs && <span> +{claimedReward.pokeballs} <span className="pokeball-icon" /></span>}
-          {claimedReward.energy && <span> +{claimedReward.energy} {'\u26A1'}</span>}
+          {claimedReward.energy && <span> +{claimedReward.energy} <GameIcon id="energy" size={14} /></span>}
         </div>
       )}
     </div>
@@ -199,7 +200,7 @@ function TrophyCard({
   return (
     <div className="trophy-card">
       <div className="trophy-header">
-        <span className="trophy-icon">{trophy.icon}</span>
+        <span className="trophy-icon"><GameIcon id={trophy.icon} size={16} /></span>
         <div className="trophy-name-area">
           <span className="trophy-name">{trophy.name}</span>
           <span className="trophy-desc">
@@ -231,7 +232,7 @@ function TrophyCard({
                 disabled={!reached || claimed}
                 onClick={() => onClaim(trophy.id, i)}
               >
-                {claimed ? '\u2713' : reached ? 'Claim' : '\u{1F512}'}
+                {claimed ? <GameIcon id="check" size={14} /> : reached ? 'Claim' : <GameIcon id="lock" size={14} />}
               </button>
             </div>
           );

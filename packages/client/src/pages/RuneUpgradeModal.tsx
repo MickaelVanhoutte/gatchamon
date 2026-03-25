@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { HeldItemInstance, HeldItemSlot } from '@gatchamon/shared';
 import { getUpgradeCost, getUpgradeSuccessRate, STAT_TYPE_LABELS, getItemSet, GRADE_COLORS, getItemSellValue } from '@gatchamon/shared';
 import { useGameStore } from '../stores/gameStore';
+import { GameIcon, StarRating } from '../components/icons';
 import './RuneUpgradeModal.css';
 
 interface RuneUpgradeModalProps {
@@ -63,7 +64,7 @@ export function RuneUpgradeModal({ item: initialItem, playerStardust, onClose, o
       <div className="rune-upgrade-modal" onClick={e => e.stopPropagation()}>
         <div className="rune-upgrade-header">
           <h3>Upgrade Item</h3>
-          <button className="rune-upgrade-close" onClick={onClose}>&#x2715;</button>
+          <button className="rune-upgrade-close" onClick={onClose}><GameIcon id="close" size={18} /></button>
         </div>
 
         <div className="rune-upgrade-content">
@@ -71,12 +72,12 @@ export function RuneUpgradeModal({ item: initialItem, playerStardust, onClose, o
           <div className={`rune-upgrade-card ${animating ? 'rune-upgrading' : ''} ${lastResult?.success ? 'rune-upgrade-success' : ''}`}
                style={{ borderColor: gradeColor }}>
             <div className="rune-upgrade-card-top">
-              <span className="rune-upgrade-icon">{setDef?.icon}</span>
+              <span className="rune-upgrade-icon"><GameIcon id={setDef?.icon} size={14} /></span>
               <span className="rune-upgrade-set">{setDef?.name}</span>
               <span className="rune-upgrade-slot">S{item.slot}</span>
             </div>
             <div className="rune-upgrade-stars" style={{ color: gradeColor }}>
-              {'★'.repeat(item.stars)}
+              <StarRating count={item.stars} size={10} />
               <span className="rune-upgrade-grade">{item.grade}</span>
             </div>
             <div className="rune-upgrade-level">+{item.level}{isMaxLevel ? ' MAX' : ''}</div>
@@ -110,7 +111,7 @@ export function RuneUpgradeModal({ item: initialItem, playerStardust, onClose, o
             <div className="rune-upgrade-info">
               <div className="rune-upgrade-info-row">
                 <span>Cost</span>
-                <span>✦ {cost.toLocaleString()}</span>
+                <span><GameIcon id="stardust" size={12} /> {cost.toLocaleString()}</span>
               </div>
               <div className="rune-upgrade-info-row">
                 <span>Success Rate</span>
@@ -137,7 +138,7 @@ export function RuneUpgradeModal({ item: initialItem, playerStardust, onClose, o
               onClick={handleUpgrade}
               disabled={!canAfford || animating}
             >
-              {animating ? 'Upgrading...' : `Upgrade (${cost.toLocaleString()} ✦)`}
+              {animating ? 'Upgrading...' : `Upgrade (${cost.toLocaleString()} <GameIcon id="stardust" size={12} />)`}
             </button>
           ) : (
             <div className="rune-upgrade-maxed">MAX LEVEL</div>
@@ -153,11 +154,11 @@ export function RuneUpgradeModal({ item: initialItem, playerStardust, onClose, o
               disabled={item.equippedTo !== null}
               title={item.equippedTo !== null ? 'Unequip item first' : undefined}
             >
-              Sell ({getItemSellValue(item).toLocaleString()} ✦)
+              Sell ({getItemSellValue(item).toLocaleString()} <GameIcon id="stardust" size={12} />)
             </button>
           ) : (
             <div className="rune-sell-confirm">
-              <span>Sell for {getItemSellValue(item).toLocaleString()} ✦?</span>
+              <span>Sell for {getItemSellValue(item).toLocaleString()} <GameIcon id="stardust" size={12} />?</span>
               <button className="rune-sell-yes" onClick={() => { storeSell(item.itemId); onClose(); }}>Yes</button>
               <button className="rune-sell-no" onClick={() => setConfirmSell(false)}>No</button>
             </div>

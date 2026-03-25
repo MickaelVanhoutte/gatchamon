@@ -4,7 +4,7 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
   {
     id: 101,
     name: 'Granite Cave',
-    icon: '\u{26F0}',
+    icon: 'mountain',
     color: '#b8860b',
     description: 'A rugged cave carved from ancient stone. Drops Choice Band and Power Band items.',
     // Pool reference: [74, 75, 76, 95, 111] — Geodude, Graveler, Golem, Onix, Rhyhorn
@@ -55,7 +55,7 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
   {
     id: 102,
     name: 'Whispering Woods',
-    icon: '\u{1F333}',
+    icon: 'tree',
     color: '#228B22',
     description: 'A mysterious forest humming with life energy. Drops Leftovers and Razor Fang items.',
     // Pool reference: [1, 43, 44, 45, 69] — Bulbasaur, Oddish, Gloom, Vileplume, Bellsprout
@@ -106,7 +106,7 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
   {
     id: 103,
     name: 'Thunder Spire',
-    icon: '\u26A1',
+    icon: 'electric',
     color: '#f0c030',
     description: 'A tower crackling with electric energy. Drops Swift Wing and Quick Claw items.',
     // Pool reference: [25, 26, 81, 82, 100] — Pikachu, Raichu, Magnemite, Magneton, Voltorb
@@ -157,7 +157,7 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
   {
     id: 104,
     name: 'Frozen Peak',
-    icon: '\u{2744}',
+    icon: 'ice',
     color: '#87CEEB',
     description: 'An icy mountain summit wreathed in frost. Drops Scope Lens and Wise Glasses items.',
     // Pool reference: [87, 91, 124, 131, 144] — Dewgong, Cloyster, Jynx, Lapras, Articuno
@@ -208,7 +208,7 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
   {
     id: 105,
     name: 'Ancient Shrine',
-    icon: '\u{26E9}',
+    icon: 'shrine',
     color: '#6a5acd',
     description: 'A sacred temple housing ancient power. Drops Focus Sash and King\'s Rock items.',
     // Pool reference: [147, 148, 149, 130, 142] — Dratini, Dragonair, Dragonite, Gyarados, Aerodactyl

@@ -5,7 +5,7 @@ export const ITEM_SETS: ItemSetDef[] = [
   {
     id: 'swift_wing',
     name: 'Swift Wing',
-    icon: '\u{1F4A8}',
+    icon: 'wind',
     pieces: 4,
     effectType: 'stat',
     bonusStat: 'spd',
@@ -16,7 +16,7 @@ export const ITEM_SETS: ItemSetDef[] = [
   {
     id: 'power_band',
     name: 'Power Band',
-    icon: '\u{1F4AA}',
+    icon: 'muscle',
     pieces: 4,
     effectType: 'stat',
     bonusStat: 'atk',
@@ -27,7 +27,7 @@ export const ITEM_SETS: ItemSetDef[] = [
   {
     id: 'scope_lens',
     name: 'Scope Lens',
-    icon: '\u{1F3AF}',
+    icon: 'target',
     pieces: 4,
     effectType: 'stat',
     bonusStat: 'critRate',
@@ -39,7 +39,7 @@ export const ITEM_SETS: ItemSetDef[] = [
   {
     id: 'kings_rock',
     name: "King's Rock",
-    icon: '\u{1F451}',
+    icon: 'crown',
     pieces: 4,
     effectType: 'proc',
     procDescription: '22% chance to gain an extra turn after attacking',
@@ -50,7 +50,7 @@ export const ITEM_SETS: ItemSetDef[] = [
   {
     id: 'razor_fang',
     name: 'Razor Fang',
-    icon: '\u{1F5E1}',
+    icon: 'blade',
     pieces: 4,
     effectType: 'proc',
     procDescription: '25% chance to stun enemy for 1 turn on attack',
@@ -63,7 +63,7 @@ export const ITEM_SETS: ItemSetDef[] = [
   {
     id: 'choice_band',
     name: 'Choice Band',
-    icon: '\u{1F3B5}',
+    icon: 'music',
     pieces: 2,
     effectType: 'stat',
     bonusStat: 'atk',
@@ -74,7 +74,7 @@ export const ITEM_SETS: ItemSetDef[] = [
   {
     id: 'focus_sash',
     name: 'Focus Sash',
-    icon: '\u{1F94B}',
+    icon: 'martial_arts',
     pieces: 2,
     effectType: 'stat',
     bonusStat: 'def',
@@ -85,7 +85,7 @@ export const ITEM_SETS: ItemSetDef[] = [
   {
     id: 'wise_glasses',
     name: 'Wise Glasses',
-    icon: '\u{1F453}',
+    icon: 'glasses',
     pieces: 2,
     effectType: 'stat',
     bonusStat: 'critDmg',
@@ -96,7 +96,7 @@ export const ITEM_SETS: ItemSetDef[] = [
   {
     id: 'quick_claw',
     name: 'Quick Claw',
-    icon: '\u{1F43E}',
+    icon: 'paw',
     pieces: 2,
     effectType: 'stat',
     bonusStat: 'spd',
@@ -108,7 +108,7 @@ export const ITEM_SETS: ItemSetDef[] = [
   {
     id: 'leftovers',
     name: 'Leftovers',
-    icon: '\u{1F96A}',
+    icon: 'sandwich',
     pieces: 2,
     effectType: 'proc',
     procDescription: 'Recover 15% of max HP at the start of each turn',

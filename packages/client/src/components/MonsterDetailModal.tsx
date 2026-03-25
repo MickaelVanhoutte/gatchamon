@@ -2,6 +2,7 @@ import type { BaseStats } from '@gatchamon/shared';
 import { computeStats, computeStatsWithItems, getSkillsForPokemon, getItemSet, STAT_TYPE_LABELS } from '@gatchamon/shared';
 import type { OwnedPokemon } from '../stores/gameStore';
 import { getItemsForPokemon } from '../services/storage';
+import { GameIcon, StarRating } from './icons';
 import { assetUrl } from '../utils/asset-url';
 import './MonsterDetailModal.css';
 
@@ -45,7 +46,7 @@ export function MonsterDetailModal({ pokemon, onClose }: MonsterDetailModalProps
   return (
     <div className="mdm-overlay" onClick={onClose}>
       <div className="mdm-modal" onClick={e => e.stopPropagation()}>
-        <button className="mdm-close" onClick={onClose}>&#x2715;</button>
+        <button className="mdm-close" onClick={onClose}><GameIcon id="close" size={18} /></button>
 
         {/* Header */}
         <div className="mdm-header">
@@ -53,7 +54,7 @@ export function MonsterDetailModal({ pokemon, onClose }: MonsterDetailModalProps
           <div className="mdm-info">
             <h3 className="mdm-name">{template.name}</h3>
             <div className="mdm-stars" style={{ color: starColor }}>
-              {'★'.repeat(instance.stars)}
+              <StarRating count={instance.stars} size={10} />
             </div>
             <div className="mdm-level">Lv.{instance.level}</div>
             <div className="mdm-types">
@@ -102,7 +103,7 @@ export function MonsterDetailModal({ pokemon, onClose }: MonsterDetailModalProps
                 <div key={slot} className={`mdm-item-slot ${item ? 'filled' : ''}`}>
                   {item && setDef ? (
                     <>
-                      <span className="mdm-item-icon">{setDef.icon}</span>
+                      <span className="mdm-item-icon"><GameIcon id={setDef.icon} size={14} /></span>
                       <span className="mdm-item-level">+{item.level}</span>
                     </>
                   ) : (

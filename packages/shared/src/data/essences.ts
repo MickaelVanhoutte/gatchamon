@@ -2,12 +2,12 @@ import type { EssenceDefinition, EssenceTier } from '../types/evolution.js';
 import type { PokemonType } from '../types/pokemon.js';
 
 const ELEMENT_ICONS: Record<string, string> = {
-  normal: '\u26AA', fire: '\u{1F525}', water: '\u{1F4A7}', grass: '\u{1F33F}',
-  electric: '\u26A1', ice: '\u2744\uFE0F', fighting: '\u{1F94A}', poison: '\u2620\uFE0F',
-  ground: '\u{1F30D}', flying: '\u{1F4A8}', psychic: '\u{1F52E}', bug: '\u{1F41B}',
-  rock: '\u{1FAA8}', ghost: '\u{1F47B}', dragon: '\u{1F432}',
-  fairy: '\u{1F9DA}', dark: '\u{1F311}', steel: '\u2699\uFE0F',
-  magic: '\u2728',
+  normal: 'normal', fire: 'fire', water: 'water', grass: 'grass',
+  electric: 'electric', ice: 'ice', fighting: 'fighting', poison: 'poison',
+  ground: 'ground', flying: 'flying', psychic: 'psychic', bug: 'bug',
+  rock: 'rock', ghost: 'ghost', dragon: 'dragon',
+  fairy: 'fairy', dark: 'dark', steel: 'steel',
+  magic: 'magic',
 };
 
 const TIER_LABELS: Record<EssenceTier, string> = {

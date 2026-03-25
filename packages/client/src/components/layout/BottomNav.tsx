@@ -1,15 +1,16 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useGameStore } from '../../stores/gameStore';
+import { GameIcon } from '../icons';
 import './BottomNav.css';
 
 const TABS = [
-  { path: '/', icon: '\u2302', badge: false },
-  { path: '/summon', icon: '\u25C9', badge: false },
-  { path: '/collection', icon: '\u25A4', badge: false },
-  { path: '/missions', icon: '\u{1F3C6}', badge: true },
-  { path: '/story', icon: '\u2694', badge: false },
-  { path: '/dungeons', icon: '\u{1F3DB}', badge: false },
-  { path: '/trainer', icon: '\u{1F9D1}', badge: false },
+  { path: '/', icon: 'home', badge: false },
+  { path: '/summon', icon: 'summon', badge: false },
+  { path: '/collection', icon: 'collection', badge: false },
+  { path: '/missions', icon: 'trophy', badge: true },
+  { path: '/story', icon: 'swords', badge: false },
+  { path: '/dungeons', icon: 'dungeon', badge: false },
+  { path: '/trainer', icon: 'trainer', badge: false },
 ];
 
 export function BottomNav() {
@@ -27,7 +28,7 @@ export function BottomNav() {
           className={`toolbar-btn ${location.pathname === tab.path ? 'active' : ''}`}
           onClick={() => navigate(tab.path)}
         >
-          <span className="toolbar-icon">{tab.icon}</span>
+          <span className="toolbar-icon"><GameIcon id={tab.icon} size={20} /></span>
           {tab.badge && unclaimedRewardCount > 0 && (
             <span className="toolbar-badge">{unclaimedRewardCount}</span>
           )}

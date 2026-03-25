@@ -18,13 +18,13 @@
   height: 52px;
   border-radius: 50%;
   background: radial-gradient(circle at 40% 40%,
-    #ff6b81 0%,
+    #5eead4 0%,
     var(--accent) 40%,
-    #8a1a30 100%
+    #065f56 100%
   );
   box-shadow:
-    0 0 20px rgba(233, 69, 96, 0.6),
-    0 0 40px rgba(233, 69, 96, 0.3),
+    0 0 20px rgba(13, 148, 136, 0.6),
+    0 0 40px rgba(13, 148, 136, 0.3),
     inset 0 -4px 8px rgba(0, 0, 0, 0.3);
   animation: portal-glow 2s ease-in-out infinite;
   position: relative;
@@ -44,8 +44,8 @@
 }
 
 @keyframes portal-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(233, 69, 96, 0.6), 0 0 40px rgba(233, 69, 96, 0.3), inset 0 -4px 8px rgba(0, 0, 0, 0.3); }
-  50% { box-shadow: 0 0 30px rgba(233, 69, 96, 0.8), 0 0 60px rgba(233, 69, 96, 0.4), inset 0 -4px 8px rgba(0, 0, 0, 0.3); }
+  0%, 100% { box-shadow: 0 0 20px rgba(13, 148, 136, 0.6), 0 0 40px rgba(13, 148, 136, 0.3), inset 0 -4px 8px rgba(0, 0, 0, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(13, 148, 136, 0.8), 0 0 60px rgba(13, 148, 136, 0.4), inset 0 -4px 8px rgba(0, 0, 0, 0.3); }
 }
 
 @keyframes portal-core {

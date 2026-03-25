@@ -9,8 +9,8 @@
 /* ─── Tabs ─── */
 .missions-tabs {
   display: flex;
-  background: rgba(0, 0, 0, 0.5);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--card-border);
   flex-shrink: 0;
 }
 
@@ -70,7 +70,7 @@
   padding: 10px 12px;
   background: var(--bg-card);
   border-radius: 8px;
-  border-left: 3px solid rgba(255, 255, 255, 0.15);
+  border-left: 3px solid var(--card-border);
   transition: all 0.2s;
 }
 
@@ -81,7 +81,7 @@
 
 .mission-card.claimed {
   opacity: 0.5;
-  border-left-color: rgba(255, 255, 255, 0.05);
+  border-left-color: var(--card-border);
 }
 
 .mission-icon {
@@ -104,7 +104,7 @@
 
 .mission-progress-bar {
   height: 6px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.06);
   border-radius: 3px;
   overflow: hidden;
   margin-bottom: 2px;
@@ -112,7 +112,7 @@
 
 .mission-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent), #ff8a9e);
+  background: linear-gradient(90deg, var(--accent), var(--accent-hover));
   border-radius: 3px;
   transition: width 0.3s;
 }
@@ -160,7 +160,7 @@
 }
 
 .mission-claim-btn:disabled {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--bg-secondary);
   color: var(--text-secondary);
   cursor: default;
 }
@@ -176,14 +176,14 @@
   gap: 10px;
   padding: 12px;
   margin-top: 4px;
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(233, 69, 96, 0.1));
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.08), rgba(13, 148, 136, 0.08));
   border: 1px solid rgba(251, 191, 36, 0.2);
   border-radius: 10px;
 }
 
 .all-dailies-bonus.ready {
   border-color: #fbbf24;
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(233, 69, 96, 0.15));
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.12), rgba(13, 148, 136, 0.12));
   animation: bonus-pulse 1.5s ease-in-out infinite;
 }
 
@@ -225,7 +225,7 @@
 
 .bonus-claim {
   background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  color: #1a1a2e;
+  color: var(--text-primary);
 }
 
 .bonus-claim:not(:disabled):hover {
@@ -243,7 +243,7 @@
   background: var(--bg-card);
   border-radius: 10px;
   padding: 12px;
-  border-left: 4px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid var(--card-border);
 }
 
 .trophy-header {
@@ -294,7 +294,7 @@
   gap: 8px;
   padding: 4px 8px;
   border-radius: 6px;
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--bg-primary);
   font-size: 0.75rem;
 }
 
@@ -317,7 +317,7 @@
 .tier-progress-bar {
   flex: 1;
   height: 4px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.06);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -359,7 +359,7 @@
 }
 
 .tier-claim-btn:disabled {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--bg-secondary);
   color: var(--text-secondary);
   cursor: default;
 }
@@ -380,7 +380,7 @@
   border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 600;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   animation: toast-in 0.3s ease-out;
   z-index: 100;
 }

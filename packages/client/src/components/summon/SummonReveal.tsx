@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import type { OwnedPokemon } from '../../stores/gameStore';
 import { assetUrl } from '../../utils/asset-url';
+import { GameIcon } from '../icons';
 import './SummonReveal.css';
 
 interface Props {
@@ -136,7 +137,7 @@ export function SummonReveal({ pokemon, onComplete }: Props) {
       <div className="reveal-stars" ref={starsRef}>
         {Array.from({ length: instance.stars }, (_, i) => (
           <span key={i} className="reveal-star" style={{ color: starColor }}>
-            ★
+            <GameIcon id="star" size={20} />
           </span>
         ))}
       </div>
@@ -144,7 +145,7 @@ export function SummonReveal({ pokemon, onComplete }: Props) {
       {/* Monster name */}
       <div className="reveal-name" ref={nameRef}>
         {template.name}
-        {isShiny && <span className="reveal-shiny-icon">✦</span>}
+        {isShiny && <span className="reveal-shiny-icon"><GameIcon id="shiny" size={16} /></span>}
       </div>
     </div>
   );

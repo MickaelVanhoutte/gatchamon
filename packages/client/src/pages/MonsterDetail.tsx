@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { computeStats } from '@gatchamon/shared';
 import type { BaseStats } from '@gatchamon/shared';
+import { GameIcon, StarRating } from '../components/icons';
 import { assetUrl } from '../utils/asset-url';
 import './MonsterDetail.css';
 
@@ -75,10 +76,10 @@ export function MonsterDetail() {
 
       <h2 className="detail-name">
         {template.name}
-        {isShiny && <span style={{ color: '#ffd700', marginLeft: 6, fontSize: '0.8em' }}>✦</span>}
+        {isShiny && <GameIcon id="shiny" size={14} color="#ffd700" />}
       </h2>
       <div className="detail-stars" style={{ color: starColor }}>
-        {'★'.repeat(instance.stars)}
+        <StarRating count={instance.stars} size={10} />
       </div>
       <div className="detail-level">Level {instance.level}</div>
 

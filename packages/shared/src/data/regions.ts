@@ -14,7 +14,7 @@ export const REGIONS: RegionDef[] = [
   {
     id: 1,
     name: 'Verdant Woods',
-    icon: '\u{1F332}',
+    icon: 'tree',
     color: '#3a7a2a',
     commonPool: [10, 13, 69, 43],       // Caterpie, Weedle, Bellsprout, Oddish
     bossPool: [127],                      // Pinsir
@@ -29,7 +29,7 @@ export const REGIONS: RegionDef[] = [
   {
     id: 2,
     name: 'Windswept Plains',
-    icon: '\u{1F33E}',
+    icon: 'wheat',
     color: '#c4a74a',
     commonPool: [16, 19, 21, 39],        // Pidgey, Rattata, Spearow, Jigglypuff
     bossPool: [128],                      // Tauros
@@ -44,7 +44,7 @@ export const REGIONS: RegionDef[] = [
   {
     id: 3,
     name: 'Toxic Marsh',
-    icon: '\u{2620}\u{FE0F}',
+    icon: 'poison',
     color: '#8a4a8a',
     commonPool: [41, 13, 43, 92],        // Zubat, Weedle, Oddish, Gastly
     bossPool: [1],                        // Bulbasaur
@@ -59,7 +59,7 @@ export const REGIONS: RegionDef[] = [
   {
     id: 4,
     name: 'Crystal Caverns',
-    icon: '\u{1FAA8}',
+    icon: 'rock',
     color: '#8a7a5a',
     commonPool: [74, 41, 19, 66],        // Geodude, Zubat, Rattata, Machop
     bossPool: [142],                      // Aerodactyl
@@ -74,7 +74,7 @@ export const REGIONS: RegionDef[] = [
   {
     id: 5,
     name: 'Azure Coast',
-    icon: '\u{1F30A}',
+    icon: 'wave',
     color: '#4a8ab0',
     commonPool: [129, 60, 7],            // Magikarp, Poliwag, Squirtle
     bossPool: [131],                      // Lapras
@@ -89,7 +89,7 @@ export const REGIONS: RegionDef[] = [
   {
     id: 6,
     name: 'Thunderpeak Ridge',
-    icon: '\u{26A1}',
+    icon: 'electric',
     color: '#f0c030',
     commonPool: [25, 66, 74],            // Pikachu, Machop, Geodude
     bossPool: [106],                      // Hitmonlee
@@ -104,7 +104,7 @@ export const REGIONS: RegionDef[] = [
   {
     id: 7,
     name: 'Ember Highlands',
-    icon: '\u{1F525}',
+    icon: 'fire',
     color: '#d04040',
     commonPool: [4, 58, 74],             // Charmander, Growlithe, Geodude
     bossPool: [107],                      // Hitmonchan
@@ -119,7 +119,7 @@ export const REGIONS: RegionDef[] = [
   {
     id: 8,
     name: 'Phantom Ruins',
-    icon: '\u{1F47B}',
+    icon: 'ghost',
     color: '#6a5acd',
     commonPool: [92, 63, 41, 39],        // Gastly, Abra, Zubat, Jigglypuff
     bossPool: [115],                      // Kangaskhan
@@ -134,7 +134,7 @@ export const REGIONS: RegionDef[] = [
   {
     id: 9,
     name: 'Frozen Tundra',
-    icon: '\u{2744}\u{FE0F}',
+    icon: 'ice',
     color: '#88ccee',
     commonPool: [60, 133, 147],          // Poliwag, Eevee, Dratini
     bossPool: [131],                      // Lapras
@@ -149,7 +149,7 @@ export const REGIONS: RegionDef[] = [
   {
     id: 10,
     name: 'Pokemon League',
-    icon: '\u{1F451}',
+    icon: 'crown',
     color: '#7038f8',
     commonPool: [1, 4, 7, 25, 147, 133], // Bulbasaur, Charmander, Squirtle, Pikachu, Dratini, Eevee
     bossPool: [142],                      // Aerodactyl

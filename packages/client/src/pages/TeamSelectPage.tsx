@@ -8,6 +8,7 @@ import { buildFloorEnemies } from '../services/floor.service';
 import { loadLastTeam, saveLastTeam } from '../services/storage';
 import { useRotatedHorizontalScroll } from '../hooks/useRotatedHorizontalScroll';
 import { MonsterDetailModal } from '../components/MonsterDetailModal';
+import { GameIcon, StarRating } from '../components/icons';
 import { assetUrl } from '../utils/asset-url';
 import './TeamSelectPage.css';
 
@@ -202,7 +203,7 @@ export function TeamSelectPage() {
                       className="ts-slot-sprite"
                     />
                     <div className="ts-slot-stars" style={{ color: STAR_COLORS[mon.instance.stars] }}>
-                      {'★'.repeat(mon.instance.stars)}
+                      <StarRating count={mon.instance.stars} size={10} />
                     </div>
                     <div className="ts-slot-level">Lv.{mon.instance.level}</div>
                   </>
@@ -231,7 +232,7 @@ export function TeamSelectPage() {
                 className="ts-slot-sprite"
               />
               <div className="ts-slot-stars" style={{ color: STAR_COLORS[enemy.stars] }}>
-                {'★'.repeat(enemy.stars)}
+                <StarRating count={enemy.stars} size={10} />
               </div>
               <div className="ts-slot-level">Lv.{enemy.level}</div>
             </div>
@@ -285,10 +286,10 @@ export function TeamSelectPage() {
                   />
                   <span className="ts-mini-name">{mon.template.name}</span>
                   <span className="ts-mini-stars" style={{ color: starColor }}>
-                    {'★'.repeat(mon.instance.stars)}
+                    <StarRating count={mon.instance.stars} size={10} />
                   </span>
                   <span className="ts-mini-level">Lv.{mon.instance.level}</span>
-                  {isSelected && <div className="ts-checkmark">✓</div>}
+                  {isSelected && <div className="ts-checkmark"><GameIcon id="check" size={14} /></div>}
                 </div>
               );
             })}
@@ -298,7 +299,7 @@ export function TeamSelectPage() {
         <div className="ts-actions">
           {energyCost > 0 && (
             <div className="ts-energy-cost">
-              <span>⚡</span>
+              <GameIcon id="energy" size={14} />
               <span>{energyCost}</span>
             </div>
           )}

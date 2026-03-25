@@ -7,6 +7,7 @@ import { useAutoBattle } from '../battle/useAutoBattle';
 import { getTemplate, SKILLS, getTypeEffectiveness, ESSENCES, ITEM_SETS } from '@gatchamon/shared';
 import type { BattleState, BattleMon, BattleLogEntry, BattleResult, PokemonType } from '@gatchamon/shared';
 import { assetUrl } from '../utils/asset-url';
+import { GameIcon, StarRating } from '../components/icons';
 import './BattlePage.css';
 
 type Phase = 'player_turn' | 'animating' | 'victory' | 'defeat';
@@ -294,7 +295,7 @@ export function BattlePage() {
             {rewards && (
               <div className="rewards">
                 {rewards.isFirstClear && (
-                  <p className="first-clear-banner">{'\u2728'} First Clear Bonus!</p>
+                  <p className="first-clear-banner"><GameIcon id="sparkles" size={14} /> First Clear Bonus!</p>
                 )}
                 {rewards.pokeballs > 0 && <p>+ {rewards.pokeballs} <span className="pokeball-icon" /></p>}
                 <p>+ {rewards.xpPerMon} XP per monster</p>
@@ -305,7 +306,7 @@ export function BattlePage() {
                 )}
                 {rewards.monsterLoot && (
                   <div className="monster-loot-reward">
-                    <p className="loot-title">{'\u{1F340}'} Monster Captured!</p>
+                    <p className="loot-title"><GameIcon id="clover" size={14} /> Monster Captured!</p>
                     <div className="loot-monster-display">
                       <img
                         src={assetUrl(getTemplate(rewards.monsterLoot.templateId)?.spriteUrl ?? `sprites/${rewards.monsterLoot.templateId}.png`)}
@@ -313,12 +314,12 @@ export function BattlePage() {
                         className="loot-sprite"
                       />
                       <span className="loot-name">{getTemplate(rewards.monsterLoot.templateId)?.name}</span>
-                      <span className="loot-stars">{'\u2605'.repeat(rewards.monsterLoot.stars)}</span>
+                      <span className="loot-stars"><StarRating count={rewards.monsterLoot.stars} size={10} /></span>
                     </div>
                   </div>
                 )}
                 {rewards.stardust != null && rewards.stardust > 0 && (
-                  <p>+ {rewards.stardust.toLocaleString()} <span style={{color:'#c084fc'}}>✦</span> Stardust</p>
+                  <p>+ {rewards.stardust.toLocaleString()} <span style={{color:'#c084fc'}}><GameIcon id="stardust" size={12} /></span> Stardust</p>
                 )}
                 {rewards.essences && Object.keys(rewards.essences).length > 0 && (
                   <div className="essence-drops">
@@ -327,7 +328,7 @@ export function BattlePage() {
                       const ess = ESSENCES[essId];
                       return (
                         <p key={essId} className="essence-item">
-                          {ess?.icon ?? ''} {ess?.name ?? essId} x{qty}
+                          <GameIcon id={ess?.icon} size={14} /> {ess?.name ?? essId} x{qty}
                         </p>
                       );
                     })}
@@ -340,7 +341,7 @@ export function BattlePage() {
                       const setDef = ITEM_SETS.find(s => s.id === drop.setId);
                       return (
                         <p key={i} className="essence-item">
-                          {setDef?.icon ?? '?'} {setDef?.name ?? drop.setId} {'★'.repeat(drop.stars)} ({drop.grade})
+                          <GameIcon id={setDef?.icon} size={14} /> {setDef?.name ?? drop.setId} <StarRating count={drop.stars} size={10} /> ({drop.grade})
                         </p>
                       );
                     })}
@@ -380,15 +381,15 @@ export function BattlePage() {
 
 function EffectivenessArrow({ effectiveness }: { effectiveness: number }) {
   if (effectiveness >= 2) {
-    return <span className="eff-arrow eff-super">▼</span>;
+    return <span className="eff-arrow eff-super"><GameIcon id="arrow_down" size={10} /></span>;
   } else if (effectiveness > 1) {
-    return <span className="eff-arrow eff-advantage">▼</span>;
+    return <span className="eff-arrow eff-advantage"><GameIcon id="arrow_down" size={10} /></span>;
   } else if (effectiveness === 1) {
-    return <span className="eff-arrow eff-neutral">▶</span>;
+    return <span className="eff-arrow eff-neutral"><GameIcon id="arrow_right" size={10} /></span>;
   } else if (effectiveness > 0) {
-    return <span className="eff-arrow eff-resist">▲</span>;
+    return <span className="eff-arrow eff-resist"><GameIcon id="arrow_up" size={10} /></span>;
   } else {
-    return <span className="eff-arrow eff-immune">✕</span>;
+    return <span className="eff-arrow eff-immune"><GameIcon id="close" size={10} /></span>;
   }
 }
 

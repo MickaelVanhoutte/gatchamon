@@ -1,5 +1,6 @@
 import type { HeldItemInstance } from '@gatchamon/shared';
 import { getItemSet, GRADE_COLORS, STAT_TYPE_LABELS } from '@gatchamon/shared';
+import { GameIcon, StarRating } from '../icons';
 import './RuneCard.css';
 
 interface RuneCardProps {
@@ -21,9 +22,9 @@ export function RuneCard({ item, compact, selected, equippedPokemonName, onClick
         style={{ borderColor: gradeColor }}
         onClick={onClick}
       >
-        <div className="rune-card-icon">{setDef?.icon ?? '?'}</div>
+        <div className="rune-card-icon"><GameIcon id={setDef?.icon} size={14} /></div>
         <div className="rune-card-stars" style={{ color: gradeColor }}>
-          {'★'.repeat(item.stars)}
+          <StarRating count={item.stars} size={10} />
         </div>
         <div className="rune-card-level">+{item.level}</div>
       </div>
@@ -37,13 +38,13 @@ export function RuneCard({ item, compact, selected, equippedPokemonName, onClick
       onClick={onClick}
     >
       <div className="rune-card-header">
-        <span className="rune-card-icon">{setDef?.icon ?? '?'}</span>
+        <span className="rune-card-icon"><GameIcon id={setDef?.icon} size={14} /></span>
         <span className="rune-card-set-name">{setDef?.name ?? item.setId}</span>
         <span className="rune-card-slot">S{item.slot}</span>
       </div>
       <div className="rune-card-stars-row">
         <span className="rune-card-stars" style={{ color: gradeColor }}>
-          {'★'.repeat(item.stars)}
+          <StarRating count={item.stars} size={10} />
         </span>
         <span className="rune-card-grade" style={{ color: gradeColor }}>
           {item.grade}

@@ -4,22 +4,25 @@
   align-items: center;
   gap: 8px;
   padding: 12px;
-  background: var(--bg-card);
+  background: var(--bg-card, #ffffff);
   border-radius: 12px;
-  border: 2px solid transparent;
+  border: 2px solid var(--card-border, #d0e4ea);
   cursor: pointer;
   transition: all 0.2s;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--card-shadow, 0 2px 8px rgba(0, 0, 0, 0.08));
 }
 
 .monster-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.15);
+  border-color: var(--accent, #0d9488);
 }
 
 .monster-card.selected {
-  box-shadow: 0 0 0 3px var(--accent), 0 4px 12px rgba(233, 69, 96, 0.3);
+  border-color: var(--accent, #0d9488);
+  box-shadow: 0 0 0 3px var(--accent, #0d9488), 0 4px 12px rgba(13, 148, 136, 0.25);
 }
 
 .monster-card.compact {
@@ -50,6 +53,7 @@
 .card-name {
   font-weight: 600;
   font-size: 0.9rem;
+  color: var(--text-primary, #1a2332);
 }
 
 .compact .card-name {
@@ -71,7 +75,7 @@
 
 .card-level {
   font-size: 0.8rem;
-  color: var(--text-secondary);
+  color: var(--text-secondary, #5a6a7a);
 }
 
 .card-types {

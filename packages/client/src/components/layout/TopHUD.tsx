@@ -1,6 +1,7 @@
 import { useLocation } from 'react-router-dom';
 import { useGameStore } from '../../stores/gameStore';
 import { getMaxEnergy, trainerXpToNextLevel, TOTAL_REGIONS } from '@gatchamon/shared';
+import { GameIcon } from '../icons';
 import './TopHUD.css';
 
 export function TopHUD() {
@@ -29,15 +30,15 @@ export function TopHUD() {
       </div>
       <div className="hud-right">
         <div className="hud-resource">
-          <span className="hud-energy-icon">⚡</span>
+          <GameIcon id="energy" size={14} className="hud-energy-icon" />
           <span>{player.energy}/{maxEnergy}</span>
         </div>
         <div className="hud-resource">
-          <span className="hud-stardust-icon">✦</span>
+          <GameIcon id="stardust" size={14} className="hud-stardust-icon" />
           <span>{(player.stardust ?? 0).toLocaleString()}</span>
         </div>
         <div className="hud-resource">
-          <span className="pokeball-icon" />
+          <GameIcon id="pokeball" size={14} />
           <span>{player.pokeballs}</span>
         </div>
       </div>

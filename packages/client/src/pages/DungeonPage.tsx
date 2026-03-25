@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { DUNGEONS, ESSENCES, ITEM_DUNGEONS, getItemSet } from '@gatchamon/shared';
 import type { DungeonDef, ItemDungeonDef } from '@gatchamon/shared';
+import { GameIcon, StarRating } from '../components/icons';
 import './DungeonPage.css';
 
 type DungeonTab = 'essence' | 'items';
@@ -106,7 +107,7 @@ export function DungeonPage() {
               onClick={() => { setSelectedDungeon(d); setSelectedFloor(0); }}
               style={{ borderLeftColor: d.color }}
             >
-              <span className="dungeon-card-icon">{d.icon}</span>
+              <span className="dungeon-card-icon"><GameIcon id={d.icon} size={16} /></span>
               <div className="dungeon-card-info">
                 <span className="dungeon-card-name">{d.name}</span>
                 <span className="dungeon-card-cost">{d.energyCost} Energy</span>
@@ -118,7 +119,7 @@ export function DungeonPage() {
         {/* Right: Detail panel */}
         <div className="dungeon-detail">
           <div className="dungeon-detail-header" style={{ borderBottomColor: selectedDungeon.color }}>
-            <span className="dungeon-detail-icon">{selectedDungeon.icon}</span>
+            <span className="dungeon-detail-icon"><GameIcon id={selectedDungeon.icon} size={16} /></span>
             <h3>{selectedDungeon.name}</h3>
           </div>
 
@@ -153,7 +154,7 @@ export function DungeonPage() {
             {isItemDungeon && floor && 'stardustReward' in floor && (
               <div className="dungeon-info-row">
                 <span>Stardust</span>
-                <span>✦ {(floor as any).stardustReward[0]}–{(floor as any).stardustReward[1]}</span>
+                <span><GameIcon id="stardust" size={12} /> {(floor as any).stardustReward[0]}–{(floor as any).stardustReward[1]}</span>
               </div>
             )}
           </div>
@@ -167,7 +168,7 @@ export function DungeonPage() {
                 if (!ess) return null;
                 return (
                   <div key={essId} className="dungeon-drop-item">
-                    <span className="drop-icon">{ess.icon}</span>
+                    <span className="drop-icon"><GameIcon id={ess.icon} size={14} /></span>
                     <span className="drop-name">{ess.name}</span>
                     <span className="drop-owned">x{materials[essId] ?? 0}</span>
                   </div>
@@ -178,7 +179,7 @@ export function DungeonPage() {
                 if (!setDef) return null;
                 return (
                   <div key={setId} className="dungeon-drop-item">
-                    <span className="drop-icon">{setDef.icon}</span>
+                    <span className="drop-icon"><GameIcon id={setDef.icon} size={14} /></span>
                     <span className="drop-name">{setDef.name}</span>
                     <span className="drop-owned" style={{ color: setDef.color }}>
                       {setDef.pieces}-set

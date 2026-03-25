@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
+import { GameIcon, StarRating } from '../components/icons';
 import { getTemplate, REGIONS } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
 import { getFloorDefsForRegion } from '../services/floor.service';
@@ -156,19 +157,19 @@ export function StoryModePage() {
               disabled={status === 'locked'}
             >
               <div className="zone-pin" style={{ '--zone-color': region.color } as React.CSSProperties}>
-                <span className="zone-icon">{region.icon}</span>
+                <span className="zone-icon"><GameIcon id={region.icon} size={16} /></span>
               </div>
               <div className="zone-label">
                 <span className="zone-name">{region.name}</span>
                 <span className="zone-stars">
                   {Array.from({ length: Math.min(stars.total, 10) }).map((_, i) => (
                     <span key={i} className={`zone-star ${i < stars.completed ? 'filled' : ''}`}>
-                      {'\u2605'}
+                      <GameIcon id="star" size={12} />
                     </span>
                   ))}
                 </span>
               </div>
-              {status === 'locked' && <div className="zone-lock-icon">{'\uD83D\uDD12'}</div>}
+              {status === 'locked' && <div className="zone-lock-icon"><GameIcon id="lock" size={14} /></div>}
               {status === 'available' && (
                 <div className="zone-pulse" style={{ '--zone-color': region.color } as React.CSSProperties} />
               )}
@@ -191,7 +192,7 @@ export function StoryModePage() {
                   onClick={() => handleDifficultyChange(d.key)}
                   disabled={!unlocked}
                 >
-                  {unlocked ? d.label : `${'\uD83D\uDD12'} ${d.label}`}
+                  {unlocked ? d.label : <><GameIcon id="lock" size={14} /> {d.label}</>}
                 </button>
               );
             })}
@@ -203,9 +204,9 @@ export function StoryModePage() {
       {selectedRegion && (
         <div className="floor-panel">
           <div className="floor-panel-header">
-            <h3>{selectedRegion.icon} {selectedRegion.name}</h3>
+            <h3><GameIcon id={selectedRegion.icon} size={16} /> {selectedRegion.name}</h3>
             <button className="floor-panel-close" onClick={() => setSelectedRegionId(null)}>
-              {'\u2715'}
+              <GameIcon id="close" size={18} />
             </button>
           </div>
           <div className="floor-panel-difficulty">
@@ -243,13 +244,13 @@ export function StoryModePage() {
                       <div className="floor-reward-preview">
                         {floor.rewardPreview.isFirstClear ? (
                           <span className="reward-tag first-clear">
-                            {'\u2728'} +{floor.rewardPreview.pokeballs} <span className="pokeball-icon" />
+                            <GameIcon id="sparkles" size={14} /> +{floor.rewardPreview.pokeballs} <span className="pokeball-icon" />
                           </span>
                         ) : (
                           <span className="reward-tag replay">XP only</span>
                         )}
                         <span className="reward-tag loot-hint">
-                          {'\u{1F340}'} Drop
+                          <GameIcon id="clover" size={14} /> Drop
                         </span>
                       </div>
                     )}
@@ -262,10 +263,10 @@ export function StoryModePage() {
                     )}
                   >
                     {!isUnlocked ? (
-                      <span className="go-lock">{'\uD83D\uDD12'}</span>
+                      <span className="go-lock"><GameIcon id="lock" size={14} /></span>
                     ) : (
                       <>
-                        <span className="go-energy">{'\u26A1'}3</span>
+                        <span className="go-energy"><GameIcon id="energy" size={14} />3</span>
                         <span className="go-text">GO</span>
                       </>
                     )}

@@ -4,7 +4,7 @@ export const DUNGEONS: DungeonDef[] = [
   {
     id: 1,
     name: 'Verdant Cavern',
-    icon: '\u{1F33F}',
+    icon: 'grass',
     color: '#3a7a2a',
     description: 'A lush cave teeming with plant and insect life. Drops Grass, Poison, and Bug essences.',
     energyCost: 3,
@@ -70,7 +70,7 @@ export const DUNGEONS: DungeonDef[] = [
   {
     id: 2,
     name: 'Volcanic Depths',
-    icon: '\u{1F525}',
+    icon: 'fire',
     color: '#d04040',
     description: 'Scorching tunnels of magma and stone. Drops Fire, Rock, and Ground essences.',
     energyCost: 3,
@@ -135,7 +135,7 @@ export const DUNGEONS: DungeonDef[] = [
   {
     id: 3,
     name: 'Abyssal Trench',
-    icon: '\u{1F30A}',
+    icon: 'wave',
     color: '#4a8ab0',
     description: 'Dark ocean depths hiding ancient power. Drops Water, Ice, and Dragon essences.',
     energyCost: 3,
@@ -200,7 +200,7 @@ export const DUNGEONS: DungeonDef[] = [
   {
     id: 4,
     name: 'Storm Citadel',
-    icon: '\u26A1',
+    icon: 'electric',
     color: '#f0c030',
     description: 'A fortress crackling with elemental energy. Drops Electric, Flying, Normal, and Psychic essences.',
     energyCost: 3,
@@ -267,7 +267,7 @@ export const DUNGEONS: DungeonDef[] = [
   {
     id: 5,
     name: 'Shadow Sanctum',
-    icon: '\u{1F47B}',
+    icon: 'ghost',
     color: '#6a5acd',
     description: 'A haunted temple of dark power. Drops Ghost, Fighting, and Magic essences.',
     energyCost: 4,
@@ -334,7 +334,7 @@ export const DUNGEONS: DungeonDef[] = [
   {
     id: 6,
     name: 'Moonlit Grove',
-    icon: '\u{1F9DA}',
+    icon: 'fairy',
     color: '#ee99ac',
     description: 'An enchanted forest bathed in moonlight. Drops Fairy, Normal, and Grass essences.',
     energyCost: 3,
@@ -394,7 +394,7 @@ export const DUNGEONS: DungeonDef[] = [
   {
     id: 7,
     name: 'Shadow Crypt',
-    icon: '\u{1F311}',
+    icon: 'dark',
     color: '#705848',
     description: 'A crypt shrouded in perpetual darkness. Drops Dark, Ghost, and Psychic essences.',
     energyCost: 3,
@@ -454,7 +454,7 @@ export const DUNGEONS: DungeonDef[] = [
   {
     id: 8,
     name: 'Iron Forge',
-    icon: '\u{2699}\u{FE0F}',
+    icon: 'steel',
     color: '#b8b8d0',
     description: 'An ancient foundry where metal Pokemon dwell. Drops Steel, Rock, and Electric essences.',
     energyCost: 3,

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
+import { GameIcon, StarRating } from '../components/icons';
 import type { OwnedPokemon } from '../stores/gameStore';
 import { computeStats, getSkillsForPokemon, MAX_LEVEL_BY_STARS, isMaxLevel, getTemplate, ESSENCES, getEvolutionsFrom, getTypeChangeDef, getAvailableTypeChanges } from '@gatchamon/shared';
 import { canMerge } from '../services/merge.service';
@@ -144,7 +145,7 @@ export function CollectionPage() {
           {mergeMode ? (
             <button className="box-close" onClick={() => { setMergeMode(false); setFodderConfirm(null); }}>Cancel</button>
           ) : (
-            <button className="box-close" onClick={() => history.back()}>&#x2715;</button>
+            <button className="box-close" onClick={() => history.back()}><GameIcon id="close" size={18} /></button>
           )}
         </div>
       </div>
@@ -164,7 +165,7 @@ export function CollectionPage() {
                   onClick={() => handleCellClick(mon)}
                 >
                   <div className="box-cell-stars" style={{ color: starColor }}>
-                    {'★'.repeat(mon.instance.stars)}
+                    <StarRating count={mon.instance.stars} size={10} />
                   </div>
                   <img
                     className="box-cell-sprite"
@@ -172,7 +173,7 @@ export function CollectionPage() {
                     alt={mon.template.name}
                   />
                   <div className="box-cell-level">
-                    <span className="box-cell-lock">&#x1F512;</span>
+                    <span className="box-cell-lock"><GameIcon id="lock" size={14} /></span>
                     {mon.instance.level}
                   </div>
                 </div>
@@ -218,7 +219,7 @@ export function CollectionPage() {
                   <div className="box-detail-header">
                     <span className="box-detail-name">{selected.template.name}</span>
                     <span className="box-detail-stars" style={{ color: STAR_COLORS[selected.instance.stars] }}>
-                      {'★'.repeat(selected.instance.stars)}
+                      <StarRating count={selected.instance.stars} size={10} />
                     </span>
                   </div>
 
@@ -270,11 +271,11 @@ export function CollectionPage() {
                   {/* Power Up / Merge section */}
                   {canPowerUp && !mergeMode && (
                     <button className="box-powerup-btn" onClick={() => setMergeMode(true)}>
-                      &#x2B06; Power Up
+                      <GameIcon id="arrow_up" size={14} /> Power Up
                     </button>
                   )}
                   {selected.instance.stars >= 6 && (
-                    <div className="box-max-stars-badge">&#x2B50; Max Stars</div>
+                    <div className="box-max-stars-badge"><GameIcon id="star" size={14} /> Max Stars</div>
                   )}
 
                   {/* Evolution section */}
@@ -304,7 +305,7 @@ export function CollectionPage() {
                                 const owned = materials[essId] ?? 0;
                                 return (
                                   <div key={essId} className="box-evo-req-row">
-                                    <span>{ess?.icon} {ess?.name ?? essId}</span>
+                                    <span><GameIcon id={ess?.icon} size={14} /> {ess?.name ?? essId}</span>
                                     <span className={owned >= needed ? 'req-met' : 'req-unmet'}>
                                       {owned}/{needed}
                                     </span>
@@ -358,7 +359,7 @@ export function CollectionPage() {
                                   const owned = materials[essId] ?? 0;
                                   return (
                                     <div key={essId} className="box-evo-req-row">
-                                      <span>{ess?.icon} {ess?.name ?? essId}</span>
+                                      <span><GameIcon id={ess?.icon} size={14} /> {ess?.name ?? essId}</span>
                                       <span className={owned >= needed ? 'req-met' : 'req-unmet'}>
                                         {owned}/{needed}
                                       </span>
@@ -443,7 +444,7 @@ export function CollectionPage() {
             <p className="merge-result">
               {selected.template.name} will become{' '}
               <span style={{ color: STAR_COLORS[selected.instance.stars + 1] }}>
-                {'★'.repeat(selected.instance.stars + 1)}
+                <StarRating count={selected.instance.stars + 1} size={10} />
               </span>{' '}
               and reset to Level 1.
             </p>

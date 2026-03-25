@@ -1,4 +1,5 @@
 import type { OwnedPokemon } from '../../stores/gameStore';
+import { GameIcon, StarRating } from '../icons';
 import { assetUrl } from '../../utils/asset-url';
 import './MonsterCard.css';
 
@@ -52,10 +53,10 @@ export function MonsterCard({ owned, compact, onClick, selected }: Props) {
       <div className="card-info">
         <span className="card-name">
           {template.name}
-          {isShiny && <span className="shiny-icon">✦</span>}
+          {isShiny && <span className="shiny-icon"><GameIcon id="shiny" size={12} /></span>}
         </span>
         <div className="card-stars" style={{ color: starColor }}>
-          {'★'.repeat(instance.stars)}
+          <StarRating count={instance.stars} size={10} />
         </div>
         {!compact && (
           <div className="card-meta">

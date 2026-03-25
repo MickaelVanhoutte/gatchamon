@@ -38,10 +38,10 @@
 .auto-toggle {
   margin-left: auto;
   padding: 4px 12px;
-  background: rgba(0, 0, 0, 0.5);
-  border: 2px solid var(--text-secondary);
+  background: rgba(255, 255, 255, 0.85);
+  border: 2px solid var(--card-border, #d0e4ea);
   border-radius: 16px;
-  color: var(--text-secondary);
+  color: var(--text-secondary, #5a6a7a);
   font-size: 0.7rem;
   font-weight: 700;
   cursor: pointer;
@@ -53,8 +53,8 @@
 
 .auto-toggle.active {
   border-color: var(--star-gold);
-  color: var(--star-gold);
-  background: rgba(255, 215, 0, 0.15);
+  color: #b8860b;
+  background: rgba(255, 255, 255, 0.95);
   box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
 }
 
@@ -76,7 +76,7 @@
   filter: grayscale(1);
 }
 
-/* Arena — fills remaining space, centers monsters vertically */
+/* Arena — fills remaining space, centers monsters vertically (stays dark) */
 .battle-arena {
   flex: 1;
   display: flex;
@@ -116,7 +116,7 @@
   100% { opacity: 0.6; }
 }
 
-/* Battle fields — no background, monsters float on arena */
+/* Battle fields — no background, monsters float on arena (stays dark) */
 .battle-field {
   display: flex;
   justify-content: center;
@@ -213,14 +213,14 @@
   100% { transform: scale(1); }
 }
 
-/* HP bar */
+/* HP bar — brightened UI */
 .mon-hp-bar-bg {
   width: 80%;
   height: 6px;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(255, 255, 255, 0.3);
   border-radius: 3px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .mon-hp-bar {
@@ -275,7 +275,7 @@
   font-weight: 600;
 }
 
-/* Skill panel — bottom-right overlay like SW */
+/* Skill panel — brightened UI panel */
 .skill-panel {
   position: absolute;
   bottom: 16px;
@@ -295,22 +295,24 @@
   justify-content: center;
   gap: 2px;
   padding: 4px;
-  background: rgba(0, 0, 0, 0.6);
-  border: 2px solid var(--accent);
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid var(--accent, #0d9488);
   border-radius: 12px;
-  color: var(--text-primary);
+  color: var(--text-primary, #1a2332);
   cursor: pointer;
   position: relative;
   transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .skill-btn:hover:not(:disabled) {
-  background: var(--accent);
+  background: var(--accent, #0d9488);
+  color: #ffffff;
   transform: scale(1.1);
 }
 
 .skill-btn.on-cd {
-  border-color: var(--text-secondary);
+  border-color: var(--card-border, #d0e4ea);
   opacity: 0.4;
   cursor: not-allowed;
 }
@@ -320,7 +322,7 @@
   font-weight: 600;
   text-align: center;
   line-height: 1.1;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  text-shadow: none;
 }
 
 .cd-overlay {
@@ -329,7 +331,7 @@
   right: -6px;
   width: 20px;
   height: 20px;
-  background: var(--accent);
+  background: var(--accent, #0d9488);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -350,29 +352,30 @@
 .cancel-btn {
   width: 40px;
   height: 40px;
-  background: rgba(0, 0, 0, 0.6);
-  border: 2px solid var(--text-secondary);
+  background: rgba(255, 255, 255, 0.85);
+  border: 2px solid var(--card-border, #d0e4ea);
   border-radius: 50%;
-  color: #fff;
+  color: var(--text-primary, #1a2332);
   cursor: pointer;
   font-weight: 700;
   font-size: 0.85rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 .waiting-text {
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.8rem;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
-/* Victory / Defeat overlay */
+/* Victory / Defeat overlay — brightened */
 .battle-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(232, 244, 248, 0.95);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -386,6 +389,10 @@
   align-items: center;
   gap: 16px;
   padding: 32px;
+  background: var(--bg-card, #ffffff);
+  border-radius: 16px;
+  border: 1px solid var(--card-border, #d0e4ea);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
 }
 
 .overlay-content h2 {
@@ -393,11 +400,11 @@
 }
 
 .overlay-content h2.victory {
-  color: var(--star-gold);
+  color: #b8860b;
 }
 
 .overlay-content h2.defeat {
-  color: var(--accent);
+  color: #dc2626;
 }
 
 .rewards {
@@ -405,12 +412,12 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  color: var(--text-secondary);
+  color: var(--text-secondary, #5a6a7a);
   font-size: 1rem;
 }
 
 .level-ups {
-  color: var(--star-gold);
+  color: #b8860b;
   font-weight: 600;
 }
 
@@ -423,20 +430,20 @@
 
 .essence-title {
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--text-primary, #1a2332);
   font-size: 0.9rem;
 }
 
 .essence-item {
   font-size: 0.85rem;
-  color: #a78bfa;
+  color: #7c3aed;
 }
 
 .first-clear-banner {
-  color: #fbbf24;
+  color: #b8860b;
   font-weight: 700;
   font-size: 1.1rem;
-  text-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
+  text-shadow: none;
 }
 
 .monster-loot-reward {
@@ -445,14 +452,14 @@
   align-items: center;
   gap: 4px;
   padding: 8px 16px;
-  background: rgba(74, 222, 128, 0.1);
-  border: 1px solid rgba(74, 222, 128, 0.3);
+  background: rgba(74, 222, 128, 0.08);
+  border: 1px solid rgba(74, 222, 128, 0.25);
   border-radius: 8px;
 }
 
 .loot-title {
   font-weight: 700;
-  color: #4ade80;
+  color: #16a34a;
   font-size: 0.9rem;
 }
 
@@ -470,17 +477,17 @@
 
 .loot-name {
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-primary, #1a2332);
 }
 
 .loot-stars {
-  color: #fbbf24;
+  color: #b8860b;
   font-size: 0.85rem;
 }
 
 .return-btn {
   padding: 12px 48px;
-  background: var(--accent);
+  background: var(--accent, #0d9488);
   color: white;
   border: none;
   border-radius: 8px;
@@ -491,7 +498,7 @@
 }
 
 .return-btn:hover {
-  background: var(--accent-hover);
+  background: var(--accent-hover, #14b8a6);
 }
 
 @keyframes fadeIn {

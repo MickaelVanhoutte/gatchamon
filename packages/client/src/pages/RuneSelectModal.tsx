@@ -5,6 +5,7 @@ import { POKEDEX } from '@gatchamon/shared';
 import type { OwnedPokemon } from '../stores/gameStore';
 import { useGameStore } from '../stores/gameStore';
 import { RuneCard } from '../components/rune/RuneCard';
+import { GameIcon } from '../components/icons';
 import './RuneSelectModal.css';
 
 const STAT_LABELS: Record<keyof BaseStats, string> = {
@@ -89,7 +90,7 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
       <div className="rune-select-modal" onClick={e => e.stopPropagation()}>
         <div className="rune-select-header">
           <h3>Select Item for Slot {slot}</h3>
-          <button className="rune-select-close" onClick={onClose}>&#x2715;</button>
+          <button className="rune-select-close" onClick={onClose}><GameIcon id="close" size={18} /></button>
         </div>
 
         {/* Filters */}
@@ -186,7 +187,7 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
                 }, 0);
                 return confirmBulkSell ? (
                   <div className="rune-sell-confirm" style={{ flex: 1 }}>
-                    <span>Sell {sellSelection.size} items for {totalValue.toLocaleString()} ✦?</span>
+                    <span>Sell {sellSelection.size} items for {totalValue.toLocaleString()} <GameIcon id="stardust" size={12} />?</span>
                     <button className="rune-sell-yes" onClick={() => {
                       storeSellItems(Array.from(sellSelection));
                       setSellMode(false);
@@ -202,7 +203,7 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
                     disabled={sellSelection.size === 0}
                     onClick={() => setConfirmBulkSell(true)}
                   >
-                    Sell {sellSelection.size} items ({totalValue.toLocaleString()} ✦)
+                    Sell {sellSelection.size} items ({totalValue.toLocaleString()} <GameIcon id="stardust" size={12} />)
                   </button>
                 );
               })()}
@@ -215,7 +216,7 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
                   onClick={handleRemove}
                   disabled={playerStardust < ITEM_REMOVAL_COST}
                 >
-                  Remove ({ITEM_REMOVAL_COST.toLocaleString()} ✦)
+                  Remove ({ITEM_REMOVAL_COST.toLocaleString()} <GameIcon id="stardust" size={12} />)
                 </button>
               )}
               <button

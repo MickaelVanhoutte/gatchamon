@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import type { OwnedPokemon } from '../../stores/gameStore';
+import { StarRating } from '../icons';
 import { assetUrl } from '../../utils/asset-url';
 import './IslandMonster.css';
 
@@ -35,8 +36,6 @@ export function IslandMonster({ owned, positionIndex }: IslandMonsterProps) {
     };
   }, []);
 
-  const stars = '★'.repeat(owned.instance.stars);
-
   return (
     <div
       className="island-monster"
@@ -44,7 +43,7 @@ export function IslandMonster({ owned, positionIndex }: IslandMonsterProps) {
       onClick={handleTap}
     >
       <div className={`island-monster-label ${showLabel ? 'visible' : ''}`}>
-        {owned.template.name} <span style={{ color: '#ffd700' }}>{stars}</span>
+        {owned.template.name} <span style={{ color: '#ffd700' }}><StarRating count={owned.instance.stars} size={10} /></span>
       </div>
       <div className={`island-monster-sprite-wrap roam-${positionIndex % 6}`}>
         <img

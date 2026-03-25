@@ -3,6 +3,7 @@ import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
 import { SummonPortal } from '../components/summon/SummonPortal';
 import { SummonRevealSequence } from '../components/summon/SummonRevealSequence';
 import { SummonResult } from '../components/summon/SummonResult';
+import { GameIcon } from '../components/icons';
 import './SummonPage.css';
 
 type Phase = 'idle' | 'summoning' | 'revealing' | 'done';
@@ -50,7 +51,7 @@ export function SummonPage() {
       <div className="summon-header">
         <h2>Summon</h2>
         <div className="pokeball-count">
-          <span className="pokeball-icon" />
+          <GameIcon id="pokeball" size={14} />
           {player.pokeballs}
         </div>
       </div>
@@ -65,7 +66,7 @@ export function SummonPage() {
               disabled={player.pokeballs < 5}
             >
               <span className="btn-label">Summon x1</span>
-              <span className="btn-cost">5 <span className="pokeball-icon" /></span>
+              <span className="btn-cost">5 <GameIcon id="pokeball" size={14} /></span>
             </button>
             <button
               className="summon-btn summon-multi"
@@ -73,7 +74,7 @@ export function SummonPage() {
               disabled={player.pokeballs < 45}
             >
               <span className="btn-label">Summon x10</span>
-              <span className="btn-cost">45 <span className="pokeball-icon" /></span>
+              <span className="btn-cost">45 <GameIcon id="pokeball" size={14} /></span>
             </button>
           </div>
           {error && <p className="summon-error">{error}</p>}

@@ -14,8 +14,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 4px 12px;
-  background: rgba(0, 0, 0, 0.5);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--card-border);
 }
 
 .box-title {
@@ -41,10 +41,10 @@
 
 .pdex-nav-btn {
   padding: 4px 10px;
-  background: rgba(79, 195, 247, 0.15);
-  border: 1px solid rgba(79, 195, 247, 0.3);
+  background: rgba(13, 148, 136, 0.1);
+  border: 1px solid rgba(13, 148, 136, 0.3);
   border-radius: 6px;
-  color: #4fc3f7;
+  color: var(--accent);
   font-size: 0.7rem;
   font-weight: 700;
   cursor: pointer;
@@ -52,7 +52,7 @@
 }
 
 .pdex-nav-btn:hover {
-  background: rgba(79, 195, 247, 0.25);
+  background: rgba(13, 148, 136, 0.2);
 }
 
 /* Main split layout */
@@ -67,7 +67,7 @@
   flex: 1;
   overflow-y: auto;
   padding: 4px;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--bg-primary);
 }
 
 .box-grid {
@@ -84,7 +84,7 @@
   align-items: center;
   background: var(--bg-card);
   border-radius: 4px;
-  border: 2px solid rgba(255, 255, 255, 0.08);
+  border: 2px solid var(--card-border);
   cursor: pointer;
   padding: 1px;
   height: 72px;
@@ -93,12 +93,12 @@
 }
 
 .box-cell:hover {
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: var(--accent);
 }
 
 .box-cell--selected {
-  border-color: #4fc3f7;
-  box-shadow: 0 0 8px rgba(79, 195, 247, 0.4);
+  border-color: var(--accent);
+  box-shadow: 0 0 8px rgba(13, 148, 136, 0.4);
 }
 
 /* Stars inside cell */
@@ -126,8 +126,8 @@
   left: 2px;
   font-size: 0.5rem;
   font-weight: 700;
-  color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  color: var(--text-primary);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
   display: flex;
   align-items: center;
   gap: 1px;
@@ -143,8 +143,8 @@
   flex-shrink: 0;
   display: flex;
   flex-direction: row;
-  background: rgba(20, 20, 40, 0.95);
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-card);
+  border-left: 1px solid var(--card-border);
   overflow: hidden;
 }
 
@@ -153,15 +153,15 @@
   flex-direction: column;
   gap: 2px;
   padding: 4px;
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--bg-secondary);
   width: 48px;
   flex-shrink: 0;
 }
 
 .box-tab {
   padding: 8px 4px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
   border-radius: 6px;
   color: var(--text-secondary);
   font-size: 0.65rem;
@@ -172,13 +172,13 @@
 }
 
 .box-tab:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-primary);
 }
 
 .box-tab--active {
-  background: rgba(79, 195, 247, 0.15);
-  border-color: #4fc3f7;
-  color: #4fc3f7;
+  background: rgba(13, 148, 136, 0.1);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 /* Detail content (right of tabs) */
@@ -232,7 +232,7 @@
 .box-detail-exp-bar {
   flex: 1;
   height: 12px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.06);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -249,9 +249,10 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--bg-primary);
   border-radius: 8px;
   padding: 6px 8px;
+  border: 1px solid var(--card-border);
 }
 
 .box-stat-row {
@@ -259,7 +260,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 3px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--card-border);
 }
 
 .box-stat-row:last-child {
@@ -296,7 +297,7 @@
 /* Filters */
 .box-filters {
   padding: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--card-border);
 }
 
 .box-filter-row {
@@ -308,8 +309,8 @@
 .box-type-select {
   flex: 1;
   padding: 5px 6px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
   border-radius: 6px;
   color: var(--text-primary);
   font-size: 0.7rem;
@@ -335,13 +336,14 @@
 }
 
 .skill-card {
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--bg-card);
   border-radius: 8px;
   padding: 8px;
   display: flex;
   flex-direction: column;
   gap: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
 }
 
 .skill-card-header {
@@ -353,8 +355,8 @@
 .skill-card-index {
   font-size: 0.6rem;
   font-weight: 800;
-  color: #4fc3f7;
-  background: rgba(79, 195, 247, 0.15);
+  color: var(--accent);
+  background: rgba(13, 148, 136, 0.1);
   padding: 2px 5px;
   border-radius: 4px;
   flex-shrink: 0;
@@ -393,7 +395,7 @@
   display: flex;
   justify-content: space-between;
   padding: 2px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--card-border);
 }
 
 .skill-meta-row:last-child {
@@ -501,12 +503,12 @@
 .box-max-stars-badge {
   text-align: center;
   padding: 6px;
-  background: rgba(255, 107, 107, 0.15);
-  border: 1px solid rgba(255, 107, 107, 0.3);
+  background: rgba(13, 148, 136, 0.1);
+  border: 1px solid rgba(13, 148, 136, 0.3);
   border-radius: 8px;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #ff6b6b;
+  color: var(--accent);
 }
 
 /* ========== Merge mode grid ========== */
@@ -549,13 +551,13 @@
 }
 
 .box-evo-option {
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--bg-primary);
   border-radius: 8px;
   padding: 8px;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--card-border);
 }
 
 .box-evo-header {
@@ -617,7 +619,7 @@
 }
 
 .box-evo-btn:disabled {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--bg-secondary);
   color: var(--text-secondary);
   cursor: not-allowed;
 }
@@ -634,12 +636,13 @@
 }
 
 .merge-dialog {
-  background: var(--bg-secondary);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
   padding: 20px;
   max-width: 340px;
   width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .merge-dialog h3 {
@@ -683,7 +686,7 @@
 }
 
 .merge-cancel {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-secondary);
   color: var(--text-secondary);
 }
 

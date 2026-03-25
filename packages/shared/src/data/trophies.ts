@@ -7,7 +7,7 @@ export const TROPHIES: TrophyDefinition[] = [
     category: 'summon',
     name: 'Summoner',
     description: 'Summon {threshold} monsters',
-    icon: '\u25C9',
+    icon: 'summon',
     tiers: [
       { threshold: 10, reward: { pokeballs: 10, trainerXp: 50 } },
       { threshold: 50, reward: { pokeballs: 25, trainerXp: 100 } },
@@ -23,7 +23,7 @@ export const TROPHIES: TrophyDefinition[] = [
     category: 'collection',
     name: 'Collector',
     description: 'Own {threshold} unique monsters',
-    icon: '\u25A4',
+    icon: 'collection',
     tiers: [
       { threshold: 10, reward: { pokeballs: 15, trainerXp: 50 } },
       { threshold: 30, reward: { pokeballs: 30, trainerXp: 100, essences: { grass_low: 3, fire_low: 3, water_low: 3 } } },
@@ -38,7 +38,7 @@ export const TROPHIES: TrophyDefinition[] = [
     category: 'battle',
     name: 'Story Warrior',
     description: 'Win {threshold} story battles',
-    icon: '\u2694',
+    icon: 'swords',
     tiers: [
       { threshold: 10, reward: { pokeballs: 10, trainerXp: 50 } },
       { threshold: 50, reward: { pokeballs: 25, trainerXp: 150, essences: { magic_low: 3 } } },
@@ -51,7 +51,7 @@ export const TROPHIES: TrophyDefinition[] = [
     category: 'battle',
     name: 'Dungeon Crawler',
     description: 'Complete {threshold} dungeon battles',
-    icon: '\u{1F3DB}',
+    icon: 'dungeon',
     tiers: [
       { threshold: 10, reward: { pokeballs: 10, trainerXp: 50 } },
       { threshold: 50, reward: { pokeballs: 25, trainerXp: 150, heldItem: { setId: 'leftovers', stars: 2, grade: 'rare' } } },
@@ -63,7 +63,7 @@ export const TROPHIES: TrophyDefinition[] = [
     category: 'battle',
     name: 'Boss Slayer',
     description: 'Defeat {threshold} bosses',
-    icon: '\u{1F451}',
+    icon: 'crown',
     tiers: [
       { threshold: 5, reward: { pokeballs: 15, trainerXp: 75 } },
       { threshold: 15, reward: { pokeballs: 30, trainerXp: 150, essences: { magic_mid: 3 } } },
@@ -78,7 +78,7 @@ export const TROPHIES: TrophyDefinition[] = [
     category: 'misc',
     name: 'Evolver',
     description: 'Evolve {threshold} monsters',
-    icon: '\u{1F300}',
+    icon: 'evolve',
     tiers: [
       { threshold: 5, reward: { pokeballs: 10, trainerXp: 75 } },
       { threshold: 15, reward: { pokeballs: 25, trainerXp: 150, essences: { magic_low: 5 } } },
@@ -90,7 +90,7 @@ export const TROPHIES: TrophyDefinition[] = [
     category: 'misc',
     name: 'Merger',
     description: 'Merge {threshold} monsters',
-    icon: '\u2B06',
+    icon: 'merge',
     tiers: [
       { threshold: 10, reward: { pokeballs: 10, trainerXp: 75 } },
       { threshold: 30, reward: { pokeballs: 20, trainerXp: 150, heldItem: { setId: 'focus_sash', stars: 1, grade: 'common' } } },
@@ -102,7 +102,7 @@ export const TROPHIES: TrophyDefinition[] = [
     category: 'misc',
     name: 'Lucky Hunter',
     description: 'Loot {threshold} monsters from battles',
-    icon: '\u{1F340}',
+    icon: 'clover',
     tiers: [
       { threshold: 1, reward: { pokeballs: 20, trainerXp: 50 } },
       { threshold: 5, reward: { pokeballs: 50, trainerXp: 150, essences: { magic_low: 5 } } },
@@ -116,7 +116,7 @@ export const TROPHIES: TrophyDefinition[] = [
     category: 'progression',
     name: 'Region Master',
     description: 'Clear {threshold} regions on Normal',
-    icon: '\u2B50',
+    icon: 'star',
     tiers: [
       { threshold: 3, reward: { pokeballs: 20, trainerXp: 100 } },
       { threshold: 6, reward: { pokeballs: 40, trainerXp: 200, essences: { fire_mid: 3, water_mid: 3, grass_mid: 3 } } },
@@ -129,7 +129,7 @@ export const TROPHIES: TrophyDefinition[] = [
     category: 'progression',
     name: 'Region Conqueror',
     description: 'Clear {threshold} regions on Hard',
-    icon: '\u{1F525}',
+    icon: 'fire',
     tiers: [
       { threshold: 3, reward: { pokeballs: 30, trainerXp: 150 } },
       { threshold: 6, reward: { pokeballs: 60, trainerXp: 300, essences: { fire_mid: 5, water_mid: 5, grass_mid: 5 } } },
@@ -142,7 +142,7 @@ export const TROPHIES: TrophyDefinition[] = [
     category: 'progression',
     name: 'Region Overlord',
     description: 'Clear {threshold} regions on Hell',
-    icon: '\u{1F480}',
+    icon: 'skull',
     tiers: [
       { threshold: 3, reward: { pokeballs: 50, trainerXp: 200 } },
       { threshold: 6, reward: { pokeballs: 100, trainerXp: 400, essences: { magic_high: 3 } } },
