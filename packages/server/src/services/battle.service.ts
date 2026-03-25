@@ -26,6 +26,7 @@ interface FloorEnemy {
   templateId: number;
   level: number;
   stars: 1 | 2 | 3;
+  isBoss?: boolean;
 }
 
 export interface FloorDef {
@@ -70,20 +71,44 @@ export function buildFloorEnemies(regionId: number, floor: number, difficulty: D
   const difficultyBonus = DIFFICULTY_LEVEL_BONUS[difficulty];
 
   if (floor === 10) {
-    // Boss floor — single strong enemy
+    // Boss floor — strong boss flanked by companions
     const bossLevel = regionBase + floorBonus + difficultyBonus + 5;
     const baseStars = getBaseStars(regionId, true);
     const starBoost = difficulty === 'hell' ? 1 : difficulty === 'hard' ? 1 : 0;
     const bossStars = clampStars(baseStars + starBoost);
 
-    return {
-      enemies: [{
-        templateId: pickSeeded(region.bossPool, regionId, floor, 0),
-        level: bossLevel,
-        stars: bossStars,
-      }],
+    const companionLevel = regionBase + floorBonus + difficultyBonus;
+    const companionStars = getBaseStars(regionId, false);
+
+    const enemies: FloorEnemy[] = [];
+
+    // Left companion
+    if (region.bossCompanions.length > 0) {
+      enemies.push({
+        templateId: region.bossCompanions[0],
+        level: companionLevel,
+        stars: companionStars,
+      });
+    }
+
+    // Boss (center)
+    enemies.push({
+      templateId: pickSeeded(region.bossPool, regionId, floor, 0),
+      level: bossLevel,
+      stars: bossStars,
       isBoss: true,
-    };
+    });
+
+    // Right companion
+    if (region.bossCompanions.length > 1) {
+      enemies.push({
+        templateId: region.bossCompanions[1],
+        level: companionLevel,
+        stars: companionStars,
+      });
+    }
+
+    return { enemies, isBoss: true };
   }
 
   // Normal floors
@@ -721,7 +746,9 @@ export function startBattle(
 
   const enemyTeam: BattleMon[] = floorDef.enemies.map(e => {
     const id = `enemy_${uuidv4()}`;
-    return makeBattleMon(id, e.templateId, e.level, e.stars, false);
+    const mon = makeBattleMon(id, e.templateId, e.level, e.stars, false);
+    if (e.isBoss) mon.isBoss = true;
+    return mon;
   });
 
   const battleId = uuidv4();

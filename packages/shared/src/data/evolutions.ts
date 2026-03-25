@@ -549,3 +549,9 @@ export function getEvolutionLineage(templateId: number): number[] {
   }
   return lineage;
 }
+
+// Primal evolution chains
+EVOLUTION_CHAINS.push(
+  { from: 384, to: 383, requirements: { essences: { ground_high: 15, fire_high: 10, magic_high: 8 }, levelRequired: 30 } },
+  { from: 386, to: 382, requirements: { essences: { water_high: 15, magic_high: 8 }, levelRequired: 30 } },
+);

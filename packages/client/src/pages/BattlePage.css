@@ -244,6 +244,33 @@
   font-weight: 600;
 }
 
+/* Boss monster — larger container and sprite */
+.battle-mon.boss-mon {
+  width: clamp(140px, 22vw, 240px);
+}
+
+.boss-mon .battle-sprite {
+  width: clamp(110px, 18vw, 200px);
+  height: clamp(110px, 18vw, 200px);
+}
+
+.boss-mon .mon-name {
+  font-size: 0.85rem;
+  color: #ff6b6b;
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(255, 107, 107, 0.5), 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.boss-mon .mon-hp-bar-bg {
+  width: 90%;
+  height: 8px;
+}
+
+.boss-mon .mon-hp-text {
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
 /* Skill panel — bottom-right overlay like SW */
 .skill-panel {
   position: absolute;

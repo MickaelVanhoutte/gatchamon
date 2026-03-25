@@ -6,6 +6,7 @@ import * as playerService from '../services/player.service';
 import * as gachaService from '../services/gacha.service';
 import * as mergeService from '../services/merge.service';
 import * as evolutionService from '../services/evolution.service';
+import * as typeChangeService from '../services/type-change.service';
 import * as runeService from '../services/rune.service';
 import { regenerateEnergy } from '../services/energy.service';
 import { getUnclaimedMissionCount, getUnclaimedTrophyCount } from '../services/reward.service';
@@ -29,6 +30,7 @@ interface GameState {
   loadCollection: () => void;
   mergePokemon: (baseId: string, fodderId: string) => void;
   evolvePokemon: (instanceId: string, targetTemplateId: number) => void;
+  changeType: (instanceId: string, targetTemplateId: number) => void;
   refreshRewards: () => void;
   loadHeldItems: () => void;
   equipItem: (itemId: string, pokemonInstanceId: string) => void;
@@ -135,6 +137,14 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   evolvePokemon: (instanceId: string, targetTemplateId: number) => {
     evolutionService.performEvolution(instanceId, targetTemplateId);
+    const updatedPlayer = storage.loadPlayer();
+    set({ player: updatedPlayer });
+    get().loadCollection();
+    get().refreshRewards();
+  },
+
+  changeType: (instanceId: string, targetTemplateId: number) => {
+    typeChangeService.performTypeChange(instanceId, targetTemplateId);
     const updatedPlayer = storage.loadPlayer();
     set({ player: updatedPlayer });
     get().loadCollection();

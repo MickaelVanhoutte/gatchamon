@@ -13,6 +13,7 @@ export interface BattleMon {
   debuffs: ActiveEffect[];
   isAlive: boolean;
   actionGauge: number;
+  isBoss?: boolean;
 }
 
 export interface ActiveEffect {

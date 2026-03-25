@@ -872,7 +872,9 @@ export function startBattle(
 
   const enemyTeam: BattleMon[] = floorDef.enemies.map(e => {
     const id = `enemy_${crypto.randomUUID()}`;
-    return makeBattleMon(id, e.templateId, e.level, e.stars, false);
+    const mon = makeBattleMon(id, e.templateId, e.level, e.stars, false);
+    if (e.isBoss) mon.isBoss = true;
+    return mon;
   });
 
   const battleId = crypto.randomUUID();
@@ -948,11 +950,17 @@ export function startDungeonBattle(
   const floor = dungeonDef.floors[floorIndex];
   if (!floor) throw new Error(`Invalid dungeon floor ${floorIndex}`);
 
+  const isLastFloor = floorIndex === dungeonDef.floors.length - 1;
+  const bossIndex = Math.floor(floor.enemies.length / 2);
+
   const enemyTeam: BattleMon[] = [];
-  for (const templateId of floor.enemies) {
+  for (let i = 0; i < floor.enemies.length; i++) {
+    const templateId = floor.enemies[i];
     const template = getTemplate(templateId);
     const id = `dungeon_enemy_${crypto.randomUUID()}`;
-    enemyTeam.push(makeBattleMon(id, templateId, floor.enemyLevel, template.naturalStars, false));
+    const mon = makeBattleMon(id, templateId, floor.enemyLevel, template.naturalStars, false);
+    if (isLastFloor && i === bossIndex) mon.isBoss = true;
+    enemyTeam.push(mon);
   }
 
   const battleId = crypto.randomUUID();
@@ -1027,11 +1035,17 @@ export function startItemDungeonBattle(
   const floor = dungeonDef.floors[floorIndex];
   if (!floor) throw new Error(`Invalid dungeon floor ${floorIndex}`);
 
+  const isLastFloor = floorIndex === dungeonDef.floors.length - 1;
+  const bossIndex = Math.floor(floor.enemies.length / 2);
+
   const enemyTeam: BattleMon[] = [];
-  for (const templateId of floor.enemies) {
+  for (let i = 0; i < floor.enemies.length; i++) {
+    const templateId = floor.enemies[i];
     const template = getTemplate(templateId);
     const id = `item_dungeon_enemy_${crypto.randomUUID()}`;
-    enemyTeam.push(makeBattleMon(id, templateId, floor.enemyLevel, template.naturalStars, false));
+    const mon = makeBattleMon(id, templateId, floor.enemyLevel, template.naturalStars, false);
+    if (isLastFloor && i === bossIndex) mon.isBoss = true;
+    enemyTeam.push(mon);
   }
 
   const battleId = crypto.randomUUID();

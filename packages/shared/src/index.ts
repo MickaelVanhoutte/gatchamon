@@ -18,3 +18,5 @@ export { computeStatsWithItems, getActiveSetEffects, getUpgradeCost, getUpgradeS
 export * from './types/rewards.js';
 export { MISSION_POOL, ALL_DAILIES_BONUS, DAILY_MISSION_COUNT, selectDailyMissions } from './data/missions.js';
 export { TROPHIES, getTrophyStat } from './data/trophies.js';
+export * from './types/type-change.js';
+export { TYPE_CHANGE_DEFS, getTypeChangeDef, getCurrentFormType, getAvailableTypeChanges, getTypeChangeCost } from './data/type-changes.js';

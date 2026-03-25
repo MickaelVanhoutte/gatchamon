@@ -422,12 +422,14 @@ function BattleMonSprite({
     : null;
 
   // Scale sprite based on species height: small Pokemon ~0.6x, large ~1.3x
-  const sizeScale = Math.min(1.3, Math.max(0.6, 0.4 + (tmpl.height ?? 1) * 0.4));
+  // Boss monsters get a 1.8x multiplier for dramatic visual impact
+  const baseSizeScale = Math.min(1.3, Math.max(0.6, 0.4 + (tmpl.height ?? 1) * 0.4));
+  const sizeScale = mon.isBoss ? baseSizeScale * 1.8 : baseSizeScale;
 
   return (
     <div
       ref={registerRef}
-      className={`battle-mon ${!mon.isAlive ? 'dead' : ''} ${isTargetable ? 'targetable' : ''} ${isActive ? 'active-mon' : ''}`}
+      className={`battle-mon ${!mon.isAlive ? 'dead' : ''} ${isTargetable ? 'targetable' : ''} ${isActive ? 'active-mon' : ''} ${mon.isBoss ? 'boss-mon' : ''}`}
       onClick={mon.isAlive && isTargetable ? onClick : undefined}
     >
       {effectiveness !== null && mon.isAlive && (

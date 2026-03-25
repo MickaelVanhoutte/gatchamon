@@ -39,12 +39,18 @@ function generateDungeonEnemies(dungeonDef: DungeonDef, floorIndex: number): Bat
   const floor = dungeonDef.floors[floorIndex];
   if (!floor) throw new Error(`Invalid floor ${floorIndex}`);
 
+  const isLastFloor = floorIndex === dungeonDef.floors.length - 1;
+  const bossIndex = Math.floor(floor.enemies.length / 2);
+
   const enemies: BattleMon[] = [];
-  for (const templateId of floor.enemies) {
+  for (let i = 0; i < floor.enemies.length; i++) {
+    const templateId = floor.enemies[i];
     const template = getTemplate(templateId);
     const id = `dungeon_enemy_${crypto.randomUUID()}`;
     const stars = template.naturalStars;
-    enemies.push(makeBattleMon(id, templateId, floor.enemyLevel, stars, false));
+    const mon = makeBattleMon(id, templateId, floor.enemyLevel, stars, false);
+    if (isLastFloor && i === bossIndex) mon.isBoss = true;
+    enemies.push(mon);
   }
   return enemies;
 }

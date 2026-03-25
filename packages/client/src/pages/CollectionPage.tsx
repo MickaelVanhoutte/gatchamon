@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import type { OwnedPokemon } from '../stores/gameStore';
-import { computeStats, getSkillsForPokemon, MAX_LEVEL_BY_STARS, isMaxLevel, getTemplate, ESSENCES, getEvolutionsFrom } from '@gatchamon/shared';
+import { computeStats, getSkillsForPokemon, MAX_LEVEL_BY_STARS, isMaxLevel, getTemplate, ESSENCES, getEvolutionsFrom, getTypeChangeDef, getAvailableTypeChanges } from '@gatchamon/shared';
 import { canMerge } from '../services/merge.service';
 import { canEvolveInstance } from '../services/evolution.service';
+import { canChangeType } from '../services/type-change.service';
 import type { PokemonType, BaseStats, SkillDefinition, EvolutionChain } from '@gatchamon/shared';
 import { assetUrl } from '../utils/asset-url';
 import { RuneEquipPanel } from './RuneEquipPanel';
@@ -39,7 +40,7 @@ const STAT_LABELS: Record<keyof BaseStats, string> = {
 };
 
 export function CollectionPage() {
-  const { collection, loadCollection, mergePokemon, evolvePokemon, player, heldItems, loadHeldItems } = useGameStore();
+  const { collection, loadCollection, mergePokemon, evolvePokemon, changeType, player, heldItems, loadHeldItems } = useGameStore();
   const [typeFilter, setTypeFilter] = useState<PokemonType | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>('stars');
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -98,6 +99,13 @@ export function CollectionPage() {
   // Evolution data
   const evolutionOptions = selected ? getEvolutionsFrom(selected.instance.templateId) : [];
   const hasEvolutions = evolutionOptions.length > 0;
+
+  // Type change data
+  const typeChangeDef = selected ? getTypeChangeDef(selected.instance.templateId) : undefined;
+  const typeChangeOptions = (selected && typeChangeDef)
+    ? getAvailableTypeChanges(typeChangeDef, selected.instance.templateId)
+    : [];
+  const hasTypeChange = typeChangeOptions.length > 0;
 
   function handleCellClick(mon: OwnedPokemon) {
     if (mergeMode && selected) {
@@ -305,6 +313,61 @@ export function CollectionPage() {
                               }}
                             >
                               {validation.valid ? 'Evolve' : 'Requirements not met'}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Type Change section */}
+                  {hasTypeChange && player && (
+                    <div className="box-evolution">
+                      <span className="box-evo-label">Type Change</span>
+                      {typeChangeOptions.map(option => {
+                        const targetTemplate = getTemplate(option.targetTemplateId);
+                        if (!targetTemplate) return null;
+                        const validation = canChangeType(selected.instance, player, option.targetTemplateId);
+                        const materials = player.materials ?? {};
+                        const isFree = Object.keys(option.cost.essences).length === 0;
+                        return (
+                          <div key={option.targetTemplateId} className="box-evo-option">
+                            <div className="box-evo-header">
+                              <img src={assetUrl(targetTemplate.spriteUrl)} alt={targetTemplate.name} className="box-evo-sprite" />
+                              <span className="box-evo-name">{targetTemplate.name}</span>
+                            </div>
+                            <div className="box-evo-reqs">
+                              {isFree ? (
+                                <div className="box-evo-req-row">
+                                  <span>Cost</span>
+                                  <span className="req-met">Free</span>
+                                </div>
+                              ) : (
+                                Object.entries(option.cost.essences).map(([essId, needed]) => {
+                                  const ess = ESSENCES[essId];
+                                  const owned = materials[essId] ?? 0;
+                                  return (
+                                    <div key={essId} className="box-evo-req-row">
+                                      <span>{ess?.icon} {ess?.name ?? essId}</span>
+                                      <span className={owned >= needed ? 'req-met' : 'req-unmet'}>
+                                        {owned}/{needed}
+                                      </span>
+                                    </div>
+                                  );
+                                })
+                              )}
+                            </div>
+                            <button
+                              className="box-evo-btn"
+                              disabled={!validation.valid}
+                              onClick={() => {
+                                if (confirm(`Change ${selected.template.name} to ${targetTemplate.name}?`)) {
+                                  changeType(selected.instance.instanceId, option.targetTemplateId);
+                                  setSelectedId(selected.instance.instanceId);
+                                }
+                              }}
+                            >
+                              {validation.valid ? 'Change Type' : 'Requirements not met'}
                             </button>
                           </div>
                         );
