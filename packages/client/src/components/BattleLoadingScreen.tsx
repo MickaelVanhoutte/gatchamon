@@ -18,25 +18,35 @@ export function BattleLoadingScreen({ assetUrls, onReady }: BattleLoadingScreenP
     let loaded = 0;
     const total = assetUrls.length;
     let done = false;
+    const startTime = Date.now();
+    const MIN_DISPLAY = 800; // minimum ms to show loading screen
 
     const markDone = () => {
       if (done) return;
       done = true;
       setProgress(100);
-      setTimeout(onReady, 200);
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, MIN_DISPLAY - elapsed);
+      setTimeout(onReady, remaining);
     };
 
     // Timeout fallback
-    const timeout = setTimeout(markDone, 5000);
+    const timeout = setTimeout(markDone, 8000);
 
+    // Use fetch to fully download each asset (not just first frame of GIFs)
     for (const url of assetUrls) {
-      const img = new Image();
-      img.onload = img.onerror = () => {
-        loaded++;
-        setProgress(Math.floor((loaded / total) * 100));
-        if (loaded >= total) markDone();
-      };
-      img.src = url;
+      fetch(url)
+        .then(r => r.blob())
+        .then(() => {
+          loaded++;
+          setProgress(Math.floor((loaded / total) * 100));
+          if (loaded >= total) markDone();
+        })
+        .catch(() => {
+          loaded++;
+          setProgress(Math.floor((loaded / total) * 100));
+          if (loaded >= total) markDone();
+        });
     }
 
     return () => clearTimeout(timeout);
