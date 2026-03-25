@@ -16,6 +16,15 @@
   z-index: 1;
 }
 
+/* Darkening overlay for tension build-up */
+.lightning-darken {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  opacity: 0;
+  z-index: 0;
+}
+
 /* Low-tier soft pop (1-2 stars) */
 .lightning-orb-pop {
   width: 60px;
@@ -38,6 +47,39 @@
     transparent 70%
   );
   z-index: 2;
+}
+
+/* Golden shimmer ring that pulses during tension */
+.lightning-shimmer-ring {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid var(--lightning-color);
+  box-shadow:
+    0 0 20px var(--lightning-glow),
+    0 0 40px var(--lightning-glow),
+    inset 0 0 15px var(--lightning-glow);
+  opacity: 0;
+  z-index: 2;
+}
+
+/* Energy particles that converge to center */
+.lightning-energy-particles {
+  position: absolute;
+  width: 0;
+  height: 0;
+  z-index: 2;
+}
+
+.lightning-energy-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--lightning-color);
+  box-shadow:
+    0 0 10px var(--lightning-glow),
+    0 0 20px var(--lightning-glow);
+  will-change: transform, opacity;
 }
 
 /* Lightning bolts radiating from center */
@@ -84,14 +126,13 @@
   will-change: transform, opacity;
 }
 
-/* 5-star screen crack overlay */
+/* Screen crack overlay (3+ stars, opacity varies by tier) */
 .lightning-crack {
   position: absolute;
   inset: 0;
   opacity: 0;
   z-index: 4;
   background:
-    /* Crack lines using gradients */
     linear-gradient(35deg, transparent 45%, rgba(255, 255, 255, 0.8) 45.5%, rgba(255, 255, 255, 0.8) 46%, transparent 46.5%),
     linear-gradient(155deg, transparent 40%, rgba(255, 255, 255, 0.6) 40.5%, rgba(255, 255, 255, 0.6) 41%, transparent 41.5%),
     linear-gradient(75deg, transparent 52%, rgba(255, 255, 255, 0.7) 52.5%, rgba(255, 255, 255, 0.7) 53%, transparent 53.5%),
@@ -118,6 +159,11 @@
 .tier-purple .lightning-spark {
   background: #c084fc;
   box-shadow: 0 0 6px rgba(192, 132, 252, 0.6);
+}
+
+.tier-purple .lightning-energy-particle {
+  background: #c084fc;
+  box-shadow: 0 0 10px rgba(192, 132, 252, 0.5), 0 0 20px rgba(192, 132, 252, 0.3);
 }
 
 .tier-legendary .lightning-bolt {
@@ -148,4 +194,50 @@
   filter: blur(8px);
   opacity: 0;
   z-index: 5;
+}
+
+/* Shiny prismatic rays radiating from center */
+.lightning-prismatic-rays {
+  position: absolute;
+  width: 0;
+  height: 0;
+  z-index: 5;
+}
+
+.lightning-prismatic-ray {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  transform-origin: bottom center;
+  background: linear-gradient(
+    to top,
+    #ffd700,
+    #ff6b6b 25%,
+    #51cf66 50%,
+    #339af0 75%,
+    transparent
+  );
+  border-radius: 2px;
+  filter: blur(1px);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* Shiny rainbow color wash */
+.lightning-shiny-wash {
+  position: absolute;
+  inset: 0;
+  background: conic-gradient(
+    from 0deg,
+    rgba(255, 107, 107, 0.3),
+    rgba(255, 215, 0, 0.3),
+    rgba(81, 207, 102, 0.3),
+    rgba(51, 154, 240, 0.3),
+    rgba(204, 93, 232, 0.3),
+    rgba(255, 107, 107, 0.3)
+  );
+  mix-blend-mode: color;
+  opacity: 0;
+  z-index: 6;
+  pointer-events: none;
 }

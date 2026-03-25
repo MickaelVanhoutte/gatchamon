@@ -9,7 +9,11 @@ interface Props {
   onAllRevealed: () => void;
 }
 
-type SubPhase = 'lightning' | 'reveal';
+type SubPhase = 'lightning' | 'reveal' | 'waiting';
+
+function isSpecialPull(pokemon: OwnedPokemon): boolean {
+  return pokemon.instance.stars >= 3 || (pokemon.instance.isShiny ?? false);
+}
 
 export function SummonRevealSequence({ results, onAllRevealed }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -20,6 +24,22 @@ export function SummonRevealSequence({ results, onAllRevealed }: Props) {
   }, []);
 
   const handleRevealComplete = useCallback(() => {
+    const current = results[currentIndex];
+    // If this is a special pull in multi-summon, pause and wait for tap
+    if (current && isSpecialPull(current) && results.length > 1) {
+      setSubPhase('waiting');
+      return;
+    }
+    // Otherwise advance normally
+    if (currentIndex < results.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
+      setSubPhase('lightning');
+    } else {
+      onAllRevealed();
+    }
+  }, [currentIndex, results, onAllRevealed]);
+
+  const handleTapToContinue = useCallback(() => {
     if (currentIndex < results.length - 1) {
       setCurrentIndex((prev) => prev + 1);
       setSubPhase('lightning');
@@ -34,6 +54,8 @@ export function SummonRevealSequence({ results, onAllRevealed }: Props) {
 
   const current = results[currentIndex];
   if (!current) return null;
+
+  const special = isSpecialPull(current);
 
   return (
     <div className="reveal-sequence">
@@ -61,12 +83,20 @@ export function SummonRevealSequence({ results, onAllRevealed }: Props) {
         />
       )}
 
-      {subPhase === 'reveal' && (
+      {(subPhase === 'reveal' || subPhase === 'waiting') && (
         <SummonReveal
           key={`reveal-${currentIndex}`}
           pokemon={current}
+          isSpecial={special}
           onComplete={handleRevealComplete}
         />
+      )}
+
+      {/* Tap to continue overlay for special pulls */}
+      {subPhase === 'waiting' && (
+        <div className="tap-to-continue-overlay" onClick={handleTapToContinue}>
+          <div className="tap-to-continue-text">Tap to continue</div>
+        </div>
       )}
     </div>
   );

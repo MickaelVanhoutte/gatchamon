@@ -41,6 +41,8 @@
     drop-shadow(0 0 24px rgba(255, 215, 0, 0.3));
 }
 
+/* Silhouette class removed — GSAP manages the filter transition on the img directly */
+
 /* Shiny sparkle particles orbiting the sprite */
 .reveal-shiny-sparkles {
   position: absolute;
@@ -106,11 +108,11 @@
   filter: drop-shadow(0 0 4px currentColor);
 }
 
-/* Name */
+/* Name - always white since reveal happens on dark background */
 .reveal-name {
   font-size: 1.3rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #ffffff;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
   opacity: 0;
 }

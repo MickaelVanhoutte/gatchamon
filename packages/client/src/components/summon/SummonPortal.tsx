@@ -8,12 +8,12 @@ interface Props {
 }
 
 const PARTICLE_COUNT = 24;
+const WISP_COUNT = 7;
 const MIN_DURATION = 1.8;
 
 export function SummonPortal({ resultsReady, onComplete }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const orbRef = useRef<HTMLDivElement>(null);
-  const ringRef = useRef<HTMLDivElement>(null);
   const circleRef = useRef<HTMLDivElement>(null);
   const animDoneRef = useRef(false);
   const completedRef = useRef(false);
@@ -27,6 +27,17 @@ export function SummonPortal({ resultsReady, onComplete }: Props) {
       radius: 120 + Math.random() * 80,
       size: 3 + Math.random() * 4,
       delay: Math.random() * 0.8,
+      hue: 200 + Math.random() * 60,
+    }))
+  ).current;
+
+  const wisps = useRef(
+    Array.from({ length: WISP_COUNT }, (_, i) => ({
+      id: i,
+      orbitRadius: 55 + Math.random() * 25, // 55-80px from center
+      orbitSpeed: 1.5 + Math.random() * 1.5, // 1.5-3s per revolution
+      startAngle: (360 / WISP_COUNT) * i + Math.random() * 20,
+      size: 4 + Math.random() * 4,
       hue: 200 + Math.random() * 60,
     }))
   ).current;
@@ -45,7 +56,7 @@ export function SummonPortal({ resultsReady, onComplete }: Props) {
   }, [resultsReady, doComplete]);
 
   useEffect(() => {
-    if (!orbRef.current || !ringRef.current || !circleRef.current || !containerRef.current) return;
+    if (!orbRef.current || !circleRef.current || !containerRef.current) return;
 
     // Reset refs in case of strict mode re-mount
     animDoneRef.current = false;
@@ -74,12 +85,15 @@ export function SummonPortal({ resultsReady, onComplete }: Props) {
       0.2
     );
 
-    // Ring spins
-    tl.fromTo(ringRef.current,
-      { scale: 0.5, opacity: 0, rotation: 0 },
-      { scale: 1, opacity: 1, rotation: 360, duration: 1.5, ease: 'power1.inOut' },
-      0.3
-    );
+    // Wisps fade in with stagger
+    const wispEls = containerRef.current.querySelectorAll('.portal-wisp');
+    wispEls.forEach((el, i) => {
+      tl.fromTo(el,
+        { opacity: 0, scale: 0 },
+        { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(2)' },
+        0.3 + i * 0.08
+      );
+    });
 
     // Particles spiral inward
     const particleEls = containerRef.current.querySelectorAll('.portal-particle');
@@ -95,11 +109,17 @@ export function SummonPortal({ resultsReady, onComplete }: Props) {
       );
     });
 
-    // Orb intensifies
+    // Orb intensifies + wisps get absorbed
     tl.to(orbRef.current,
       { scale: 1.3, duration: 0.4, ease: 'power2.in' },
       MIN_DURATION - 0.4
     );
+    wispEls.forEach((el) => {
+      tl.to(el,
+        { scale: 0, opacity: 0, duration: 0.3, ease: 'power2.in' },
+        MIN_DURATION - 0.4
+      );
+    });
 
     // White flash at the end
     tl.fromTo(
@@ -143,9 +163,24 @@ export function SummonPortal({ resultsReady, onComplete }: Props) {
       </div>
 
       <div className="portal-center">
-        <div className="portal-ring" ref={ringRef} />
         <div className="portal-orb-main" ref={orbRef}>
           <div className="portal-orb-core" />
+        </div>
+        <div className="portal-wisps">
+          {wisps.map((w) => (
+            <div
+              key={w.id}
+              className="portal-wisp"
+              style={{
+                '--wisp-orbit-radius': `${w.orbitRadius}px`,
+                '--wisp-orbit-speed': `${w.orbitSpeed}s`,
+                '--wisp-start-angle': `${w.startAngle}deg`,
+                '--wisp-hue': w.hue,
+                width: w.size,
+                height: w.size,
+              } as React.CSSProperties}
+            />
+          ))}
         </div>
         <div className="portal-particles">
           {particles.map((p) => (

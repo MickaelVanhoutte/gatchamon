@@ -73,21 +73,25 @@
   justify-content: center;
 }
 
-/* Rotating ring */
-.portal-ring {
+/* Orbital wisps */
+.portal-wisps {
   position: absolute;
-  width: 140%;
-  height: 140%;
-  border: 2px solid rgba(100, 160, 255, 0.4);
-  border-top-color: rgba(180, 200, 255, 0.8);
-  border-radius: 50%;
-  opacity: 0;
-  animation: ring-spin 1.5s linear infinite;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
 }
 
-@keyframes ring-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.portal-wisp {
+  position: absolute;
+  border-radius: 50%;
+  background: hsl(var(--wisp-hue, 220), 80%, 75%);
+  box-shadow:
+    0 0 8px hsl(var(--wisp-hue, 220), 80%, 65%),
+    0 0 16px hsl(var(--wisp-hue, 220), 70%, 55%);
+  opacity: 0;
+  animation: wisp-orbit var(--wisp-orbit-speed, 2s) linear infinite;
 }
 
 /* Main orb */
@@ -151,4 +155,13 @@
   background: hsl(var(--hue, 220), 80%, 70%);
   box-shadow: 0 0 6px hsl(var(--hue, 220), 80%, 60%);
   opacity: 0;
+}
+
+@keyframes wisp-orbit {
+  from {
+    transform: rotate(var(--wisp-start-angle, 0deg)) translateX(var(--wisp-orbit-radius, 60px));
+  }
+  to {
+    transform: rotate(calc(var(--wisp-start-angle, 0deg) + 360deg)) translateX(var(--wisp-orbit-radius, 60px));
+  }
 }

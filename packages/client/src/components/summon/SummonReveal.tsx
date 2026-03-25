@@ -7,6 +7,7 @@ import './SummonReveal.css';
 
 interface Props {
   pokemon: OwnedPokemon;
+  isSpecial?: boolean;
   onComplete: () => void;
 }
 
@@ -18,7 +19,7 @@ const STAR_COLORS: Record<number, string> = {
   5: '#fbbf24',
 };
 
-export function SummonReveal({ pokemon, onComplete }: Props) {
+export function SummonReveal({ pokemon, isSpecial = false, onComplete }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const spriteRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
@@ -38,59 +39,149 @@ export function SummonReveal({ pokemon, onComplete }: Props) {
 
     const tl = gsap.timeline({
       onComplete: () => {
-        // Hold for a moment then complete
         gsap.delayedCall(0.6, onComplete);
       },
     });
     tlRef.current = tl;
 
-    // Glow expands from center
-    if (glowRef.current) {
-      tl.fromTo(
-        glowRef.current,
-        { scale: 0.3, opacity: 0.8 },
-        { scale: 1.5, opacity: 0.3, duration: 0.5, ease: 'power2.out' },
-        0
-      );
-    }
+    if (isSpecial) {
+      // === SPECIAL REVEAL: Silhouette-first with dramatic timing ===
 
-    // Monster sprite materializes with overshoot bounce
-    if (spriteRef.current) {
-      tl.fromTo(
-        spriteRef.current,
-        { scale: 0, opacity: 0, filter: 'brightness(3)' },
-        {
-          scale: 1,
-          opacity: 1,
-          filter: 'brightness(1)',
-          duration: 0.6,
-          ease: 'back.out(1.8)',
-        },
-        0.1
-      );
-    }
-
-    // Stars pop in one by one
-    if (starsRef.current) {
-      const starEls = starsRef.current.querySelectorAll('.reveal-star');
-      starEls.forEach((el, i) => {
-        tl.fromTo(
-          el,
-          { scale: 0, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 0.15, ease: 'back.out(3)' },
-          0.5 + i * 0.08
+      // Background glow starts small and dim
+      if (glowRef.current) {
+        tl.fromTo(glowRef.current,
+          { scale: 0.2, opacity: 0.3 },
+          { scale: 0.8, opacity: 0.2, duration: 0.6, ease: 'power2.out' },
+          0
         );
-      });
-    }
+      }
 
-    // Name fades in
-    if (nameRef.current) {
-      tl.fromTo(
-        nameRef.current,
-        { opacity: 0, y: 10 },
-        { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' },
-        0.6
-      );
+      // Sprite wrapper: scale/opacity animation
+      if (spriteRef.current) {
+        const imgEl = spriteRef.current.querySelector('img');
+
+        tl.fromTo(spriteRef.current,
+          { scale: 0, opacity: 0 },
+          {
+            scale: 1,
+            opacity: 1,
+            duration: 0.8,
+            ease: 'back.out(1.4)',
+          },
+          0.1
+        );
+
+        // Filter animations target the img directly so CSS specificity doesn't interfere
+        if (imgEl) {
+          // Start as black silhouette with colored glow
+          tl.set(imgEl, { filter: `brightness(0) drop-shadow(0 0 20px ${starColor})` }, 0.1);
+
+          // Silhouette pulses subtly during hold (0.9s to 2.0s)
+          tl.to(imgEl,
+            { filter: `brightness(0.05) drop-shadow(0 0 30px ${starColor})`, duration: 0.3, yoyo: true, repeat: 1, ease: 'sine.inOut' },
+            1.0
+          );
+
+          // Flash bright reveal at 2.0s
+          tl.to(imgEl,
+            { filter: 'brightness(3) drop-shadow(0 0 40px rgba(255,255,255,0.9))', duration: 0.2, ease: 'power3.in' },
+            2.0
+          );
+          // Settle to normal
+          const normalFilter = isShiny
+            ? 'brightness(1) drop-shadow(0 0 12px rgba(255,215,0,0.6)) drop-shadow(0 0 24px rgba(255,215,0,0.3))'
+            : 'brightness(1) drop-shadow(0 0 12px rgba(255,255,255,0.4))';
+          tl.to(imgEl,
+            { filter: normalFilter, duration: 0.5, ease: 'power2.out' },
+            2.2
+          );
+        }
+      }
+
+      // Glow expands to full during reveal
+      if (glowRef.current) {
+        tl.to(glowRef.current,
+          { scale: 1.8, opacity: 0.5, duration: 0.4, ease: 'power2.out' },
+          2.0
+        );
+        tl.to(glowRef.current,
+          { opacity: 0.3, scale: 1.5, duration: 0.4 },
+          2.4
+        );
+      }
+
+      // Name appears as dark/dim text during silhouette, then brightens with reveal
+      if (nameRef.current) {
+        tl.fromTo(nameRef.current,
+          { opacity: 0, y: 10, color: 'rgba(60, 70, 90, 0.5)' },
+          { opacity: 0.6, y: 0, duration: 0.5, ease: 'power2.out' },
+          1.0
+        );
+        // Brighten name when monster is revealed
+        tl.to(nameRef.current,
+          { opacity: 1, color: '#ffffff', textShadow: '0 2px 12px rgba(255,255,255,0.5)', duration: 0.3, ease: 'power2.out' },
+          2.0
+        );
+      }
+
+      // Stars pop in sequence after reveal
+      if (starsRef.current) {
+        const starEls = starsRef.current.querySelectorAll('.reveal-star');
+        starEls.forEach((el, i) => {
+          tl.fromTo(el,
+            { scale: 0, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 0.2, ease: 'back.out(3)' },
+            2.3 + i * 0.12
+          );
+        });
+      }
+    } else {
+      // === STANDARD REVEAL: Fast animation for 1-2 star pulls ===
+
+      // Glow expands from center
+      if (glowRef.current) {
+        tl.fromTo(glowRef.current,
+          { scale: 0.3, opacity: 0.8 },
+          { scale: 1.5, opacity: 0.3, duration: 0.5, ease: 'power2.out' },
+          0
+        );
+      }
+
+      // Monster sprite materializes with overshoot bounce
+      if (spriteRef.current) {
+        tl.fromTo(spriteRef.current,
+          { scale: 0, opacity: 0, filter: 'brightness(3)' },
+          {
+            scale: 1,
+            opacity: 1,
+            filter: 'brightness(1)',
+            duration: 0.6,
+            ease: 'back.out(1.8)',
+          },
+          0.1
+        );
+      }
+
+      // Stars pop in one by one
+      if (starsRef.current) {
+        const starEls = starsRef.current.querySelectorAll('.reveal-star');
+        starEls.forEach((el, i) => {
+          tl.fromTo(el,
+            { scale: 0, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 0.15, ease: 'back.out(3)' },
+            0.5 + i * 0.08
+          );
+        });
+      }
+
+      // Name fades in (white for readability on dark background)
+      if (nameRef.current) {
+        tl.fromTo(nameRef.current,
+          { opacity: 0, y: 10, color: '#ffffff' },
+          { opacity: 1, y: 0, color: '#ffffff', duration: 0.3, ease: 'power2.out' },
+          0.6
+        );
+      }
     }
 
     return () => {
@@ -109,7 +200,10 @@ export function SummonReveal({ pokemon, onComplete }: Props) {
       />
 
       {/* Monster sprite */}
-      <div className={`reveal-sprite ${isShiny ? 'shiny' : ''}`} ref={spriteRef}>
+      <div
+        className={`reveal-sprite ${isShiny ? 'shiny' : ''}`}
+        ref={spriteRef}
+      >
         <img
           src={spriteUrl}
           alt={template.name}
