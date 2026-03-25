@@ -11,6 +11,7 @@ import { BattlePage } from './pages/BattlePage';
 import { DungeonPage } from './pages/DungeonPage';
 import { MissionsPage } from './pages/MissionsPage';
 import { TrainerPage } from './pages/TrainerPage';
+import { PokedexPage } from './pages/PokedexPage';
 import { BottomNav } from './components/layout/BottomNav';
 import { TopHUD } from './components/layout/TopHUD';
 import { LoadingScreen } from './components/LoadingScreen';
@@ -70,6 +71,7 @@ export function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/summon" element={<SummonPage />} />
           <Route path="/collection" element={<CollectionPage />} />
+          <Route path="/pokedex" element={<PokedexPage />} />
           <Route path="/collection/:instanceId" element={<MonsterDetail />} />
           <Route path="/missions" element={<MissionsPage />} />
           <Route path="/story" element={<StoryModePage />} />

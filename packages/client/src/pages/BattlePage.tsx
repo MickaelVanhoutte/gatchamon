@@ -182,7 +182,6 @@ export function BattlePage() {
       {/* Turn order bar */}
       <div className="turn-bar">
         {[...state.playerTeam, ...state.enemyTeam]
-          .filter(m => m.isAlive)
           .sort((a, b) => b.actionGauge - a.actionGauge)
           .slice(0, 6)
           .map(mon => {
@@ -190,7 +189,7 @@ export function BattlePage() {
             return (
               <div
                 key={mon.instanceId}
-                className={`turn-portrait ${mon.instanceId === state.currentActorId ? 'active' : ''} ${mon.isPlayerOwned ? 'player' : 'enemy'}`}
+                className={`turn-portrait ${mon.instanceId === state.currentActorId ? 'active' : ''} ${mon.isPlayerOwned ? 'player' : 'enemy'} ${!mon.isAlive ? 'dead' : ''}`}
               >
                 <img src={tmpl ? assetUrl(tmpl.spriteUrl) : undefined} alt="" width={28} height={28} />
               </div>

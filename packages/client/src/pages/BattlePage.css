@@ -14,7 +14,6 @@
   display: flex;
   gap: 6px;
   padding: 6px 12px;
-  background: rgba(0, 0, 0, 0.5);
   overflow-x: auto;
   z-index: 10;
 }
@@ -70,6 +69,11 @@
 
 .turn-portrait.enemy {
   background: rgba(239, 68, 68, 0.3);
+}
+
+.turn-portrait.dead {
+  opacity: 0.35;
+  filter: grayscale(1);
 }
 
 /* Arena — fills remaining space, centers monsters vertically */
