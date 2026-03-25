@@ -8,6 +8,8 @@ import { getFloorDefsForRegion } from '../services/floor.service';
 import { getFloorRewardPreview } from '../services/reward.service';
 import type { FloorRewardPreview } from '../services/reward.service';
 import { assetUrl } from '../utils/asset-url';
+import { useRotatedScroll } from '../hooks/useRotatedScroll';
+import { useRotatedHorizontalScroll } from '../hooks/useRotatedHorizontalScroll';
 import './StoryModePage.css';
 
 interface FloorEnemy {
@@ -43,6 +45,9 @@ export function StoryModePage() {
   const [selectedRegionId, setSelectedRegionId] = useState<number | null>(null);
   const [difficulty, setDifficulty] = useState<Difficulty>('normal');
   const floorListRef = useRef<HTMLDivElement>(null);
+  const worldMapRef = useRef<HTMLDivElement>(null);
+  useRotatedScroll(floorListRef);
+  useRotatedHorizontalScroll(worldMapRef);
 
   useEffect(() => {
     if (selectedRegionId) {
@@ -123,7 +128,7 @@ export function StoryModePage() {
   return (
     <div className="page story-page">
       {/* World Map — horizontal scroll */}
-      <div className="world-map">
+      <div className="world-map" ref={worldMapRef} data-horizontal-scroll>
         <div className="map-scroll">
           {/* Map background */}
           <div className="map-bg">
@@ -215,7 +220,7 @@ export function StoryModePage() {
               {DIFFICULTIES.find(d => d.key === difficulty)?.label}
             </span>
           </div>
-          <div className="floor-panel-list" ref={floorListRef}>
+          <div className="floor-panel-list" ref={floorListRef} data-nested-scroll>
             {selectedFloors.map(floor => {
               const currentFloor = regionProgress[selectedRegion.id] ?? 0;
               const isUnlocked = floor.floor <= currentFloor;

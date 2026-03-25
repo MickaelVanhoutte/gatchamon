@@ -31,9 +31,10 @@ export function useRotatedScroll(containerRef: React.RefObject<HTMLElement | nul
 
     const onTouchMove = (e: TouchEvent) => {
       if (!isRotated.current) return;
-      // Skip if target is in a horizontally-scrollable container
+      // Skip if target is in a horizontally-scrollable or nested-scrollable container
       const target = e.target as HTMLElement;
       if (target.closest('[data-horizontal-scroll]')) return;
+      if (target.closest('[data-nested-scroll]')) return;
       e.preventDefault();
       const deltaY = e.touches[0].clientY - startY;
       el.scrollTop = startScrollTop - deltaY;

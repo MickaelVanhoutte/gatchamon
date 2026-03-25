@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getBattleState as fetchBattleState, resolvePlayerAction } from '../services/battle.service';
 import { useGameStore } from '../stores/gameStore';
@@ -8,6 +8,7 @@ import { getTemplate, SKILLS, getTypeEffectiveness, ESSENCES, ITEM_SETS } from '
 import type { BattleState, BattleMon, BattleLogEntry, BattleResult, PokemonType } from '@gatchamon/shared';
 import { assetUrl } from '../utils/asset-url';
 import { GameIcon, StarRating } from '../components/icons';
+import { BattleLoadingScreen } from '../components/BattleLoadingScreen';
 import './BattlePage.css';
 
 type Phase = 'player_turn' | 'animating' | 'victory' | 'defeat';
@@ -26,6 +27,7 @@ export function BattlePage() {
   const [logEntries, setLogEntries] = useState<BattleLogEntry[]>([]);
   const [animatingLog, setAnimatingLog] = useState<BattleLogEntry | null>(null);
   const [rewards, setRewards] = useState<BattleResult['rewards']>(undefined);
+  const [assetsReady, setAssetsReady] = useState(false);
   const [arenaEl, setArenaEl] = useState<HTMLDivElement | null>(null);
   const monRefs = useRef<Map<string, HTMLElement>>(new Map());
 
@@ -163,8 +165,33 @@ export function BattlePage() {
     setSelectedSkill(skillId);
   };
 
+  const backgroundUrl = state ? (LEVEL_BACKGROUNDS[state.floor.region] ?? LEVEL_BACKGROUNDS[1]) : '';
+
+  const assetUrls = useMemo(() => {
+    if (!state) return [];
+    const urls: string[] = [backgroundUrl];
+    for (const mon of [...state.playerTeam, ...state.enemyTeam]) {
+      const tmpl = getTemplate(mon.templateId);
+      if (tmpl) {
+        const dir = mon.isPlayerOwned ? 'ani-back' : 'ani';
+        urls.push(assetUrl(`monsters/${dir}/${tmpl.name.toLowerCase()}.gif`));
+      }
+    }
+    return urls;
+  }, [state?.battleId]);
+
+  const handleAssetsReady = useCallback(() => setAssetsReady(true), []);
+
   if (!state) {
     return <div className="page battle-page"><p>Loading battle...</p></div>;
+  }
+
+  if (!assetsReady) {
+    return (
+      <div className="battle-page">
+        <BattleLoadingScreen assetUrls={assetUrls} onReady={handleAssetsReady} />
+      </div>
+    );
   }
 
   const currentActor = state.currentActorId
@@ -172,8 +199,6 @@ export function BattlePage() {
     : null;
 
   const isPlayerTurn = phase === 'player_turn' && currentActor?.isPlayerOwned;
-
-  const backgroundUrl = LEVEL_BACKGROUNDS[state.floor.region] ?? LEVEL_BACKGROUNDS[1];
 
   return (
     <div
@@ -183,7 +208,12 @@ export function BattlePage() {
       {/* Turn order bar */}
       <div className="turn-bar">
         {[...state.playerTeam, ...state.enemyTeam]
-          .sort((a, b) => b.actionGauge - a.actionGauge)
+          .filter(m => m.isAlive)
+          .sort((a, b) => {
+            const spdA = a.stats.spd + (a.buffs?.filter(b => b.stat === 'spd').reduce((s, b) => s + b.value, 0) ?? 0) + (a.debuffs?.filter(d => d.stat === 'spd').reduce((s, d) => s + d.value, 0) ?? 0);
+            const spdB = b.stats.spd + (b.buffs?.filter(b => b.stat === 'spd').reduce((s, b) => s + b.value, 0) ?? 0) + (b.debuffs?.filter(d => d.stat === 'spd').reduce((s, d) => s + d.value, 0) ?? 0);
+            return spdB - spdA;
+          })
           .slice(0, 6)
           .map(mon => {
             const tmpl = getTemplate(mon.templateId);

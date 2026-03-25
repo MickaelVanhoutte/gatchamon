@@ -89,9 +89,9 @@
 /* Floating log */
 .floating-log {
   position: absolute;
-  top: 30%;
+  bottom: 80px;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.75);
   padding: 6px 14px;
   border-radius: 8px;
@@ -102,6 +102,8 @@
 .log-text {
   font-size: 0.85rem;
   white-space: nowrap;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .log-text.crit {
@@ -110,8 +112,8 @@
 }
 
 @keyframes fadeInOut {
-  0% { opacity: 0; transform: translate(-50%, -40%); }
-  20% { opacity: 1; transform: translate(-50%, -50%); }
+  0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  20% { opacity: 1; transform: translateX(-50%) translateY(0); }
   80% { opacity: 1; }
   100% { opacity: 0.6; }
 }
