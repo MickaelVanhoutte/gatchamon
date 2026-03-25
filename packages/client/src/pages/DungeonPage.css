@@ -7,15 +7,6 @@
   overflow: hidden;
 }
 
-.dungeon-title {
-  padding: 10px 16px;
-  margin: 0;
-  font-size: 1rem;
-  background: var(--bg-secondary, #d1ecf1);
-  border-bottom: 1px solid var(--card-border, #d0e4ea);
-  color: var(--text-primary, #1a2332);
-}
-
 .dungeon-tab-toggle {
   display: flex;
   background: var(--bg-primary, #e8f4f8);
@@ -232,9 +223,14 @@
   color: var(--text-secondary);
 }
 
-.drop-owned {
-  color: #16a34a;
+.drop-qty {
+  color: var(--text-primary);
   font-weight: 700;
+}
+
+.drop-chance {
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 /* Enter button */

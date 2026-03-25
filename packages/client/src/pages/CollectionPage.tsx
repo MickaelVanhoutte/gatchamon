@@ -138,9 +138,30 @@ export function CollectionPage() {
         </span>
         <div className="box-header-actions">
           {!mergeMode && (
-            <button className="pdex-nav-btn" onClick={() => navigate('/pokedex')}>
-              Pokedex
-            </button>
+            <>
+              <select
+                className="box-sort-select"
+                value={sortBy}
+                onChange={e => setSortBy(e.target.value as SortBy)}
+              >
+                <option value="stars">Grade</option>
+                <option value="level">Level</option>
+                <option value="name">Name</option>
+              </select>
+              <select
+                className="box-type-select"
+                value={typeFilter ?? ''}
+                onChange={e => setTypeFilter((e.target.value || null) as PokemonType | null)}
+              >
+                <option value="">All Types</option>
+                {ALL_TYPES.map(t => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+              <button className="pdex-nav-btn" onClick={() => navigate('/pokedex')}>
+                Pokedex
+              </button>
+            </>
           )}
           {mergeMode ? (
             <button className="box-close" onClick={() => { setMergeMode(false); setFodderConfirm(null); }}>Cancel</button>
@@ -396,32 +417,6 @@ export function CollectionPage() {
                 </div>
               )}
 
-              {/* Filters at bottom */}
-              {!mergeMode && (
-                <div className="box-filters">
-                  <div className="box-filter-row">
-                    <select
-                      className="box-sort-select"
-                      value={sortBy}
-                      onChange={e => setSortBy(e.target.value as SortBy)}
-                    >
-                      <option value="stars">Grade</option>
-                      <option value="level">Level</option>
-                      <option value="name">Name</option>
-                    </select>
-                    <select
-                      className="box-type-select"
-                      value={typeFilter ?? ''}
-                      onChange={e => setTypeFilter((e.target.value || null) as PokemonType | null)}
-                    >
-                      <option value="">All Types</option>
-                      {ALL_TYPES.map(t => (
-                        <option key={t} value={t}>{t}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              )}
               </div>
             </>
           ) : (

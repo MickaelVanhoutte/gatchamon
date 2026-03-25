@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { DUNGEONS, ESSENCES, ITEM_DUNGEONS, getItemSet } from '@gatchamon/shared';
 import type { DungeonDef, ItemDungeonDef } from '@gatchamon/shared';
-import { GameIcon, StarRating } from '../components/icons';
+import { GameIcon } from '../components/icons';
 import './DungeonPage.css';
 
 type DungeonTab = 'essence' | 'items';
@@ -54,33 +54,16 @@ export function DungeonPage() {
     }
   }
 
-  // Essence dungeon drops
-  const droppableEssences = new Set<string>();
-  if (!isItemDungeon && 'floors' in selectedDungeon) {
-    for (const floor of (selectedDungeon as DungeonDef).floors) {
-      for (const drop of floor.drops) {
-        droppableEssences.add(drop.essenceId);
-      }
-    }
-  }
-
-  // Item dungeon drops
-  const droppableItemSets = new Set<string>();
-  if (isItemDungeon) {
-    for (const floor of (selectedDungeon as ItemDungeonDef).floors) {
-      for (const drop of floor.drops) {
-        droppableItemSets.add(drop.setId);
-      }
-    }
-  }
-
-  const materials = player?.materials ?? {};
   const floor = selectedDungeon.floors[selectedFloor];
+
+  // Essence dungeon drops — selected floor only
+  const floorEssenceDrops = !isItemDungeon && floor ? (floor as DungeonDef['floors'][0]).drops : [];
+
+  // Item dungeon drops — selected floor only
+  const floorItemDrops = isItemDungeon && floor ? (floor as ItemDungeonDef['floors'][0]).drops : [];
 
   return (
     <div className="page dungeon-page">
-      <h2 className="dungeon-title">Dungeons</h2>
-
       {/* Tab toggle */}
       <div className="dungeon-tab-toggle">
         <button
@@ -163,26 +146,27 @@ export function DungeonPage() {
           <div className="dungeon-drops">
             <span className="dungeon-drops-label">Possible Drops</span>
             <div className="dungeon-drops-grid">
-              {!isItemDungeon && Array.from(droppableEssences).map(essId => {
-                const ess = ESSENCES[essId];
+              {!isItemDungeon && floorEssenceDrops.map(drop => {
+                const ess = ESSENCES[drop.essenceId];
                 if (!ess) return null;
                 return (
-                  <div key={essId} className="dungeon-drop-item">
+                  <div key={drop.essenceId} className="dungeon-drop-item">
                     <span className="drop-icon"><GameIcon id={ess.icon} size={14} /></span>
                     <span className="drop-name">{ess.name}</span>
-                    <span className="drop-owned">x{materials[essId] ?? 0}</span>
+                    <span className="drop-qty">{drop.quantity[0]}–{drop.quantity[1]}</span>
+                    <span className="drop-chance">{Math.round(drop.chance * 100)}%</span>
                   </div>
                 );
               })}
-              {isItemDungeon && Array.from(droppableItemSets).map(setId => {
-                const setDef = getItemSet(setId);
+              {isItemDungeon && floorItemDrops.map(drop => {
+                const setDef = getItemSet(drop.setId);
                 if (!setDef) return null;
                 return (
-                  <div key={setId} className="dungeon-drop-item">
+                  <div key={drop.setId} className="dungeon-drop-item">
                     <span className="drop-icon"><GameIcon id={setDef.icon} size={14} /></span>
                     <span className="drop-name">{setDef.name}</span>
-                    <span className="drop-owned" style={{ color: setDef.color }}>
-                      {setDef.pieces}-set
+                    <span className="drop-qty" style={{ color: setDef.color }}>
+                      {drop.minStars}–{drop.maxStars}★
                     </span>
                   </div>
                 );

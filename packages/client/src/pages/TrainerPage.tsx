@@ -45,7 +45,8 @@ export function TrainerPage() {
   const xpPct = isMaxLevel ? 100 : Math.min(100, Math.floor((trainerExp / xpNeeded) * 100));
 
   return (
-    <div className="page trainer-page">
+    <div className="page trainer-page" data-nested-scroll>
+      <div className="trainer-page-inner">
       {/* Header */}
       <div className="trainer-header">
         <div className="trainer-level-badge">
@@ -105,6 +106,7 @@ export function TrainerPage() {
           })}
         </div>
       ))}
+      </div>
     </div>
   );
 }

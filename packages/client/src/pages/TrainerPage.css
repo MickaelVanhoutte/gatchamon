@@ -1,5 +1,11 @@
 .trainer-page {
+  height: 100%;
+  overflow-y: auto;
   padding: 16px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.trainer-page-inner {
   max-width: 480px;
   margin: 0 auto;
 }
