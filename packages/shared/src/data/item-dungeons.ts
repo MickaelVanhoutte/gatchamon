@@ -8,7 +8,7 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
     color: '#b8860b',
     description: 'A rugged cave carved from ancient stone. Drops Choice Band and Power Band items.',
     // Pool reference: [74, 75, 76, 95, 111] — Geodude, Graveler, Golem, Onix, Rhyhorn
-    energyCost: 5,
+    energyCost: 3,
     floors: [
       { enemyLevel: 8, enemies: [74, 74, 75], drops: [
         { setId: 'choice_band', minStars: 1, maxStars: 2, gradeWeights: { common: 70, rare: 25, hero: 5, legend: 0 } },
@@ -59,7 +59,7 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
     color: '#228B22',
     description: 'A mysterious forest humming with life energy. Drops Leftovers and Razor Fang items.',
     // Pool reference: [1, 43, 44, 45, 69] — Bulbasaur, Oddish, Gloom, Vileplume, Bellsprout
-    energyCost: 5,
+    energyCost: 3,
     floors: [
       { enemyLevel: 8, enemies: [1, 43, 69], drops: [
         { setId: 'leftovers', minStars: 1, maxStars: 2, gradeWeights: { common: 70, rare: 25, hero: 5, legend: 0 } },
@@ -110,7 +110,7 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
     color: '#f0c030',
     description: 'A tower crackling with electric energy. Drops Swift Wing and Quick Claw items.',
     // Pool reference: [25, 26, 81, 82, 100] — Pikachu, Raichu, Magnemite, Magneton, Voltorb
-    energyCost: 5,
+    energyCost: 3,
     floors: [
       { enemyLevel: 8, enemies: [25, 100, 81], drops: [
         { setId: 'swift_wing', minStars: 1, maxStars: 2, gradeWeights: { common: 70, rare: 25, hero: 5, legend: 0 } },
@@ -161,7 +161,7 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
     color: '#87CEEB',
     description: 'An icy mountain summit wreathed in frost. Drops Scope Lens and Wise Glasses items.',
     // Pool reference: [87, 91, 124, 131, 144] — Dewgong, Cloyster, Jynx, Lapras, Articuno
-    energyCost: 6,
+    energyCost: 4,
     floors: [
       { enemyLevel: 10, enemies: [87, 91, 87], drops: [
         { setId: 'scope_lens', minStars: 1, maxStars: 2, gradeWeights: { common: 70, rare: 25, hero: 5, legend: 0 } },
@@ -212,7 +212,7 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
     color: '#6a5acd',
     description: 'A sacred temple housing ancient power. Drops Focus Sash and King\'s Rock items.',
     // Pool reference: [147, 148, 149, 130, 142] — Dratini, Dragonair, Dragonite, Gyarados, Aerodactyl
-    energyCost: 6,
+    energyCost: 4,
     floors: [
       { enemyLevel: 10, enemies: [147, 147, 130], drops: [
         { setId: 'focus_sash', minStars: 1, maxStars: 2, gradeWeights: { common: 70, rare: 25, hero: 5, legend: 0 } },

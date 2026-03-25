@@ -35,7 +35,7 @@ export function useRotatedHorizontalScroll(containerRef: React.RefObject<HTMLEle
       e.preventDefault();
       e.stopPropagation();
       const deltaY = e.touches[0].clientY - startY;
-      el.scrollLeft = startScrollLeft + deltaY;
+      el.scrollLeft = startScrollLeft - deltaY;
     };
 
     el.addEventListener('touchstart', onTouchStart, { passive: true });

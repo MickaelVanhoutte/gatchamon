@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { HeldItemInstance, HeldItemSlot } from '@gatchamon/shared';
-import { getUpgradeCost, getUpgradeSuccessRate, STAT_TYPE_LABELS, getItemSet, GRADE_COLORS } from '@gatchamon/shared';
+import { getUpgradeCost, getUpgradeSuccessRate, STAT_TYPE_LABELS, getItemSet, GRADE_COLORS, getItemSellValue } from '@gatchamon/shared';
 import { useGameStore } from '../stores/gameStore';
 import './RuneUpgradeModal.css';
 
@@ -12,9 +12,10 @@ interface RuneUpgradeModalProps {
 }
 
 export function RuneUpgradeModal({ item: initialItem, playerStardust, onClose, onEquipSlot }: RuneUpgradeModalProps) {
-  const { upgradeItem: storeUpgrade, heldItems } = useGameStore();
+  const { upgradeItem: storeUpgrade, sellItem: storeSell, heldItems } = useGameStore();
   const [lastResult, setLastResult] = useState<{ success: boolean; message: string } | null>(null);
   const [animating, setAnimating] = useState(false);
+  const [confirmSell, setConfirmSell] = useState(false);
 
   // Always read fresh item data from store
   const item = heldItems.find(i => i.itemId === initialItem.itemId) ?? initialItem;
@@ -140,6 +141,26 @@ export function RuneUpgradeModal({ item: initialItem, playerStardust, onClose, o
             </button>
           ) : (
             <div className="rune-upgrade-maxed">MAX LEVEL</div>
+          )}
+        </div>
+
+        {/* Sell */}
+        <div className="rune-sell-section">
+          {!confirmSell ? (
+            <button
+              className="rune-sell-btn"
+              onClick={() => setConfirmSell(true)}
+              disabled={item.equippedTo !== null}
+              title={item.equippedTo !== null ? 'Unequip item first' : undefined}
+            >
+              Sell ({getItemSellValue(item).toLocaleString()} ✦)
+            </button>
+          ) : (
+            <div className="rune-sell-confirm">
+              <span>Sell for {getItemSellValue(item).toLocaleString()} ✦?</span>
+              <button className="rune-sell-yes" onClick={() => { storeSell(item.itemId); onClose(); }}>Yes</button>
+              <button className="rune-sell-no" onClick={() => setConfirmSell(false)}>No</button>
+            </div>
           )}
         </div>
       </div>

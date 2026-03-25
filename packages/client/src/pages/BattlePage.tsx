@@ -347,6 +347,12 @@ export function BattlePage() {
                     })}
                   </div>
                 )}
+                {rewards.trainerXpGained != null && rewards.trainerXpGained > 0 && (
+                  <p>+ {rewards.trainerXpGained} Trainer XP</p>
+                )}
+                {rewards.trainerLeveledUp && (
+                  <p className="level-ups">Trainer leveled up to Lv.{rewards.trainerNewLevel}!</p>
+                )}
               </div>
             )}
             <button

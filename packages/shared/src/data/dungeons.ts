@@ -7,7 +7,7 @@ export const DUNGEONS: DungeonDef[] = [
     icon: '\u{1F33F}',
     color: '#3a7a2a',
     description: 'A lush cave teeming with plant and insect life. Drops Grass, Poison, and Bug essences.',
-    energyCost: 5,
+    energyCost: 3,
     floors: [
       {
         enemyLevel: 8,
@@ -73,7 +73,7 @@ export const DUNGEONS: DungeonDef[] = [
     icon: '\u{1F525}',
     color: '#d04040',
     description: 'Scorching tunnels of magma and stone. Drops Fire, Rock, and Ground essences.',
-    energyCost: 5,
+    energyCost: 3,
     floors: [
       {
         enemyLevel: 8,
@@ -138,7 +138,7 @@ export const DUNGEONS: DungeonDef[] = [
     icon: '\u{1F30A}',
     color: '#4a8ab0',
     description: 'Dark ocean depths hiding ancient power. Drops Water, Ice, and Dragon essences.',
-    energyCost: 5,
+    energyCost: 3,
     floors: [
       {
         enemyLevel: 8,
@@ -203,7 +203,7 @@ export const DUNGEONS: DungeonDef[] = [
     icon: '\u26A1',
     color: '#f0c030',
     description: 'A fortress crackling with elemental energy. Drops Electric, Flying, Normal, and Psychic essences.',
-    energyCost: 5,
+    energyCost: 3,
     floors: [
       {
         enemyLevel: 8,
@@ -270,7 +270,7 @@ export const DUNGEONS: DungeonDef[] = [
     icon: '\u{1F47B}',
     color: '#6a5acd',
     description: 'A haunted temple of dark power. Drops Ghost, Fighting, and Magic essences.',
-    energyCost: 6,
+    energyCost: 4,
     floors: [
       {
         enemyLevel: 10,
@@ -337,7 +337,7 @@ export const DUNGEONS: DungeonDef[] = [
     icon: '\u{1F9DA}',
     color: '#ee99ac',
     description: 'An enchanted forest bathed in moonlight. Drops Fairy, Normal, and Grass essences.',
-    energyCost: 5,
+    energyCost: 3,
     floors: [
       {
         enemyLevel: 10,
@@ -397,7 +397,7 @@ export const DUNGEONS: DungeonDef[] = [
     icon: '\u{1F311}',
     color: '#705848',
     description: 'A crypt shrouded in perpetual darkness. Drops Dark, Ghost, and Psychic essences.',
-    energyCost: 5,
+    energyCost: 3,
     floors: [
       {
         enemyLevel: 10,
@@ -457,7 +457,7 @@ export const DUNGEONS: DungeonDef[] = [
     icon: '\u{2699}\u{FE0F}',
     color: '#b8b8d0',
     description: 'An ancient foundry where metal Pokemon dwell. Drops Steel, Rock, and Electric essences.',
-    energyCost: 5,
+    energyCost: 3,
     floors: [
       {
         enemyLevel: 10,

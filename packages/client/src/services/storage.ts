@@ -1,4 +1,5 @@
 import type { Player, PokemonInstance, HeldItemInstance } from '@gatchamon/shared';
+import { defaultTrainerSkills } from '@gatchamon/shared';
 
 const PLAYER_KEY = 'gatchamon_player';
 const COLLECTION_KEY = 'gatchamon_collection';
@@ -11,6 +12,32 @@ export function loadPlayer(): Player | null {
   // Migration: add stardust for existing players
   if (player.stardust === undefined) {
     player.stardust = 0;
+  }
+  // Migration: add energy regen timestamp
+  if (player.lastEnergyUpdate === undefined) {
+    player.lastEnergyUpdate = new Date().toISOString();
+  }
+  // Migration: add trainer level fields
+  if ((player as any).trainerLevel === undefined) {
+    player.trainerLevel = 1;
+    player.trainerExp = 0;
+    player.trainerSkillPoints = 0;
+    player.trainerSkills = defaultTrainerSkills();
+  }
+  // Migration: trim regions to 10 (League renumbered from 11 → 10)
+  if (player.storyProgress) {
+    for (const diff of ['normal', 'hard', 'hell'] as const) {
+      const prog = player.storyProgress[diff];
+      if (!prog) continue;
+      // Migrate old League (11) → new League (10)
+      if (prog[11] !== undefined && prog[10] === undefined) {
+        prog[10] = prog[11];
+      }
+      // Remove all regions > 10
+      for (const key of Object.keys(prog)) {
+        if (Number(key) > 10) delete prog[Number(key)];
+      }
+    }
   }
   return player;
 }

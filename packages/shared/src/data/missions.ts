@@ -7,7 +7,7 @@ export const MISSION_POOL: MissionDefinition[] = [
     description: 'Summon 1 monster',
     icon: '\u25C9',
     target: 1,
-    reward: { pokeballs: 5 },
+    reward: { pokeballs: 5, trainerXp: 10 },
   },
   {
     id: 'summon_3',
@@ -15,7 +15,7 @@ export const MISSION_POOL: MissionDefinition[] = [
     description: 'Summon 3 monsters',
     icon: '\u25C9',
     target: 3,
-    reward: { pokeballs: 10 },
+    reward: { pokeballs: 10, trainerXp: 20 },
   },
   {
     id: 'story_1',
@@ -23,7 +23,7 @@ export const MISSION_POOL: MissionDefinition[] = [
     description: 'Win 1 story battle',
     icon: '\u2694',
     target: 1,
-    reward: { pokeballs: 5, energy: 5 },
+    reward: { pokeballs: 5, energy: 5, trainerXp: 15 },
   },
   {
     id: 'story_3',
@@ -31,7 +31,7 @@ export const MISSION_POOL: MissionDefinition[] = [
     description: 'Win 3 story battles',
     icon: '\u2694',
     target: 3,
-    reward: { pokeballs: 15 },
+    reward: { pokeballs: 15, trainerXp: 30 },
   },
   {
     id: 'dungeon_1',
@@ -39,7 +39,7 @@ export const MISSION_POOL: MissionDefinition[] = [
     description: 'Win 1 dungeon battle',
     icon: '\u{1F3DB}',
     target: 1,
-    reward: { energy: 5 },
+    reward: { energy: 5, trainerXp: 20 },
   },
   {
     id: 'boss_1',
@@ -47,7 +47,7 @@ export const MISSION_POOL: MissionDefinition[] = [
     description: 'Defeat a boss floor',
     icon: '\u{1F451}',
     target: 1,
-    reward: { pokeballs: 20 },
+    reward: { pokeballs: 20, trainerXp: 40, heldItem: { setId: 'choice_band', stars: 1, grade: 'common' } },
   },
   {
     id: 'energy_10',
@@ -55,7 +55,7 @@ export const MISSION_POOL: MissionDefinition[] = [
     description: 'Spend 10 energy',
     icon: '\u26A1',
     target: 10,
-    reward: { pokeballs: 10 },
+    reward: { pokeballs: 10, trainerXp: 15 },
   },
   {
     id: 'merge_1',
@@ -63,7 +63,7 @@ export const MISSION_POOL: MissionDefinition[] = [
     description: 'Merge a monster',
     icon: '\u2B06',
     target: 1,
-    reward: { pokeballs: 10 },
+    reward: { pokeballs: 10, trainerXp: 25 },
   },
   {
     id: 'evolve_1',
@@ -71,7 +71,7 @@ export const MISSION_POOL: MissionDefinition[] = [
     description: 'Evolve a monster',
     icon: '\u{1F300}',
     target: 1,
-    reward: { pokeballs: 20 },
+    reward: { pokeballs: 20, trainerXp: 35, heldItem: { setId: 'focus_sash', stars: 1, grade: 'common' } },
   },
   {
     id: 'collect_5',
@@ -79,13 +79,14 @@ export const MISSION_POOL: MissionDefinition[] = [
     description: 'Collect 5 monsters',
     icon: '\u25A4',
     target: 5,
-    reward: { pokeballs: 15 },
+    reward: { pokeballs: 15, trainerXp: 20 },
   },
 ];
 
 export const ALL_DAILIES_BONUS: MissionReward = {
   pokeballs: 25,
   energy: 10,
+  trainerXp: 50,
 };
 
 export const DAILY_MISSION_COUNT = 5;

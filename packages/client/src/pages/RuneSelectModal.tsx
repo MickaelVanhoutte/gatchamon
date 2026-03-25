@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import type { HeldItemInstance, HeldItemSlot, BaseStats } from '@gatchamon/shared';
-import { ITEM_SETS, GRADE_COLORS, ITEM_REMOVAL_COST, computeStatsWithItems, computeStats } from '@gatchamon/shared';
+import { ITEM_SETS, GRADE_COLORS, ITEM_REMOVAL_COST, computeStatsWithItems, computeStats, getItemSellValue } from '@gatchamon/shared';
 import { POKEDEX } from '@gatchamon/shared';
 import type { OwnedPokemon } from '../stores/gameStore';
 import { useGameStore } from '../stores/gameStore';
@@ -26,10 +26,13 @@ interface RuneSelectModalProps {
 }
 
 export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playerStardust, onClose }: RuneSelectModalProps) {
-  const { equipItem, unequipItem, refreshPlayer } = useGameStore();
+  const { equipItem, unequipItem, sellItems: storeSellItems, refreshPlayer } = useGameStore();
   const [setFilter, setSetFilter] = useState<string>('');
   const [sortBy, setSortBy] = useState<SortOption>('stars');
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [sellMode, setSellMode] = useState(false);
+  const [sellSelection, setSellSelection] = useState<Set<string>>(new Set());
+  const [confirmBulkSell, setConfirmBulkSell] = useState(false);
 
   const currentEquipped = equippedItems.find(i => i.slot === slot);
 
@@ -103,6 +106,12 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
             <option value="grade">Grade</option>
             <option value="mainValue">Main Stat</option>
           </select>
+          <button
+            className={`rune-sell-mode-btn ${sellMode ? 'active' : ''}`}
+            onClick={() => { setSellMode(!sellMode); setSellSelection(new Set()); setConfirmBulkSell(false); }}
+          >
+            {sellMode ? 'Cancel' : 'Sell'}
+          </button>
         </div>
 
         <div className="rune-select-body">
@@ -111,15 +120,30 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
             {availableItems.length === 0 && (
               <div className="rune-select-empty">No items for slot {slot}</div>
             )}
-            {availableItems.map(item => (
-              <RuneCard
-                key={item.itemId}
-                item={item}
-                selected={item.itemId === selectedItemId}
-                equippedPokemonName={getEquippedPokemonName(item)}
-                onClick={() => setSelectedItemId(item.itemId === selectedItemId ? null : item.itemId)}
-              />
-            ))}
+            {availableItems.map(item => {
+              const isEquipped = item.equippedTo !== null;
+              const isSellSelected = sellSelection.has(item.itemId);
+              return (
+                <RuneCard
+                  key={item.itemId}
+                  item={item}
+                  selected={sellMode ? isSellSelected : item.itemId === selectedItemId}
+                  equippedPokemonName={getEquippedPokemonName(item)}
+                  onClick={() => {
+                    if (sellMode) {
+                      if (isEquipped) return; // can't sell equipped items
+                      const next = new Set(sellSelection);
+                      if (isSellSelected) next.delete(item.itemId);
+                      else next.add(item.itemId);
+                      setSellSelection(next);
+                      setConfirmBulkSell(false);
+                    } else {
+                      setSelectedItemId(item.itemId === selectedItemId ? null : item.itemId);
+                    }
+                  }}
+                />
+              );
+            })}
           </div>
 
           {/* Stat preview */}
@@ -153,22 +177,56 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
 
         {/* Actions */}
         <div className="rune-select-actions">
-          {currentEquipped && (
-            <button
-              className="rune-remove-btn"
-              onClick={handleRemove}
-              disabled={playerStardust < ITEM_REMOVAL_COST}
-            >
-              Remove ({ITEM_REMOVAL_COST.toLocaleString()} ✦)
-            </button>
+          {sellMode ? (
+            <>
+              {(() => {
+                const totalValue = Array.from(sellSelection).reduce((sum, id) => {
+                  const itm = heldItems.find(i => i.itemId === id);
+                  return sum + (itm ? getItemSellValue(itm) : 0);
+                }, 0);
+                return confirmBulkSell ? (
+                  <div className="rune-sell-confirm" style={{ flex: 1 }}>
+                    <span>Sell {sellSelection.size} items for {totalValue.toLocaleString()} ✦?</span>
+                    <button className="rune-sell-yes" onClick={() => {
+                      storeSellItems(Array.from(sellSelection));
+                      setSellMode(false);
+                      setSellSelection(new Set());
+                      setConfirmBulkSell(false);
+                      refreshPlayer();
+                    }}>Yes</button>
+                    <button className="rune-sell-no" onClick={() => setConfirmBulkSell(false)}>No</button>
+                  </div>
+                ) : (
+                  <button
+                    className="rune-sell-bulk-btn"
+                    disabled={sellSelection.size === 0}
+                    onClick={() => setConfirmBulkSell(true)}
+                  >
+                    Sell {sellSelection.size} items ({totalValue.toLocaleString()} ✦)
+                  </button>
+                );
+              })()}
+            </>
+          ) : (
+            <>
+              {currentEquipped && (
+                <button
+                  className="rune-remove-btn"
+                  onClick={handleRemove}
+                  disabled={playerStardust < ITEM_REMOVAL_COST}
+                >
+                  Remove ({ITEM_REMOVAL_COST.toLocaleString()} ✦)
+                </button>
+              )}
+              <button
+                className="rune-equip-action-btn"
+                onClick={handleEquip}
+                disabled={!selectedItem}
+              >
+                Equip
+              </button>
+            </>
           )}
-          <button
-            className="rune-equip-action-btn"
-            onClick={handleEquip}
-            disabled={!selectedItem}
-          >
-            Equip
-          </button>
         </div>
       </div>
     </div>

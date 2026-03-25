@@ -8,9 +8,10 @@ import {
   computeMainStatValue,
   getUpgradeCost,
   getUpgradeSuccessRate,
+  getItemSellValue,
 } from '@gatchamon/shared';
 import { loadHeldItems, saveHeldItems, getItemsForPokemon } from './storage';
-import { spendStardust } from './player.service';
+import { spendStardust, earnStardust } from './player.service';
 
 // ── Random helpers ──────────────────────────────────────────────────────
 
@@ -185,6 +186,40 @@ export function getUnequippedItems(): HeldItemInstance[] {
 
 export function getItemsForSlot(slot: HeldItemSlot): HeldItemInstance[] {
   return loadHeldItems().filter(i => i.slot === slot);
+}
+
+// ── Sell items ──────────────────────────────────────────────────────────
+
+export function sellItem(itemId: string): number {
+  const items = loadHeldItems();
+  const idx = items.findIndex(i => i.itemId === itemId);
+  if (idx === -1) throw new Error('Item not found');
+  const item = items[idx];
+  if (item.equippedTo !== null) throw new Error('Cannot sell equipped item');
+
+  const value = getItemSellValue(item);
+  items.splice(idx, 1);
+  saveHeldItems(items);
+  earnStardust(value);
+  return value;
+}
+
+export function sellItems(itemIds: string[]): number {
+  const items = loadHeldItems();
+  let totalValue = 0;
+
+  const remaining = items.filter(item => {
+    if (!itemIds.includes(item.itemId)) return true;
+    if (item.equippedTo !== null) return true; // skip equipped
+    totalValue += getItemSellValue(item);
+    return false;
+  });
+
+  if (totalValue > 0) {
+    saveHeldItems(remaining);
+    earnStardust(totalValue);
+  }
+  return totalValue;
 }
 
 export { getItemsForPokemon };

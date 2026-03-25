@@ -1,4 +1,5 @@
 import type { BaseStats, PokemonTemplate, SkillDefinition } from '../types/pokemon.js';
+import type { TrainerSkills } from '../types/player.js';
 import { getTypeEffectiveness } from './type-chart.js';
 
 const STAR_MULTIPLIERS: Record<number, number> = {
@@ -78,4 +79,53 @@ export function calculateDamage(
   const damage = Math.max(1, Math.floor(baseDamage * critBonus * stabBonus * effectiveness * variance));
 
   return { damage, isCrit, effectiveness };
+}
+
+// ── Energy ──────────────────────────────────────────────────────────────
+
+export const BASE_MAX_ENERGY = 100;
+export const BASE_ENERGY_REGEN_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes per 1 energy
+
+export function getMaxEnergy(skills: TrainerSkills): number {
+  return BASE_MAX_ENERGY + skills.maxEnergyPool * 10;
+}
+
+export function getEnergyRegenInterval(skills: TrainerSkills): number {
+  return Math.floor(BASE_ENERGY_REGEN_INTERVAL_MS * Math.pow(0.9, skills.energyRegenSpeed));
+}
+
+// ── Trainer Level ───────────────────────────────────────────────────────
+
+export const MAX_TRAINER_LEVEL = 100;
+
+export function trainerXpToNextLevel(level: number): number {
+  return Math.floor(100 * Math.pow(1.15, level - 1));
+}
+
+export const TRAINER_SKILL_MAX: Record<keyof TrainerSkills, number> = {
+  energyRegenSpeed: 10,
+  maxEnergyPool: 10,
+  globalAtkBonus: 10,
+  globalDefBonus: 10,
+  globalHpBonus: 10,
+  globalSpdBonus: 10,
+  stardustBonus: 5,
+  xpBonus: 5,
+  pokeballBonus: 5,
+  essenceBonus: 5,
+};
+
+export function defaultTrainerSkills(): TrainerSkills {
+  return {
+    energyRegenSpeed: 0,
+    maxEnergyPool: 0,
+    globalAtkBonus: 0,
+    globalDefBonus: 0,
+    globalHpBonus: 0,
+    globalSpdBonus: 0,
+    stardustBonus: 0,
+    xpBonus: 0,
+    pokeballBonus: 0,
+    essenceBonus: 0,
+  };
 }

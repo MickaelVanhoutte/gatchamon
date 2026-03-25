@@ -65,6 +65,9 @@ export interface BattleRewards {
   monsterLoot?: { templateId: number; stars: 1 | 2 | 3; instanceId: string };
   stardust?: number;
   itemDrops?: Array<{ itemId: string; setId: string; stars: number; grade: string }>;
+  trainerXpGained?: number;
+  trainerLeveledUp?: boolean;
+  trainerNewLevel?: number;
 }
 
 export interface BattleResult {

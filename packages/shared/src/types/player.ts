@@ -1,5 +1,18 @@
 export type Difficulty = 'normal' | 'hard' | 'hell';
 
+export interface TrainerSkills {
+  energyRegenSpeed: number;    // 0-10, -10% regen interval per level
+  maxEnergyPool: number;       // 0-10, +10 max energy per level
+  globalAtkBonus: number;      // 0-10, +2% ATK per level
+  globalDefBonus: number;      // 0-10, +2% DEF per level
+  globalHpBonus: number;       // 0-10, +2% HP per level
+  globalSpdBonus: number;      // 0-10, +1% SPD per level
+  stardustBonus: number;       // 0-5, +10% stardust per level
+  xpBonus: number;             // 0-5, +10% battle XP per level
+  pokeballBonus: number;       // 0-5, +10% pokeball rewards per level
+  essenceBonus: number;        // 0-5, +10% essence drops per level
+}
+
 export interface Player {
   id: string;
   name: string;
@@ -9,6 +22,11 @@ export interface Player {
   storyProgress: StoryProgress;
   materials: Record<string, number>;
   createdAt: string;
+  lastEnergyUpdate?: string;
+  trainerLevel: number;
+  trainerExp: number;
+  trainerSkillPoints: number;
+  trainerSkills: TrainerSkills;
 }
 
 /**

@@ -23,6 +23,7 @@ import {
   incrementMission,
   checkAndUpdateTrophies,
 } from './reward.service';
+import { grantTrainerXp } from './player.service';
 import { rollItemDrop } from './rune.service';
 import { addHeldItem } from './storage';
 
@@ -53,7 +54,7 @@ function makeBattleMon(
 ): BattleMon {
   const template = getTemplate(templateId);
 
-  // For player pokemon, apply held item bonuses
+  // For player pokemon, apply held item bonuses + trainer skill bonuses
   let stats: BaseStats;
   if (isPlayerOwned) {
     const equippedItems = getItemsForPokemon(instanceId);
@@ -61,6 +62,18 @@ function makeBattleMon(
     // Store set effects for proc handling during battle
     const setEffects = getActiveSetEffects(equippedItems);
     battleSetEffects.set(instanceId, setEffects);
+    // Apply trainer global stat bonuses
+    const player = loadPlayer();
+    if (player?.trainerSkills) {
+      const sk = player.trainerSkills;
+      stats = {
+        ...stats,
+        atk: Math.floor(stats.atk * (1 + sk.globalAtkBonus * 0.02)),
+        def: Math.floor(stats.def * (1 + sk.globalDefBonus * 0.02)),
+        hp: Math.floor(stats.hp * (1 + sk.globalHpBonus * 0.02)),
+        spd: Math.floor(stats.spd * (1 + sk.globalSpdBonus * 0.01)),
+      };
+    }
   } else {
     stats = computeStats(template, level, stars);
   }
@@ -529,18 +542,25 @@ function calculateDungeonRewards(state: BattleState): BattleRewards {
   const floorIndex = state.floor.floor - 1;
   const floor = dungeonDef.floors[floorIndex];
 
+  // Trainer skill bonuses
+  const trainerPlayer = loadPlayer();
+  const tSkills = trainerPlayer?.trainerSkills;
+  const stardustMult = tSkills ? 1 + tSkills.stardustBonus * 0.1 : 1;
+  const xpMult = tSkills ? 1 + tSkills.xpBonus * 0.1 : 1;
+  const essenceMult = tSkills ? 1 + tSkills.essenceBonus * 0.1 : 1;
+
   // Roll material drops
   const essences: Record<string, number> = {};
   for (const drop of floor.drops) {
     if (Math.random() > drop.chance) continue;
     const [min, max] = drop.quantity;
-    const qty = min + Math.floor(Math.random() * (max - min + 1));
+    const qty = Math.floor((min + Math.floor(Math.random() * (max - min + 1))) * essenceMult);
     if (qty > 0) {
       essences[drop.essenceId] = (essences[drop.essenceId] ?? 0) + qty;
     }
   }
 
-  const xpPerMon = Math.floor(floor.enemyLevel * 8);
+  const xpPerMon = Math.floor(floor.enemyLevel * 8 * xpMult);
   const levelUps: Array<{ instanceId: string; newLevel: number }> = [];
 
   // Apply XP
@@ -571,7 +591,7 @@ function calculateDungeonRewards(state: BattleState): BattleRewards {
   }
 
   // Stardust reward for dungeon
-  const stardustReward = 20 + floor.enemyLevel * 2;
+  const stardustReward = Math.floor((20 + floor.enemyLevel * 2) * stardustMult);
 
   // Add essences and stardust to player inventory
   const player = loadPlayer()!;
@@ -586,7 +606,16 @@ function calculateDungeonRewards(state: BattleState): BattleRewards {
   incrementMission('battle_dungeon', 1);
   checkAndUpdateTrophies();
 
-  return { pokeballs: 0, xpPerMon, levelUps, essences, stardust: stardustReward };
+  // Trainer XP
+  const trainerXpBase = (floorIndex + 1) * 8 + 10;
+  const trainerResult = grantTrainerXp(trainerXpBase);
+
+  return {
+    pokeballs: 0, xpPerMon, levelUps, essences, stardust: stardustReward,
+    trainerXpGained: trainerXpBase,
+    trainerLeveledUp: trainerResult.leveledUp,
+    trainerNewLevel: trainerResult.newLevel,
+  };
 }
 
 function calculateItemDungeonRewards(state: BattleState): BattleRewards {
@@ -596,7 +625,13 @@ function calculateItemDungeonRewards(state: BattleState): BattleRewards {
   const floorIndex = state.floor.floor - 1;
   const floor = dungeonDef.floors[floorIndex];
 
-  const xpPerMon = Math.floor(floor.enemyLevel * 8);
+  // Trainer skill bonuses
+  const trainerPlayer = loadPlayer();
+  const tSkills = trainerPlayer?.trainerSkills;
+  const stardustMult = tSkills ? 1 + tSkills.stardustBonus * 0.1 : 1;
+  const xpMult = tSkills ? 1 + tSkills.xpBonus * 0.1 : 1;
+
+  const xpPerMon = Math.floor(floor.enemyLevel * 8 * xpMult);
   const levelUps: Array<{ instanceId: string; newLevel: number }> = [];
 
   // Apply XP
@@ -632,7 +667,7 @@ function calculateItemDungeonRewards(state: BattleState): BattleRewards {
 
   // Stardust
   const [minSd, maxSd] = floor.stardustReward;
-  const stardustReward = minSd + Math.floor(Math.random() * (maxSd - minSd + 1));
+  const stardustReward = Math.floor((minSd + Math.floor(Math.random() * (maxSd - minSd + 1))) * stardustMult);
   savePlayer({ ...player, stardust: (player.stardust ?? 0) + stardustReward });
 
   // Track stats
@@ -640,7 +675,16 @@ function calculateItemDungeonRewards(state: BattleState): BattleRewards {
   incrementMission('battle_dungeon', 1);
   checkAndUpdateTrophies();
 
-  return { pokeballs: 0, xpPerMon, levelUps, stardust: stardustReward, itemDrops };
+  // Trainer XP
+  const trainerXpBase = (floorIndex + 1) * 8 + 10;
+  const trainerResult = grantTrainerXp(trainerXpBase);
+
+  return {
+    pokeballs: 0, xpPerMon, levelUps, stardust: stardustReward, itemDrops,
+    trainerXpGained: trainerXpBase,
+    trainerLeveledUp: trainerResult.leveledUp,
+    trainerNewLevel: trainerResult.newLevel,
+  };
 }
 
 function calculateRewards(state: BattleState): BattleRewards {
@@ -656,14 +700,21 @@ function calculateRewards(state: BattleState): BattleRewards {
   const diffMult = DIFFICULTY_REWARD_MULT[difficulty];
   const bossMult = isBoss ? 3 : 1;
 
+  // Load player for trainer skill bonuses
+  const trainerPlayer = loadPlayer();
+  const tSkills = trainerPlayer?.trainerSkills;
+  const pokeballMult = tSkills ? 1 + tSkills.pokeballBonus * 0.1 : 1;
+  const stardustMult = tSkills ? 1 + tSkills.stardustBonus * 0.1 : 1;
+  const xpMult = tSkills ? 1 + tSkills.xpBonus * 0.1 : 1;
+
   // Pokeballs
   const pokeballBase = 2 + regionId + Math.floor(floorNum / 3);
-  const pokeballs = Math.floor(pokeballBase * diffMult * bossMult);
+  const pokeballs = Math.floor(pokeballBase * diffMult * bossMult * pokeballMult);
 
   // XP
   const xpBase = regionId * 10 + floorNum * 5;
   const xpBossMult = isBoss ? 2 : 1;
-  const xpPerMon = Math.floor(xpBase * diffMult * xpBossMult);
+  const xpPerMon = Math.floor(xpBase * diffMult * xpBossMult * xpMult);
 
   const levelUps: Array<{ instanceId: string; newLevel: number }> = [];
 
@@ -705,8 +756,8 @@ function calculateRewards(state: BattleState): BattleRewards {
   // Stardust reward
   const stardustBase = 10 + regionId * 5 + floorNum * 2;
   const stardustReward = firstClear
-    ? Math.floor(stardustBase * diffMult * bossMult * 3)
-    : Math.floor(stardustBase * diffMult);
+    ? Math.floor(stardustBase * diffMult * bossMult * 3 * stardustMult)
+    : Math.floor(stardustBase * diffMult * stardustMult);
 
   {
     const player = loadPlayer()!;
@@ -740,6 +791,10 @@ function calculateRewards(state: BattleState): BattleRewards {
   }
   checkAndUpdateTrophies();
 
+  // Trainer XP
+  const trainerXpBase = regionId * 5 + floorNum * 2;
+  const trainerResult = grantTrainerXp(trainerXpBase);
+
   return {
     pokeballs: actualPokeballs,
     xpPerMon,
@@ -747,6 +802,9 @@ function calculateRewards(state: BattleState): BattleRewards {
     isFirstClear: firstClear,
     monsterLoot: monsterLoot ?? undefined,
     stardust: stardustReward,
+    trainerXpGained: trainerXpBase,
+    trainerLeveledUp: trainerResult.leveledUp,
+    trainerNewLevel: trainerResult.newLevel,
   };
 }
 

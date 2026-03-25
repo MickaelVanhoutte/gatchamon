@@ -1,5 +1,5 @@
 import type { BaseStats, PokemonTemplate } from '../types/pokemon.js';
-import type { HeldItemInstance, HeldItemMainStatType, ActiveSetEffect } from '../types/held-item.js';
+import type { HeldItemInstance, HeldItemMainStatType, HeldItemGrade, ActiveSetEffect } from '../types/held-item.js';
 import { ITEM_SETS, MAIN_STAT_SCALING } from '../data/held-items.js';
 import { computeStats } from './formulas.js';
 
@@ -161,4 +161,20 @@ export function computeStatsWithItems(
     acc:      Math.min(100, base.acc + acc.accFlat),
     res:      Math.min(100, base.res + acc.resFlat),
   };
+}
+
+// ── Sell value ──────────────────────────────────────────────────────────
+
+const GRADE_SELL_MULT: Record<HeldItemGrade, number> = {
+  common: 1,
+  rare: 2,
+  hero: 4,
+  legend: 8,
+};
+
+export function getItemSellValue(item: HeldItemInstance): number {
+  const baseValue = item.stars * 100;
+  const gradeMult = GRADE_SELL_MULT[item.grade];
+  const levelBonus = item.level * item.stars * 50;
+  return Math.floor((baseValue + levelBonus) * gradeMult);
 }

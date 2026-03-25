@@ -9,6 +9,7 @@ const TABS = [
   { path: '/missions', icon: '\u{1F3C6}', badge: true },
   { path: '/story', icon: '\u2694', badge: false },
   { path: '/dungeons', icon: '\u{1F3DB}', badge: false },
+  { path: '/trainer', icon: '\u{1F9D1}', badge: false },
 ];
 
 export function BottomNav() {

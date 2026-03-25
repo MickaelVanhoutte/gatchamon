@@ -24,7 +24,10 @@ import {
   savePlayer,
   loadCollection,
   addToCollection,
+  addHeldItem,
 } from './storage';
+import { generateItem } from './rune.service';
+import { grantTrainerXp } from './player.service';
 import type { FloorEnemy } from './floor.service';
 import { DIFFICULTY_REWARD_MULT } from './floor.service';
 
@@ -360,4 +363,20 @@ function applyReward(reward: MissionReward): void {
   }
 
   savePlayer({ ...player, ...updates });
+
+  // Trainer XP
+  if (reward.trainerXp) {
+    grantTrainerXp(reward.trainerXp);
+  }
+
+  // Held item reward
+  if (reward.heldItem) {
+    const { setId, stars, grade, slot } = reward.heldItem;
+    const actualSlot = slot ?? (Math.ceil(Math.random() * 6) as 1 | 2 | 3 | 4 | 5 | 6);
+    const p = loadPlayer();
+    if (p) {
+      const item = generateItem(setId, actualSlot, stars, grade, p.id);
+      addHeldItem(item);
+    }
+  }
 }

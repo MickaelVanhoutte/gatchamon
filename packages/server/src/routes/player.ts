@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { getDb } from '../db/schema.js';
 import type { Player } from '@gatchamon/shared';
+import { defaultTrainerSkills } from '@gatchamon/shared';
 
 export const playerRouter = Router();
 
@@ -30,6 +31,11 @@ playerRouter.post('/', (req, res) => {
     storyProgress: JSON.parse(player.story_progress),
     materials: {},
     createdAt: player.created_at,
+    stardust: 0,
+    trainerLevel: 1,
+    trainerExp: 0,
+    trainerSkillPoints: 0,
+    trainerSkills: defaultTrainerSkills(),
   };
 
   res.status(201).json(result);
@@ -52,6 +58,11 @@ playerRouter.get('/:id', (req, res) => {
     storyProgress: JSON.parse(player.story_progress),
     materials: {},
     createdAt: player.created_at,
+    stardust: 0,
+    trainerLevel: 1,
+    trainerExp: 0,
+    trainerSkillPoints: 0,
+    trainerSkills: defaultTrainerSkills(),
   };
 
   res.json(result);

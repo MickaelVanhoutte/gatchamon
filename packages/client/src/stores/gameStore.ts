@@ -1,12 +1,13 @@
 import { create } from 'zustand';
-import type { Player, PokemonInstance, PokemonTemplate, HeldItemInstance } from '@gatchamon/shared';
-import { getTemplate } from '@gatchamon/shared';
+import type { Player, PokemonInstance, PokemonTemplate, HeldItemInstance, TrainerSkills } from '@gatchamon/shared';
+import { getTemplate, getMaxEnergy, getEnergyRegenInterval } from '@gatchamon/shared';
 import * as storage from '../services/storage';
 import * as playerService from '../services/player.service';
 import * as gachaService from '../services/gacha.service';
 import * as mergeService from '../services/merge.service';
 import * as evolutionService from '../services/evolution.service';
 import * as runeService from '../services/rune.service';
+import { regenerateEnergy } from '../services/energy.service';
 import { getUnclaimedMissionCount, getUnclaimedTrophyCount } from '../services/reward.service';
 
 export interface OwnedPokemon {
@@ -33,6 +34,9 @@ interface GameState {
   equipItem: (itemId: string, pokemonInstanceId: string) => void;
   unequipItem: (itemId: string) => void;
   upgradeItem: (itemId: string) => runeService.UpgradeResult;
+  sellItem: (itemId: string) => number;
+  sellItems: (itemIds: string[]) => number;
+  allocateTrainerSkill: (skill: keyof TrainerSkills) => void;
 }
 
 export const useGameStore = create<GameState>((set, get) => ({
@@ -48,10 +52,31 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   loadPlayer: () => {
-    const player = storage.loadPlayer();
+    let player = storage.loadPlayer();
     if (player) {
+      // Regenerate energy based on elapsed time
+      const maxE = getMaxEnergy(player.trainerSkills);
+      const interval = getEnergyRegenInterval(player.trainerSkills);
+      const updated = regenerateEnergy(player, maxE, interval);
+      if (updated !== player) {
+        storage.savePlayer(updated);
+        player = updated;
+      }
       set({ player });
       get().refreshRewards();
+
+      // Periodic energy regen check every 60s
+      setInterval(() => {
+        let p = storage.loadPlayer();
+        if (!p) return;
+        const mE = getMaxEnergy(p.trainerSkills);
+        const iv = getEnergyRegenInterval(p.trainerSkills);
+        const u = regenerateEnergy(p, mE, iv);
+        if (u !== p) {
+          storage.savePlayer(u);
+          set({ player: u });
+        }
+      }, 60_000);
     }
   },
 
@@ -142,5 +167,25 @@ export const useGameStore = create<GameState>((set, get) => ({
     const updatedPlayer = storage.loadPlayer();
     set({ player: updatedPlayer, heldItems: storage.loadHeldItems() });
     return result;
+  },
+
+  sellItem: (itemId: string) => {
+    const value = runeService.sellItem(itemId);
+    const updatedPlayer = storage.loadPlayer();
+    set({ player: updatedPlayer, heldItems: storage.loadHeldItems() });
+    return value;
+  },
+
+  sellItems: (itemIds: string[]) => {
+    const total = runeService.sellItems(itemIds);
+    const updatedPlayer = storage.loadPlayer();
+    set({ player: updatedPlayer, heldItems: storage.loadHeldItems() });
+    return total;
+  },
+
+  allocateTrainerSkill: (skill: keyof TrainerSkills) => {
+    playerService.allocateTrainerSkill(skill);
+    const updatedPlayer = storage.loadPlayer();
+    set({ player: updatedPlayer });
   },
 }));

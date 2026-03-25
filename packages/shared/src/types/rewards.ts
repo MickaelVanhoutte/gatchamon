@@ -1,4 +1,5 @@
 import type { Difficulty } from './player.js';
+import type { HeldItemGrade, HeldItemSlot } from './held-item.js';
 
 // ─── Daily Missions ───
 
@@ -12,10 +13,19 @@ export type MissionType =
   | 'spend_energy'
   | 'collect_monster';
 
+export interface HeldItemReward {
+  setId: string;
+  stars: 1 | 2 | 3 | 4 | 5 | 6;
+  grade: HeldItemGrade;
+  slot?: HeldItemSlot;
+}
+
 export interface MissionReward {
   pokeballs?: number;
   energy?: number;
   essences?: Record<string, number>;
+  trainerXp?: number;
+  heldItem?: HeldItemReward;
 }
 
 export interface MissionDefinition {

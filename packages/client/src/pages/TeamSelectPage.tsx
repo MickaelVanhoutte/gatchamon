@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
 import { REGIONS, DUNGEONS, ITEM_DUNGEONS, getTemplate } from '@gatchamon/shared';
@@ -7,6 +7,7 @@ import { startBattle, startDungeonBattle, startItemDungeonBattle } from '../serv
 import { buildFloorEnemies } from '../services/floor.service';
 import { loadLastTeam, saveLastTeam } from '../services/storage';
 import { useRotatedHorizontalScroll } from '../hooks/useRotatedHorizontalScroll';
+import { MonsterDetailModal } from '../components/MonsterDetailModal';
 import { assetUrl } from '../utils/asset-url';
 import './TeamSelectPage.css';
 
@@ -34,6 +35,9 @@ export function TeamSelectPage() {
   const [selected, setSelected] = useState<string[]>([]);
   const [isStarting, setIsStarting] = useState(false);
   const [teamRestored, setTeamRestored] = useState(false);
+  const [detailMon, setDetailMon] = useState<OwnedPokemon | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const longPressTriggered = useRef(false);
   const rosterRef = useRef<HTMLDivElement>(null);
   useRotatedHorizontalScroll(rosterRef);
 
@@ -247,7 +251,32 @@ export function TeamSelectPage() {
                   key={mon.instance.instanceId}
                   className={`ts-mini-card ${isSelected ? 'selected' : ''}`}
                   style={{ borderColor: starColor }}
-                  onClick={() => toggleSelect(mon.instance.instanceId)}
+                  onClick={() => {
+                    if (longPressTriggered.current) {
+                      longPressTriggered.current = false;
+                      return;
+                    }
+                    toggleSelect(mon.instance.instanceId);
+                  }}
+                  onTouchStart={() => {
+                    longPressTriggered.current = false;
+                    longPressTimer.current = setTimeout(() => {
+                      longPressTriggered.current = true;
+                      setDetailMon(mon);
+                    }, 500);
+                  }}
+                  onTouchMove={() => {
+                    if (longPressTimer.current) {
+                      clearTimeout(longPressTimer.current);
+                      longPressTimer.current = null;
+                    }
+                  }}
+                  onTouchEnd={() => {
+                    if (longPressTimer.current) {
+                      clearTimeout(longPressTimer.current);
+                      longPressTimer.current = null;
+                    }
+                  }}
                 >
                   <img
                     src={getSpriteUrl(mon)}
@@ -285,6 +314,10 @@ export function TeamSelectPage() {
           </button>
         </div>
       </div>
+
+      {detailMon && (
+        <MonsterDetailModal pokemon={detailMon} onClose={() => setDetailMon(null)} />
+      )}
     </div>
   );
 }

@@ -245,3 +245,56 @@
   font-weight: 700;
   font-size: 0.85rem;
 }
+
+/* Sell */
+.rune-sell-section {
+  padding: 8px 16px 12px;
+}
+
+.rune-sell-btn {
+  width: 100%;
+  background: rgba(255, 107, 107, 0.12);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  color: #ff6b6b;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.rune-sell-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.rune-sell-confirm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: #ff6b6b;
+}
+
+.rune-sell-confirm span {
+  flex: 1;
+}
+
+.rune-sell-yes {
+  background: #ff6b6b;
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.rune-sell-no {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
