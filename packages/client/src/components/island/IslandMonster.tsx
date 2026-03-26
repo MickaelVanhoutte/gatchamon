@@ -4,13 +4,14 @@ import { StarRating } from '../icons';
 import { assetUrl } from '../../utils/asset-url';
 import './IslandMonster.css';
 
-const ISLAND_POSITIONS = [
-  { x: 22, y: 38 },
-  { x: 75, y: 42 },
-  { x: 18, y: 60 },
-  { x: 80, y: 62 },
-  { x: 38, y: 78 },
-  { x: 62, y: 50 },
+// Pixel positions within the 1200x800 meadow world
+const MEADOW_POSITIONS = [
+  { x: 350, y: 200 },
+  { x: 800, y: 180 },
+  { x: 200, y: 500 },
+  { x: 950, y: 500 },
+  { x: 450, y: 600 },
+  { x: 700, y: 300 },
 ];
 
 interface IslandMonsterProps {
@@ -18,11 +19,23 @@ interface IslandMonsterProps {
   positionIndex: number;
 }
 
+// Map Pokedex height (meters) to sprite size (px).
+// Clamp between 56px (tiny mons like Diancie 0.7m) and 120px (huge mons like Kyogre 4.5m).
+function spriteSize(heightM: number): number {
+  const MIN_PX = 56;
+  const MAX_PX = 120;
+  const MIN_H = 0.3;
+  const MAX_H = 5.0;
+  const t = Math.min(1, Math.max(0, (heightM - MIN_H) / (MAX_H - MIN_H)));
+  return Math.round(MIN_PX + t * (MAX_PX - MIN_PX));
+}
+
 export function IslandMonster({ owned, positionIndex }: IslandMonsterProps) {
   const [showLabel, setShowLabel] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  const pos = ISLAND_POSITIONS[positionIndex] ?? ISLAND_POSITIONS[0];
+  const pos = MEADOW_POSITIONS[positionIndex] ?? MEADOW_POSITIONS[0];
+  const size = spriteSize(owned.template.height);
 
   const handleTap = useCallback(() => {
     setShowLabel(true);
@@ -39,7 +52,7 @@ export function IslandMonster({ owned, positionIndex }: IslandMonsterProps) {
   return (
     <div
       className="island-monster"
-      style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
+      style={{ left: pos.x, top: pos.y }}
       onClick={handleTap}
     >
       <div className={`island-monster-label ${showLabel ? 'visible' : ''}`}>
@@ -50,9 +63,10 @@ export function IslandMonster({ owned, positionIndex }: IslandMonsterProps) {
           src={assetUrl(owned.template.spriteUrl)}
           alt={owned.template.name}
           draggable={false}
+          style={{ width: size, height: size }}
         />
       </div>
-      <div className="island-monster-shadow" />
+      <div className="island-monster-shadow" style={{ width: size * 0.6 }} />
     </div>
   );
 }
