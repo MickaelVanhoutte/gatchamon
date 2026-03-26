@@ -4,10 +4,9 @@ import { useGameStore } from '../stores/gameStore';
 import { GameIcon, StarRating } from '../components/icons';
 import type { OwnedPokemon } from '../stores/gameStore';
 import { computeStats, getSkillsForPokemon, MAX_LEVEL_BY_STARS, isMaxLevel, getTemplate, ESSENCES, getEvolutionsFrom, getTypeChangeDef, getAvailableTypeChanges } from '@gatchamon/shared';
-import { canMerge } from '../services/merge.service';
 import { canEvolveInstance } from '../services/evolution.service';
 import { canChangeType } from '../services/type-change.service';
-import type { PokemonType, BaseStats, SkillDefinition, EvolutionChain } from '@gatchamon/shared';
+import type { PokemonType, BaseStats } from '@gatchamon/shared';
 import { assetUrl } from '../utils/asset-url';
 import { RuneEquipPanel } from './RuneEquipPanel';
 import { SkillCard } from '../components/monster/SkillCard';
@@ -31,6 +30,12 @@ const STAR_COLORS: Record<number, string> = {
   6: '#ff6b6b',
 };
 
+/** Map Pokemon height (meters) to a sprite scale (0.45–1.0) for the grid cell. */
+function getSpriteScale(heightMeters: number): number {
+  const clamped = Math.min(2.5, Math.max(0.2, heightMeters));
+  return 0.45 + ((clamped - 0.2) / (2.5 - 0.2)) * 0.55;
+}
+
 const STAT_LABELS: Record<keyof BaseStats, string> = {
   hp: 'HP',
   atk: 'ATK',
@@ -44,13 +49,11 @@ const STAT_LABELS: Record<keyof BaseStats, string> = {
 
 export function CollectionPage() {
   const navigate = useNavigate();
-  const { collection, loadCollection, mergePokemon, evolvePokemon, changeType, player, heldItems, loadHeldItems } = useGameStore();
+  const { collection, loadCollection, evolvePokemon, changeType, player, heldItems, loadHeldItems } = useGameStore();
   const [typeFilter, setTypeFilter] = useState<PokemonType | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>('stars');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<DetailTab>('info');
-  const [mergeMode, setMergeMode] = useState(false);
-  const [fodderConfirm, setFodderConfirm] = useState<OwnedPokemon | null>(null);
 
   useEffect(() => {
     loadCollection();
@@ -63,23 +66,12 @@ export function CollectionPage() {
     }
   }, [collection, selectedId]);
 
-  // Exit merge mode when selection changes
-  useEffect(() => {
-    setMergeMode(false);
-    setFodderConfirm(null);
-  }, [selectedId]);
-
   const selected: OwnedPokemon | undefined = collection.find(
     m => m.instance.instanceId === selectedId,
   );
 
-  // In merge mode, filter grid to show only valid fodder
   const filtered = collection
     .filter(mon => {
-      if (mergeMode && selected) {
-        return mon.instance.templateId === selected.instance.templateId
-          && mon.instance.instanceId !== selected.instance.instanceId;
-      }
       return !typeFilter || mon.template.types.includes(typeFilter);
     })
     .sort((a, b) => {
@@ -98,7 +90,6 @@ export function CollectionPage() {
 
   const maxLevel = selected ? (MAX_LEVEL_BY_STARS[selected.instance.stars] ?? 99) : 0;
   const atMaxLevel = selected ? isMaxLevel(selected.instance.level, selected.instance.stars) : false;
-  const canPowerUp = selected && atMaxLevel && selected.instance.stars < 6;
 
   // Evolution data
   const evolutionOptions = selected ? getEvolutionsFrom(selected.instance.templateId) : [];
@@ -111,63 +102,37 @@ export function CollectionPage() {
     : [];
   const hasTypeChange = typeChangeOptions.length > 0;
 
-  function handleCellClick(mon: OwnedPokemon) {
-    if (mergeMode && selected) {
-      const validation = canMerge(selected.instance, mon.instance);
-      if (validation.valid) {
-        setFodderConfirm(mon);
-      }
-    } else {
-      setSelectedId(mon.instance.instanceId);
-    }
-  }
-
-  function confirmMerge() {
-    if (!selected || !fodderConfirm) return;
-    mergePokemon(selected.instance.instanceId, fodderConfirm.instance.instanceId);
-    setMergeMode(false);
-    setFodderConfirm(null);
-  }
-
   return (
     <div className="page collection-page">
       {/* Header */}
       <div className="box-header">
         <span className="box-title">
-          {mergeMode ? 'Select Fodder' : `Monster ${collection.length}/120`}
+          {`Monster ${collection.length}/120`}
         </span>
         <div className="box-header-actions">
-          {!mergeMode && (
-            <>
-              <select
-                className="box-sort-select"
-                value={sortBy}
-                onChange={e => setSortBy(e.target.value as SortBy)}
-              >
-                <option value="stars">Grade</option>
-                <option value="level">Level</option>
-                <option value="name">Name</option>
-              </select>
-              <select
-                className="box-type-select"
-                value={typeFilter ?? ''}
-                onChange={e => setTypeFilter((e.target.value || null) as PokemonType | null)}
-              >
-                <option value="">All Types</option>
-                {ALL_TYPES.map(t => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
-              </select>
-              <button className="pdex-nav-btn" onClick={() => navigate('/pokedex')}>
-                Pokedex
-              </button>
-            </>
-          )}
-          {mergeMode ? (
-            <button className="box-close" onClick={() => { setMergeMode(false); setFodderConfirm(null); }}>Cancel</button>
-          ) : (
-            <button className="box-close" onClick={() => history.back()}><GameIcon id="close" size={18} /></button>
-          )}
+          <select
+            className="box-sort-select"
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value as SortBy)}
+          >
+            <option value="stars">Grade</option>
+            <option value="level">Level</option>
+            <option value="name">Name</option>
+          </select>
+          <select
+            className="box-type-select"
+            value={typeFilter ?? ''}
+            onChange={e => setTypeFilter((e.target.value || null) as PokemonType | null)}
+          >
+            <option value="">All Types</option>
+            {ALL_TYPES.map(t => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+          <button className="pdex-nav-btn" onClick={() => navigate('/pokedex')}>
+            Pokedex
+          </button>
+          <button className="box-close" onClick={() => history.back()}><GameIcon id="close" size={18} /></button>
         </div>
       </div>
 
@@ -178,12 +143,11 @@ export function CollectionPage() {
             {filtered.map(mon => {
               const starColor = STAR_COLORS[mon.instance.stars] ?? STAR_COLORS[1];
               const isSelected = mon.instance.instanceId === selectedId;
-              const isFodderSelected = fodderConfirm?.instance.instanceId === mon.instance.instanceId;
               return (
                 <div
                   key={mon.instance.instanceId}
-                  className={`box-cell ${isSelected ? 'box-cell--selected' : ''} ${isFodderSelected ? 'box-cell--fodder' : ''} ${mergeMode ? 'box-cell--merge-mode' : ''}`}
-                  onClick={() => handleCellClick(mon)}
+                  className={`box-cell ${isSelected ? 'box-cell--selected' : ''}`}
+                  onClick={() => setSelectedId(mon.instance.instanceId)}
                 >
                   <div className="box-cell-stars" style={{ color: starColor }}>
                     <StarRating count={mon.instance.stars} size={10} />
@@ -194,6 +158,7 @@ export function CollectionPage() {
                       ? assetUrl(`monsters/ani-shiny/${mon.template.name.toLowerCase()}.gif`)
                       : assetUrl(mon.template.spriteUrl)}
                     alt={mon.template.name}
+                    style={{ width: `${getSpriteScale(mon.template.height) * 80}%` }}
                   />
                   {mon.instance.isShiny && <div className="box-cell-shiny-badge"><GameIcon id="shiny" size={10} /></div>}
                   <div className="box-cell-level">
@@ -203,9 +168,6 @@ export function CollectionPage() {
                 </div>
               );
             })}
-            {mergeMode && filtered.length === 0 && (
-              <div className="box-empty-merge">No duplicates available</div>
-            )}
           </div>
         </div>
 
@@ -295,9 +257,12 @@ export function CollectionPage() {
                     ))}
                   </div>
 
-                  {/* Power Up / Merge section */}
-                  {canPowerUp && !mergeMode && (
-                    <button className="box-powerup-btn" onClick={() => setMergeMode(true)}>
+                  {/* Power Up — navigates to Altar page */}
+                  {selected.instance.stars < 6 && (
+                    <button
+                      className="box-powerup-btn"
+                      onClick={() => navigate(`/altar?baseId=${selected.instance.instanceId}`)}
+                    >
                       <GameIcon id="arrow_up" size={14} /> Power Up
                     </button>
                   )}
@@ -418,7 +383,12 @@ export function CollectionPage() {
                 /* Skill tab */
                 <div className="box-skills">
                   {selectedSkills.map((skill, i) => (
-                    <SkillCard key={skill.id} skill={skill} index={i + 1} />
+                    <SkillCard
+                      key={skill.id}
+                      skill={skill}
+                      index={i + 1}
+                      skillLevel={selected.instance.skillLevels?.[i] ?? 1}
+                    />
                   ))}
                 </div>
               )}
@@ -432,32 +402,6 @@ export function CollectionPage() {
           )}
         </div>
       </div>
-
-      {/* Merge confirmation dialog */}
-      {fodderConfirm && selected && (
-        <div className="merge-overlay" onClick={() => setFodderConfirm(null)}>
-          <div className="merge-dialog" onClick={e => e.stopPropagation()}>
-            <h3>Power Up</h3>
-            <p>
-              Merge <strong>{fodderConfirm.template.name}</strong> (Lv.{fodderConfirm.instance.level}) into{' '}
-              <strong>{selected.template.name}</strong>?
-            </p>
-            <p className="merge-result">
-              {selected.template.name} will become{' '}
-              <span style={{ color: STAR_COLORS[selected.instance.stars + 1] }}>
-                <StarRating count={selected.instance.stars + 1} size={10} />
-              </span>{' '}
-              and reset to Level 1.
-            </p>
-            <p className="merge-warning">The fodder monster will be consumed.</p>
-            <div className="merge-actions">
-              <button className="merge-cancel" onClick={() => setFodderConfirm(null)}>Cancel</button>
-              <button className="merge-confirm" onClick={confirmMerge}>Confirm</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
-

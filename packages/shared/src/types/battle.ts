@@ -14,6 +14,7 @@ export interface BattleMon {
   isAlive: boolean;
   actionGauge: number;
   isBoss?: boolean;
+  skillLevels?: [number, number, number];
 }
 
 export interface ActiveEffect {

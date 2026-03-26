@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { getTemplate, SKILLS, getTypeEffectiveness } from '@gatchamon/shared';
+import { getTemplate, SKILLS, getTypeEffectiveness, getSkillMultiplierBonus } from '@gatchamon/shared';
 import type { BattleState, BattleMon, PokemonType, BaseStats } from '@gatchamon/shared';
 
 type Phase = 'player_turn' | 'animating' | 'victory' | 'defeat';
@@ -93,7 +93,15 @@ function pickBestAction(actor: BattleMon, state: BattleState): AutoAction | null
   let bestScore = -Infinity;
   let bestAction: AutoAction | null = null;
 
-  for (const skill of availableSkills) {
+  for (const rawSkill of availableSkills) {
+    // Apply skill level bonus to multiplier
+    const skillIndex = template.skillIds.indexOf(rawSkill.id);
+    const skillLevel = actor.skillLevels?.[skillIndex] ?? 1;
+    const levelBonus = getSkillMultiplierBonus(skillLevel);
+    const skill = rawSkill.multiplier > 0
+      ? { ...rawSkill, multiplier: rawSkill.multiplier * levelBonus }
+      : rawSkill;
+
     // Prefer active skills over basic attacks — basic is a last resort
     const categoryBonus = skill.category === 'basic' ? 0 : 50;
 

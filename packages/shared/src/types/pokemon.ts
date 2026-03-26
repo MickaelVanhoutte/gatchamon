@@ -35,6 +35,7 @@ export interface PokemonInstance {
   stars: 1 | 2 | 3 | 4 | 5 | 6;
   exp: number;
   isShiny: boolean;
+  skillLevels?: [number, number, number];
 }
 
 export type SkillTarget =

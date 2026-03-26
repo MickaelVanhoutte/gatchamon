@@ -2,7 +2,7 @@ import type { BaseStats, PokemonTemplate, SkillDefinition } from '../types/pokem
 import type { TrainerSkills } from '../types/player.js';
 import { getTypeEffectiveness } from './type-chart.js';
 
-const STAR_MULTIPLIERS: Record<number, number> = {
+export const STAR_MULTIPLIERS: Record<number, number> = {
   1: 1.0,
   2: 1.15,
   3: 1.3,
@@ -128,4 +128,38 @@ export function defaultTrainerSkills(): TrainerSkills {
     pokeballBonus: 0,
     essenceBonus: 0,
   };
+}
+
+// ── Altar / Power-Up Circle ───────────────────────────────────────────
+
+export const FODDER_XP_STAR_MULTIPLIERS: Record<number, number> = {
+  1: 1, 2: 1.5, 3: 2, 4: 3, 5: 5, 6: 8,
+};
+
+export const MAX_SKILL_LEVEL = 5;
+export const SKILL_LEVEL_MULTIPLIER_BONUS = 0.15;
+
+export function calculateFodderXp(fodderLevel: number, fodderStars: number): number {
+  return Math.floor(fodderLevel * 50 * (FODDER_XP_STAR_MULTIPLIERS[fodderStars] ?? 1));
+}
+
+export function getSkillMultiplierBonus(skillLevel: number): number {
+  return 1 + (Math.max(1, skillLevel) - 1) * SKILL_LEVEL_MULTIPLIER_BONUS;
+}
+
+export function getRequiredFodderCount(baseStars: number): number {
+  return baseStars;
+}
+
+export function canStarEvolve(
+  baseLevel: number,
+  baseStars: number,
+  fodderStars: number[],
+): boolean {
+  if (baseStars >= 6) return false;
+  if (!isMaxLevel(baseLevel, baseStars)) return false;
+  const needed = baseStars;
+  if (fodderStars.length < needed) return false;
+  const qualifying = fodderStars.filter(s => s === baseStars);
+  return qualifying.length >= needed;
 }

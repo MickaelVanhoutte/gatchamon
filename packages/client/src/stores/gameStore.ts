@@ -5,6 +5,7 @@ import * as storage from '../services/storage';
 import * as playerService from '../services/player.service';
 import * as gachaService from '../services/gacha.service';
 import * as mergeService from '../services/merge.service';
+import * as altarService from '../services/altar.service';
 import * as evolutionService from '../services/evolution.service';
 import * as typeChangeService from '../services/type-change.service';
 import * as runeService from '../services/rune.service';
@@ -29,6 +30,7 @@ interface GameState {
   summon: (count: 1 | 10, type?: PokeballType) => OwnedPokemon[];
   loadCollection: () => void;
   mergePokemon: (baseId: string, fodderId: string) => void;
+  altarFeed: (baseId: string, fodderIds: string[]) => void;
   evolvePokemon: (instanceId: string, targetTemplateId: number) => void;
   changeType: (instanceId: string, targetTemplateId: number) => void;
   refreshRewards: () => void;
@@ -138,6 +140,12 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   mergePokemon: (baseId: string, fodderId: string) => {
     mergeService.performMerge(baseId, fodderId);
+    get().loadCollection();
+    get().refreshRewards();
+  },
+
+  altarFeed: (baseId: string, fodderIds: string[]) => {
+    altarService.performAltarFeed(baseId, fodderIds);
     get().loadCollection();
     get().refreshRewards();
   },

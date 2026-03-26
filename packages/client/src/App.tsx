@@ -12,6 +12,7 @@ import { DungeonPage } from './pages/DungeonPage';
 import { MissionsPage } from './pages/MissionsPage';
 import { TrainerPage } from './pages/TrainerPage';
 import { PokedexPage } from './pages/PokedexPage';
+import { AltarPage } from './pages/AltarPage';
 import { BottomNav } from './components/layout/BottomNav';
 import { TopHUD } from './components/layout/TopHUD';
 import { LoadingScreen } from './components/LoadingScreen';
@@ -23,11 +24,22 @@ export function App() {
   const [showLoading, setShowLoading] = useState(true);
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   useRotatedScroll(scrollRef);
 
   useEffect(() => {
     loadPlayer();
   }, [loadPlayer]);
+
+  // Only auto-focus when the device is truly in landscape (not using CSS rotation hack)
+  useEffect(() => {
+    if (!player && !showLoading && inputRef.current) {
+      const isPortrait = window.matchMedia('(orientation: portrait)').matches;
+      if (!isPortrait) {
+        inputRef.current.focus();
+      }
+    }
+  }, [player, showLoading]);
 
   if (showLoading) {
     return <LoadingScreen onStart={() => setShowLoading(false)} />;
@@ -47,12 +59,12 @@ export function App() {
             }
           }}>
             <input
+              ref={inputRef}
               type="text"
               value={nameInput}
               onChange={e => setNameInput(e.target.value)}
               placeholder="Enter name..."
               maxLength={20}
-              autoFocus
             />
             <button type="submit" disabled={!nameInput.trim()}>
               Start Adventure
@@ -77,6 +89,7 @@ export function App() {
           <Route path="/story" element={<StoryModePage />} />
           <Route path="/dungeons" element={<DungeonPage />} />
           <Route path="/trainer" element={<TrainerPage />} />
+          <Route path="/altar" element={<AltarPage />} />
           <Route path="/battle/team-select" element={<TeamSelectPage />} />
           <Route path="/battle/:battleId" element={<BattlePage />} />
         </Routes>

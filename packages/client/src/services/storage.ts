@@ -55,7 +55,17 @@ export function savePlayer(player: Player): void {
 export function loadCollection(): PokemonInstance[] {
   const raw = localStorage.getItem(COLLECTION_KEY);
   if (!raw) return [];
-  return JSON.parse(raw) as PokemonInstance[];
+  const collection = JSON.parse(raw) as PokemonInstance[];
+  // Migration: add skillLevels for existing monsters
+  let needsSave = false;
+  for (const inst of collection) {
+    if (!inst.skillLevels) {
+      inst.skillLevels = [1, 1, 1];
+      needsSave = true;
+    }
+  }
+  if (needsSave) saveCollection(collection);
+  return collection;
 }
 
 export function saveCollection(collection: PokemonInstance[]): void {

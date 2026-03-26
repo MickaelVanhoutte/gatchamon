@@ -1,0 +1,441 @@
+/* ── Altar Page ─────────────────────────────────────────────────────── */
+
+.altar-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.altar-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.altar-back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.altar-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.altar-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Left: Monster Grid ────────────────────────────────────────────── */
+
+.altar-grid-panel {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px;
+  background: var(--bg-secondary);
+}
+
+.altar-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 2px;
+}
+
+.altar-cell {
+  position: relative;
+  aspect-ratio: 1;
+  background: var(--bg-card);
+  border: 2px solid transparent;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  overflow: hidden;
+}
+
+.altar-cell:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 6px rgba(13, 148, 136, 0.3);
+}
+
+.altar-cell--selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 8px rgba(13, 148, 136, 0.5);
+}
+
+.altar-cell--fodder {
+  border-color: #ff4444;
+  box-shadow: 0 0 8px rgba(255, 68, 68, 0.4);
+  opacity: 0.7;
+}
+
+.altar-cell--base {
+  border-color: #ffd700;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+.altar-cell--disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.altar-cell-stars {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  display: flex;
+  gap: 1px;
+}
+
+.altar-cell-sprite {
+  image-rendering: pixelated;
+  max-height: 60%;
+  object-fit: contain;
+}
+
+.altar-cell-level {
+  position: absolute;
+  bottom: 1px;
+  right: 3px;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.altar-cell-skillup-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: #4ade80;
+  color: white;
+  font-size: 0.45rem;
+  font-weight: 700;
+  padding: 1px 3px;
+  border-radius: 2px;
+  text-transform: uppercase;
+}
+
+/* ── Right: Altar Panel ────────────────────────────────────────────── */
+
+.altar-panel {
+  width: 340px;
+  background: var(--bg-card);
+  border-left: 1px solid var(--card-border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 12px;
+  gap: 12px;
+}
+
+/* Base monster display */
+.altar-base {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+.altar-base-sprite {
+  width: 64px;
+  height: 64px;
+  image-rendering: pixelated;
+  object-fit: contain;
+}
+
+.altar-base-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.altar-base-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+.altar-base-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+/* Fodder slots */
+.altar-fodder-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.altar-fodder-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.altar-fodder-slots {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.altar-slot {
+  width: 52px;
+  height: 52px;
+  border: 2px dashed var(--card-border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  position: relative;
+  background: var(--bg-secondary);
+}
+
+.altar-slot:hover {
+  border-color: var(--accent);
+}
+
+.altar-slot--filled {
+  border-style: solid;
+  border-color: var(--accent);
+  background: var(--bg-card);
+}
+
+.altar-slot--active {
+  border-color: var(--accent);
+  border-style: solid;
+  box-shadow: 0 0 8px rgba(13, 148, 136, 0.5);
+}
+
+.altar-slot-sprite {
+  width: 36px;
+  height: 36px;
+  image-rendering: pixelated;
+  object-fit: contain;
+}
+
+.altar-slot-remove {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ff4444;
+  color: white;
+  border: none;
+  font-size: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.altar-slot-empty {
+  font-size: 1.2rem;
+  color: var(--card-border);
+}
+
+/* Preview section */
+.altar-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+.altar-preview-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.altar-preview-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+}
+
+.altar-preview-label {
+  color: var(--text-secondary);
+}
+
+.altar-preview-value {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.altar-preview-value--star {
+  color: #ffd700;
+}
+
+.altar-preview-value--skill {
+  color: #4ade80;
+}
+
+.altar-preview-value--xp {
+  color: var(--accent);
+}
+
+.altar-star-evolve-badge {
+  text-align: center;
+  padding: 6px;
+  background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 6px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Confirm button */
+.altar-confirm-btn {
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+  color: white;
+  transition: opacity 0.15s;
+}
+
+.altar-confirm-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.altar-confirm-btn:not(:disabled):hover {
+  opacity: 0.9;
+}
+
+/* Confirmation overlay */
+.altar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.altar-dialog {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 340px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.altar-dialog h3 {
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+}
+
+.altar-dialog p {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.altar-dialog-results {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 10px 0;
+  padding: 8px;
+  background: var(--bg-secondary);
+  border-radius: 6px;
+  font-size: 0.72rem;
+}
+
+.altar-dialog-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.altar-dialog-cancel {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  background: var(--bg-card);
+  font-size: 0.75rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.altar-dialog-confirm {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.altar-dialog-warning {
+  color: #ff4444 !important;
+  font-weight: 600;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  .altar-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .altar-panel {
+    width: 300px;
+  }
+}
+
+@media (max-width: 420px) {
+  .altar-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .altar-panel {
+    width: 45%;
+  }
+}

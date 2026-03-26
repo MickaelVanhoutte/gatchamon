@@ -53,6 +53,9 @@ export function initDb(): void {
   // Split pokeballs into regular/premium
   migratePokeballSplit(database);
 
+  // Add skill_levels column
+  migrateAddSkillLevels(database);
+
   console.log('Database initialized');
 }
 
@@ -72,6 +75,14 @@ function migratePokeballSplit(database: Database.Database): void {
     database.exec('UPDATE players SET regular_pokeballs = pokeballs');
   } catch {
     // Columns already exist
+  }
+}
+
+function migrateAddSkillLevels(database: Database.Database): void {
+  try {
+    database.exec("ALTER TABLE pokemon_instances ADD COLUMN skill_levels TEXT NOT NULL DEFAULT '[1,1,1]'");
+  } catch {
+    // Column already exists
   }
 }
 

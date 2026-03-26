@@ -1,4 +1,4 @@
-import { getTemplate as getTemplateShared, computeStats, computeStatsWithItems, getActiveSetEffects, calculateDamage, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel } from '@gatchamon/shared';
+import { getTemplate as getTemplateShared, computeStats, computeStatsWithItems, getActiveSetEffects, calculateDamage, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel, getSkillMultiplierBonus } from '@gatchamon/shared';
 import { SKILLS, getSkillsForPokemon } from '@gatchamon/shared';
 import { TOTAL_REGIONS } from '@gatchamon/shared';
 import type {
@@ -51,6 +51,7 @@ function makeBattleMon(
   level: number,
   stars: number,
   isPlayerOwned: boolean,
+  skillLevels?: [number, number, number],
 ): BattleMon {
   const template = getTemplate(templateId);
 
@@ -98,6 +99,7 @@ function makeBattleMon(
     debuffs: [],
     isAlive: true,
     actionGauge: 0,
+    skillLevels,
   };
 }
 
@@ -270,6 +272,14 @@ function resolveSkill(
   const actorTemplate = getTemplate(actor.templateId);
   const attackerStats = getEffectiveStats(actor);
 
+  // Apply skill level multiplier bonus
+  const skillIndex = actorTemplate.skillIds.indexOf(skill.id);
+  const skillLevel = actor.skillLevels?.[skillIndex] ?? 1;
+  const levelBonus = getSkillMultiplierBonus(skillLevel);
+  const effectiveSkill = skill.multiplier > 0
+    ? { ...skill, multiplier: skill.multiplier * levelBonus }
+    : skill;
+
   for (const target of targets) {
     const targetTemplate = getTemplate(target.templateId);
     let damage = 0;
@@ -278,12 +288,12 @@ function resolveSkill(
     const appliedEffects: string[] = [];
 
     // Handle heal skills (target is self or ally)
-    if (skill.target === 'self' || skill.target === 'single_ally' || skill.target === 'all_allies') {
-      if (skill.multiplier > 0) {
+    if (effectiveSkill.target === 'self' || effectiveSkill.target === 'single_ally' || effectiveSkill.target === 'all_allies') {
+      if (effectiveSkill.multiplier > 0) {
         const result = calculateDamage(
           attackerStats,
           getEffectiveStats(target),
-          skill,
+          effectiveSkill,
           actorTemplate.types,
           targetTemplate.types,
         );
@@ -302,7 +312,7 @@ function resolveSkill(
       const result = calculateDamage(
         attackerStats,
         getEffectiveStats(target),
-        skill,
+        effectiveSkill,
         actorTemplate.types,
         targetTemplate.types,
       );
@@ -873,7 +883,7 @@ export function startBattle(
   for (const instId of teamInstanceIds) {
     const inst = collection.find(p => p.instanceId === instId && p.ownerId === player.id);
     if (!inst) throw new Error(`Pokemon instance ${instId} not found or not owned by player`);
-    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true));
+    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true, inst.skillLevels));
   }
 
   if (playerTeam.length === 0) throw new Error('Team cannot be empty');
@@ -952,7 +962,7 @@ export function startDungeonBattle(
   for (const instId of teamInstanceIds) {
     const inst = collection.find(p => p.instanceId === instId && p.ownerId === player.id);
     if (!inst) throw new Error(`Pokemon instance ${instId} not found`);
-    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true));
+    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true, inst.skillLevels));
   }
 
   if (playerTeam.length === 0) throw new Error('Team cannot be empty');
@@ -1038,7 +1048,7 @@ export function startItemDungeonBattle(
   for (const instId of teamInstanceIds) {
     const inst = collection.find(p => p.instanceId === instId && p.ownerId === player.id);
     if (!inst) throw new Error(`Pokemon instance ${instId} not found`);
-    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true));
+    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true, inst.skillLevels));
   }
 
   if (playerTeam.length === 0) throw new Error('Team cannot be empty');

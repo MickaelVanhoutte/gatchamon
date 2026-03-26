@@ -1,4 +1,5 @@
 import type { SkillDefinition } from '@gatchamon/shared';
+import { getSkillMultiplierBonus, MAX_SKILL_LEVEL } from '@gatchamon/shared';
 
 const EFFECT_LABELS: Record<string, string> = {
   buff: 'Buff',
@@ -22,12 +23,21 @@ const TARGET_LABELS: Record<string, string> = {
   all_allies: 'All Allies',
 };
 
-export function SkillCard({ skill, index }: { skill: SkillDefinition; index: number }) {
+export function SkillCard({ skill, index, skillLevel = 1 }: { skill: SkillDefinition; index: number; skillLevel?: number }) {
+  const bonus = getSkillMultiplierBonus(skillLevel);
+  const effectiveMultiplier = skill.multiplier > 0
+    ? Math.round(skill.multiplier * bonus * 100) / 100
+    : 0;
+  const hasBonus = skillLevel > 1 && skill.multiplier > 0;
+
   return (
     <div className="skill-card">
       <div className="skill-card-header">
         <span className="skill-card-index">S{index}</span>
         <span className="skill-card-name">{skill.name}</span>
+        <span className="skill-card-level">
+          Lv.{skillLevel}/{MAX_SKILL_LEVEL}
+        </span>
         <span className="skill-card-type" style={{ background: `var(--type-${skill.type})` }}>
           {skill.type}
         </span>
@@ -42,7 +52,11 @@ export function SkillCard({ skill, index }: { skill: SkillDefinition; index: num
         </div>
         <div className="skill-meta-row">
           <span className="skill-meta-label">Multiplier</span>
-          <span className="skill-meta-value">{skill.multiplier > 0 ? `${skill.multiplier}x` : '—'}</span>
+          <span className="skill-meta-value">
+            {effectiveMultiplier > 0
+              ? <>{effectiveMultiplier}x{hasBonus && <span className="skill-bonus"> (+{Math.round((bonus - 1) * 100)}%)</span>}</>
+              : '—'}
+          </span>
         </div>
         <div className="skill-meta-row">
           <span className="skill-meta-label">Cooldown</span>

@@ -117,6 +117,7 @@
   flex: 1;
   min-height: 0;
   object-fit: contain;
+  object-position: bottom;
 }
 
 /* Level overlay at bottom */
@@ -365,6 +366,19 @@
   font-weight: 700;
   color: var(--text-primary);
   flex: 1;
+}
+
+.skill-card-level {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.skill-bonus {
+  color: #4ade80;
+  font-size: 0.65rem;
+  font-weight: 600;
 }
 
 .skill-card-type {

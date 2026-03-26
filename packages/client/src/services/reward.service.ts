@@ -273,6 +273,7 @@ export function rollMonsterLoot(
         stars: enemy.stars,
         exp: 0,
         isShiny: Math.random() < SHINY_RATE,
+        skillLevels: [1, 1, 1],
       };
 
       addToCollection([instance]);

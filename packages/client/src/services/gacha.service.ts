@@ -45,6 +45,7 @@ function createInstance(template: PokemonTemplate, ownerId: string): PokemonInst
     stars: template.naturalStars,
     exp: 0,
     isShiny,
+    skillLevels: [1, 1, 1],
   };
 }
 
