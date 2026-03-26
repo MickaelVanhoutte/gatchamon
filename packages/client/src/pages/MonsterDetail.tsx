@@ -33,7 +33,7 @@ const STAR_COLORS: Record<number, string> = {
   2: '#4ade80',
   3: '#60a5fa',
   4: '#c084fc',
-  5: '#fbbf24',
+  5: '#ff4444',
   6: '#ff6b6b',
 };
 

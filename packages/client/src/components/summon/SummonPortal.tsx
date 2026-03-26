@@ -14,7 +14,6 @@ const MIN_DURATION = 1.8;
 export function SummonPortal({ resultsReady, onComplete }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const orbRef = useRef<HTMLDivElement>(null);
-  const circleRef = useRef<HTMLDivElement>(null);
   const animDoneRef = useRef(false);
   const completedRef = useRef(false);
   const onCompleteRef = useRef(onComplete);
@@ -56,7 +55,7 @@ export function SummonPortal({ resultsReady, onComplete }: Props) {
   }, [resultsReady, doComplete]);
 
   useEffect(() => {
-    if (!orbRef.current || !circleRef.current || !containerRef.current) return;
+    if (!orbRef.current || !containerRef.current) return;
 
     // Reset refs in case of strict mode re-mount
     animDoneRef.current = false;
@@ -71,18 +70,17 @@ export function SummonPortal({ resultsReady, onComplete }: Props) {
       { opacity: 1, duration: 0.3 }
     );
 
-    // Summoning circle appears
-    tl.fromTo(circleRef.current,
-      { opacity: 0, scale: 0.3 },
-      { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.5)' },
+    // Pokeball appears and starts rotating
+    tl.fromTo(orbRef.current,
+      { scale: 0.3, opacity: 0, rotation: 0 },
+      { scale: 1, opacity: 1, rotation: 360, duration: 1.0, ease: 'power2.out' },
       0.1
     );
 
-    // Orb grows
-    tl.fromTo(orbRef.current,
-      { scale: 0.3, opacity: 0 },
-      { scale: 1, opacity: 1, duration: 0.8, ease: 'power2.out' },
-      0.2
+    // Continue a slower spin while energy gathers
+    tl.to(orbRef.current,
+      { rotation: 720, duration: 1.2, ease: 'power1.inOut' },
+      1.1
     );
 
     // Wisps fade in with stagger
@@ -157,14 +155,15 @@ export function SummonPortal({ resultsReady, onComplete }: Props) {
       <div className="portal-backdrop" />
       <div className="portal-flash" />
 
-      <div className="portal-circle" ref={circleRef}>
-        <div className="portal-circle-inner" />
-        <div className="portal-circle-runes" />
-      </div>
-
       <div className="portal-center">
         <div className="portal-orb-main" ref={orbRef}>
-          <div className="portal-orb-core" />
+          <div className="portal-pokeball">
+            <div className="portal-pokeball-top" />
+            <div className="portal-pokeball-bottom" />
+            <div className="portal-pokeball-band">
+              <div className="portal-pokeball-button" />
+            </div>
+          </div>
         </div>
         <div className="portal-wisps">
           {wisps.map((w) => (

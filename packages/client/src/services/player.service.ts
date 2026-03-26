@@ -9,7 +9,7 @@ import {
 import { loadPlayer, savePlayer } from './storage';
 
 const DEFAULT_STORY_PROGRESS: StoryProgress = { normal: { 1: 1 }, hard: {}, hell: {} };
-const STARTING_POKEBALLS = 50;
+const STARTING_POKEBALLS = 100;
 const STARTING_ENERGY = 100;
 const STARTING_STARDUST = 0;
 

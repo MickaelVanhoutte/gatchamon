@@ -58,7 +58,15 @@ export function SummonPage() {
 
       {phase === 'idle' && (
         <div className="summon-idle">
-          <div className="idle-portal-orb" />
+          <div className="idle-pokeball">
+            <div className="idle-pokeball-top" />
+            <div className="idle-pokeball-bottom" />
+            <div className="idle-pokeball-band">
+              <div className="idle-pokeball-button">
+                <div className="idle-pokeball-button-inner" />
+              </div>
+            </div>
+          </div>
           <div className="summon-buttons">
             <button
               className="summon-btn summon-single"

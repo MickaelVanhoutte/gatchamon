@@ -9,21 +9,22 @@ const MULTI_COST = 45;
 const MULTI_COUNT = 10;
 const SHINY_RATE = DEBUG_MODE ? 0.5 : 0.001; // Debug: 50%, Prod: 0.1% (1 in 1000)
 
-function rollStarRating(guaranteeMinTwo = false): 1 | 2 | 3 {
+function rollStarRating(guaranteeMinThree = false): 1 | 2 | 3 | 5 {
   const roll = Math.random() * 100;
-  if (guaranteeMinTwo) {
-    return roll < 80 ? 2 : 3;
+  if (guaranteeMinThree) {
+    return roll < 90 ? 3 : 5;
   }
-  if (roll < 55) return 1;
-  if (roll < 85) return 2;
-  return 3;
+  if (roll < 50) return 1;
+  if (roll < 80) return 2;
+  if (roll < 98) return 3;
+  return 5;
 }
 
 function rollShiny(): boolean {
   return Math.random() < SHINY_RATE;
 }
 
-function pickFromPool(stars: 1 | 2 | 3): PokemonTemplate {
+function pickFromPool(stars: 1 | 2 | 3 | 5): PokemonTemplate {
   const pool = POKEDEX.filter(p => p.naturalStars === stars && p.summonable !== false);
   return pool[Math.floor(Math.random() * pool.length)];
 }

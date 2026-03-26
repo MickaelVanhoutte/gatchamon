@@ -25,6 +25,20 @@ const POKEDEX_OUT = path.resolve(__dirname, '../src/data/pokedex');
 const SKILLS_OUT = path.resolve(__dirname, '../src/data/skills');
 const EVOLUTIONS_OUT = path.resolve(__dirname, '../src/data/evolutions.ts');
 
+// Pseudo-legendary final form IDs (BST 600, final stage of 3-stage non-legendary line)
+const PSEUDO_LEGENDARY_IDS = new Set([
+  149,  // Dragonite
+  248,  // Tyranitar
+  373,  // Salamence
+  376,  // Metagross
+  445,  // Garchomp
+  635,  // Hydreigon
+  706,  // Goodra
+  784,  // Kommo-o
+  887,  // Dragapult
+  998,  // Baxcalibur
+]);
+
 // Suffixes to exclude
 const EXCLUDED_SUFFIXES = ['-gmax', '-totem'];
 // Cosmetic forms to exclude
@@ -300,10 +314,12 @@ function mapStats(bst: number): {
   };
 }
 
-function getNaturalStars(bst: number, isLegendary: boolean, isMythical: boolean): 1 | 2 | 3 {
-  if (isLegendary || isMythical) return 3;
-  if (bst >= 550) return 3;
-  if (bst >= 400) return 2;
+function getNaturalStars(bst: number, isLegendary: boolean, isMythical: boolean, id: number, pseudoChainIds: Set<number>): 1 | 2 | 3 | 4 | 5 {
+  if (isLegendary || isMythical) return 5;
+  if (pseudoChainIds.has(id)) return 4;
+  if (bst >= 370) return 4;
+  if (bst >= 307) return 3;
+  if (bst >= 276) return 2;
   return 1;
 }
 
@@ -358,6 +374,12 @@ const TYPE_EFFECTS: Record<string, any[]> = {
   normal: [{ type: 'buff', stat: 'spd', value: 15, duration: 2, chance: 100 }],
 };
 
+// Set of all Pokemon IDs in pseudo-legendary evolution chains (populated in main())
+let pseudoChainIds = new Set<number>();
+
+// Map of Pokemon ID -> effective naturalStars (evolved forms inherit from base form)
+let naturalStarsMap = new Map<number, 1 | 2 | 3 | 4 | 5>();
+
 // Track used move names per Pokemon to ensure uniqueness
 const usedMoves = new Set<string>();
 
@@ -382,13 +404,13 @@ function generateSkills(pokemon: PokemonData): string {
   const key = pokemon.name.replace(/[^a-z0-9]/g, '_');
   const primaryType = pokemon.types[0];
   const secondaryType = pokemon.types[1] || primaryType;
-  const stars = getNaturalStars(pokemon.bst, pokemon.isLegendary, pokemon.isMythical);
+  const stars = naturalStarsMap.get(pokemon.id) ?? getNaturalStars(pokemon.bst, pokemon.isLegendary, pokemon.isMythical, pokemon.id, pseudoChainIds);
 
   // Multipliers scale with star rating
-  const activeMultiplier = stars === 3 ? 1.8 : stars === 2 ? 1.5 : 1.3;
-  const strongMultiplier = stars === 3 ? 2.2 : stars === 2 ? 1.9 : 1.6;
-  const activeCooldown = stars === 3 ? 4 : 3;
-  const strongCooldown = stars === 3 ? 5 : 4;
+  const activeMultiplier = stars >= 5 ? 2.2 : stars === 4 ? 2.0 : stars === 3 ? 1.8 : stars === 2 ? 1.5 : 1.3;
+  const strongMultiplier = stars >= 5 ? 2.6 : stars === 4 ? 2.4 : stars === 3 ? 2.2 : stars === 2 ? 1.9 : 1.6;
+  const activeCooldown = stars >= 4 ? 5 : stars === 3 ? 4 : 3;
+  const strongCooldown = stars >= 4 ? 6 : stars === 3 ? 5 : 4;
 
   // Pick move names (escape single quotes for TS string literals)
   const basicMove = pickMove(primaryType, 'basic', pokemon.name + '_b').replace(/'/g, "\\'");
@@ -437,7 +459,7 @@ function generateSkills(pokemon: PokemonData): string {
 
 function generatePokemonEntry(pokemon: PokemonData, allPokemon: PokemonData[]): string {
   const stats = mapStats(pokemon.bst);
-  const stars = getNaturalStars(pokemon.bst, pokemon.isLegendary, pokemon.isMythical);
+  const stars = naturalStarsMap.get(pokemon.id) ?? getNaturalStars(pokemon.bst, pokemon.isLegendary, pokemon.isMythical, pokemon.id, pseudoChainIds);
   const key = pokemon.name.replace(/[^a-z0-9]/g, '_');
 
   // Determine if summonable
@@ -491,15 +513,23 @@ function generateEvolutions(allPokemon: PokemonData[]): string {
     if (!parent) continue;
 
     const primaryType = pokemon.types[0];
-    const stars = getNaturalStars(pokemon.bst, pokemon.isLegendary, pokemon.isMythical);
-    const parentStars = getNaturalStars(parent.bst, parent.isLegendary, parent.isMythical);
+    const stars = naturalStarsMap.get(pokemon.id) ?? getNaturalStars(pokemon.bst, pokemon.isLegendary, pokemon.isMythical, pokemon.id, pseudoChainIds);
+    const parentStars = naturalStarsMap.get(parent.id) ?? getNaturalStars(parent.bst, parent.isLegendary, parent.isMythical, parent.id, pseudoChainIds);
 
     // Determine tier and essences based on evolution stage
     let tier: string;
     let levelReq: number;
     let essences: string;
 
-    if (stars <= 1) {
+    if (stars >= 4) {
+      tier = 'high';
+      levelReq = 35;
+      essences = `{ ${primaryType}_high: 15, magic_high: 8 }`;
+    } else if (stars === 3 && parentStars >= 2) {
+      tier = 'mid';
+      levelReq = 30;
+      essences = `{ ${primaryType}_mid: 12, magic_mid: 5 }`;
+    } else if (stars <= 1) {
       tier = 'low';
       levelReq = 15;
       essences = `{ ${primaryType}_low: 5, magic_low: 2 }`;
@@ -509,7 +539,7 @@ function generateEvolutions(allPokemon: PokemonData[]): string {
       essences = `{ ${primaryType}_low: 8, magic_low: 4 }`;
     } else {
       tier = 'mid';
-      levelReq = stars >= 3 ? 30 : 25;
+      levelReq = 25;
       essences = `{ ${primaryType}_mid: 12, magic_mid: 5 }`;
     }
 
@@ -692,6 +722,54 @@ async function main() {
       p.id += 1;
     }
     usedIds.add(p.id);
+  }
+
+  // Build pseudo-legendary chain set: trace backward from each pseudo-legendary final form
+  const byName = new Map(allPokemon.map(p => [p.name, p]));
+  pseudoChainIds = new Set<number>();
+  for (const p of allPokemon) {
+    if (PSEUDO_LEGENDARY_IDS.has(p.id)) {
+      pseudoChainIds.add(p.id);
+      let current = p;
+      while (current.evolvesFrom) {
+        const parent = byName.get(current.evolvesFrom);
+        if (parent) {
+          pseudoChainIds.add(parent.id);
+          current = parent;
+        } else {
+          break;
+        }
+      }
+    }
+  }
+  // Hardcode Jangmo-o chain IDs in case name lookup missed them
+  for (const id of [782, 783, 784]) {
+    pseudoChainIds.add(id);
+  }
+  console.log(`Pseudo-legendary chain: ${pseudoChainIds.size} Pokemon`);
+
+  // Build naturalStars map: evolved forms inherit from their base form
+  naturalStarsMap = new Map();
+  // First pass: assign stars to non-evolved forms
+  for (const p of allPokemon) {
+    if (p.evolvesFrom === null) {
+      naturalStarsMap.set(p.id, getNaturalStars(p.bst, p.isLegendary, p.isMythical, p.id, pseudoChainIds));
+    }
+  }
+  // Second pass: evolved forms trace back to base and inherit its stars
+  for (const p of allPokemon) {
+    if (!naturalStarsMap.has(p.id)) {
+      let current = p;
+      while (current.evolvesFrom) {
+        const parent = byName.get(current.evolvesFrom);
+        if (parent) {
+          current = parent;
+        } else break;
+      }
+      const baseStar = naturalStarsMap.get(current.id)
+        ?? getNaturalStars(current.bst, current.isLegendary, current.isMythical, current.id, pseudoChainIds);
+      naturalStarsMap.set(p.id, baseStar);
+    }
   }
 
   console.log(`\nTotal Pokemon: ${allPokemon.length}`);

@@ -20,7 +20,7 @@ export interface PokemonTemplate {
   name: string;
   types: PokemonType[];
   baseStats: BaseStats;
-  naturalStars: 1 | 2 | 3;
+  naturalStars: 1 | 2 | 3 | 4 | 5;
   spriteUrl: string;
   skillIds: [string, string, string];
   height: number; // meters, from official Pokedex

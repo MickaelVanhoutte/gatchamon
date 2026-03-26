@@ -29,7 +29,7 @@ const STAR_THEMES: Record<number, { color: string; glow: string; className: stri
   2: { color: '#aaa', glow: 'rgba(170,170,170,0.3)', className: 'tier-low' },
   3: { color: '#ffd700', glow: 'rgba(255,215,0,0.5)', className: 'tier-gold' },
   4: { color: '#c084fc', glow: 'rgba(192,132,252,0.5)', className: 'tier-purple' },
-  5: { color: '#ffd700', glow: 'rgba(255,215,0,0.6)', className: 'tier-legendary' },
+  5: { color: '#ff4444', glow: 'rgba(255,68,68,0.6)', className: 'tier-legendary' },
 };
 
 const CRACK_OPACITY: Record<number, number> = {

@@ -52,19 +52,117 @@
   min-height: 0;
 }
 
-/* Keep the portal orb dramatic/dark for the summoning effect */
-.idle-portal-orb {
-  width: min(180px, 30vh);
-  height: min(180px, 30vh);
+/* Idle Pokeball */
+.idle-pokeball {
+  width: 150px;
+  height: 150px;
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #14b8a6, #0d9488, #065f56);
-  box-shadow: 0 0 60px rgba(13, 148, 136, 0.5), 0 0 120px rgba(13, 148, 136, 0.2);
-  animation: idle-pulse 2s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 0 40px rgba(220, 40, 40, 0.3),
+    0 0 80px rgba(220, 40, 40, 0.15),
+    inset 0 0 20px rgba(0, 0, 0, 0.1);
+  border: 4px solid #2a2a2a;
+  animation: pokeball-pulse 2.5s ease-in-out infinite;
 }
 
-@keyframes idle-pulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 60px rgba(13, 148, 136, 0.5); }
-  50% { transform: scale(1.05); box-shadow: 0 0 80px rgba(13, 148, 136, 0.7); }
+.idle-pokeball-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(145deg, #ff4444 0%, #dc2626 30%, #b91c1c 60%, #991b1b 100%);
+}
+
+.idle-pokeball-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(145deg, #fafafa 0%, #e5e5e5 40%, #d4d4d4 100%);
+}
+
+/* Highlight reflection on the top half */
+.idle-pokeball-top::after {
+  content: '';
+  position: absolute;
+  top: 12%;
+  left: 15%;
+  width: 35%;
+  height: 25%;
+  background: radial-gradient(ellipse, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.idle-pokeball-band {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  height: 12%;
+  background: #2a2a2a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.idle-pokeball-button {
+  width: 33px;
+  height: 33px;
+  border-radius: 50%;
+  background: #2a2a2a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #3a3a3a;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
+}
+
+.idle-pokeball-button-inner {
+  width: 55%;
+  height: 55%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffffff, #e0e0e0, #bbb);
+  box-shadow:
+    0 0 8px rgba(255, 255, 255, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8);
+  animation: button-glow 2.5s ease-in-out infinite;
+}
+
+@keyframes pokeball-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 40px rgba(220, 40, 40, 0.3),
+      0 0 80px rgba(220, 40, 40, 0.15);
+  }
+  50% {
+    transform: scale(1.04);
+    box-shadow:
+      0 0 50px rgba(220, 40, 40, 0.4),
+      0 0 100px rgba(220, 40, 40, 0.2);
+  }
+}
+
+@keyframes button-glow {
+  0%, 100% {
+    box-shadow:
+      0 0 8px rgba(255, 255, 255, 0.5),
+      inset 0 1px 2px rgba(255, 255, 255, 0.8);
+  }
+  50% {
+    box-shadow:
+      0 0 16px rgba(255, 255, 255, 0.8),
+      0 0 30px rgba(255, 255, 255, 0.3),
+      inset 0 1px 2px rgba(255, 255, 255, 0.8);
+  }
 }
 
 .summon-buttons {
