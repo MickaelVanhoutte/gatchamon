@@ -463,10 +463,9 @@ function generatePokemonEntry(pokemon: PokemonData, allPokemon: PokemonData[]): 
   const key = pokemon.name.replace(/[^a-z0-9]/g, '_');
 
   // Determine if summonable
-  // Evolved forms, megas are not summonable
+  // Only base forms that are not evolved are summonable (no megas, regionals, alternate forms)
   const isEvolved = pokemon.evolvesFrom !== null;
-  const isMega = ['mega', 'megax', 'megay'].includes(pokemon.formType);
-  const summonable = !isEvolved && !isMega;
+  const summonable = !isEvolved && pokemon.formType === 'base';
 
   const displayName = pokemon.name.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-');
 

@@ -1149,6 +1149,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/rattata-alola.gif',
     skillIds: ['rattata_alola_skill1', 'rattata_alola_skill2', 'rattata_alola_skill3'],
     height: 0.3,
+    summonable: false,
     baseStats: {
       hp: 501,
       atk: 70,
@@ -1168,6 +1169,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/raticate-alola.gif',
     skillIds: ['raticate_alola_skill1', 'raticate_alola_skill2', 'raticate_alola_skill3'],
     height: 0.7,
+    summonable: false,
     baseStats: {
       hp: 597,
       atk: 96,
@@ -1187,6 +1189,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/raichu-alola.gif',
     skillIds: ['raichu_alola_skill1', 'raichu_alola_skill2', 'raichu_alola_skill3'],
     height: 0.7,
+    summonable: false,
     baseStats: {
       hp: 641,
       atk: 107,
@@ -1206,6 +1209,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/sandshrew-alola.gif',
     skillIds: ['sandshrew_alola_skill1', 'sandshrew_alola_skill2', 'sandshrew_alola_skill3'],
     height: 0.7,
+    summonable: false,
     baseStats: {
       hp: 530,
       atk: 78,
@@ -1225,6 +1229,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/sandslash-alola.gif',
     skillIds: ['sandslash_alola_skill1', 'sandslash_alola_skill2', 'sandslash_alola_skill3'],
     height: 1.2,
+    summonable: false,
     baseStats: {
       hp: 620,
       atk: 102,
@@ -1244,6 +1249,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/vulpix-alola.gif',
     skillIds: ['vulpix_alola_skill1', 'vulpix_alola_skill2', 'vulpix_alola_skill3'],
     height: 0.6,
+    summonable: false,
     baseStats: {
       hp: 529,
       atk: 77,
@@ -1263,6 +1269,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/ninetales-alola.gif',
     skillIds: ['ninetales_alola_skill1', 'ninetales_alola_skill2', 'ninetales_alola_skill3'],
     height: 1.1,
+    summonable: false,
     baseStats: {
       hp: 653,
       atk: 110,
@@ -1282,6 +1289,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/diglett-alola.gif',
     skillIds: ['diglett_alola_skill1', 'diglett_alola_skill2', 'diglett_alola_skill3'],
     height: 0.2,
+    summonable: false,
     baseStats: {
       hp: 509,
       atk: 72,
@@ -1301,6 +1309,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/dugtrio-alola.gif',
     skillIds: ['dugtrio_alola_skill1', 'dugtrio_alola_skill2', 'dugtrio_alola_skill3'],
     height: 0.7,
+    summonable: false,
     baseStats: {
       hp: 605,
       atk: 98,
@@ -1320,6 +1329,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/meowth-alola.gif',
     skillIds: ['meowth_alola_skill1', 'meowth_alola_skill2', 'meowth_alola_skill3'],
     height: 0.4,
+    summonable: false,
     baseStats: {
       hp: 524,
       atk: 76,
@@ -1339,6 +1349,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/persian-alola.gif',
     skillIds: ['persian_alola_skill1', 'persian_alola_skill2', 'persian_alola_skill3'],
     height: 1.1,
+    summonable: false,
     baseStats: {
       hp: 614,
       atk: 100,
@@ -1358,6 +1369,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/geodude-alola.gif',
     skillIds: ['geodude_alola_skill1', 'geodude_alola_skill2', 'geodude_alola_skill3'],
     height: 0.4,
+    summonable: false,
     baseStats: {
       hp: 530,
       atk: 78,
@@ -1377,6 +1389,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/graveler-alola.gif',
     skillIds: ['graveler_alola_skill1', 'graveler_alola_skill2', 'graveler_alola_skill3'],
     height: 1,
+    summonable: false,
     baseStats: {
       hp: 584,
       atk: 92,
@@ -1396,6 +1409,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/golem-alola.gif',
     skillIds: ['golem_alola_skill1', 'golem_alola_skill2', 'golem_alola_skill3'],
     height: 1.7,
+    summonable: false,
     baseStats: {
       hp: 647,
       atk: 109,
@@ -1415,6 +1429,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/grimer-alola.gif',
     skillIds: ['grimer_alola_skill1', 'grimer_alola_skill2', 'grimer_alola_skill3'],
     height: 0.7,
+    summonable: false,
     baseStats: {
       hp: 545,
       atk: 82,
@@ -1434,6 +1449,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/muk-alola.gif',
     skillIds: ['muk_alola_skill1', 'muk_alola_skill2', 'muk_alola_skill3'],
     height: 1,
+    summonable: false,
     baseStats: {
       hp: 650,
       atk: 110,
@@ -1453,6 +1469,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/exeggutor-alola.gif',
     skillIds: ['exeggutor_alola_skill1', 'exeggutor_alola_skill2', 'exeggutor_alola_skill3'],
     height: 10.9,
+    summonable: false,
     baseStats: {
       hp: 668,
       atk: 114,
@@ -1472,6 +1489,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/marowak-alola.gif',
     skillIds: ['marowak_alola_skill1', 'marowak_alola_skill2', 'marowak_alola_skill3'],
     height: 1,
+    summonable: false,
     baseStats: {
       hp: 605,
       atk: 98,
@@ -1491,6 +1509,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/meowth-galar.gif',
     skillIds: ['meowth_galar_skill1', 'meowth_galar_skill2', 'meowth_galar_skill3'],
     height: 0.4,
+    summonable: false,
     baseStats: {
       hp: 524,
       atk: 76,
@@ -1510,6 +1529,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/ponyta-galar.gif',
     skillIds: ['ponyta_galar_skill1', 'ponyta_galar_skill2', 'ponyta_galar_skill3'],
     height: 0.8,
+    summonable: false,
     baseStats: {
       hp: 596,
       atk: 95,
@@ -1529,6 +1549,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/rapidash-galar.gif',
     skillIds: ['rapidash_galar_skill1', 'rapidash_galar_skill2', 'rapidash_galar_skill3'],
     height: 1.7,
+    summonable: false,
     baseStats: {
       hp: 650,
       atk: 110,
@@ -1548,6 +1569,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/slowpoke-galar.gif',
     skillIds: ['slowpoke_galar_skill1', 'slowpoke_galar_skill2', 'slowpoke_galar_skill3'],
     height: 1.2,
+    summonable: false,
     baseStats: {
       hp: 539,
       atk: 80,
@@ -1567,6 +1589,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/slowbro-galar.gif',
     skillIds: ['slowbro_galar_skill1', 'slowbro_galar_skill2', 'slowbro_galar_skill3'],
     height: 1.6,
+    summonable: false,
     baseStats: {
       hp: 644,
       atk: 108,
@@ -1586,6 +1609,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/weezing-galar.gif',
     skillIds: ['weezing_galar_skill1', 'weezing_galar_skill2', 'weezing_galar_skill3'],
     height: 3,
+    summonable: false,
     baseStats: {
       hp: 644,
       atk: 108,
@@ -1605,6 +1629,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/mrmime-galar.gif',
     skillIds: ['mrmime_galar_skill1', 'mrmime_galar_skill2', 'mrmime_galar_skill3'],
     height: 1.4,
+    summonable: false,
     baseStats: {
       hp: 626,
       atk: 103,
@@ -1624,6 +1649,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/articuno-galar.gif',
     skillIds: ['articuno_galar_skill1', 'articuno_galar_skill2', 'articuno_galar_skill3'],
     height: 1.7,
+    summonable: false,
     baseStats: {
       hp: 698,
       atk: 122,
@@ -1643,6 +1669,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/zapdos-galar.gif',
     skillIds: ['zapdos_galar_skill1', 'zapdos_galar_skill2', 'zapdos_galar_skill3'],
     height: 1.6,
+    summonable: false,
     baseStats: {
       hp: 698,
       atk: 122,
@@ -1662,6 +1689,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/moltres-galar.gif',
     skillIds: ['moltres_galar_skill1', 'moltres_galar_skill2', 'moltres_galar_skill3'],
     height: 2,
+    summonable: false,
     baseStats: {
       hp: 698,
       atk: 122,
@@ -1681,6 +1709,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/slowking-galar.gif',
     skillIds: ['slowking_galar_skill1', 'slowking_galar_skill2', 'slowking_galar_skill3'],
     height: 1.8,
+    summonable: false,
     baseStats: {
       hp: 644,
       atk: 108,
@@ -1700,6 +1729,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/corsola-galar.gif',
     skillIds: ['corsola_galar_skill1', 'corsola_galar_skill2', 'corsola_galar_skill3'],
     height: 0.6,
+    summonable: false,
     baseStats: {
       hp: 596,
       atk: 95,
@@ -1719,6 +1749,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/zigzagoon-galar.gif',
     skillIds: ['zigzagoon_galar_skill1', 'zigzagoon_galar_skill2', 'zigzagoon_galar_skill3'],
     height: 0.4,
+    summonable: false,
     baseStats: {
       hp: 494,
       atk: 68,
@@ -1738,6 +1769,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/linoone-galar.gif',
     skillIds: ['linoone_galar_skill1', 'linoone_galar_skill2', 'linoone_galar_skill3'],
     height: 0.5,
+    summonable: false,
     baseStats: {
       hp: 602,
       atk: 97,
@@ -1757,6 +1789,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/darumaka-galar.gif',
     skillIds: ['darumaka_galar_skill1', 'darumaka_galar_skill2', 'darumaka_galar_skill3'],
     height: 0.7,
+    summonable: false,
     baseStats: {
       hp: 539,
       atk: 80,
@@ -1776,6 +1809,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/yamask-galar.gif',
     skillIds: ['yamask_galar_skill1', 'yamask_galar_skill2', 'yamask_galar_skill3'],
     height: 0.5,
+    summonable: false,
     baseStats: {
       hp: 531,
       atk: 78,
@@ -1795,6 +1829,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/stunfisk-galar.gif',
     skillIds: ['stunfisk_galar_skill1', 'stunfisk_galar_skill2', 'stunfisk_galar_skill3'],
     height: 0.7,
+    summonable: false,
     baseStats: {
       hp: 632,
       atk: 105,
@@ -1814,6 +1849,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/growlithe-hisui.gif',
     skillIds: ['growlithe_hisui_skill1', 'growlithe_hisui_skill2', 'growlithe_hisui_skill3'],
     height: 0.8,
+    summonable: false,
     baseStats: {
       hp: 560,
       atk: 86,
@@ -1833,6 +1869,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/arcanine-hisui.gif',
     skillIds: ['arcanine_hisui_skill1', 'arcanine_hisui_skill2', 'arcanine_hisui_skill3'],
     height: 2,
+    summonable: false,
     baseStats: {
       hp: 683,
       atk: 118,
@@ -1852,6 +1889,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/voltorb-hisui.gif',
     skillIds: ['voltorb_hisui_skill1', 'voltorb_hisui_skill2', 'voltorb_hisui_skill3'],
     height: 0.5,
+    summonable: false,
     baseStats: {
       hp: 548,
       atk: 82,
@@ -1871,6 +1909,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/electrode-hisui.gif',
     skillIds: ['electrode_hisui_skill1', 'electrode_hisui_skill2', 'electrode_hisui_skill3'],
     height: 1.2,
+    summonable: false,
     baseStats: {
       hp: 644,
       atk: 108,
@@ -1890,6 +1929,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/typhlosion-hisui.gif',
     skillIds: ['typhlosion_hisui_skill1', 'typhlosion_hisui_skill2', 'typhlosion_hisui_skill3'],
     height: 1.6,
+    summonable: false,
     baseStats: {
       hp: 670,
       atk: 115,
@@ -1909,6 +1949,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/qwilfish-hisui.gif',
     skillIds: ['qwilfish_hisui_skill1', 'qwilfish_hisui_skill2', 'qwilfish_hisui_skill3'],
     height: 0.5,
+    summonable: false,
     baseStats: {
       hp: 614,
       atk: 100,
@@ -1928,6 +1969,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/sneasel-hisui.gif',
     skillIds: ['sneasel_hisui_skill1', 'sneasel_hisui_skill2', 'sneasel_hisui_skill3'],
     height: 0.9,
+    summonable: false,
     baseStats: {
       hp: 608,
       atk: 98,
@@ -1947,6 +1989,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/samurott-hisui.gif',
     skillIds: ['samurott_hisui_skill1', 'samurott_hisui_skill2', 'samurott_hisui_skill3'],
     height: 1.5,
+    summonable: false,
     baseStats: {
       hp: 666,
       atk: 114,
@@ -1966,6 +2009,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/lilligant-hisui.gif',
     skillIds: ['lilligant_hisui_skill1', 'lilligant_hisui_skill2', 'lilligant_hisui_skill3'],
     height: 1.2,
+    summonable: false,
     baseStats: {
       hp: 638,
       atk: 106,
@@ -1985,6 +2029,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/zorua-hisui.gif',
     skillIds: ['zorua_hisui_skill1', 'zorua_hisui_skill2', 'zorua_hisui_skill3'],
     height: 0.7,
+    summonable: false,
     baseStats: {
       hp: 548,
       atk: 82,
@@ -2004,6 +2049,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/zoroark-hisui.gif',
     skillIds: ['zoroark_hisui_skill1', 'zoroark_hisui_skill2', 'zoroark_hisui_skill3'],
     height: 1.6,
+    summonable: false,
     baseStats: {
       hp: 656,
       atk: 111,
@@ -2023,6 +2069,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/braviary-hisui.gif',
     skillIds: ['braviary_hisui_skill1', 'braviary_hisui_skill2', 'braviary_hisui_skill3'],
     height: 1.7,
+    summonable: false,
     baseStats: {
       hp: 656,
       atk: 111,
@@ -2042,6 +2089,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/sliggoo-hisui.gif',
     skillIds: ['sliggoo_hisui_skill1', 'sliggoo_hisui_skill2', 'sliggoo_hisui_skill3'],
     height: 0.7,
+    summonable: false,
     baseStats: {
       hp: 621,
       atk: 102,
@@ -2061,6 +2109,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/goodra-hisui.gif',
     skillIds: ['goodra_hisui_skill1', 'goodra_hisui_skill2', 'goodra_hisui_skill3'],
     height: 1.7,
+    summonable: false,
     baseStats: {
       hp: 710,
       atk: 126,
@@ -2080,6 +2129,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/avalugg-hisui.gif',
     skillIds: ['avalugg_hisui_skill1', 'avalugg_hisui_skill2', 'avalugg_hisui_skill3'],
     height: 1.4,
+    summonable: false,
     baseStats: {
       hp: 658,
       atk: 112,
@@ -2099,6 +2149,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/decidueye-hisui.gif',
     skillIds: ['decidueye_hisui_skill1', 'decidueye_hisui_skill2', 'decidueye_hisui_skill3'],
     height: 1.6,
+    summonable: false,
     baseStats: {
       hp: 668,
       atk: 114,
@@ -2118,6 +2169,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/wooper-paldea.gif',
     skillIds: ['wooper_paldea_skill1', 'wooper_paldea_skill2', 'wooper_paldea_skill3'],
     height: 0.4,
+    summonable: false,
     baseStats: {
       hp: 476,
       atk: 63,
@@ -2137,6 +2189,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/deoxys-attack.gif',
     skillIds: ['deoxys_attack_skill1', 'deoxys_attack_skill2', 'deoxys_attack_skill3'],
     height: 1.7,
+    summonable: false,
     baseStats: {
       hp: 710,
       atk: 126,
@@ -2156,6 +2209,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/deoxys-defense.gif',
     skillIds: ['deoxys_defense_skill1', 'deoxys_defense_skill2', 'deoxys_defense_skill3'],
     height: 1.7,
+    summonable: false,
     baseStats: {
       hp: 710,
       atk: 126,
@@ -2175,6 +2229,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/deoxys-speed.gif',
     skillIds: ['deoxys_speed_skill1', 'deoxys_speed_skill2', 'deoxys_speed_skill3'],
     height: 1.7,
+    summonable: false,
     baseStats: {
       hp: 710,
       atk: 126,
@@ -2194,6 +2249,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/rotom-fan.gif',
     skillIds: ['rotom_fan_skill1', 'rotom_fan_skill2', 'rotom_fan_skill3'],
     height: 0.3,
+    summonable: false,
     baseStats: {
       hp: 662,
       atk: 113,
@@ -2213,6 +2269,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/rotom-frost.gif',
     skillIds: ['rotom_frost_skill1', 'rotom_frost_skill2', 'rotom_frost_skill3'],
     height: 0.3,
+    summonable: false,
     baseStats: {
       hp: 662,
       atk: 113,
@@ -2232,6 +2289,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/rotom-heat.gif',
     skillIds: ['rotom_heat_skill1', 'rotom_heat_skill2', 'rotom_heat_skill3'],
     height: 0.3,
+    summonable: false,
     baseStats: {
       hp: 662,
       atk: 113,
@@ -2251,6 +2309,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/rotom-mow.gif',
     skillIds: ['rotom_mow_skill1', 'rotom_mow_skill2', 'rotom_mow_skill3'],
     height: 0.3,
+    summonable: false,
     baseStats: {
       hp: 662,
       atk: 113,
@@ -2270,6 +2329,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/rotom-wash.gif',
     skillIds: ['rotom_wash_skill1', 'rotom_wash_skill2', 'rotom_wash_skill3'],
     height: 0.3,
+    summonable: false,
     baseStats: {
       hp: 662,
       atk: 113,
@@ -2289,6 +2349,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/giratina-origin.gif',
     skillIds: ['giratina_origin_skill1', 'giratina_origin_skill2', 'giratina_origin_skill3'],
     height: 6.9,
+    summonable: false,
     baseStats: {
       hp: 758,
       atk: 138,
@@ -2308,6 +2369,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/shaymin-sky.gif',
     skillIds: ['shaymin_sky_skill1', 'shaymin_sky_skill2', 'shaymin_sky_skill3'],
     height: 0.4,
+    summonable: false,
     baseStats: {
       hp: 710,
       atk: 126,
@@ -2327,6 +2389,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/arceus-bug.gif',
     skillIds: ['arceus_bug_skill1', 'arceus_bug_skill2', 'arceus_bug_skill3'],
     height: 3.2,
+    summonable: false,
     baseStats: {
       hp: 782,
       atk: 145,
@@ -2346,6 +2409,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/arceus-dark.gif',
     skillIds: ['arceus_dark_skill1', 'arceus_dark_skill2', 'arceus_dark_skill3'],
     height: 3.2,
+    summonable: false,
     baseStats: {
       hp: 782,
       atk: 145,
@@ -2365,6 +2429,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/arceus-dragon.gif',
     skillIds: ['arceus_dragon_skill1', 'arceus_dragon_skill2', 'arceus_dragon_skill3'],
     height: 3.2,
+    summonable: false,
     baseStats: {
       hp: 782,
       atk: 145,
@@ -2384,6 +2449,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/arceus-electric.gif',
     skillIds: ['arceus_electric_skill1', 'arceus_electric_skill2', 'arceus_electric_skill3'],
     height: 3.2,
+    summonable: false,
     baseStats: {
       hp: 782,
       atk: 145,
@@ -2403,6 +2469,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/arceus-fairy.gif',
     skillIds: ['arceus_fairy_skill1', 'arceus_fairy_skill2', 'arceus_fairy_skill3'],
     height: 3.2,
+    summonable: false,
     baseStats: {
       hp: 782,
       atk: 145,
@@ -2422,6 +2489,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/arceus-fighting.gif',
     skillIds: ['arceus_fighting_skill1', 'arceus_fighting_skill2', 'arceus_fighting_skill3'],
     height: 3.2,
+    summonable: false,
     baseStats: {
       hp: 782,
       atk: 145,
@@ -2441,6 +2509,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/arceus-fire.gif',
     skillIds: ['arceus_fire_skill1', 'arceus_fire_skill2', 'arceus_fire_skill3'],
     height: 3.2,
+    summonable: false,
     baseStats: {
       hp: 782,
       atk: 145,
@@ -2460,6 +2529,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/arceus-flying.gif',
     skillIds: ['arceus_flying_skill1', 'arceus_flying_skill2', 'arceus_flying_skill3'],
     height: 3.2,
+    summonable: false,
     baseStats: {
       hp: 782,
       atk: 145,
@@ -2479,6 +2549,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/arceus-ghost.gif',
     skillIds: ['arceus_ghost_skill1', 'arceus_ghost_skill2', 'arceus_ghost_skill3'],
     height: 3.2,
+    summonable: false,
     baseStats: {
       hp: 782,
       atk: 145,
@@ -2498,6 +2569,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/arceus-grass.gif',
     skillIds: ['arceus_grass_skill1', 'arceus_grass_skill2', 'arceus_grass_skill3'],
     height: 3.2,
+    summonable: false,
     baseStats: {
       hp: 782,
       atk: 145,
@@ -2517,6 +2589,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/arceus-ground.gif',
     skillIds: ['arceus_ground_skill1', 'arceus_ground_skill2', 'arceus_ground_skill3'],
     height: 3.2,
+    summonable: false,
     baseStats: {
       hp: 782,
       atk: 145,
@@ -2536,6 +2609,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/arceus-ice.gif',
     skillIds: ['arceus_ice_skill1', 'arceus_ice_skill2', 'arceus_ice_skill3'],
     height: 3.2,
+    summonable: false,
     baseStats: {
       hp: 782,
       atk: 145,
@@ -2555,6 +2629,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/arceus-poison.gif',
     skillIds: ['arceus_poison_skill1', 'arceus_poison_skill2', 'arceus_poison_skill3'],
     height: 3.2,
+    summonable: false,
     baseStats: {
       hp: 782,
       atk: 145,
@@ -2574,6 +2649,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/arceus-psychic.gif',
     skillIds: ['arceus_psychic_skill1', 'arceus_psychic_skill2', 'arceus_psychic_skill3'],
     height: 3.2,
+    summonable: false,
     baseStats: {
       hp: 782,
       atk: 145,
@@ -2593,6 +2669,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/arceus-rock.gif',
     skillIds: ['arceus_rock_skill1', 'arceus_rock_skill2', 'arceus_rock_skill3'],
     height: 3.2,
+    summonable: false,
     baseStats: {
       hp: 782,
       atk: 145,
@@ -2612,6 +2689,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/arceus-steel.gif',
     skillIds: ['arceus_steel_skill1', 'arceus_steel_skill2', 'arceus_steel_skill3'],
     height: 3.2,
+    summonable: false,
     baseStats: {
       hp: 782,
       atk: 145,
@@ -2631,6 +2709,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/arceus-water.gif',
     skillIds: ['arceus_water_skill1', 'arceus_water_skill2', 'arceus_water_skill3'],
     height: 3.2,
+    summonable: false,
     baseStats: {
       hp: 782,
       atk: 145,
@@ -2650,6 +2729,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/tornadus-therian.gif',
     skillIds: ['tornadus_therian_skill1', 'tornadus_therian_skill2', 'tornadus_therian_skill3'],
     height: 1.4,
+    summonable: false,
     baseStats: {
       hp: 698,
       atk: 122,
@@ -2669,6 +2749,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/thundurus-therian.gif',
     skillIds: ['thundurus_therian_skill1', 'thundurus_therian_skill2', 'thundurus_therian_skill3'],
     height: 3,
+    summonable: false,
     baseStats: {
       hp: 698,
       atk: 122,
@@ -2688,6 +2769,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/landorus-therian.gif',
     skillIds: ['landorus_therian_skill1', 'landorus_therian_skill2', 'landorus_therian_skill3'],
     height: 1.3,
+    summonable: false,
     baseStats: {
       hp: 710,
       atk: 126,
@@ -2707,6 +2789,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/kyurem-black.gif',
     skillIds: ['kyurem_black_skill1', 'kyurem_black_skill2', 'kyurem_black_skill3'],
     height: 3.3,
+    summonable: false,
     baseStats: {
       hp: 770,
       atk: 142,
@@ -2726,6 +2809,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/kyurem-white.gif',
     skillIds: ['kyurem_white_skill1', 'kyurem_white_skill2', 'kyurem_white_skill3'],
     height: 3.6,
+    summonable: false,
     baseStats: {
       hp: 770,
       atk: 142,
@@ -2745,6 +2829,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/zygarde-10.gif',
     skillIds: ['zygarde_10_skill1', 'zygarde_10_skill2', 'zygarde_10_skill3'],
     height: 1.2,
+    summonable: false,
     baseStats: {
       hp: 641,
       atk: 107,
@@ -2764,6 +2849,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/zygarde-complete.gif',
     skillIds: ['zygarde_complete_skill1', 'zygarde_complete_skill2', 'zygarde_complete_skill3'],
     height: 4.5,
+    summonable: false,
     baseStats: {
       hp: 774,
       atk: 143,
@@ -2783,6 +2869,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/lycanroc-dusk.gif',
     skillIds: ['lycanroc_dusk_skill1', 'lycanroc_dusk_skill2', 'lycanroc_dusk_skill3'],
     height: 0.8,
+    summonable: false,
     baseStats: {
       hp: 642,
       atk: 107,
@@ -2802,6 +2889,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/lycanroc-midnight.gif',
     skillIds: ['lycanroc_midnight_skill1', 'lycanroc_midnight_skill2', 'lycanroc_midnight_skill3'],
     height: 1.1,
+    summonable: false,
     baseStats: {
       hp: 642,
       atk: 107,
@@ -2821,6 +2909,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/silvally-bug.gif',
     skillIds: ['silvally_bug_skill1', 'silvally_bug_skill2', 'silvally_bug_skill3'],
     height: 2.3,
+    summonable: false,
     baseStats: {
       hp: 692,
       atk: 121,
@@ -2840,6 +2929,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/silvally-dark.gif',
     skillIds: ['silvally_dark_skill1', 'silvally_dark_skill2', 'silvally_dark_skill3'],
     height: 2.3,
+    summonable: false,
     baseStats: {
       hp: 692,
       atk: 121,
@@ -2859,6 +2949,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/silvally-dragon.gif',
     skillIds: ['silvally_dragon_skill1', 'silvally_dragon_skill2', 'silvally_dragon_skill3'],
     height: 2.3,
+    summonable: false,
     baseStats: {
       hp: 692,
       atk: 121,
@@ -2878,6 +2969,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/silvally-electric.gif',
     skillIds: ['silvally_electric_skill1', 'silvally_electric_skill2', 'silvally_electric_skill3'],
     height: 2.3,
+    summonable: false,
     baseStats: {
       hp: 692,
       atk: 121,
@@ -2897,6 +2989,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/silvally-fairy.gif',
     skillIds: ['silvally_fairy_skill1', 'silvally_fairy_skill2', 'silvally_fairy_skill3'],
     height: 2.3,
+    summonable: false,
     baseStats: {
       hp: 692,
       atk: 121,
@@ -2916,6 +3009,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/silvally-fighting.gif',
     skillIds: ['silvally_fighting_skill1', 'silvally_fighting_skill2', 'silvally_fighting_skill3'],
     height: 2.3,
+    summonable: false,
     baseStats: {
       hp: 692,
       atk: 121,
@@ -2935,6 +3029,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/silvally-fire.gif',
     skillIds: ['silvally_fire_skill1', 'silvally_fire_skill2', 'silvally_fire_skill3'],
     height: 2.3,
+    summonable: false,
     baseStats: {
       hp: 692,
       atk: 121,
@@ -2954,6 +3049,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/silvally-flying.gif',
     skillIds: ['silvally_flying_skill1', 'silvally_flying_skill2', 'silvally_flying_skill3'],
     height: 2.3,
+    summonable: false,
     baseStats: {
       hp: 692,
       atk: 121,
@@ -2973,6 +3069,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/silvally-ghost.gif',
     skillIds: ['silvally_ghost_skill1', 'silvally_ghost_skill2', 'silvally_ghost_skill3'],
     height: 2.3,
+    summonable: false,
     baseStats: {
       hp: 692,
       atk: 121,
@@ -2992,6 +3089,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/silvally-grass.gif',
     skillIds: ['silvally_grass_skill1', 'silvally_grass_skill2', 'silvally_grass_skill3'],
     height: 2.3,
+    summonable: false,
     baseStats: {
       hp: 692,
       atk: 121,
@@ -3011,6 +3109,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/silvally-ground.gif',
     skillIds: ['silvally_ground_skill1', 'silvally_ground_skill2', 'silvally_ground_skill3'],
     height: 2.3,
+    summonable: false,
     baseStats: {
       hp: 692,
       atk: 121,
@@ -3030,6 +3129,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/silvally-ice.gif',
     skillIds: ['silvally_ice_skill1', 'silvally_ice_skill2', 'silvally_ice_skill3'],
     height: 2.3,
+    summonable: false,
     baseStats: {
       hp: 692,
       atk: 121,
@@ -3049,6 +3149,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/silvally-poison.gif',
     skillIds: ['silvally_poison_skill1', 'silvally_poison_skill2', 'silvally_poison_skill3'],
     height: 2.3,
+    summonable: false,
     baseStats: {
       hp: 692,
       atk: 121,
@@ -3068,6 +3169,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/silvally-psychic.gif',
     skillIds: ['silvally_psychic_skill1', 'silvally_psychic_skill2', 'silvally_psychic_skill3'],
     height: 2.3,
+    summonable: false,
     baseStats: {
       hp: 692,
       atk: 121,
@@ -3087,6 +3189,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/silvally-rock.gif',
     skillIds: ['silvally_rock_skill1', 'silvally_rock_skill2', 'silvally_rock_skill3'],
     height: 2.3,
+    summonable: false,
     baseStats: {
       hp: 692,
       atk: 121,
@@ -3106,6 +3209,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/silvally-steel.gif',
     skillIds: ['silvally_steel_skill1', 'silvally_steel_skill2', 'silvally_steel_skill3'],
     height: 2.3,
+    summonable: false,
     baseStats: {
       hp: 692,
       atk: 121,
@@ -3125,6 +3229,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/silvally-water.gif',
     skillIds: ['silvally_water_skill1', 'silvally_water_skill2', 'silvally_water_skill3'],
     height: 2.3,
+    summonable: false,
     baseStats: {
       hp: 692,
       atk: 121,
@@ -3144,6 +3249,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/zacian-crowned.gif',
     skillIds: ['zacian_crowned_skill1', 'zacian_crowned_skill2', 'zacian_crowned_skill3'],
     height: 2.8,
+    summonable: false,
     baseStats: {
       hp: 770,
       atk: 142,
@@ -3163,6 +3269,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/zamazenta-crowned.gif',
     skillIds: ['zamazenta_crowned_skill1', 'zamazenta_crowned_skill2', 'zamazenta_crowned_skill3'],
     height: 2.9,
+    summonable: false,
     baseStats: {
       hp: 770,
       atk: 142,
@@ -3182,6 +3289,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/calyrex-ice.gif',
     skillIds: ['calyrex_ice_skill1', 'calyrex_ice_skill2', 'calyrex_ice_skill3'],
     height: 2.4,
+    summonable: false,
     baseStats: {
       hp: 758,
       atk: 138,
@@ -3201,6 +3309,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/calyrex-shadow.gif',
     skillIds: ['calyrex_shadow_skill1', 'calyrex_shadow_skill2', 'calyrex_shadow_skill3'],
     height: 2.4,
+    summonable: false,
     baseStats: {
       hp: 758,
       atk: 138,
@@ -3220,6 +3329,7 @@ export const FORMS: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/enamorus-therian.gif',
     skillIds: ['enamorus_therian_skill1', 'enamorus_therian_skill2', 'enamorus_therian_skill3'],
     height: 1.6,
+    summonable: false,
     baseStats: {
       hp: 698,
       atk: 122,
