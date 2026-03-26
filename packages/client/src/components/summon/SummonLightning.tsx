@@ -19,7 +19,7 @@ const BOLT_COUNTS: Record<number, number> = {
 const SPARK_COUNTS: Record<number, number> = {
   1: 0,
   2: 0,
-  3: 0,
+  3: 14,
   4: 32,
   5: 40,
 };
@@ -27,7 +27,7 @@ const SPARK_COUNTS: Record<number, number> = {
 const STAR_THEMES: Record<number, { color: string; glow: string; className: string }> = {
   1: { color: '#aaa', glow: 'rgba(170,170,170,0.3)', className: 'tier-low' },
   2: { color: '#aaa', glow: 'rgba(170,170,170,0.3)', className: 'tier-low' },
-  3: { color: '#60a5fa', glow: 'rgba(96,165,250,0.3)', className: 'tier-low' },
+  3: { color: '#60a5fa', glow: 'rgba(96,165,250,0.5)', className: 'tier-sparkle' },
   4: { color: '#c084fc', glow: 'rgba(192,132,252,0.5)', className: 'tier-purple' },
   5: { color: '#ff4444', glow: 'rgba(255,68,68,0.6)', className: 'tier-legendary' },
 };
@@ -97,8 +97,8 @@ export function SummonLightning({ stars, isShiny, onComplete }: Props) {
     const tl = gsap.timeline({ onComplete });
     tlRef.current = tl;
 
-    if (stars <= 3) {
-      // Low tier (1-3★): soft pop, no lightning
+    if (stars <= 2) {
+      // Low tier (1-2★): soft pop, no lightning
       const orbPop = containerRef.current.querySelector('.lightning-orb-pop');
       if (orbPop) {
         tl.fromTo(
@@ -107,6 +107,69 @@ export function SummonLightning({ stars, isShiny, onComplete }: Props) {
           { scale: 2.5, opacity: 0, duration: 0.5, ease: 'power2.out' }
         );
       }
+      return;
+    }
+
+    if (stars === 3) {
+      // Mid tier (3★): sparkle burst — blue flash + sparks scatter
+      const darken = containerRef.current.querySelector('.lightning-darken');
+      if (darken) {
+        tl.fromTo(darken, { opacity: 0 }, { opacity: 0.5, duration: 0.6, ease: 'power2.in' }, 0);
+      }
+
+      // Brief shimmer ring pulse
+      const shimmerRing = containerRef.current.querySelector('.lightning-shimmer-ring');
+      if (shimmerRing) {
+        tl.fromTo(shimmerRing,
+          { scale: 0.3, opacity: 0 },
+          { scale: 1.2, opacity: 0.8, duration: 0.5, ease: 'power2.out' },
+          0.2
+        );
+        tl.to(shimmerRing,
+          { scale: 2.5, opacity: 0, duration: 0.5, ease: 'power2.out' },
+          0.7
+        );
+      }
+
+      // Orb flash
+      const orbFlash = containerRef.current.querySelector('.lightning-orb-flash');
+      if (orbFlash) {
+        tl.fromTo(orbFlash,
+          { scale: 0.3, opacity: 0 },
+          { scale: 1.5, opacity: 0.8, duration: 0.15 },
+          0.6
+        );
+        tl.to(orbFlash, { scale: 3, opacity: 0, duration: 0.4, ease: 'power2.out' }, 0.75);
+      }
+
+      // Blue flash
+      const flash = containerRef.current.querySelector('.lightning-flash');
+      if (flash) {
+        tl.fromTo(flash, { opacity: 0 }, { opacity: 0.6, duration: 0.06, yoyo: true, repeat: 1 }, 0.7);
+      }
+
+      // Sparks scatter outward
+      const sparkEls = containerRef.current.querySelectorAll('.lightning-spark');
+      sparkEls.forEach((el, i) => {
+        const spark = sparks[i];
+        const rad = (spark.angle * Math.PI) / 180;
+        const endX = Math.cos(rad) * spark.distance * 0.8;
+        const endY = Math.sin(rad) * spark.distance * 0.8;
+        tl.fromTo(el,
+          { x: 0, y: 0, opacity: 1, scale: 1 },
+          { x: endX, y: endY, opacity: 0, scale: 0.2, duration: 0.6, ease: 'power2.out' },
+          0.7 + spark.delay * 0.3
+        );
+      });
+
+      // Gentle shake
+      tl.to(containerRef.current, { x: 3, duration: 0.03, yoyo: true, repeat: 5, ease: 'none' }, 0.7);
+
+      // Darken fades out
+      if (darken) {
+        tl.to(darken, { opacity: 0, duration: 0.3 }, 1.2);
+      }
+
       return;
     }
 
@@ -346,13 +409,13 @@ export function SummonLightning({ stars, isShiny, onComplete }: Props) {
       <div className="lightning-darken" />
 
       {/* Low-tier soft pop */}
-      {stars <= 3 && <div className="lightning-orb-pop" />}
+      {stars <= 2 && <div className="lightning-orb-pop" />}
 
-      {/* 4+ star: orb flash */}
-      {stars >= 4 && <div className="lightning-orb-flash" />}
+      {/* 3+ star: orb flash */}
+      {stars >= 3 && <div className="lightning-orb-flash" />}
 
       {/* Shimmer ring */}
-      {stars >= 4 && <div className="lightning-shimmer-ring" />}
+      {stars >= 3 && <div className="lightning-shimmer-ring" />}
 
       {/* Energy particles converging to center */}
       {stars >= 4 && (
@@ -385,7 +448,7 @@ export function SummonLightning({ stars, isShiny, onComplete }: Props) {
       )}
 
       {/* Spark particles */}
-      {stars >= 4 && (
+      {stars >= 3 && (
         <div className="lightning-sparks">
           {sparks.map((spark) => (
             <div

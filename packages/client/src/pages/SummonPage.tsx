@@ -55,55 +55,33 @@ export function SummonPage() {
 
   return (
     <div className="page summon-page">
-      <div className="summon-header">
-        <h2>Summon</h2>
-        <div className="summon-currencies">
-          <div className="pokeball-count">
-            <GameIcon id="pokeball" size={14} />
-            {player.regularPokeballs}
-          </div>
-          <div className="pokeball-count premium">
-            <GameIcon id="premiumPokeball" size={14} />
-            {player.premiumPokeballs}
-          </div>
-        </div>
-      </div>
-
       {phase === 'idle' && (
         <div className="summon-idle">
-          <div className="pokeball-type-selector">
-            <button
-              className={`pokeball-type-tab ${selectedBall === 'regular' ? 'active' : ''}`}
-              onClick={() => setSelectedBall('regular')}
-            >
-              <GameIcon id="pokeball" size={16} />
-              <span>Regular</span>
-            </button>
-            <button
-              className={`pokeball-type-tab ${selectedBall === 'premium' ? 'active' : ''}`}
-              onClick={() => setSelectedBall('premium')}
-            >
-              <GameIcon id="premiumPokeball" size={16} />
-              <span>Premium</span>
-            </button>
-          </div>
-
-          <div className="pokeball-type-info">
-            {selectedBall === 'regular'
-              ? 'Summons 1-2★ monsters'
-              : 'Summons 3-5★ monsters'}
-          </div>
-
-          <div className={`idle-pokeball ${selectedBall === 'premium' ? 'premium' : ''}`}>
-            <div className="idle-pokeball-top" />
-            <div className="idle-pokeball-bottom" />
-            <div className="idle-pokeball-band">
-              <div className="idle-pokeball-button">
-                <div className="idle-pokeball-button-inner" />
-              </div>
+          <div className="summon-top-row">
+            <div className="pokeball-type-selector">
+              <button
+                className={`pokeball-type-tab ${selectedBall === 'regular' ? 'active' : ''}`}
+                onClick={() => setSelectedBall('regular')}
+              >
+                <GameIcon id="pokeball" size={16} />
+                <span>Regular</span>
+              </button>
+              <button
+                className={`pokeball-type-tab ${selectedBall === 'premium' ? 'active' : ''}`}
+                onClick={() => setSelectedBall('premium')}
+              >
+                <GameIcon id="premiumPokeball" size={16} />
+                <span>Premium</span>
+              </button>
+            </div>
+            <div className="pokeball-type-info">
+              {selectedBall === 'regular'
+                ? 'Summons 1-3★ monsters'
+                : 'Summons 3-5★ monsters'}
             </div>
           </div>
-          <div className="summon-buttons">
+
+          <div className="summon-center-row">
             <button
               className="summon-btn summon-single"
               onClick={() => handleSummon(1)}
@@ -112,6 +90,17 @@ export function SummonPage() {
               <span className="btn-label">Summon x1</span>
               <span className="btn-cost">{costs.single} <GameIcon id={iconId} size={14} /></span>
             </button>
+
+            <div className={`idle-pokeball ${selectedBall === 'premium' ? 'premium' : ''}`}>
+              <div className="idle-pokeball-top" />
+              <div className="idle-pokeball-bottom" />
+              <div className="idle-pokeball-band">
+                <div className="idle-pokeball-button">
+                  <div className="idle-pokeball-button-inner" />
+                </div>
+              </div>
+            </div>
+
             <button
               className="summon-btn summon-multi"
               onClick={() => handleSummon(10)}
@@ -121,6 +110,7 @@ export function SummonPage() {
               <span className="btn-cost">{costs.multi} <GameIcon id={iconId} size={14} /></span>
             </button>
           </div>
+
           {error && <p className="summon-error">{error}</p>}
         </div>
       )}

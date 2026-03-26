@@ -11,9 +11,11 @@ const PREMIUM_MULTI_COST = 10;
 const MULTI_COUNT = 10;
 const SHINY_RATE = DEBUG_MODE ? 0.5 : 0.001;
 
-function rollRegularStarRating(guaranteeMinTwo = false): 1 | 2 {
+function rollRegularStarRating(guaranteeMinTwo = false): 1 | 2 | 3 {
   if (guaranteeMinTwo) return 2;
-  return Math.random() < 0.6 ? 1 : 2;
+  const roll = Math.random() * 100;
+  if (roll < 5) return 3;
+  return roll < 62 ? 1 : 2;
 }
 
 function rollPremiumStarRating(): 3 | 4 | 5 {

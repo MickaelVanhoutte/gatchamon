@@ -12,7 +12,7 @@ interface Props {
 type SubPhase = 'lightning' | 'reveal' | 'waiting';
 
 function isSpecialPull(pokemon: OwnedPokemon): boolean {
-  return pokemon.instance.stars >= 4 || (pokemon.instance.isShiny ?? false);
+  return pokemon.instance.stars >= 3 || (pokemon.instance.isShiny ?? false);
 }
 
 export function SummonRevealSequence({ results, onAllRevealed }: Props) {
