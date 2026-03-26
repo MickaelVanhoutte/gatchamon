@@ -137,6 +137,16 @@
   font-size: 0.45rem;
 }
 
+/* Shiny badge in grid cell */
+.box-cell-shiny-badge {
+  position: absolute;
+  top: 1px;
+  right: 2px;
+  color: #ffd700;
+  filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.8));
+  z-index: 2;
+}
+
 /* ========== Right: Detail panel ========== */
 .box-detail-panel {
   width: 340px;

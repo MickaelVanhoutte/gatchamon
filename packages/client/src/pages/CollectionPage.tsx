@@ -190,9 +190,12 @@ export function CollectionPage() {
                   </div>
                   <img
                     className="box-cell-sprite"
-                    src={assetUrl(mon.template.spriteUrl)}
+                    src={mon.instance.isShiny
+                      ? assetUrl(`monsters/ani-shiny/${mon.template.name.toLowerCase()}.gif`)
+                      : assetUrl(mon.template.spriteUrl)}
                     alt={mon.template.name}
                   />
+                  {mon.instance.isShiny && <div className="box-cell-shiny-badge"><GameIcon id="shiny" size={10} /></div>}
                   <div className="box-cell-level">
                     <span className="box-cell-lock"><GameIcon id="lock" size={14} /></span>
                     {mon.instance.level}
@@ -238,7 +241,10 @@ export function CollectionPage() {
                 {/* Monster info */}
                 <div className="box-detail-info">
                   <div className="box-detail-header">
-                    <span className="box-detail-name">{selected.template.name}</span>
+                    <span className="box-detail-name">
+                      {selected.template.name}
+                      {selected.instance.isShiny && <span className="shiny-icon"><GameIcon id="shiny" size={12} /></span>}
+                    </span>
                     <span className="box-detail-stars" style={{ color: STAR_COLORS[selected.instance.stars] }}>
                       <StarRating count={selected.instance.stars} size={10} />
                     </span>

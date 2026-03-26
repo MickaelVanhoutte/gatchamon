@@ -39,7 +39,11 @@ export function TopHUD() {
         </div>
         <div className="hud-resource">
           <GameIcon id="pokeball" size={14} />
-          <span>{player.pokeballs}</span>
+          <span>{player.regularPokeballs}</span>
+        </div>
+        <div className="hud-resource">
+          <GameIcon id="premiumPokeball" size={14} />
+          <span>{player.premiumPokeballs}</span>
         </div>
       </div>
     </header>

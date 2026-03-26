@@ -11,7 +11,7 @@ interface Props {
 const BOLT_COUNTS: Record<number, number> = {
   1: 0,
   2: 0,
-  3: 14,
+  3: 0,
   4: 18,
   5: 22,
 };
@@ -19,7 +19,7 @@ const BOLT_COUNTS: Record<number, number> = {
 const SPARK_COUNTS: Record<number, number> = {
   1: 0,
   2: 0,
-  3: 24,
+  3: 0,
   4: 32,
   5: 40,
 };
@@ -27,13 +27,12 @@ const SPARK_COUNTS: Record<number, number> = {
 const STAR_THEMES: Record<number, { color: string; glow: string; className: string }> = {
   1: { color: '#aaa', glow: 'rgba(170,170,170,0.3)', className: 'tier-low' },
   2: { color: '#aaa', glow: 'rgba(170,170,170,0.3)', className: 'tier-low' },
-  3: { color: '#ffd700', glow: 'rgba(255,215,0,0.5)', className: 'tier-gold' },
+  3: { color: '#60a5fa', glow: 'rgba(96,165,250,0.3)', className: 'tier-low' },
   4: { color: '#c084fc', glow: 'rgba(192,132,252,0.5)', className: 'tier-purple' },
   5: { color: '#ff4444', glow: 'rgba(255,68,68,0.6)', className: 'tier-legendary' },
 };
 
 const CRACK_OPACITY: Record<number, number> = {
-  3: 0.4,
   4: 0.7,
   5: 1.0,
 };
@@ -98,8 +97,8 @@ export function SummonLightning({ stars, isShiny, onComplete }: Props) {
     const tl = gsap.timeline({ onComplete });
     tlRef.current = tl;
 
-    if (stars <= 2) {
-      // Low tier: soft pop, no lightning
+    if (stars <= 3) {
+      // Low tier (1-3★): soft pop, no lightning
       const orbPop = containerRef.current.querySelector('.lightning-orb-pop');
       if (orbPop) {
         tl.fromTo(
@@ -112,7 +111,7 @@ export function SummonLightning({ stars, isShiny, onComplete }: Props) {
     }
 
     // ============================================
-    // 3+ stars: Multi-phase dramatic lightning
+    // 4+ stars: Multi-phase dramatic lightning
     // ============================================
 
     // --- PHASE 1: Tension Build-Up (0s to ~1.8s) ---
@@ -347,16 +346,16 @@ export function SummonLightning({ stars, isShiny, onComplete }: Props) {
       <div className="lightning-darken" />
 
       {/* Low-tier soft pop */}
-      {stars <= 2 && <div className="lightning-orb-pop" />}
+      {stars <= 3 && <div className="lightning-orb-pop" />}
 
-      {/* 3+ star: orb flash */}
-      {stars >= 3 && <div className="lightning-orb-flash" />}
+      {/* 4+ star: orb flash */}
+      {stars >= 4 && <div className="lightning-orb-flash" />}
 
-      {/* Golden shimmer ring */}
-      {stars >= 3 && <div className="lightning-shimmer-ring" />}
+      {/* Shimmer ring */}
+      {stars >= 4 && <div className="lightning-shimmer-ring" />}
 
       {/* Energy particles converging to center */}
-      {stars >= 3 && (
+      {stars >= 4 && (
         <div className="lightning-energy-particles">
           {energyParticles.map((p) => (
             <div
@@ -369,7 +368,7 @@ export function SummonLightning({ stars, isShiny, onComplete }: Props) {
       )}
 
       {/* Lightning bolts */}
-      {stars >= 3 && (
+      {stars >= 4 && (
         <div className="lightning-bolts">
           {bolts.map((bolt) => (
             <div
@@ -386,7 +385,7 @@ export function SummonLightning({ stars, isShiny, onComplete }: Props) {
       )}
 
       {/* Spark particles */}
-      {stars >= 3 && (
+      {stars >= 4 && (
         <div className="lightning-sparks">
           {sparks.map((spark) => (
             <div
@@ -401,8 +400,8 @@ export function SummonLightning({ stars, isShiny, onComplete }: Props) {
         </div>
       )}
 
-      {/* Screen crack for 3+ stars */}
-      {stars >= 3 && <div className="lightning-crack" />}
+      {/* Screen crack for 4+ stars */}
+      {stars >= 4 && <div className="lightning-crack" />}
 
       {/* Shiny prismatic burst */}
       {isShiny && <div className="lightning-shiny-burst" />}

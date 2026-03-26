@@ -1,10 +1,14 @@
 import { Router } from 'express';
-import { summonSingle, summonMulti, SUMMON_COSTS } from '../services/gacha.service.js';
+import {
+  summonSingleRegular, summonMultiRegular,
+  summonSinglePremium, summonMultiPremium,
+  SUMMON_COSTS,
+} from '../services/gacha.service.js';
 
 export const summonRouter = Router();
 
 summonRouter.post('/', (req, res) => {
-  const { playerId, count } = req.body;
+  const { playerId, count, type = 'regular' } = req.body;
 
   if (!playerId) {
     res.status(400).json({ error: 'playerId is required' });
@@ -12,12 +16,22 @@ summonRouter.post('/', (req, res) => {
   }
 
   try {
-    if (count === 10) {
-      const results = summonMulti(playerId);
-      res.json({ results });
+    if (type === 'premium') {
+      if (count === 10) {
+        const results = summonMultiPremium(playerId);
+        res.json({ results });
+      } else {
+        const result = summonSinglePremium(playerId);
+        res.json({ results: [result] });
+      }
     } else {
-      const result = summonSingle(playerId);
-      res.json({ results: [result] });
+      if (count === 10) {
+        const results = summonMultiRegular(playerId);
+        res.json({ results });
+      } else {
+        const result = summonSingleRegular(playerId);
+        res.json({ results: [result] });
+      }
     }
   } catch (err: any) {
     const status = err.message === 'Player not found' ? 404 : 400;

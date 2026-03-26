@@ -1,23 +1,26 @@
 import { POKEDEX } from '@gatchamon/shared';
-import type { PokemonTemplate, PokemonInstance } from '@gatchamon/shared';
+import type { PokemonTemplate, PokemonInstance, PokeballType } from '@gatchamon/shared';
 import { loadPlayer, savePlayer, addToCollection, loadCollection } from './storage';
 import { trackStat, incrementMission, checkAndUpdateTrophies } from './reward.service';
 import { loadRewardState, saveRewardState } from './storage';
 
-const SINGLE_COST = 5;
-const MULTI_COST = 45;
+const REGULAR_SINGLE_COST = 5;
+const REGULAR_MULTI_COST = 45;
+const PREMIUM_SINGLE_COST = 1;
+const PREMIUM_MULTI_COST = 10;
 const MULTI_COUNT = 10;
 const DEBUG_MODE = import.meta.env.VITE_DEBUG_MODE === 'true';
 const SHINY_RATE = DEBUG_MODE ? 0.5 : 0.001;
 
-function rollStarRating(guaranteeMinThree = false): 1 | 2 | 3 | 5 {
+function rollRegularStarRating(guaranteeMinTwo = false): 1 | 2 {
+  if (guaranteeMinTwo) return 2;
+  return Math.random() < 0.6 ? 1 : 2;
+}
+
+function rollPremiumStarRating(): 3 | 4 | 5 {
   const roll = Math.random() * 100;
-  if (guaranteeMinThree) {
-    return roll < 90 ? 3 : 5;
-  }
-  if (roll < 50) return 1;
-  if (roll < 80) return 2;
-  if (roll < 98) return 3;
+  if (roll < 75) return 3;
+  if (roll < 95) return 4;
   return 5;
 }
 
@@ -25,7 +28,7 @@ function rollShiny(): boolean {
   return Math.random() < SHINY_RATE;
 }
 
-function pickFromPool(stars: 1 | 2 | 3 | 5): PokemonTemplate {
+function pickFromPool(stars: 1 | 2 | 3 | 4 | 5): PokemonTemplate {
   const pool = POKEDEX.filter(p => p.naturalStars === stars && p.summonable !== false);
   return pool[Math.floor(Math.random() * pool.length)];
 }
@@ -48,44 +51,51 @@ export interface SummonResult {
   template: PokemonTemplate;
 }
 
-export const SUMMON_COSTS = { single: SINGLE_COST, multi: MULTI_COST };
+export const SUMMON_COSTS = {
+  regular: { single: REGULAR_SINGLE_COST, multi: REGULAR_MULTI_COST },
+  premium: { single: PREMIUM_SINGLE_COST, multi: PREMIUM_MULTI_COST },
+};
 
-export function summonSingle(): SummonResult {
+function trackSummons(count: number): void {
+  trackStat('totalSummons', count);
+  trackStat('totalMonstersCollected', count);
+  incrementMission('summon_any', count);
+  incrementMission('collect_monster', count);
+  updateUniqueCount();
+  checkAndUpdateTrophies();
+}
+
+// ── Regular Pokeball (1-2★) ──
+
+export function summonSingleRegular(): SummonResult {
   const player = loadPlayer();
   if (!player) throw new Error('Player not found');
-  if (player.pokeballs < SINGLE_COST) throw new Error('Not enough pokeballs');
+  if (player.regularPokeballs < REGULAR_SINGLE_COST) throw new Error('Not enough pokeballs');
 
-  savePlayer({ ...player, pokeballs: player.pokeballs - SINGLE_COST });
+  savePlayer({ ...player, regularPokeballs: player.regularPokeballs - REGULAR_SINGLE_COST });
 
-  const stars = rollStarRating();
+  const stars = rollRegularStarRating();
   const template = pickFromPool(stars);
   const pokemon = createInstance(template, player.id);
   addToCollection([pokemon]);
-
-  // Track rewards
-  trackStat('totalSummons', 1);
-  trackStat('totalMonstersCollected', 1);
-  incrementMission('summon_any', 1);
-  incrementMission('collect_monster', 1);
-  updateUniqueCount();
-  checkAndUpdateTrophies();
+  trackSummons(1);
 
   return { pokemon, template };
 }
 
-export function summonMulti(): SummonResult[] {
+export function summonMultiRegular(): SummonResult[] {
   const player = loadPlayer();
   if (!player) throw new Error('Player not found');
-  if (player.pokeballs < MULTI_COST) throw new Error('Not enough pokeballs');
+  if (player.regularPokeballs < REGULAR_MULTI_COST) throw new Error('Not enough pokeballs');
 
-  savePlayer({ ...player, pokeballs: player.pokeballs - MULTI_COST });
+  savePlayer({ ...player, regularPokeballs: player.regularPokeballs - REGULAR_MULTI_COST });
 
   const results: SummonResult[] = [];
   const instances: PokemonInstance[] = [];
 
   for (let i = 0; i < MULTI_COUNT; i++) {
     const isLastPull = i === MULTI_COUNT - 1;
-    const stars = rollStarRating(isLastPull);
+    const stars = rollRegularStarRating(isLastPull);
     const template = pickFromPool(stars);
     const pokemon = createInstance(template, player.id);
     instances.push(pokemon);
@@ -93,14 +103,49 @@ export function summonMulti(): SummonResult[] {
   }
 
   addToCollection(instances);
+  trackSummons(MULTI_COUNT);
 
-  // Track rewards
-  trackStat('totalSummons', MULTI_COUNT);
-  trackStat('totalMonstersCollected', MULTI_COUNT);
-  incrementMission('summon_any', MULTI_COUNT);
-  incrementMission('collect_monster', MULTI_COUNT);
-  updateUniqueCount();
-  checkAndUpdateTrophies();
+  return results;
+}
+
+// ── Premium Pokeball (3-5★) ──
+
+export function summonSinglePremium(): SummonResult {
+  const player = loadPlayer();
+  if (!player) throw new Error('Player not found');
+  if (player.premiumPokeballs < PREMIUM_SINGLE_COST) throw new Error('Not enough premium pokeballs');
+
+  savePlayer({ ...player, premiumPokeballs: player.premiumPokeballs - PREMIUM_SINGLE_COST });
+
+  const stars = rollPremiumStarRating();
+  const template = pickFromPool(stars);
+  const pokemon = createInstance(template, player.id);
+  addToCollection([pokemon]);
+  trackSummons(1);
+
+  return { pokemon, template };
+}
+
+export function summonMultiPremium(): SummonResult[] {
+  const player = loadPlayer();
+  if (!player) throw new Error('Player not found');
+  if (player.premiumPokeballs < PREMIUM_MULTI_COST) throw new Error('Not enough premium pokeballs');
+
+  savePlayer({ ...player, premiumPokeballs: player.premiumPokeballs - PREMIUM_MULTI_COST });
+
+  const results: SummonResult[] = [];
+  const instances: PokemonInstance[] = [];
+
+  for (let i = 0; i < MULTI_COUNT; i++) {
+    const stars = rollPremiumStarRating();
+    const template = pickFromPool(stars);
+    const pokemon = createInstance(template, player.id);
+    instances.push(pokemon);
+    results.push({ pokemon, template });
+  }
+
+  addToCollection(instances);
+  trackSummons(MULTI_COUNT);
 
   return results;
 }

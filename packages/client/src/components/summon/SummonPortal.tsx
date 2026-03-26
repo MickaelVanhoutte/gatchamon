@@ -2,16 +2,20 @@ import { useEffect, useRef, useCallback } from 'react';
 import gsap from 'gsap';
 import './SummonPortal.css';
 
+import type { PokeballType } from '@gatchamon/shared';
+
 interface Props {
   resultsReady: boolean;
   onComplete: () => void;
+  pokeballType?: PokeballType;
 }
 
 const PARTICLE_COUNT = 24;
 const WISP_COUNT = 7;
 const MIN_DURATION = 1.8;
 
-export function SummonPortal({ resultsReady, onComplete }: Props) {
+export function SummonPortal({ resultsReady, onComplete, pokeballType = 'regular' }: Props) {
+  const isPremium = pokeballType === 'premium';
   const containerRef = useRef<HTMLDivElement>(null);
   const orbRef = useRef<HTMLDivElement>(null);
   const animDoneRef = useRef(false);
@@ -157,7 +161,7 @@ export function SummonPortal({ resultsReady, onComplete }: Props) {
 
       <div className="portal-center">
         <div className="portal-orb-main" ref={orbRef}>
-          <div className="portal-pokeball">
+          <div className={`portal-pokeball ${isPremium ? 'premium' : ''}`}>
             <div className="portal-pokeball-top" />
             <div className="portal-pokeball-bottom" />
             <div className="portal-pokeball-band">

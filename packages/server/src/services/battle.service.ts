@@ -659,9 +659,9 @@ function calculateRewards(state: BattleState): BattleRewards {
     ).run(currentLevel, currentExp, mon.instanceId);
   }
 
-  // Award pokeballs
+  // Award regular pokeballs
   db.prepare(
-    'UPDATE players SET pokeballs = pokeballs + ? WHERE id = ?'
+    'UPDATE players SET regular_pokeballs = regular_pokeballs + ? WHERE id = ?'
   ).run(pokeballs, state.playerId);
 
   // Advance story progress
@@ -673,7 +673,7 @@ function calculateRewards(state: BattleState): BattleRewards {
       .run(JSON.stringify(storyProgress), state.playerId);
   }
 
-  return { pokeballs, xpPerMon, levelUps };
+  return { regularPokeballs: pokeballs, premiumPokeballs: 0, xpPerMon, levelUps };
 }
 
 function advanceStoryProgress(

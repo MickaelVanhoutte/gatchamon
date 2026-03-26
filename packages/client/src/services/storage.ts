@@ -24,6 +24,12 @@ export function loadPlayer(): Player | null {
     player.trainerSkillPoints = 0;
     player.trainerSkills = defaultTrainerSkills();
   }
+  // Migration: split pokeballs into regular/premium
+  if ((player as any).pokeballs !== undefined && player.regularPokeballs === undefined) {
+    player.regularPokeballs = (player as any).pokeballs;
+    player.premiumPokeballs = 0;
+    delete (player as any).pokeballs;
+  }
   // Migration: trim regions to 10 (League renumbered from 11 → 10)
   if (player.storyProgress) {
     for (const diff of ['normal', 'hard', 'hell'] as const) {

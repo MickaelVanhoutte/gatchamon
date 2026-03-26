@@ -4,6 +4,8 @@ import { SummonPortal } from '../components/summon/SummonPortal';
 import { SummonRevealSequence } from '../components/summon/SummonRevealSequence';
 import { SummonResult } from '../components/summon/SummonResult';
 import { GameIcon } from '../components/icons';
+import { SUMMON_COSTS } from '../services/gacha.service';
+import type { PokeballType } from '@gatchamon/shared';
 import './SummonPage.css';
 
 type Phase = 'idle' | 'summoning' | 'revealing' | 'done';
@@ -14,6 +16,11 @@ export function SummonPage() {
   const [results, setResults] = useState<OwnedPokemon[]>([]);
   const [resultsReady, setResultsReady] = useState(false);
   const [error, setError] = useState('');
+  const [selectedBall, setSelectedBall] = useState<PokeballType>('regular');
+
+  const costs = SUMMON_COSTS[selectedBall];
+  const currency = selectedBall === 'premium' ? player?.premiumPokeballs ?? 0 : player?.regularPokeballs ?? 0;
+  const iconId = selectedBall === 'premium' ? 'premiumPokeball' : 'pokeball';
 
   const handleSummon = async (count: 1 | 10) => {
     setError('');
@@ -21,7 +28,7 @@ export function SummonPage() {
     setPhase('summoning');
 
     try {
-      const newPokemon = await summon(count);
+      const newPokemon = await summon(count, selectedBall);
       setResults(newPokemon);
       setResultsReady(true);
     } catch (err: any) {
@@ -50,15 +57,44 @@ export function SummonPage() {
     <div className="page summon-page">
       <div className="summon-header">
         <h2>Summon</h2>
-        <div className="pokeball-count">
-          <GameIcon id="pokeball" size={14} />
-          {player.pokeballs}
+        <div className="summon-currencies">
+          <div className="pokeball-count">
+            <GameIcon id="pokeball" size={14} />
+            {player.regularPokeballs}
+          </div>
+          <div className="pokeball-count premium">
+            <GameIcon id="premiumPokeball" size={14} />
+            {player.premiumPokeballs}
+          </div>
         </div>
       </div>
 
       {phase === 'idle' && (
         <div className="summon-idle">
-          <div className="idle-pokeball">
+          <div className="pokeball-type-selector">
+            <button
+              className={`pokeball-type-tab ${selectedBall === 'regular' ? 'active' : ''}`}
+              onClick={() => setSelectedBall('regular')}
+            >
+              <GameIcon id="pokeball" size={16} />
+              <span>Regular</span>
+            </button>
+            <button
+              className={`pokeball-type-tab ${selectedBall === 'premium' ? 'active' : ''}`}
+              onClick={() => setSelectedBall('premium')}
+            >
+              <GameIcon id="premiumPokeball" size={16} />
+              <span>Premium</span>
+            </button>
+          </div>
+
+          <div className="pokeball-type-info">
+            {selectedBall === 'regular'
+              ? 'Summons 1-2★ monsters'
+              : 'Summons 3-5★ monsters'}
+          </div>
+
+          <div className={`idle-pokeball ${selectedBall === 'premium' ? 'premium' : ''}`}>
             <div className="idle-pokeball-top" />
             <div className="idle-pokeball-bottom" />
             <div className="idle-pokeball-band">
@@ -71,18 +107,18 @@ export function SummonPage() {
             <button
               className="summon-btn summon-single"
               onClick={() => handleSummon(1)}
-              disabled={player.pokeballs < 5}
+              disabled={currency < costs.single}
             >
               <span className="btn-label">Summon x1</span>
-              <span className="btn-cost">5 <GameIcon id="pokeball" size={14} /></span>
+              <span className="btn-cost">{costs.single} <GameIcon id={iconId} size={14} /></span>
             </button>
             <button
               className="summon-btn summon-multi"
               onClick={() => handleSummon(10)}
-              disabled={player.pokeballs < 45}
+              disabled={currency < costs.multi}
             >
               <span className="btn-label">Summon x10</span>
-              <span className="btn-cost">45 <GameIcon id="pokeball" size={14} /></span>
+              <span className="btn-cost">{costs.multi} <GameIcon id={iconId} size={14} /></span>
             </button>
           </div>
           {error && <p className="summon-error">{error}</p>}
@@ -93,6 +129,7 @@ export function SummonPage() {
         <SummonPortal
           resultsReady={resultsReady}
           onComplete={handlePortalComplete}
+          pokeballType={selectedBall}
         />
       )}
 

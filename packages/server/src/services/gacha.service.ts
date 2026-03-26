@@ -1,22 +1,25 @@
 import { v4 as uuidv4 } from 'uuid';
 import { POKEDEX } from '@gatchamon/shared';
-import type { PokemonTemplate, PokemonInstance } from '@gatchamon/shared';
+import type { PokemonTemplate, PokemonInstance, PokeballType } from '@gatchamon/shared';
 import { getDb } from '../db/schema.js';
 import { DEBUG_MODE } from '../config.js';
 
-const SINGLE_COST = 5;
-const MULTI_COST = 45;
+const REGULAR_SINGLE_COST = 5;
+const REGULAR_MULTI_COST = 45;
+const PREMIUM_SINGLE_COST = 1;
+const PREMIUM_MULTI_COST = 10;
 const MULTI_COUNT = 10;
-const SHINY_RATE = DEBUG_MODE ? 0.5 : 0.001; // Debug: 50%, Prod: 0.1% (1 in 1000)
+const SHINY_RATE = DEBUG_MODE ? 0.5 : 0.001;
 
-function rollStarRating(guaranteeMinThree = false): 1 | 2 | 3 | 5 {
+function rollRegularStarRating(guaranteeMinTwo = false): 1 | 2 {
+  if (guaranteeMinTwo) return 2;
+  return Math.random() < 0.6 ? 1 : 2;
+}
+
+function rollPremiumStarRating(): 3 | 4 | 5 {
   const roll = Math.random() * 100;
-  if (guaranteeMinThree) {
-    return roll < 90 ? 3 : 5;
-  }
-  if (roll < 50) return 1;
-  if (roll < 80) return 2;
-  if (roll < 98) return 3;
+  if (roll < 75) return 3;
+  if (roll < 95) return 4;
   return 5;
 }
 
@@ -24,7 +27,7 @@ function rollShiny(): boolean {
   return Math.random() < SHINY_RATE;
 }
 
-function pickFromPool(stars: 1 | 2 | 3 | 5): PokemonTemplate {
+function pickFromPool(stars: 1 | 2 | 3 | 4 | 5): PokemonTemplate {
   const pool = POKEDEX.filter(p => p.naturalStars === stars && p.summonable !== false);
   return pool[Math.floor(Math.random() * pool.length)];
 }
@@ -54,35 +57,42 @@ export interface SummonResult {
   template: PokemonTemplate;
 }
 
-export function summonSingle(playerId: string): SummonResult {
+export const SUMMON_COSTS = {
+  regular: { single: REGULAR_SINGLE_COST, multi: REGULAR_MULTI_COST },
+  premium: { single: PREMIUM_SINGLE_COST, multi: PREMIUM_MULTI_COST },
+};
+
+// ── Regular Pokeball (1-2★) ──
+
+export function summonSingleRegular(playerId: string): SummonResult {
   const db = getDb();
-  const player = db.prepare('SELECT pokeballs FROM players WHERE id = ?').get(playerId) as any;
+  const player = db.prepare('SELECT regular_pokeballs FROM players WHERE id = ?').get(playerId) as any;
 
   if (!player) throw new Error('Player not found');
-  if (player.pokeballs < SINGLE_COST) throw new Error('Not enough pokeballs');
+  if (player.regular_pokeballs < REGULAR_SINGLE_COST) throw new Error('Not enough pokeballs');
 
-  db.prepare('UPDATE players SET pokeballs = pokeballs - ? WHERE id = ?').run(SINGLE_COST, playerId);
+  db.prepare('UPDATE players SET regular_pokeballs = regular_pokeballs - ? WHERE id = ?').run(REGULAR_SINGLE_COST, playerId);
 
-  const stars = rollStarRating();
+  const stars = rollRegularStarRating();
   const template = pickFromPool(stars);
   const pokemon = createInstance(template, playerId);
 
   return { pokemon, template };
 }
 
-export function summonMulti(playerId: string): SummonResult[] {
+export function summonMultiRegular(playerId: string): SummonResult[] {
   const db = getDb();
-  const player = db.prepare('SELECT pokeballs FROM players WHERE id = ?').get(playerId) as any;
+  const player = db.prepare('SELECT regular_pokeballs FROM players WHERE id = ?').get(playerId) as any;
 
   if (!player) throw new Error('Player not found');
-  if (player.pokeballs < MULTI_COST) throw new Error('Not enough pokeballs');
+  if (player.regular_pokeballs < REGULAR_MULTI_COST) throw new Error('Not enough pokeballs');
 
-  db.prepare('UPDATE players SET pokeballs = pokeballs - ? WHERE id = ?').run(MULTI_COST, playerId);
+  db.prepare('UPDATE players SET regular_pokeballs = regular_pokeballs - ? WHERE id = ?').run(REGULAR_MULTI_COST, playerId);
 
   const results: SummonResult[] = [];
   for (let i = 0; i < MULTI_COUNT; i++) {
     const isLastPull = i === MULTI_COUNT - 1;
-    const stars = rollStarRating(isLastPull);
+    const stars = rollRegularStarRating(isLastPull);
     const template = pickFromPool(stars);
     const pokemon = createInstance(template, playerId);
     results.push({ pokemon, template });
@@ -91,4 +101,40 @@ export function summonMulti(playerId: string): SummonResult[] {
   return results;
 }
 
-export const SUMMON_COSTS = { single: SINGLE_COST, multi: MULTI_COST };
+// ── Premium Pokeball (3-5★) ──
+
+export function summonSinglePremium(playerId: string): SummonResult {
+  const db = getDb();
+  const player = db.prepare('SELECT premium_pokeballs FROM players WHERE id = ?').get(playerId) as any;
+
+  if (!player) throw new Error('Player not found');
+  if (player.premium_pokeballs < PREMIUM_SINGLE_COST) throw new Error('Not enough premium pokeballs');
+
+  db.prepare('UPDATE players SET premium_pokeballs = premium_pokeballs - ? WHERE id = ?').run(PREMIUM_SINGLE_COST, playerId);
+
+  const stars = rollPremiumStarRating();
+  const template = pickFromPool(stars);
+  const pokemon = createInstance(template, playerId);
+
+  return { pokemon, template };
+}
+
+export function summonMultiPremium(playerId: string): SummonResult[] {
+  const db = getDb();
+  const player = db.prepare('SELECT premium_pokeballs FROM players WHERE id = ?').get(playerId) as any;
+
+  if (!player) throw new Error('Player not found');
+  if (player.premium_pokeballs < PREMIUM_MULTI_COST) throw new Error('Not enough premium pokeballs');
+
+  db.prepare('UPDATE players SET premium_pokeballs = premium_pokeballs - ? WHERE id = ?').run(PREMIUM_MULTI_COST, playerId);
+
+  const results: SummonResult[] = [];
+  for (let i = 0; i < MULTI_COUNT; i++) {
+    const stars = rollPremiumStarRating();
+    const template = pickFromPool(stars);
+    const pokemon = createInstance(template, playerId);
+    results.push({ pokemon, template });
+  }
+
+  return results;
+}

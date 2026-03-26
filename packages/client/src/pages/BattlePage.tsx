@@ -327,7 +327,8 @@ export function BattlePage() {
                 {rewards.isFirstClear && (
                   <p className="first-clear-banner"><GameIcon id="sparkles" size={14} /> First Clear Bonus!</p>
                 )}
-                {rewards.pokeballs > 0 && <p>+ {rewards.pokeballs} <span className="pokeball-icon" /></p>}
+                {rewards.regularPokeballs > 0 && <p>+ {rewards.regularPokeballs} <GameIcon id="pokeball" size={14} /></p>}
+                {rewards.premiumPokeballs > 0 && <p>+ {rewards.premiumPokeballs} <GameIcon id="premiumPokeball" size={14} /></p>}
                 <p>+ {rewards.xpPerMon} XP per monster</p>
                 {rewards.levelUps.length > 0 && (
                   <p className="level-ups">

@@ -50,6 +50,9 @@ export function initDb(): void {
   // Add is_shiny column to existing databases
   migrateAddShiny(database);
 
+  // Split pokeballs into regular/premium
+  migratePokeballSplit(database);
+
   console.log('Database initialized');
 }
 
@@ -58,6 +61,17 @@ function migrateAddShiny(database: Database.Database): void {
     database.exec('ALTER TABLE pokemon_instances ADD COLUMN is_shiny INTEGER NOT NULL DEFAULT 0');
   } catch {
     // Column already exists
+  }
+}
+
+function migratePokeballSplit(database: Database.Database): void {
+  try {
+    database.exec('ALTER TABLE players ADD COLUMN regular_pokeballs INTEGER NOT NULL DEFAULT 50');
+    database.exec('ALTER TABLE players ADD COLUMN premium_pokeballs INTEGER NOT NULL DEFAULT 0');
+    // Migrate existing pokeballs to regular
+    database.exec('UPDATE players SET regular_pokeballs = pokeballs');
+  } catch {
+    // Columns already exist
   }
 }
 

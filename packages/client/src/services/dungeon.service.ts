@@ -172,7 +172,7 @@ export function calculateDungeonRewards(state: BattleState): DungeonRewards & Ba
   }
   savePlayer({ ...player, materials });
 
-  return { essences, xpPerMon, pokeballs: 0, levelUps };
+  return { essences, xpPerMon, regularPokeballs: 0, premiumPokeballs: 0, levelUps };
 }
 
 export function getDungeonBattle(battleId: string): BattleState | null {

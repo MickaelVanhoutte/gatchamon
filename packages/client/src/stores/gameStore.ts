@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Player, PokemonInstance, PokemonTemplate, HeldItemInstance, TrainerSkills } from '@gatchamon/shared';
+import type { Player, PokemonInstance, PokemonTemplate, HeldItemInstance, TrainerSkills, PokeballType } from '@gatchamon/shared';
 import { getTemplate, getMaxEnergy, getEnergyRegenInterval } from '@gatchamon/shared';
 import * as storage from '../services/storage';
 import * as playerService from '../services/player.service';
@@ -26,7 +26,7 @@ interface GameState {
   createPlayer: (name: string) => void;
   loadPlayer: () => void;
   refreshPlayer: () => void;
-  summon: (count: 1 | 10) => OwnedPokemon[];
+  summon: (count: 1 | 10, type?: PokeballType) => OwnedPokemon[];
   loadCollection: () => void;
   mergePokemon: (baseId: string, fodderId: string) => void;
   evolvePokemon: (instanceId: string, targetTemplateId: number) => void;
@@ -88,13 +88,20 @@ export const useGameStore = create<GameState>((set, get) => ({
     get().refreshRewards();
   },
 
-  summon: (count: 1 | 10) => {
+  summon: (count: 1 | 10, type: PokeballType = 'regular') => {
     const { player } = get();
     if (!player) throw new Error('No player');
 
-    const results = count === 10
-      ? gachaService.summonMulti()
-      : [gachaService.summonSingle()];
+    let results: gachaService.SummonResult[];
+    if (type === 'premium') {
+      results = count === 10
+        ? gachaService.summonMultiPremium()
+        : [gachaService.summonSinglePremium()];
+    } else {
+      results = count === 10
+        ? gachaService.summonMultiRegular()
+        : [gachaService.summonSingleRegular()];
+    }
 
     const newPokemon: OwnedPokemon[] = results.map(r => ({
       instance: r.pokemon,

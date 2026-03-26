@@ -249,7 +249,9 @@ export function StoryModePage() {
                       <div className="floor-reward-preview">
                         {floor.rewardPreview.isFirstClear ? (
                           <span className="reward-tag first-clear">
-                            <GameIcon id="sparkles" size={14} /> +{floor.rewardPreview.pokeballs} <span className="pokeball-icon" />
+                            <GameIcon id="sparkles" size={14} />
+                            {floor.rewardPreview.regularPokeballs > 0 && <> +{floor.rewardPreview.regularPokeballs} <GameIcon id="pokeball" size={12} /></>}
+                            {floor.rewardPreview.premiumPokeballs > 0 && <> +{floor.rewardPreview.premiumPokeballs} <GameIcon id="premiumPokeball" size={12} /></>}
                           </span>
                         ) : (
                           <span className="reward-tag replay">XP only</span>

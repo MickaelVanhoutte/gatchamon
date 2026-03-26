@@ -611,7 +611,7 @@ function calculateDungeonRewards(state: BattleState): BattleRewards {
   const trainerResult = grantTrainerXp(trainerXpBase);
 
   return {
-    pokeballs: 0, xpPerMon, levelUps, essences, stardust: stardustReward,
+    regularPokeballs: 0, premiumPokeballs: 0, xpPerMon, levelUps, essences, stardust: stardustReward,
     trainerXpGained: trainerXpBase,
     trainerLeveledUp: trainerResult.leveledUp,
     trainerNewLevel: trainerResult.newLevel,
@@ -680,7 +680,7 @@ function calculateItemDungeonRewards(state: BattleState): BattleRewards {
   const trainerResult = grantTrainerXp(trainerXpBase);
 
   return {
-    pokeballs: 0, xpPerMon, levelUps, stardust: stardustReward, itemDrops,
+    regularPokeballs: 0, premiumPokeballs: 0, xpPerMon, levelUps, stardust: stardustReward, itemDrops,
     trainerXpGained: trainerXpBase,
     trainerLeveledUp: trainerResult.leveledUp,
     trainerNewLevel: trainerResult.newLevel,
@@ -749,9 +749,16 @@ function calculateRewards(state: BattleState): BattleRewards {
     updateInstance(mon.instanceId, { level: currentLevel, exp: currentExp });
   }
 
-  // First-clear: only award pokeballs on first completion
+  // First-clear: award pokeballs on first completion
   const firstClear = isFirstClear(regionId, floorNum, difficulty);
-  const actualPokeballs = firstClear ? pokeballs : 0;
+  const firstClearPokeballs = firstClear ? pokeballs : 0;
+
+  // Random regular pokeball drop (30% chance on any battle)
+  const randomRegularDrop = Math.random() < 0.3 ? Math.floor(1 + regionId / 3) : 0;
+  const totalRegularPokeballs = firstClearPokeballs + randomRegularDrop;
+
+  // Premium pokeballs: 1 guaranteed on first boss clear only
+  const premiumPokeballs = (isBoss && firstClear) ? 1 : 0;
 
   // Stardust reward
   const stardustBase = 10 + regionId * 5 + floorNum * 2;
@@ -762,8 +769,11 @@ function calculateRewards(state: BattleState): BattleRewards {
   {
     const player = loadPlayer()!;
     const updates: Partial<typeof player> = { stardust: (player.stardust ?? 0) + stardustReward };
-    if (actualPokeballs > 0) {
-      updates.pokeballs = player.pokeballs + actualPokeballs;
+    if (totalRegularPokeballs > 0) {
+      updates.regularPokeballs = player.regularPokeballs + totalRegularPokeballs;
+    }
+    if (premiumPokeballs > 0) {
+      updates.premiumPokeballs = player.premiumPokeballs + premiumPokeballs;
     }
     savePlayer({ ...player, ...updates });
   }
@@ -796,7 +806,8 @@ function calculateRewards(state: BattleState): BattleRewards {
   const trainerResult = grantTrainerXp(trainerXpBase);
 
   return {
-    pokeballs: actualPokeballs,
+    regularPokeballs: totalRegularPokeballs,
+    premiumPokeballs,
     xpPerMon,
     levelUps,
     isFirstClear: firstClear,

@@ -9,7 +9,8 @@ import {
 import { loadPlayer, savePlayer } from './storage';
 
 const DEFAULT_STORY_PROGRESS: StoryProgress = { normal: { 1: 1 }, hard: {}, hell: {} };
-const STARTING_POKEBALLS = 100;
+const STARTING_REGULAR_POKEBALLS = 50;
+const STARTING_PREMIUM_POKEBALLS = 5;
 const STARTING_ENERGY = 100;
 const STARTING_STARDUST = 0;
 
@@ -17,7 +18,8 @@ export function createPlayer(name: string): Player {
   const player: Player = {
     id: crypto.randomUUID(),
     name,
-    pokeballs: STARTING_POKEBALLS,
+    regularPokeballs: STARTING_REGULAR_POKEBALLS,
+    premiumPokeballs: STARTING_PREMIUM_POKEBALLS,
     energy: STARTING_ENERGY,
     stardust: STARTING_STARDUST,
     storyProgress: structuredClone(DEFAULT_STORY_PROGRESS),

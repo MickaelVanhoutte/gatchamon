@@ -21,7 +21,8 @@ export interface HeldItemReward {
 }
 
 export interface MissionReward {
-  pokeballs?: number;
+  regularPokeballs?: number;
+  premiumPokeballs?: number;
   energy?: number;
   essences?: Record<string, number>;
   trainerXp?: number;

@@ -116,7 +116,8 @@ export function MissionsPage() {
                     </div>
                   </div>
                   <div className="mission-reward-info">
-                    {def.reward.pokeballs && <span className="reward-pokeballs">{def.reward.pokeballs} <span className="pokeball-icon" /></span>}
+                    {def.reward.regularPokeballs && <span className="reward-pokeballs">{def.reward.regularPokeballs} <GameIcon id="pokeball" size={14} /></span>}
+                    {def.reward.premiumPokeballs && <span className="reward-pokeballs">{def.reward.premiumPokeballs} <GameIcon id="premiumPokeball" size={14} /></span>}
                     {def.reward.energy && <span className="reward-energy">{def.reward.energy} <GameIcon id="energy" size={14} /></span>}
                   </div>
                   <button
@@ -138,7 +139,7 @@ export function MissionsPage() {
                 <span className="bonus-progress">{completedCount}/{dailyState.missions.length}</span>
               </div>
               <div className="bonus-reward">
-                <span>25 <span className="pokeball-icon" /> + 10 <GameIcon id="energy" size={14} /></span>
+                <span>15 <GameIcon id="pokeball" size={14} /> + 5 <GameIcon id="premiumPokeball" size={14} /> + 10 <GameIcon id="energy" size={14} /></span>
               </div>
               <button
                 className="mission-claim-btn bonus-claim"
@@ -174,7 +175,8 @@ export function MissionsPage() {
       {claimedReward && (
         <div className="claim-toast">
           <span>Reward claimed!</span>
-          {claimedReward.pokeballs && <span> +{claimedReward.pokeballs} <span className="pokeball-icon" /></span>}
+          {claimedReward.regularPokeballs && <span> +{claimedReward.regularPokeballs} <GameIcon id="pokeball" size={14} /></span>}
+          {claimedReward.premiumPokeballs && <span> +{claimedReward.premiumPokeballs} <GameIcon id="premiumPokeball" size={14} /></span>}
           {claimedReward.energy && <span> +{claimedReward.energy} <GameIcon id="energy" size={14} /></span>}
         </div>
       )}
@@ -226,7 +228,10 @@ function TrophyCard({
                   style={{ width: `${Math.min(100, (progress.current / tier.threshold) * 100)}%` }}
                 />
               </div>
-              <span className="tier-reward">{tier.reward.pokeballs} <span className="pokeball-icon" /></span>
+              <span className="tier-reward">
+                {tier.reward.regularPokeballs && <>{tier.reward.regularPokeballs} <GameIcon id="pokeball" size={14} /></>}
+                {tier.reward.premiumPokeballs && <>{tier.reward.premiumPokeballs} <GameIcon id="premiumPokeball" size={14} /></>}
+              </span>
               <button
                 className="tier-claim-btn"
                 disabled={!reached || claimed}

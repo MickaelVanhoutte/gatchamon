@@ -145,6 +145,37 @@
   }
 }
 
+/* Premium pokeball variant */
+.portal-pokeball.premium {
+  box-shadow:
+    0 0 40px rgba(147, 51, 234, 0.5),
+    0 0 80px rgba(147, 51, 234, 0.25);
+  animation: portal-pokeball-glow-premium 1.5s ease-in-out infinite;
+}
+
+.portal-pokeball.premium .portal-pokeball-top {
+  background: linear-gradient(145deg, #a855f7, #9333ea 40%, #7e22ce);
+}
+
+.portal-pokeball.premium .portal-pokeball-button {
+  background: radial-gradient(circle at 35% 35%, #fde68a, #f59e0b, #d97706);
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+}
+
+@keyframes portal-pokeball-glow-premium {
+  0%, 100% {
+    box-shadow:
+      0 0 40px rgba(147, 51, 234, 0.5),
+      0 0 80px rgba(147, 51, 234, 0.25);
+  }
+  50% {
+    box-shadow:
+      0 0 60px rgba(147, 51, 234, 0.7),
+      0 0 120px rgba(147, 51, 234, 0.35),
+      0 0 160px rgba(255, 255, 255, 0.1);
+  }
+}
+
 /* Particles */
 .portal-particles {
   position: absolute;

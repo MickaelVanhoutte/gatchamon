@@ -58,7 +58,8 @@ export interface BattleAction {
 }
 
 export interface BattleRewards {
-  pokeballs: number;
+  regularPokeballs: number;
+  premiumPokeballs: number;
   xpPerMon: number;
   levelUps: Array<{ instanceId: string; newLevel: number }>;
   essences?: Record<string, number>;

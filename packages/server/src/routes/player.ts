@@ -18,7 +18,7 @@ playerRouter.post('/', (req, res) => {
   const storyProgress = JSON.stringify({ normal: { '1': 1 }, hard: {}, hell: {} });
 
   db.prepare(
-    'INSERT INTO players (id, name, pokeballs, energy, story_progress) VALUES (?, ?, 50, 100, ?)'
+    'INSERT INTO players (id, name, pokeballs, regular_pokeballs, premium_pokeballs, energy, story_progress) VALUES (?, ?, 50, 50, 5, 100, ?)'
   ).run(id, name.trim(), storyProgress);
 
   const player = db.prepare('SELECT * FROM players WHERE id = ?').get(id) as any;
@@ -26,7 +26,8 @@ playerRouter.post('/', (req, res) => {
   const result: Player = {
     id: player.id,
     name: player.name,
-    pokeballs: player.pokeballs,
+    regularPokeballs: player.regular_pokeballs,
+    premiumPokeballs: player.premium_pokeballs,
     energy: player.energy,
     storyProgress: JSON.parse(player.story_progress),
     materials: {},
@@ -53,7 +54,8 @@ playerRouter.get('/:id', (req, res) => {
   const result: Player = {
     id: player.id,
     name: player.name,
-    pokeballs: player.pokeballs,
+    regularPokeballs: player.regular_pokeballs,
+    premiumPokeballs: player.premium_pokeballs,
     energy: player.energy,
     storyProgress: JSON.parse(player.story_progress),
     materials: {},

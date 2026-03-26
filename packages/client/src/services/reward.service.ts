@@ -309,7 +309,8 @@ export function trackStat(stat: keyof PlayerLifetimeStats, increment: number): v
 // ---------------------------------------------------------------------------
 
 export interface FloorRewardPreview {
-  pokeballs: number;
+  regularPokeballs: number;
+  premiumPokeballs: number;
   isFirstClear: boolean;
   possibleMonsters: Array<{ templateId: number; stars: number; dropRate: number }>;
 }
@@ -336,7 +337,8 @@ export function getFloorRewardPreview(
   }));
 
   return {
-    pokeballs: first ? pokeballs : 0,
+    regularPokeballs: first ? pokeballs : 0,
+    premiumPokeballs: (isBoss && first) ? 1 : 0,
     isFirstClear: first,
     possibleMonsters,
   };
@@ -351,7 +353,8 @@ function applyReward(reward: MissionReward): void {
   if (!player) return;
 
   const updates: Partial<typeof player> = {};
-  if (reward.pokeballs) updates.pokeballs = player.pokeballs + reward.pokeballs;
+  if (reward.regularPokeballs) updates.regularPokeballs = player.regularPokeballs + reward.regularPokeballs;
+  if (reward.premiumPokeballs) updates.premiumPokeballs = player.premiumPokeballs + reward.premiumPokeballs;
   if (reward.energy) updates.energy = player.energy + reward.energy;
 
   if (reward.essences) {
