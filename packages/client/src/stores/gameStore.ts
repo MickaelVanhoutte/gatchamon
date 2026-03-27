@@ -110,13 +110,11 @@ export const useGameStore = create<GameState>((set, get) => ({
 
     let results: gachaService.SummonResult[];
     if (tutorialStep === 4 && type === 'regular' && count === 1) {
-      // Tutorial step 4: always summon Vulpix
-      results = [gachaService.summonSingleRegular(37)];
+      // Tutorial step 4: always summon Sizzlipede (fire/bug 2★)
+      results = [gachaService.summonSingleRegular(850)];
     } else if (tutorialStep === 5 && type === 'premium' && count === 1) {
-      // Tutorial step 5: random starter (Bulbasaur, Charmander, Squirtle)
-      const starters = [1, 4, 7];
-      const pick = starters[Math.floor(Math.random() * starters.length)];
-      results = [gachaService.summonSinglePremium(pick)];
+      // Tutorial step 5: always summon Rufflet (normal/flying 3★)
+      results = [gachaService.summonSinglePremium(627)];
     } else if (type === 'legendary') {
       results = [gachaService.summonSingleLegendary()];
     } else if (type === 'premium') {
