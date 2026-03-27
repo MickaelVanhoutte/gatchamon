@@ -19,7 +19,7 @@ function rollRegularStarRating(guaranteeMinTwo = false): 1 | 2 | 3 {
   return roll < 62 ? 1 : 2;
 }
 
-function rollPremiumStarRating(): 3 | 4 | 5 {
+export function rollPremiumStarRating(): 3 | 4 | 5 {
   const roll = Math.random() * 100;
   if (roll < 75) return 3;
   if (roll < 95) return 4;
@@ -30,7 +30,7 @@ function rollShiny(): boolean {
   return Math.random() < SHINY_RATE;
 }
 
-function pickFromPool(stars: 1 | 2 | 3 | 4 | 5): PokemonTemplate {
+export function pickFromPool(stars: 1 | 2 | 3 | 4 | 5): PokemonTemplate {
   const pool = POKEDEX.filter(p => p.naturalStars === stars && p.summonable !== false);
   return pool[Math.floor(Math.random() * pool.length)];
 }

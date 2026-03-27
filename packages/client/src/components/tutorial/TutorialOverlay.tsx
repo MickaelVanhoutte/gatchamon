@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTutorial } from '../../hooks/useTutorial';
+import { useGameStore } from '../../stores/gameStore';
+import { sendRetrySummonGift } from '../../services/inbox.service';
 import './TutorialOverlay.css';
 
 /** Which page each step expects */
@@ -86,10 +88,12 @@ export function TutorialOverlay() {
     }
   }, [step, navigate, advanceStep]);
 
-  // Step 8: tutorial done
+  // Step 8: tutorial done — send welcome gift
   useEffect(() => {
     if (step === 8) {
       completeTutorial();
+      sendRetrySummonGift();
+      useGameStore.getState().refreshInbox();
     }
   }, [step, completeTutorial]);
 

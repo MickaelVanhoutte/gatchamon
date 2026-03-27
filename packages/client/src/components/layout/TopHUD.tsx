@@ -1,12 +1,13 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useGameStore } from '../../stores/gameStore';
 import { getMaxEnergy, trainerXpToNextLevel, TOTAL_REGIONS } from '@gatchamon/shared';
 import { GameIcon } from '../icons';
 import './TopHUD.css';
 
 export function TopHUD() {
-  const { player } = useGameStore();
+  const { player, inboxUnreadCount } = useGameStore();
   const location = useLocation();
+  const navigate = useNavigate();
 
   if (!player) return null;
   if (location.pathname.startsWith('/battle/')) return null;
@@ -29,6 +30,12 @@ export function TopHUD() {
         <span className="hud-floor">Region {Object.keys(player.storyProgress.normal).length}/{TOTAL_REGIONS}</span>
       </div>
       <div className="hud-right">
+        <button className="hud-inbox-btn" onClick={() => navigate('/inbox')}>
+          <GameIcon id="gift" size={14} />
+          {inboxUnreadCount > 0 && (
+            <span className="hud-inbox-badge">{inboxUnreadCount}</span>
+          )}
+        </button>
         <div className="hud-resource">
           <GameIcon id="energy" size={14} className="hud-energy-icon" />
           <span>{player.energy}/{maxEnergy}</span>

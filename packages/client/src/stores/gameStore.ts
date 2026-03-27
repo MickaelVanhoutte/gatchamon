@@ -11,6 +11,7 @@ import * as typeChangeService from '../services/type-change.service';
 import * as runeService from '../services/rune.service';
 import { regenerateEnergy } from '../services/energy.service';
 import { getUnclaimedMissionCount, getUnclaimedTrophyCount } from '../services/reward.service';
+import { getUnreadInboxCount } from '../services/inbox.service';
 
 export interface OwnedPokemon {
   instance: PokemonInstance;
@@ -23,10 +24,12 @@ interface GameState {
   heldItems: HeldItemInstance[];
   isLoading: boolean;
   unclaimedRewardCount: number;
+  inboxUnreadCount: number;
 
   createPlayer: (name: string) => void;
   loadPlayer: () => void;
   refreshPlayer: () => void;
+  refreshInbox: () => void;
   summon: (count: 1 | 10, type?: PokeballType) => OwnedPokemon[];
   loadCollection: () => void;
   mergePokemon: (baseId: string, fodderId: string) => void;
@@ -49,6 +52,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   heldItems: [],
   isLoading: false,
   unclaimedRewardCount: 0,
+  inboxUnreadCount: 0,
 
   createPlayer: (name: string) => {
     const player = playerService.createPlayer(name);
@@ -168,9 +172,15 @@ export const useGameStore = create<GameState>((set, get) => ({
     get().refreshRewards();
   },
 
+  refreshInbox: () => {
+    const count = getUnreadInboxCount();
+    set({ inboxUnreadCount: count });
+  },
+
   refreshRewards: () => {
     const count = getUnclaimedMissionCount() + getUnclaimedTrophyCount();
     set({ unclaimedRewardCount: count });
+    get().refreshInbox();
   },
 
   loadHeldItems: () => {

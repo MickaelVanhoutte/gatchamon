@@ -1,10 +1,12 @@
-import type { Player, PokemonInstance, HeldItemInstance } from '@gatchamon/shared';
+import type { Player, PokemonInstance, HeldItemInstance, InboxItem } from '@gatchamon/shared';
 import { defaultTrainerSkills, shouldResetTower, getCurrentTowerResetDate } from '@gatchamon/shared';
 
 const PLAYER_KEY = 'gatchamon_player';
 const COLLECTION_KEY = 'gatchamon_collection';
 const HELD_ITEMS_KEY = 'gatchamon_held_items';
 const TUTORIAL_KEY = 'gatchamon_tutorial';
+const INBOX_KEY = 'gatchamon_inbox';
+const RETRY_SUMMON_KEY = 'gatchamon_retry_summon';
 
 export function loadPlayer(): Player | null {
   const raw = localStorage.getItem(PLAYER_KEY);
@@ -172,10 +174,54 @@ export function saveTutorialStep(step: number): void {
   localStorage.setItem(TUTORIAL_KEY, JSON.stringify(step));
 }
 
+// ── Inbox ──────────────────────────────────────────────────────────────
+
+export function loadInbox(): InboxItem[] {
+  const raw = localStorage.getItem(INBOX_KEY);
+  if (!raw) return [];
+  return JSON.parse(raw) as InboxItem[];
+}
+
+export function saveInbox(items: InboxItem[]): void {
+  localStorage.setItem(INBOX_KEY, JSON.stringify(items));
+}
+
+export function addInboxItem(item: InboxItem): void {
+  const items = loadInbox();
+  items.push(item);
+  saveInbox(items);
+}
+
+export function updateInboxItem(id: string, updates: Partial<InboxItem>): void {
+  const items = loadInbox();
+  const idx = items.findIndex(i => i.id === id);
+  if (idx === -1) return;
+  items[idx] = { ...items[idx], ...updates };
+  saveInbox(items);
+}
+
+// ── Retry Summon State ─────────────────────────────────────────────────
+
+export function loadRetrySummonState(): string | null {
+  return localStorage.getItem(RETRY_SUMMON_KEY);
+}
+
+export function saveRetrySummonState(state: string): void {
+  localStorage.setItem(RETRY_SUMMON_KEY, state);
+}
+
+export function clearRetrySummonState(): void {
+  localStorage.removeItem(RETRY_SUMMON_KEY);
+}
+
+// ── Reset ──────────────────────────────────────────────────────────────
+
 export function clearAll(): void {
   localStorage.removeItem(PLAYER_KEY);
   localStorage.removeItem(COLLECTION_KEY);
   localStorage.removeItem(REWARDS_KEY);
   localStorage.removeItem(HELD_ITEMS_KEY);
   localStorage.removeItem(TUTORIAL_KEY);
+  localStorage.removeItem(INBOX_KEY);
+  localStorage.removeItem(RETRY_SUMMON_KEY);
 }

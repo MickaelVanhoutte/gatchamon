@@ -13,6 +13,8 @@ import { MissionsPage } from './pages/MissionsPage';
 import { TrainerPage } from './pages/TrainerPage';
 import { PokedexPage } from './pages/PokedexPage';
 import { AltarPage } from './pages/AltarPage';
+import { InboxPage } from './pages/InboxPage';
+import { RetrySummonPage } from './pages/RetrySummonPage';
 import { BottomNav } from './components/layout/BottomNav';
 import { TopHUD } from './components/layout/TopHUD';
 import { TutorialOverlay } from './components/tutorial/TutorialOverlay';
@@ -94,6 +96,8 @@ export function App() {
           <Route path="/dungeons" element={<DungeonPage />} />
           <Route path="/trainer" element={<TrainerPage />} />
           <Route path="/altar" element={<AltarPage />} />
+          <Route path="/inbox" element={<InboxPage />} />
+          <Route path="/retry-summon" element={<RetrySummonPage />} />
           <Route path="/battle/team-select" element={<TeamSelectPage />} />
           <Route path="/battle/:battleId" element={<BattlePage />} />
         </Routes>

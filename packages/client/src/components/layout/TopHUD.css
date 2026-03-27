@@ -81,3 +81,40 @@
 .hud-stardust-icon {
   color: #c4b5fd;
 }
+
+.hud-inbox-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 50%;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.hud-inbox-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.hud-inbox-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: #ef4444;
+  color: white;
+  font-size: 0.55rem;
+  font-weight: 700;
+  min-width: 14px;
+  height: 14px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  border: 1.5px solid #115e59;
+}

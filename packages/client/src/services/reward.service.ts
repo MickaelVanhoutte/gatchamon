@@ -350,7 +350,7 @@ export function getFloorRewardPreview(
 // Apply Reward Helper
 // ---------------------------------------------------------------------------
 
-function applyReward(reward: MissionReward): void {
+export function applyReward(reward: MissionReward): void {
   const player = loadPlayer();
   if (!player) return;
 
