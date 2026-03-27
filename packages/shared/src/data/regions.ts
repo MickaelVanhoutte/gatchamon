@@ -24,7 +24,7 @@ export const REGIONS: RegionDef[] = [
       'Mushroom Glade', 'Ancient Oak', 'Spider Den', 'Canopy Walk',
       'Deep Brush', 'Heart of the Forest',
     ],
-    mapPosition: { x: 4, y: 55 },
+    mapPosition: { x: 100, y: 380 },
   },
   {
     id: 2,
@@ -39,7 +39,7 @@ export const REGIONS: RegionDef[] = [
       'Dusty Road', 'Hawk Ridge', 'Grazing Meadow', 'Stone Fence',
       'Cyclone Pass', 'The Great Expanse',
     ],
-    mapPosition: { x: 14, y: 28 },
+    mapPosition: { x: 280, y: 220 },
   },
   {
     id: 3,
@@ -54,7 +54,7 @@ export const REGIONS: RegionDef[] = [
       'Miasma Pit', 'Sludge Banks', 'Gas Vents', 'Fungus Cavern',
       'Venom Falls', 'Swamp Heart',
     ],
-    mapPosition: { x: 23, y: 65 },
+    mapPosition: { x: 460, y: 420 },
   },
   {
     id: 4,
@@ -69,7 +69,7 @@ export const REGIONS: RegionDef[] = [
       'Underground River', 'Gem Deposit', 'Collapsed Tunnel', 'Lava Tube',
       'Fossil Chamber', 'Ancient Sanctum',
     ],
-    mapPosition: { x: 33, y: 30 },
+    mapPosition: { x: 650, y: 250 },
   },
   {
     id: 5,
@@ -84,7 +84,7 @@ export const REGIONS: RegionDef[] = [
       'Sunken Ship', 'Whirlpool Bay', 'Kelp Forest', 'Deep Trench',
       'Storm Strait', 'Abyssal Throne',
     ],
-    mapPosition: { x: 43, y: 62 },
+    mapPosition: { x: 840, y: 440 },
   },
   {
     id: 6,
@@ -99,7 +99,7 @@ export const REGIONS: RegionDef[] = [
       'Static Field', 'Storm Lookout', 'Bolt Canyon', 'Powerline Ridge',
       'Voltaic Peak', 'Arena of Storms',
     ],
-    mapPosition: { x: 54, y: 30 },
+    mapPosition: { x: 1020, y: 200 },
   },
   {
     id: 7,
@@ -114,7 +114,7 @@ export const REGIONS: RegionDef[] = [
       'Magma Pools', 'Flame Geysers', 'Inferno Pass', 'Obsidian Cliff',
       'Eruption Site', 'Volcanic Core',
     ],
-    mapPosition: { x: 64, y: 60 },
+    mapPosition: { x: 1180, y: 380 },
   },
   {
     id: 8,
@@ -129,7 +129,7 @@ export const REGIONS: RegionDef[] = [
       'Shadow Corridor', 'Phantom Gallery', 'Mind Maze', 'Wailing Chamber',
       'Void Altar', 'Throne of Echoes',
     ],
-    mapPosition: { x: 75, y: 28 },
+    mapPosition: { x: 1340, y: 180 },
   },
   {
     id: 9,
@@ -144,7 +144,7 @@ export const REGIONS: RegionDef[] = [
       'Frozen Lake', 'Glacier Caves', 'Aurora Ridge', 'Permafrost Depths',
       'Crystal Spire', 'Heart of Winter',
     ],
-    mapPosition: { x: 84, y: 62 },
+    mapPosition: { x: 1500, y: 350 },
   },
   {
     id: 10,
@@ -159,7 +159,7 @@ export const REGIONS: RegionDef[] = [
       'Elimination Round', 'Semifinal Arena', 'Rival Battle', 'Elite Floor',
       'Champion Gate', 'Grand Championship',
     ],
-    mapPosition: { x: 93, y: 58 },
+    mapPosition: { x: 1680, y: 260 },
   },
 ];
 
