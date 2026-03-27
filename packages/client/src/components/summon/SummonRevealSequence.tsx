@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import type { OwnedPokemon } from '../../stores/gameStore';
 import { SummonLightning } from './SummonLightning';
 import { SummonReveal } from './SummonReveal';
@@ -15,9 +15,35 @@ function isSpecialPull(pokemon: OwnedPokemon): boolean {
   return pokemon.instance.stars >= 3 || (pokemon.instance.isShiny ?? false);
 }
 
+/** 4★+ or shiny — these always show animations even when skipping */
+function isHighRarity(pokemon: OwnedPokemon): boolean {
+  return pokemon.instance.stars >= 4 || (pokemon.instance.isShiny ?? false);
+}
+
 export function SummonRevealSequence({ results, onAllRevealed }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [subPhase, setSubPhase] = useState<SubPhase>('lightning');
+  const [skipping, setSkipping] = useState(false);
+
+  // When skipping, auto-advance past non-high-rarity pulls
+  useEffect(() => {
+    if (!skipping) return;
+    const current = results[currentIndex];
+    if (!current || isHighRarity(current)) return;
+
+    // Find next high-rarity pull, or jump to the end
+    let nextIndex = currentIndex + 1;
+    while (nextIndex < results.length && !isHighRarity(results[nextIndex])) {
+      nextIndex++;
+    }
+
+    if (nextIndex < results.length) {
+      setCurrentIndex(nextIndex);
+      setSubPhase('lightning');
+    } else {
+      onAllRevealed();
+    }
+  }, [skipping, currentIndex, results, onAllRevealed]);
 
   const handleLightningComplete = useCallback(() => {
     setSubPhase('reveal');
@@ -49,13 +75,15 @@ export function SummonRevealSequence({ results, onAllRevealed }: Props) {
   }, [currentIndex, results.length, onAllRevealed]);
 
   const handleSkip = useCallback(() => {
-    onAllRevealed();
-  }, [onAllRevealed]);
+    setSkipping(true);
+  }, []);
 
   const current = results[currentIndex];
   if (!current) return null;
 
   const special = isSpecialPull(current);
+  // During skip, only render animations for high-rarity pulls (effect auto-advances the rest)
+  const showAnimation = !skipping || isHighRarity(current);
 
   return (
     <div className="reveal-sequence">
@@ -66,15 +94,15 @@ export function SummonRevealSequence({ results, onAllRevealed }: Props) {
         </div>
       )}
 
-      {/* Skip button for multi-summon */}
-      {results.length > 1 && (
+      {/* Skip button for multi-summon (hidden once skipping is active) */}
+      {results.length > 1 && !skipping && (
         <button className="reveal-skip-btn" onClick={handleSkip}>
           Skip ▸▸
         </button>
       )}
 
       {/* Current reveal phase */}
-      {subPhase === 'lightning' && (
+      {showAnimation && subPhase === 'lightning' && (
         <SummonLightning
           key={`lightning-${currentIndex}`}
           stars={current.instance.stars}
@@ -83,7 +111,7 @@ export function SummonRevealSequence({ results, onAllRevealed }: Props) {
         />
       )}
 
-      {(subPhase === 'reveal' || subPhase === 'waiting') && (
+      {showAnimation && (subPhase === 'reveal' || subPhase === 'waiting') && (
         <SummonReveal
           key={`reveal-${currentIndex}`}
           pokemon={current}
@@ -93,7 +121,7 @@ export function SummonRevealSequence({ results, onAllRevealed }: Props) {
       )}
 
       {/* Tap to continue overlay for special pulls */}
-      {subPhase === 'waiting' && (
+      {showAnimation && subPhase === 'waiting' && (
         <div className="tap-to-continue-overlay" onClick={handleTapToContinue}>
           <div className="tap-to-continue-text">Tap to continue</div>
         </div>
