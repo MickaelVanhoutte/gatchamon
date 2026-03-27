@@ -138,6 +138,7 @@ export const FODDER_XP_STAR_MULTIPLIERS: Record<number, number> = {
 
 export const MAX_SKILL_LEVEL = 5;
 export const SKILL_LEVEL_MULTIPLIER_BONUS = 0.15;
+export const DITTO_TEMPLATE_ID = 132;
 
 export function calculateFodderXp(fodderLevel: number, fodderStars: number): number {
   return Math.floor(fodderLevel * 50 * (FODDER_XP_STAR_MULTIPLIERS[fodderStars] ?? 1));
@@ -162,4 +163,28 @@ export function canStarEvolve(
   if (fodderStars.length < needed) return false;
   const qualifying = fodderStars.filter(s => s === baseStars);
   return qualifying.length >= needed;
+}
+
+/**
+ * Get the current tower reset boundary date (1st or 15th of the month).
+ * Resets happen at 00:00 UTC on the 1st and 15th.
+ */
+export function getCurrentTowerResetDate(now: Date = new Date()): string {
+  const year = now.getUTCFullYear();
+  const month = now.getUTCMonth();
+  const day = now.getUTCDate();
+  // If we're on or after the 15th, the current boundary is the 15th
+  // Otherwise, the current boundary is the 1st
+  const boundaryDay = day >= 15 ? 15 : 1;
+  return new Date(Date.UTC(year, month, boundaryDay)).toISOString();
+}
+
+/**
+ * Check if the tower should be reset based on the player's last reset date.
+ * Returns true if the player's towerResetDate is before the current reset boundary.
+ */
+export function shouldResetTower(towerResetDate: string | undefined, now: Date = new Date()): boolean {
+  const currentBoundary = getCurrentTowerResetDate(now);
+  if (!towerResetDate) return true; // Never set = first time, reset
+  return new Date(towerResetDate) < new Date(currentBoundary);
 }

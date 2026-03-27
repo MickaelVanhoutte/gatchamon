@@ -1,5 +1,5 @@
 export type Difficulty = 'normal' | 'hard' | 'hell';
-export type PokeballType = 'regular' | 'premium';
+export type PokeballType = 'regular' | 'premium' | 'legendary';
 
 export interface TrainerSkills {
   energyRegenSpeed: number;    // 0-10, -10% regen interval per level
@@ -19,10 +19,13 @@ export interface Player {
   name: string;
   regularPokeballs: number;
   premiumPokeballs: number;
+  legendaryPokeballs: number;
   energy: number;
   stardust: number;
   storyProgress: StoryProgress;
   materials: Record<string, number>;
+  towerProgress: number;
+  towerResetDate?: string;  // ISO date of last reset boundary (1st or 15th)
   createdAt: string;
   lastEnergyUpdate?: string;
   trainerLevel: number;

@@ -54,9 +54,12 @@ export interface SummonResult {
   template: PokemonTemplate;
 }
 
+const LEGENDARY_SINGLE_COST = 1;
+
 export const SUMMON_COSTS = {
   regular: { single: REGULAR_SINGLE_COST, multi: REGULAR_MULTI_COST },
   premium: { single: PREMIUM_SINGLE_COST, multi: PREMIUM_MULTI_COST },
+  legendary: { single: LEGENDARY_SINGLE_COST },
 };
 
 function trackSummons(count: number): void {
@@ -151,6 +154,28 @@ export function summonMultiPremium(): SummonResult[] {
   trackSummons(MULTI_COUNT);
 
   return results;
+}
+
+// ── Legendary Pokeball (guaranteed 5★) ──
+
+export function summonSingleLegendary(): SummonResult {
+  const player = loadPlayer();
+  if (!player) throw new Error('Player not found');
+  if ((player.legendaryPokeballs ?? 0) < LEGENDARY_SINGLE_COST) {
+    throw new Error('Not enough legendary pokeballs');
+  }
+
+  savePlayer({
+    ...player,
+    legendaryPokeballs: (player.legendaryPokeballs ?? 0) - LEGENDARY_SINGLE_COST,
+  });
+
+  const template = pickFromPool(5);
+  const pokemon = createInstance(template, player.id);
+  addToCollection([pokemon]);
+  trackSummons(1);
+
+  return { pokemon, template };
 }
 
 function updateUniqueCount(): void {

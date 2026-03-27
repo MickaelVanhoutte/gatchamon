@@ -27,6 +27,9 @@ export interface MissionReward {
   essences?: Record<string, number>;
   trainerXp?: number;
   heldItem?: HeldItemReward;
+  dittos?: number;
+  legendaryPokeballs?: number;
+  stardust?: number;
 }
 
 export interface MissionDefinition {

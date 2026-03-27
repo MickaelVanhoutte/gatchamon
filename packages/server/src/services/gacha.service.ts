@@ -59,9 +59,12 @@ export interface SummonResult {
   template: PokemonTemplate;
 }
 
+const LEGENDARY_SINGLE_COST = 1;
+
 export const SUMMON_COSTS = {
   regular: { single: REGULAR_SINGLE_COST, multi: REGULAR_MULTI_COST },
   premium: { single: PREMIUM_SINGLE_COST, multi: PREMIUM_MULTI_COST },
+  legendary: { single: LEGENDARY_SINGLE_COST },
 };
 
 // ── Regular Pokeball (1-2★) ──
@@ -116,6 +119,23 @@ export function summonSinglePremium(playerId: string): SummonResult {
 
   const stars = rollPremiumStarRating();
   const template = pickFromPool(stars);
+  const pokemon = createInstance(template, playerId);
+
+  return { pokemon, template };
+}
+
+// ── Legendary Pokeball (guaranteed 5★) ──
+
+export function summonSingleLegendary(playerId: string): SummonResult {
+  const db = getDb();
+  const player = db.prepare('SELECT legendary_pokeballs FROM players WHERE id = ?').get(playerId) as any;
+
+  if (!player) throw new Error('Player not found');
+  if ((player.legendary_pokeballs ?? 0) < LEGENDARY_SINGLE_COST) throw new Error('Not enough legendary pokeballs');
+
+  db.prepare('UPDATE players SET legendary_pokeballs = legendary_pokeballs - ? WHERE id = ?').run(LEGENDARY_SINGLE_COST, playerId);
+
+  const template = pickFromPool(5);
   const pokemon = createInstance(template, playerId);
 
   return { pokemon, template };

@@ -19,8 +19,16 @@ export function SummonPage() {
   const [selectedBall, setSelectedBall] = useState<PokeballType>('regular');
 
   const costs = SUMMON_COSTS[selectedBall];
-  const currency = selectedBall === 'premium' ? player?.premiumPokeballs ?? 0 : player?.regularPokeballs ?? 0;
-  const iconId = selectedBall === 'premium' ? 'premiumPokeball' : 'pokeball';
+  const currency = selectedBall === 'legendary'
+    ? player?.legendaryPokeballs ?? 0
+    : selectedBall === 'premium'
+    ? player?.premiumPokeballs ?? 0
+    : player?.regularPokeballs ?? 0;
+  const iconId = selectedBall === 'legendary'
+    ? 'legendaryPokeball'
+    : selectedBall === 'premium'
+    ? 'premiumPokeball'
+    : 'pokeball';
 
   const handleSummon = async (count: 1 | 10) => {
     setError('');
@@ -73,11 +81,20 @@ export function SummonPage() {
                 <GameIcon id="premiumPokeball" size={16} />
                 <span>Premium</span>
               </button>
+              <button
+                className={`pokeball-type-tab legendary ${selectedBall === 'legendary' ? 'active' : ''}`}
+                onClick={() => setSelectedBall('legendary')}
+              >
+                <GameIcon id="legendaryPokeball" size={16} />
+                <span>Legendary</span>
+              </button>
             </div>
             <div className="pokeball-type-info">
               {selectedBall === 'regular'
                 ? 'Summons 1-3★ monsters'
-                : 'Summons 3-5★ monsters'}
+                : selectedBall === 'premium'
+                ? 'Summons 3-5★ monsters'
+                : 'Guarantees a 5★ monster'}
             </div>
           </div>
 
@@ -91,7 +108,7 @@ export function SummonPage() {
               <span className="btn-cost">{costs.single} <GameIcon id={iconId} size={14} /></span>
             </button>
 
-            <div className={`idle-pokeball ${selectedBall === 'premium' ? 'premium' : ''}`}>
+            <div className={`idle-pokeball ${selectedBall === 'premium' ? 'premium' : selectedBall === 'legendary' ? 'legendary' : ''}`}>
               <div className="idle-pokeball-top" />
               <div className="idle-pokeball-bottom" />
               <div className="idle-pokeball-band">
@@ -101,14 +118,16 @@ export function SummonPage() {
               </div>
             </div>
 
-            <button
-              className="summon-btn summon-multi"
-              onClick={() => handleSummon(10)}
-              disabled={currency < costs.multi}
-            >
-              <span className="btn-label">Summon x10</span>
-              <span className="btn-cost">{costs.multi} <GameIcon id={iconId} size={14} /></span>
-            </button>
+            {selectedBall !== 'legendary' && 'multi' in costs && (
+              <button
+                className="summon-btn summon-multi"
+                onClick={() => handleSummon(10)}
+                disabled={currency < (costs as any).multi}
+              >
+                <span className="btn-label">Summon x10</span>
+                <span className="btn-cost">{(costs as any).multi} <GameIcon id={iconId} size={14} /></span>
+              </button>
+            )}
           </div>
 
           {error && <p className="summon-error">{error}</p>}

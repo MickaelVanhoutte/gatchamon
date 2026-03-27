@@ -37,6 +37,8 @@ playerRouter.post('/', (req, res) => {
     trainerExp: 0,
     trainerSkillPoints: 0,
     trainerSkills: defaultTrainerSkills(),
+    legendaryPokeballs: player.legendary_pokeballs ?? 0,
+    towerProgress: player.tower_progress ?? 0,
   };
 
   res.status(201).json(result);
@@ -65,6 +67,8 @@ playerRouter.get('/:id', (req, res) => {
     trainerExp: 0,
     trainerSkillPoints: 0,
     trainerSkills: defaultTrainerSkills(),
+    legendaryPokeballs: player.legendary_pokeballs ?? 0,
+    towerProgress: player.tower_progress ?? 0,
   };
 
   res.json(result);

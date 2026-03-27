@@ -6,6 +6,7 @@ import {
   MAX_SKILL_LEVEL,
   xpToNextLevel,
   MAX_LEVEL_BY_STARS,
+  DITTO_TEMPLATE_ID,
 } from '@gatchamon/shared';
 import { loadCollection, saveCollection } from './storage';
 import { trackStat, incrementMission, checkAndUpdateTrophies } from './reward.service';
@@ -56,7 +57,7 @@ export function previewAltarFeed(
   const newStars = willStarEvolve ? (base.stars + 1) as PokemonInstance['stars'] : base.stars;
 
   // Count same-species fodder for skill-ups
-  const sameSpeciesCount = fodder.filter(f => f.templateId === base.templateId).length;
+  const sameSpeciesCount = fodder.filter(f => f.templateId === base.templateId || f.templateId === DITTO_TEMPLATE_ID).length;
   const currentSkills = base.skillLevels ?? [1, 1, 1];
   const upgradableSlots = currentSkills.filter(l => l < MAX_SKILL_LEVEL).length;
   const skillUps = Math.min(sameSpeciesCount, upgradableSlots);
@@ -121,7 +122,7 @@ export function performAltarFeed(
   // 2. Apply skill-ups (same species fodder)
   const skillLevels: [number, number, number] = [...(base.skillLevels ?? [1, 1, 1])] as [number, number, number];
   for (const f of fodder) {
-    if (f.templateId !== base.templateId) continue;
+    if (f.templateId !== base.templateId && f.templateId !== DITTO_TEMPLATE_ID) continue;
     const upgradable = skillLevels
       .map((lvl, idx) => ({ lvl, idx }))
       .filter(s => s.lvl < MAX_SKILL_LEVEL);

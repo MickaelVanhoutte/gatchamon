@@ -16,6 +16,7 @@ import {
   firstClearKey,
   getTemplate,
   TOTAL_REGIONS,
+  DITTO_TEMPLATE_ID,
 } from '@gatchamon/shared';
 import {
   loadRewardState,
@@ -381,6 +382,53 @@ function applyReward(reward: MissionReward): void {
     if (p) {
       const item = generateItem(setId, actualSlot, stars, grade, p.id);
       addHeldItem(item);
+    }
+  }
+
+  // Ditto reward — create Ditto instances and add to collection
+  if (reward.dittos && reward.dittos > 0) {
+    const p = loadPlayer();
+    if (p) {
+      const dittoTemplate = getTemplate(DITTO_TEMPLATE_ID);
+      if (dittoTemplate) {
+        const instances: PokemonInstance[] = [];
+        for (let i = 0; i < reward.dittos; i++) {
+          instances.push({
+            instanceId: crypto.randomUUID(),
+            templateId: DITTO_TEMPLATE_ID,
+            ownerId: p.id,
+            level: 1,
+            stars: dittoTemplate.naturalStars,
+            exp: 0,
+            isShiny: false,
+            skillLevels: [1, 1, 1],
+          });
+        }
+        addToCollection(instances);
+        trackStat('totalMonstersCollected', reward.dittos);
+      }
+    }
+  }
+
+  // Legendary pokeball reward
+  if (reward.legendaryPokeballs && reward.legendaryPokeballs > 0) {
+    const p = loadPlayer();
+    if (p) {
+      savePlayer({
+        ...p,
+        legendaryPokeballs: (p.legendaryPokeballs ?? 0) + reward.legendaryPokeballs,
+      });
+    }
+  }
+
+  // Stardust reward
+  if (reward.stardust && reward.stardust > 0) {
+    const p = loadPlayer();
+    if (p) {
+      savePlayer({
+        ...p,
+        stardust: (p.stardust ?? 0) + reward.stardust,
+      });
     }
   }
 }

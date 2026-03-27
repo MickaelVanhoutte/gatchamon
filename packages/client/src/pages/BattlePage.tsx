@@ -329,6 +329,9 @@ export function BattlePage() {
                 )}
                 {rewards.regularPokeballs > 0 && <p>+ {rewards.regularPokeballs} <GameIcon id="pokeball" size={14} /></p>}
                 {rewards.premiumPokeballs > 0 && <p>+ {rewards.premiumPokeballs} <GameIcon id="premiumPokeball" size={14} /></p>}
+                {rewards.legendaryPokeballs != null && rewards.legendaryPokeballs > 0 && (
+                  <p className="legendary-reward">+ {rewards.legendaryPokeballs} <GameIcon id="legendaryPokeball" size={14} /> Legendary Pokeball!</p>
+                )}
                 <p>+ {rewards.xpPerMon} XP per monster</p>
                 {rewards.levelUps.length > 0 && (
                   <p className="level-ups">
@@ -391,7 +394,9 @@ export function BattlePage() {
               onClick={() => {
                 refreshPlayer();
                 loadCollection();
-                if (state?.mode === 'dungeon' || state?.mode === 'item-dungeon') {
+                if (state?.mode === 'tower') {
+                  navigate('/dungeons?tab=tower');
+                } else if (state?.mode === 'dungeon' || state?.mode === 'item-dungeon') {
                   const tab = state.mode === 'item-dungeon' ? 'items' : 'essence';
                   const dungeonId = state.dungeonId ?? '';
                   const floor = (state.floor?.floor ?? 1) - 1;

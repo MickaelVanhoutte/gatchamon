@@ -30,6 +30,8 @@ export function createPlayer(name: string): Player {
     trainerExp: 0,
     trainerSkillPoints: 0,
     trainerSkills: defaultTrainerSkills(),
+    legendaryPokeballs: 0,
+    towerProgress: 0,
   };
   savePlayer(player);
   return player;

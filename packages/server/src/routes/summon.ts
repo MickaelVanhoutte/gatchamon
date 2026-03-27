@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   summonSingleRegular, summonMultiRegular,
   summonSinglePremium, summonMultiPremium,
+  summonSingleLegendary,
   SUMMON_COSTS,
 } from '../services/gacha.service.js';
 
@@ -16,7 +17,10 @@ summonRouter.post('/', (req, res) => {
   }
 
   try {
-    if (type === 'premium') {
+    if (type === 'legendary') {
+      const result = summonSingleLegendary(playerId);
+      res.json({ results: [result] });
+    } else if (type === 'premium') {
       if (count === 10) {
         const results = summonMultiPremium(playerId);
         res.json({ results });

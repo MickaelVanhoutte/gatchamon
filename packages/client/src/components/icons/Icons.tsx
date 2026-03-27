@@ -82,6 +82,32 @@ export function IconPremiumPokeball({ size = 24, ...props }: IconProps) {
   );
 }
 
+export function IconLegendaryPokeball({ size = 24, ...props }: IconProps) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" {...props}>
+      <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="2" />
+      <path d="M2 12h8a2 2 0 104 0h8" fill="none" stroke="currentColor" strokeWidth="2" />
+      <path d="M2 12h20" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="12" cy="12" r="2.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M2.1 11.5A10 10 0 0112 2a10 10 0 019.9 9.5H14.9a3 3 0 00-5.8 0H2.1z" fill="#f59e0b" opacity="0.5" />
+      <circle cx="12" cy="12" r="2" fill="#fbbf24" opacity="0.8" />
+      <path d="M12 5l1 3h3l-2.5 2 1 3L12 11l-2.5 2 1-3L8 8h3l1-3z" fill="#fbbf24" opacity="0.4" />
+    </svg>
+  );
+}
+
+export function IconTower({ size = 24, ...props }: IconProps) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M8 22V6l4-4 4 4v16" />
+      <path d="M6 22h12" />
+      <path d="M10 10h4" />
+      <path d="M10 14h4" />
+      <path d="M10 18h4" />
+    </svg>
+  );
+}
+
 // ─── Utility Icons ───
 
 export const IconStar = makeIcon('M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z');

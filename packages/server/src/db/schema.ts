@@ -56,6 +56,9 @@ export function initDb(): void {
   // Add skill_levels column
   migrateAddSkillLevels(database);
 
+  // Add legendary pokeballs and tower progress
+  migrateLegendaryAndTower(database);
+
   console.log('Database initialized');
 }
 
@@ -81,6 +84,19 @@ function migratePokeballSplit(database: Database.Database): void {
 function migrateAddSkillLevels(database: Database.Database): void {
   try {
     database.exec("ALTER TABLE pokemon_instances ADD COLUMN skill_levels TEXT NOT NULL DEFAULT '[1,1,1]'");
+  } catch {
+    // Column already exists
+  }
+}
+
+function migrateLegendaryAndTower(database: Database.Database): void {
+  try {
+    database.exec('ALTER TABLE players ADD COLUMN legendary_pokeballs INTEGER NOT NULL DEFAULT 0');
+  } catch {
+    // Column already exists
+  }
+  try {
+    database.exec('ALTER TABLE players ADD COLUMN tower_progress INTEGER NOT NULL DEFAULT 0');
   } catch {
     // Column already exists
   }

@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
-import { REGIONS, DUNGEONS, ITEM_DUNGEONS, getTemplate } from '@gatchamon/shared';
+import { REGIONS, DUNGEONS, ITEM_DUNGEONS, getTemplate, getTowerFloor } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
 import { startBattle, startDungeonBattle, startItemDungeonBattle } from '../services/battle.service';
+import { startTowerBattle } from '../services/dungeon.service';
 import { buildFloorEnemies } from '../services/floor.service';
 import { loadLastTeam, saveLastTeam } from '../services/storage';
 import { useRotatedHorizontalScroll } from '../hooks/useRotatedHorizontalScroll';
@@ -100,6 +101,25 @@ export function TeamSelectPage() {
         };
       });
     }
+    if (mode === 'tower') {
+      const towerFloor = Number(searchParams.get('floor') ?? 1);
+      const towerDef = getTowerFloor(towerFloor);
+      if (towerDef) {
+        const previews: EnemyPreview[] = [];
+        for (let i = 0; i < towerDef.enemyCount; i++) {
+          const tid = towerDef.enemyPool[i % towerDef.enemyPool.length];
+          const tmpl = getTemplate(tid);
+          previews.push({
+            templateId: tid,
+            name: tmpl?.name ?? '???',
+            spriteUrl: tmpl?.spriteUrl ?? '',
+            level: towerDef.enemyLevel,
+            stars: towerDef.enemyStars,
+          });
+        }
+        return previews;
+      }
+    }
     // Story mode
     const floorDef = buildFloorEnemies(region, floor, difficulty);
     return floorDef.enemies.map(e => {
@@ -127,7 +147,11 @@ export function TeamSelectPage() {
     setIsStarting(true);
     saveLastTeam(selected);
     try {
-      if (mode === 'item-dungeon') {
+      if (mode === 'tower') {
+        const towerFloor = Number(searchParams.get('floor') ?? 1);
+        const result = startTowerBattle(selected, towerFloor);
+        navigate(`/battle/${result.state.battleId}`);
+      } else if (mode === 'item-dungeon') {
         const result = startItemDungeonBattle(selected, dungeonId, dungeonFloor);
         navigate(`/battle/${result.state.battleId}`);
       } else if (mode === 'dungeon') {
@@ -148,7 +172,10 @@ export function TeamSelectPage() {
   );
 
   let headerText: string;
-  if (mode === 'item-dungeon' && itemDungeonDef) {
+  if (mode === 'tower') {
+    const towerFloor = Number(searchParams.get('floor') ?? 1);
+    headerText = `Battle Tower - Floor ${towerFloor}`;
+  } else if (mode === 'item-dungeon' && itemDungeonDef) {
     headerText = `${itemDungeonDef.name} - B${dungeonFloor + 1}`;
   } else if (mode === 'dungeon' && dungeonDef) {
     headerText = `${dungeonDef.name} - B${dungeonFloor + 1}`;

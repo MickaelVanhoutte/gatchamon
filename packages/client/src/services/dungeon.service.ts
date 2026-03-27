@@ -1,9 +1,11 @@
-import { getTemplate as getTemplateShared, computeStats, getDungeon, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel } from '@gatchamon/shared';
+import { getTemplate as getTemplateShared, computeStats, getDungeon, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel, getTowerFloor, DITTO_TEMPLATE_ID, getCurrentTowerResetDate } from '@gatchamon/shared';
 import { getSkillsForPokemon } from '@gatchamon/shared';
 import type { BattleState, BattleMon, BattleAction, BattleResult, BattleRewards } from '@gatchamon/shared';
 import type { DungeonRewards, DungeonDef } from '@gatchamon/shared';
-import type { PokemonTemplate } from '@gatchamon/shared';
-import { loadPlayer, savePlayer, loadCollection, updateInstance } from './storage';
+import type { PokemonTemplate, PokemonInstance } from '@gatchamon/shared';
+import { loadPlayer, savePlayer, loadCollection, updateInstance, addToCollection } from './storage';
+import { trackStat, incrementMission, checkAndUpdateTrophies } from './reward.service';
+import { grantTrainerXp } from './player.service';
 
 const activeBattles = new Map<string, BattleState>();
 
@@ -181,4 +183,183 @@ export function getDungeonBattle(battleId: string): BattleState | null {
 
 export function removeDungeonBattle(battleId: string): void {
   activeBattles.delete(battleId);
+}
+
+// ---------------------------------------------------------------------------
+// Battle Tower
+// ---------------------------------------------------------------------------
+
+export function startTowerBattle(
+  teamInstanceIds: string[],
+  towerFloor: number,
+): BattleResult {
+  const player = loadPlayer();
+  if (!player) throw new Error('Player not found');
+
+  const currentProgress = player.towerProgress ?? 0;
+  if (towerFloor !== currentProgress + 1) {
+    throw new Error('Must clear floors in order');
+  }
+
+  const floorDef = getTowerFloor(towerFloor);
+  if (!floorDef) throw new Error('Invalid tower floor');
+
+  if (player.energy < floorDef.energyCost) {
+    throw new Error('Not enough energy');
+  }
+
+  savePlayer({ ...player, energy: player.energy - floorDef.energyCost });
+
+  const collection = loadCollection();
+  const playerTeam: BattleMon[] = [];
+  for (const instId of teamInstanceIds) {
+    const inst = collection.find(p => p.instanceId === instId && p.ownerId === player.id);
+    if (!inst) throw new Error(`Pokemon instance ${instId} not found`);
+    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true));
+  }
+
+  if (playerTeam.length === 0) throw new Error('Team cannot be empty');
+
+  // Build enemy team from tower floor def
+  const enemyTeam: BattleMon[] = [];
+  for (let i = 0; i < floorDef.enemyCount; i++) {
+    const templateId = floorDef.enemyPool[i % floorDef.enemyPool.length];
+    const id = `tower_enemy_${crypto.randomUUID()}`;
+    const mon = makeBattleMon(id, templateId, floorDef.enemyLevel, floorDef.enemyStars, false);
+    if (towerFloor % 10 === 0 && i === Math.floor(floorDef.enemyCount / 2)) {
+      mon.isBoss = true;
+    }
+    enemyTeam.push(mon);
+  }
+
+  const battleId = crypto.randomUUID();
+  const state: BattleState = {
+    battleId,
+    playerId: player.id,
+    playerTeam,
+    enemyTeam,
+    currentActorId: null,
+    turnNumber: 0,
+    status: 'active',
+    log: [],
+    floor: { region: 0, floor: towerFloor, difficulty: 'normal' },
+    mode: 'tower',
+  };
+
+  activeBattles.set(battleId, state);
+
+  return { state };
+}
+
+export function calculateTowerRewards(state: BattleState): BattleRewards {
+  const towerFloor = state.floor.floor;
+  const floorDef = getTowerFloor(towerFloor);
+  if (!floorDef) throw new Error('Invalid tower floor');
+
+  const xpPerMon = Math.floor(floorDef.enemyLevel * 8);
+  const levelUps: Array<{ instanceId: string; newLevel: number }> = [];
+
+  // Apply XP
+  const collection = loadCollection();
+  for (const mon of state.playerTeam) {
+    const inst = collection.find(p => p.instanceId === mon.instanceId);
+    if (!inst) continue;
+    if (isMaxLevel(inst.level, inst.stars)) continue;
+
+    const maxLevel = MAX_LEVEL_BY_STARS[inst.stars] ?? 99;
+    let currentLevel = inst.level;
+    let currentExp = inst.exp + xpPerMon;
+    let needed = xpToNextLevel(currentLevel);
+
+    while (currentExp >= needed && currentLevel < maxLevel) {
+      currentExp -= needed;
+      currentLevel++;
+      needed = xpToNextLevel(currentLevel);
+      levelUps.push({ instanceId: mon.instanceId, newLevel: currentLevel });
+    }
+
+    if (currentLevel >= maxLevel) {
+      currentLevel = maxLevel;
+      currentExp = 0;
+    }
+
+    updateInstance(mon.instanceId, { level: currentLevel, exp: currentExp });
+  }
+
+  const reward = floorDef.reward;
+
+  // Apply reward to player
+  const player = loadPlayer()!;
+  const updates: Partial<typeof player> = {};
+  if (reward.regularPokeballs) updates.regularPokeballs = player.regularPokeballs + reward.regularPokeballs;
+  if (reward.premiumPokeballs) updates.premiumPokeballs = player.premiumPokeballs + reward.premiumPokeballs;
+  if (reward.legendaryPokeballs) updates.legendaryPokeballs = (player.legendaryPokeballs ?? 0) + reward.legendaryPokeballs;
+  if (reward.stardust) updates.stardust = (player.stardust ?? 0) + reward.stardust;
+  if (reward.essences) {
+    const materials = { ...(player.materials ?? {}) };
+    for (const [essId, qty] of Object.entries(reward.essences)) {
+      materials[essId] = (materials[essId] ?? 0) + qty;
+    }
+    updates.materials = materials;
+  }
+
+  // Advance tower progress
+  if ((player.towerProgress ?? 0) < towerFloor) {
+    updates.towerProgress = towerFloor;
+    // Set reset date if not set yet
+    if (!player.towerResetDate) {
+      updates.towerResetDate = getCurrentTowerResetDate();
+    }
+  }
+
+  savePlayer({ ...player, ...updates });
+
+  // Ditto reward — create Ditto instances
+  if (reward.dittos && reward.dittos > 0) {
+    const p = loadPlayer()!;
+    const dittoTemplate = getTemplateShared(DITTO_TEMPLATE_ID);
+    if (dittoTemplate) {
+      const instances: PokemonInstance[] = [];
+      for (let i = 0; i < reward.dittos; i++) {
+        instances.push({
+          instanceId: crypto.randomUUID(),
+          templateId: DITTO_TEMPLATE_ID,
+          ownerId: p.id,
+          level: 1,
+          stars: dittoTemplate.naturalStars,
+          exp: 0,
+          isShiny: false,
+          skillLevels: [1, 1, 1],
+        });
+      }
+      addToCollection(instances);
+      trackStat('totalMonstersCollected', reward.dittos);
+    }
+  }
+
+  // Track stats
+  trackStat('totalBattlesDungeon', 1);
+  incrementMission('battle_dungeon', 1);
+  if (towerFloor % 10 === 0) {
+    trackStat('totalBossesDefeated', 1);
+    incrementMission('clear_boss', 1);
+  }
+  checkAndUpdateTrophies();
+
+  // Trainer XP
+  const trainerXpBase = towerFloor * 3 + 10;
+  const trainerResult = grantTrainerXp(trainerXpBase);
+
+  return {
+    regularPokeballs: reward.regularPokeballs ?? 0,
+    premiumPokeballs: reward.premiumPokeballs ?? 0,
+    legendaryPokeballs: reward.legendaryPokeballs ?? 0,
+    xpPerMon,
+    levelUps,
+    essences: reward.essences,
+    stardust: reward.stardust ?? 0,
+    trainerXpGained: trainerXpBase,
+    trainerLeveledUp: trainerResult.leveledUp,
+    trainerNewLevel: trainerResult.newLevel,
+  };
 }

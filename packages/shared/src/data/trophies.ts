@@ -27,8 +27,8 @@ export const TROPHIES: TrophyDefinition[] = [
     tiers: [
       { threshold: 10, reward: { regularPokeballs: 15, trainerXp: 50 } },
       { threshold: 30, reward: { regularPokeballs: 20, premiumPokeballs: 3, trainerXp: 100, essences: { grass_low: 3, fire_low: 3, water_low: 3 } } },
-      { threshold: 50, reward: { premiumPokeballs: 8, trainerXp: 200, essences: { grass_mid: 2, fire_mid: 2, water_mid: 2 } } },
-      { threshold: 100, reward: { premiumPokeballs: 15, trainerXp: 400, essences: { magic_high: 2 } } },
+      { threshold: 50, reward: { premiumPokeballs: 8, trainerXp: 200, essences: { grass_mid: 2, fire_mid: 2, water_mid: 2 }, dittos: 1 } },
+      { threshold: 100, reward: { premiumPokeballs: 15, trainerXp: 400, essences: { magic_high: 2 }, dittos: 2 } },
     ],
   },
 
@@ -68,7 +68,7 @@ export const TROPHIES: TrophyDefinition[] = [
       { threshold: 5, reward: { regularPokeballs: 10, premiumPokeballs: 2, trainerXp: 75 } },
       { threshold: 15, reward: { premiumPokeballs: 5, trainerXp: 150, essences: { magic_mid: 3 } } },
       { threshold: 30, reward: { premiumPokeballs: 8, trainerXp: 250, heldItem: { setId: 'scope_lens', stars: 2, grade: 'rare' } } },
-      { threshold: 50, reward: { premiumPokeballs: 15, trainerXp: 400, essences: { magic_high: 2 } } },
+      { threshold: 50, reward: { premiumPokeballs: 15, trainerXp: 400, essences: { magic_high: 2 }, dittos: 1 } },
     ],
   },
 
@@ -121,7 +121,7 @@ export const TROPHIES: TrophyDefinition[] = [
       { threshold: 3, reward: { regularPokeballs: 20, trainerXp: 100 } },
       { threshold: 6, reward: { regularPokeballs: 20, premiumPokeballs: 5, trainerXp: 200, essences: { fire_mid: 3, water_mid: 3, grass_mid: 3 } } },
       { threshold: 8, reward: { premiumPokeballs: 8, trainerXp: 300, heldItem: { setId: 'quick_claw', stars: 2, grade: 'rare' } } },
-      { threshold: 10, reward: { premiumPokeballs: 15, trainerXp: 500, essences: { magic_high: 2 }, heldItem: { setId: 'kings_rock', stars: 3, grade: 'hero' } } },
+      { threshold: 10, reward: { premiumPokeballs: 15, trainerXp: 500, essences: { magic_high: 2 }, heldItem: { setId: 'kings_rock', stars: 3, grade: 'hero' }, dittos: 1 } },
     ],
   },
   {
@@ -134,7 +134,7 @@ export const TROPHIES: TrophyDefinition[] = [
       { threshold: 3, reward: { premiumPokeballs: 5, trainerXp: 150 } },
       { threshold: 6, reward: { premiumPokeballs: 8, trainerXp: 300, essences: { fire_mid: 5, water_mid: 5, grass_mid: 5 } } },
       { threshold: 8, reward: { premiumPokeballs: 12, trainerXp: 400, heldItem: { setId: 'swift_wing', stars: 3, grade: 'hero' } } },
-      { threshold: 10, reward: { premiumPokeballs: 20, trainerXp: 500, essences: { magic_high: 3 } } },
+      { threshold: 10, reward: { premiumPokeballs: 20, trainerXp: 500, essences: { magic_high: 3 }, dittos: 2 } },
     ],
   },
   {
@@ -147,7 +147,7 @@ export const TROPHIES: TrophyDefinition[] = [
       { threshold: 3, reward: { premiumPokeballs: 8, trainerXp: 200 } },
       { threshold: 6, reward: { premiumPokeballs: 15, trainerXp: 400, essences: { magic_high: 3 } } },
       { threshold: 8, reward: { premiumPokeballs: 20, trainerXp: 500, heldItem: { setId: 'power_band', stars: 3, grade: 'hero' } } },
-      { threshold: 10, reward: { premiumPokeballs: 30, trainerXp: 500, essences: { magic_high: 5 }, heldItem: { setId: 'kings_rock', stars: 4, grade: 'legend' } } },
+      { threshold: 10, reward: { premiumPokeballs: 30, trainerXp: 500, essences: { magic_high: 5 }, heldItem: { setId: 'kings_rock', stars: 4, grade: 'legend' }, dittos: 3 } },
     ],
   },
 ];

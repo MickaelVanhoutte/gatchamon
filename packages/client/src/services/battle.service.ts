@@ -26,6 +26,7 @@ import {
 import { grantTrainerXp } from './player.service';
 import { rollItemDrop } from './rune.service';
 import { addHeldItem } from './storage';
+import { calculateTowerRewards as calculateTowerRewardsImported } from './dungeon.service';
 
 // Map instanceId → active set effects for proc handling in battle
 const battleSetEffects = new Map<string, ActiveSetEffect[]>();
@@ -704,6 +705,9 @@ function calculateRewards(state: BattleState): BattleRewards {
   if (state.mode === 'dungeon') {
     return calculateDungeonRewards(state);
   }
+  if (state.mode === 'tower') {
+    return calculateTowerRewardsImported(state);
+  }
 
   const { region: regionId, floor: floorNum, difficulty } = state.floor;
   const isBoss = floorNum === 10;
@@ -788,6 +792,14 @@ function calculateRewards(state: BattleState): BattleRewards {
     savePlayer({ ...player, ...updates });
   }
 
+  // Special one-time reward: Legendary pokeball for clearing Pokemon League (per difficulty)
+  let legendaryReward = 0;
+  if (firstClear && regionId === 10 && floorNum === 10) {
+    legendaryReward = 1;
+    const lp = loadPlayer()!;
+    savePlayer({ ...lp, legendaryPokeballs: (lp.legendaryPokeballs ?? 0) + 1 });
+  }
+
   if (firstClear) {
     markFirstClear(regionId, floorNum, difficulty);
   }
@@ -818,6 +830,7 @@ function calculateRewards(state: BattleState): BattleRewards {
   return {
     regularPokeballs: totalRegularPokeballs,
     premiumPokeballs,
+    legendaryPokeballs: legendaryReward || undefined,
     xpPerMon,
     levelUps,
     isFirstClear: firstClear,

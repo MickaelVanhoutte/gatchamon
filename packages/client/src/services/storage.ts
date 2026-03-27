@@ -1,5 +1,5 @@
 import type { Player, PokemonInstance, HeldItemInstance } from '@gatchamon/shared';
-import { defaultTrainerSkills } from '@gatchamon/shared';
+import { defaultTrainerSkills, shouldResetTower, getCurrentTowerResetDate } from '@gatchamon/shared';
 
 const PLAYER_KEY = 'gatchamon_player';
 const COLLECTION_KEY = 'gatchamon_collection';
@@ -44,6 +44,20 @@ export function loadPlayer(): Player | null {
         if (Number(key) > 10) delete prog[Number(key)];
       }
     }
+  }
+  // Migration: add legendaryPokeballs for existing players
+  if ((player as any).legendaryPokeballs === undefined) {
+    player.legendaryPokeballs = 0;
+  }
+  // Migration: add towerProgress for existing players
+  if ((player as any).towerProgress === undefined) {
+    player.towerProgress = 0;
+  }
+  // Tower reset: resets on the 1st and 15th of each month
+  if (shouldResetTower(player.towerResetDate)) {
+    player.towerProgress = 0;
+    player.towerResetDate = getCurrentTowerResetDate();
+    savePlayer(player);
   }
   return player;
 }

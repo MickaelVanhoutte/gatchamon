@@ -95,7 +95,9 @@ export const useGameStore = create<GameState>((set, get) => ({
     if (!player) throw new Error('No player');
 
     let results: gachaService.SummonResult[];
-    if (type === 'premium') {
+    if (type === 'legendary') {
+      results = [gachaService.summonSingleLegendary()];
+    } else if (type === 'premium') {
       results = count === 10
         ? gachaService.summonMultiPremium()
         : [gachaService.summonSinglePremium()];

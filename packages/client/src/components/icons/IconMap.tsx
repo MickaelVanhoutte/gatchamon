@@ -1,9 +1,9 @@
 import type { ComponentType, SVGProps } from 'react';
 import {
   IconHome, IconSummon, IconCollection, IconTrophy, IconSwords, IconDungeon, IconTrainer,
-  IconEnergy, IconStardust, IconPokeball, IconPremiumPokeball, IconStar, IconClose, IconLock, IconCheck,
+  IconEnergy, IconStardust, IconPokeball, IconPremiumPokeball, IconLegendaryPokeball, IconStar, IconClose, IconLock, IconCheck,
   IconGift, IconArrowRight, IconArrowUp, IconArrowDown, IconSparkles, IconClover, IconShiny,
-  IconEvolve, IconMerge, IconSkull,
+  IconEvolve, IconMerge, IconSkull, IconTower,
   IconNormal, IconFire, IconWater, IconGrass, IconElectric, IconIce, IconFighting,
   IconPoison, IconGround, IconFlying, IconPsychic, IconBug, IconRock, IconGhost,
   IconDragon, IconFairy, IconDark, IconSteel, IconMagic,
@@ -29,6 +29,8 @@ const ICON_MAP: Record<string, IconComponent> = {
   stardust: IconStardust,
   pokeball: IconPokeball,
   premiumPokeball: IconPremiumPokeball,
+  legendaryPokeball: IconLegendaryPokeball,
+  tower: IconTower,
 
   // Utility
   star: IconStar,
