@@ -12,7 +12,7 @@ const DEFAULT_STORY_PROGRESS: StoryProgress = { normal: { 1: 1 }, hard: {}, hell
 const STARTING_REGULAR_POKEBALLS = 50;
 const STARTING_PREMIUM_POKEBALLS = 10;
 const STARTING_ENERGY = 100;
-const STARTING_STARDUST = 0;
+const STARTING_STARDUST = 10000;
 
 export function createPlayer(name: string): Player {
   const player: Player = {

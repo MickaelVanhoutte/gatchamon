@@ -23,3 +23,4 @@ export { TROPHIES, getTrophyStat } from './data/trophies.js';
 export * from './types/type-change.js';
 export * from './types/inbox.js';
 export { TYPE_CHANGE_DEFS, getTypeChangeDef, getCurrentFormType, getAvailableTypeChanges, getTypeChangeCost } from './data/type-changes.js';
+export { LOGIN_CALENDAR_REWARDS, LOGIN_CALENDAR_DAYS } from './data/login-calendar.js';

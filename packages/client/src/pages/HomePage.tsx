@@ -1,16 +1,27 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
+import { useTutorialStore } from '../stores/tutorialStore';
 import { IslandScene } from '../components/island/IslandScene';
+import { LoginCalendarModal } from '../components/LoginCalendarModal';
+import { canClaimToday } from '../services/login-calendar.service';
 import './HomePage.css';
 
 export function HomePage() {
   const { player, collection, loadCollection } = useGameStore();
+  const tutorialStep = useTutorialStore(s => s.step);
   const navigate = useNavigate();
+  const [showCalendar, setShowCalendar] = useState(false);
 
   useEffect(() => {
     if (player) loadCollection();
   }, [player, loadCollection]);
+
+  useEffect(() => {
+    if (tutorialStep === 99 && canClaimToday()) {
+      setShowCalendar(true);
+    }
+  }, [tutorialStep]);
 
   const topMonsters = useMemo(() => {
     return [...collection]
@@ -29,6 +40,7 @@ export function HomePage() {
         monsters={topMonsters}
         onNavigate={navigate}
       />
+      {showCalendar && <LoginCalendarModal onClose={() => setShowCalendar(false)} />}
     </div>
   );
 }

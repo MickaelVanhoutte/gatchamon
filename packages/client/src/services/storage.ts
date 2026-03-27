@@ -7,6 +7,7 @@ const HELD_ITEMS_KEY = 'gatchamon_held_items';
 const TUTORIAL_KEY = 'gatchamon_tutorial';
 const INBOX_KEY = 'gatchamon_inbox';
 const RETRY_SUMMON_KEY = 'gatchamon_retry_summon';
+const LOGIN_CALENDAR_KEY = 'gatchamon_login_calendar';
 
 function safeParse<T>(raw: string | null, fallback: T): T {
   if (!raw) return fallback;
@@ -226,6 +227,24 @@ export function clearRetrySummonState(): void {
   localStorage.removeItem(RETRY_SUMMON_KEY);
 }
 
+// ── Login Calendar ────────────────────────────────────────────────────
+
+export interface LoginCalendarData {
+  month: string;          // "YYYY-MM"
+  claimedDays: number[];  // days that have been claimed (1-28)
+  lastClaimDate: string;  // "YYYY-MM-DD"
+}
+
+export function loadLoginCalendar(): LoginCalendarData | null {
+  const raw = localStorage.getItem(LOGIN_CALENDAR_KEY);
+  if (!raw) return null;
+  return safeParse<LoginCalendarData | null>(raw, null);
+}
+
+export function saveLoginCalendar(state: LoginCalendarData): void {
+  localStorage.setItem(LOGIN_CALENDAR_KEY, JSON.stringify(state));
+}
+
 // ── Reset ──────────────────────────────────────────────────────────────
 
 export function clearAll(): void {
@@ -236,4 +255,5 @@ export function clearAll(): void {
   localStorage.removeItem(TUTORIAL_KEY);
   localStorage.removeItem(INBOX_KEY);
   localStorage.removeItem(RETRY_SUMMON_KEY);
+  localStorage.removeItem(LOGIN_CALENDAR_KEY);
 }
