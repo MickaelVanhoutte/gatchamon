@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { getTemplate as getTemplateShared, computeStats, calculateDamage, xpToNextLevel } from '@gatchamon/shared';
 import { SKILLS, getSkillsForPokemon } from '@gatchamon/shared';
-import { REGIONS, TOTAL_REGIONS } from '@gatchamon/shared';
+import { REGIONS, TOTAL_REGIONS, getFloorCount, getGymLeaderTeam, getLeagueChampion } from '@gatchamon/shared';
 import type {
   BattleState,
   BattleMon,
@@ -69,20 +69,53 @@ export function buildFloorEnemies(regionId: number, floor: number, difficulty: D
   const regionBase = (regionId - 1) * 5 + 1;
   const floorBonus = Math.ceil(floor / 2);
   const difficultyBonus = DIFFICULTY_LEVEL_BONUS[difficulty];
+  const floorCount = getFloorCount(regionId);
 
-  if (floor === 10) {
-    // Boss floor — strong boss flanked by companions
+  // Region 10 (Pokemon League): every floor is a champion battle
+  if (regionId === 10) {
+    const champion = getLeagueChampion(floor);
+    if (champion) {
+      const bossLevel = regionBase + floorBonus + difficultyBonus + 5;
+      const baseStars = getBaseStars(regionId, true);
+      const starBoost = difficulty === 'hell' ? 1 : difficulty === 'hard' ? 1 : 0;
+      const bossStars = clampStars(baseStars + starBoost);
+      const companionStars = getBaseStars(regionId, false);
+      const companionLevel = regionBase + floorBonus + difficultyBonus;
+
+      const enemies: FloorEnemy[] = champion.team.map((tid, i) => ({
+        templateId: tid,
+        level: i === champion.bossIndex ? bossLevel : companionLevel,
+        stars: i === champion.bossIndex ? bossStars : companionStars,
+        isBoss: i === champion.bossIndex ? true : undefined,
+      }));
+      return { enemies, isBoss: true };
+    }
+  }
+
+  // Boss floor for regions 1-9
+  if (floor === floorCount) {
     const bossLevel = regionBase + floorBonus + difficultyBonus + 5;
     const baseStars = getBaseStars(regionId, true);
     const starBoost = difficulty === 'hell' ? 1 : difficulty === 'hard' ? 1 : 0;
     const bossStars = clampStars(baseStars + starBoost);
-
     const companionLevel = regionBase + floorBonus + difficultyBonus;
     const companionStars = getBaseStars(regionId, false);
 
-    const enemies: FloorEnemy[] = [];
+    // Use gym leader team if available
+    const gymTeam = getGymLeaderTeam(regionId, difficulty);
+    if (gymTeam) {
+      const bossIdx = gymTeam.length - 1;
+      const enemies: FloorEnemy[] = gymTeam.map((tid, i) => ({
+        templateId: tid,
+        level: i === bossIdx ? bossLevel : companionLevel,
+        stars: i === bossIdx ? bossStars : companionStars,
+        isBoss: i === bossIdx ? true : undefined,
+      }));
+      return { enemies, isBoss: true };
+    }
 
-    // Left companion
+    // Fallback to original boss system
+    const enemies: FloorEnemy[] = [];
     if (region.bossCompanions.length > 0) {
       enemies.push({
         templateId: region.bossCompanions[0],
@@ -90,16 +123,12 @@ export function buildFloorEnemies(regionId: number, floor: number, difficulty: D
         stars: companionStars,
       });
     }
-
-    // Boss (center)
     enemies.push({
       templateId: pickSeeded(region.bossPool, regionId, floor, 0),
       level: bossLevel,
       stars: bossStars,
       isBoss: true,
     });
-
-    // Right companion
     if (region.bossCompanions.length > 1) {
       enemies.push({
         templateId: region.bossCompanions[1],
@@ -107,7 +136,6 @@ export function buildFloorEnemies(regionId: number, floor: number, difficulty: D
         stars: companionStars,
       });
     }
-
     return { enemies, isBoss: true };
   }
 
@@ -618,7 +646,7 @@ function autoResolveEnemyTurns(state: BattleState): BattleLogEntry[] {
 
 function calculateRewards(state: BattleState): BattleRewards {
   const { region: regionId, floor: floorNum, difficulty } = state.floor;
-  const isBoss = floorNum === 10;
+  const isBoss = regionId === 10 || floorNum === getFloorCount(regionId);
   const diffMult = DIFFICULTY_REWARD_MULT[difficulty];
   const bossMult = isBoss ? 3 : 1;
 
@@ -688,11 +716,12 @@ function advanceStoryProgress(
   // Only advance if this is the floor the player needs to beat
   if (floor !== currentFloor) return;
 
-  if (floor < 10) {
+  const floorCount = getFloorCount(regionId);
+  if (floor < floorCount) {
     progress[regionId] = floor + 1;
   } else {
     // Beat the boss — mark region complete
-    progress[regionId] = 11;
+    progress[regionId] = floorCount + 1;
     // Unlock next region if not already
     if (regionId < TOTAL_REGIONS && !progress[regionId + 1]) {
       progress[regionId + 1] = 1;
@@ -705,7 +734,7 @@ function advanceStoryProgress(
 function checkDifficultyUnlock(storyProgress: StoryProgress, difficulty: Difficulty): void {
   const progress = storyProgress[difficulty];
   const allComplete = Array.from({ length: TOTAL_REGIONS }, (_, i) => i + 1)
-    .every(rId => progress[rId] === 11);
+    .every(rId => progress[rId] === getFloorCount(rId) + 1);
 
   if (!allComplete) return;
 

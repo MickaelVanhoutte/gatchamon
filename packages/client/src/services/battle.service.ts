@@ -1,6 +1,6 @@
 import { getTemplate as getTemplateShared, computeStats, computeStatsWithItems, getActiveSetEffects, calculateDamage, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel, getSkillMultiplierBonus } from '@gatchamon/shared';
 import { SKILLS, getSkillsForPokemon } from '@gatchamon/shared';
-import { TOTAL_REGIONS } from '@gatchamon/shared';
+import { TOTAL_REGIONS, getFloorCount } from '@gatchamon/shared';
 import type {
   BattleState,
   BattleMon,
@@ -710,7 +710,7 @@ function calculateRewards(state: BattleState): BattleRewards {
   }
 
   const { region: regionId, floor: floorNum, difficulty } = state.floor;
-  const isBoss = floorNum === 10;
+  const isBoss = regionId === 10 || floorNum === getFloorCount(regionId);
   const diffMult = DIFFICULTY_REWARD_MULT[difficulty];
   const bossMult = isBoss ? 3 : 1;
 
@@ -794,7 +794,7 @@ function calculateRewards(state: BattleState): BattleRewards {
 
   // Special one-time reward: Legendary pokeball for clearing Pokemon League (per difficulty)
   let legendaryReward = 0;
-  if (firstClear && regionId === 10 && floorNum === 10) {
+  if (firstClear && regionId === 10 && floorNum === getFloorCount(10)) {
     legendaryReward = 1;
     const lp = loadPlayer()!;
     savePlayer({ ...lp, legendaryPokeballs: (lp.legendaryPokeballs ?? 0) + 1 });
@@ -853,10 +853,11 @@ function advanceStoryProgress(
 
   if (floor !== currentFloor) return;
 
-  if (floor < 10) {
+  const floorCount = getFloorCount(regionId);
+  if (floor < floorCount) {
     progress[regionId] = floor + 1;
   } else {
-    progress[regionId] = 11;
+    progress[regionId] = floorCount + 1;
     if (regionId < TOTAL_REGIONS && !progress[regionId + 1]) {
       progress[regionId + 1] = 1;
     }
@@ -867,7 +868,7 @@ function advanceStoryProgress(
 function checkDifficultyUnlock(storyProgress: StoryProgress, difficulty: Difficulty): void {
   const progress = storyProgress[difficulty];
   const allComplete = Array.from({ length: TOTAL_REGIONS }, (_, i) => i + 1)
-    .every(rId => progress[rId] === 11);
+    .every(rId => progress[rId] === getFloorCount(rId) + 1);
 
   if (!allComplete) return;
 

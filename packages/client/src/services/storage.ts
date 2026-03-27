@@ -58,6 +58,11 @@ export function loadPlayer(): Player | null {
       for (const key of Object.keys(prog)) {
         if (Number(key) > 10) delete prog[Number(key)];
       }
+      // Migration: Region 10 changed from 10 floors to 5
+      // Clamp progress > 5 to 6 (completed)
+      if (prog[10] !== undefined && prog[10] > 6) {
+        prog[10] = 6;
+      }
     }
   }
   // Migration: add legendaryPokeballs for existing players

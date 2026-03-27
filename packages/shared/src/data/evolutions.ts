@@ -108,6 +108,7 @@ export const EVOLUTION_CHAINS: EvolutionChain[] = [
   { from: 231, to: 232, requirements: { essences: { ground_mid: 12, magic_mid: 5 }, levelRequired: 30 } },
   { from: 824, to: 825, requirements: { essences: { bug_low: 5, magic_low: 2 }, levelRequired: 15 } },
   { from: 679, to: 680, requirements: { essences: { steel_mid: 12, magic_mid: 5 }, levelRequired: 30 } },
+  { from: 680, to: 681, requirements: { essences: { steel_high: 15, magic_high: 8 }, levelRequired: 35 } },
   { from: 690, to: 691, requirements: { essences: { poison_mid: 12, magic_mid: 5 }, levelRequired: 30 } },
   { from: 886, to: 887, requirements: { essences: { dragon_high: 15, magic_high: 8 }, levelRequired: 35 } },
   { from: 147, to: 148, requirements: { essences: { dragon_high: 15, magic_high: 8 }, levelRequired: 35 } },

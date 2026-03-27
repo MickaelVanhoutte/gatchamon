@@ -6,7 +6,8 @@ export interface RegionDef {
   commonPool: number[];    // template IDs for floors 1-9
   bossPool: number[];      // template IDs for floor 10
   bossCompanions: number[]; // 2 template IDs flanking the boss on floor 10
-  floorNames: string[];    // 10 themed names
+  floorNames: string[];    // themed names (length = floorCount)
+  floorCount?: number;     // defaults to 10 if omitted
   mapPosition: { x: number; y: number };
 }
 
@@ -154,13 +155,18 @@ export const REGIONS: RegionDef[] = [
     commonPool: [1, 4, 7, 25, 147, 133], // Bulbasaur, Charmander, Squirtle, Pikachu, Dratini, Eevee
     bossPool: [142],                      // Aerodactyl
     bossCompanions: [147, 133],           // Dratini, Eevee
+    floorCount: 5,
     floorNames: [
-      'Registration Hall', 'Qualifying Round', 'Group Stage', 'Quarterfinals',
-      'Elimination Round', 'Semifinal Arena', 'Rival Battle', 'Elite Floor',
-      'Champion Gate', 'Grand Championship',
+      'Will - Psychic Master', 'Koga - Poison Master', 'Bruno - Fighting Master',
+      'Karen - Dark Master', 'Cynthia - Champion',
     ],
     mapPosition: { x: 1680, y: 260 },
   },
 ];
 
 export const TOTAL_REGIONS = REGIONS.length;
+
+export function getFloorCount(regionId: number): number {
+  const region = REGIONS.find(r => r.id === regionId);
+  return region?.floorCount ?? 10;
+}

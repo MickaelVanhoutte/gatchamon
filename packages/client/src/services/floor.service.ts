@@ -1,4 +1,4 @@
-import { REGIONS } from '@gatchamon/shared';
+import { REGIONS, getFloorCount, getGymLeaderTeam, getLeagueChampion } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
 
 export interface FloorEnemy {
@@ -48,20 +48,54 @@ export function buildFloorEnemies(regionId: number, floor: number, difficulty: D
   const regionBase = (regionId - 1) * 5 + 1;
   const floorBonus = Math.ceil(floor / 2);
   const difficultyBonus = DIFFICULTY_LEVEL_BONUS[difficulty];
+  const floorCount = getFloorCount(regionId);
 
-  if (floor === 10) {
-    // Boss floor — strong boss flanked by companions
+  // Region 10 (Pokemon League): every floor is a champion battle
+  if (regionId === 10) {
+    const champion = getLeagueChampion(floor);
+    if (champion) {
+      const bossLevel = regionBase + floorBonus + difficultyBonus + 5;
+      const baseStars = getBaseStars(regionId, true);
+      const starBoost = difficulty === 'hell' ? 1 : difficulty === 'hard' ? 1 : 0;
+      const bossStars = clampStars(baseStars + starBoost);
+      const companionStars = getBaseStars(regionId, false);
+      const companionLevel = regionBase + floorBonus + difficultyBonus;
+
+      const enemies: FloorEnemy[] = champion.team.map((tid, i) => ({
+        templateId: tid,
+        level: i === champion.bossIndex ? bossLevel : companionLevel,
+        stars: i === champion.bossIndex ? bossStars : companionStars,
+        isBoss: i === champion.bossIndex ? true : undefined,
+      }));
+      return { enemies, isBoss: true };
+    }
+  }
+
+  // Boss floor for regions 1-9
+  if (floor === floorCount) {
     const bossLevel = regionBase + floorBonus + difficultyBonus + 5;
     const baseStars = getBaseStars(regionId, true);
     const starBoost = difficulty === 'hell' ? 1 : difficulty === 'hard' ? 1 : 0;
     const bossStars = clampStars(baseStars + starBoost);
-
     const companionLevel = regionBase + floorBonus + difficultyBonus;
     const companionStars = getBaseStars(regionId, false);
 
-    const enemies: FloorEnemy[] = [];
+    // Use gym leader team if available
+    const gymTeam = getGymLeaderTeam(regionId, difficulty);
+    if (gymTeam) {
+      const leader = REGIONS.find(r => r.id === regionId);
+      const bossIdx = gymTeam.length - 1; // boss is always last
+      const enemies: FloorEnemy[] = gymTeam.map((tid, i) => ({
+        templateId: tid,
+        level: i === bossIdx ? bossLevel : companionLevel,
+        stars: i === bossIdx ? bossStars : companionStars,
+        isBoss: i === bossIdx ? true : undefined,
+      }));
+      return { enemies, isBoss: true };
+    }
 
-    // Left companion
+    // Fallback to original boss system
+    const enemies: FloorEnemy[] = [];
     if (region.bossCompanions.length > 0) {
       enemies.push({
         templateId: region.bossCompanions[0],
@@ -69,16 +103,12 @@ export function buildFloorEnemies(regionId: number, floor: number, difficulty: D
         stars: companionStars,
       });
     }
-
-    // Boss (center)
     enemies.push({
       templateId: pickSeeded(region.bossPool, regionId, floor, 0),
       level: bossLevel,
       stars: bossStars,
       isBoss: true,
     });
-
-    // Right companion
     if (region.bossCompanions.length > 1) {
       enemies.push({
         templateId: region.bossCompanions[1],
@@ -86,7 +116,6 @@ export function buildFloorEnemies(regionId: number, floor: number, difficulty: D
         stars: companionStars,
       });
     }
-
     return { enemies, isBoss: true };
   }
 
@@ -109,10 +138,11 @@ export function buildFloorEnemies(regionId: number, floor: number, difficulty: D
   return { enemies, isBoss: false };
 }
 
-/** Get all 10 floor definitions for a region + difficulty. */
+/** Get all floor definitions for a region + difficulty. */
 export function getFloorDefsForRegion(regionId: number, difficulty: Difficulty): Record<number, FloorDef> {
   const defs: Record<number, FloorDef> = {};
-  for (let f = 1; f <= 10; f++) {
+  const count = getFloorCount(regionId);
+  for (let f = 1; f <= count; f++) {
     defs[f] = buildFloorEnemies(regionId, f, difficulty);
   }
   return defs;

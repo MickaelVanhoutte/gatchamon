@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
-import { REGIONS, DUNGEONS, ITEM_DUNGEONS, getTemplate, getTowerFloor } from '@gatchamon/shared';
+import { REGIONS, DUNGEONS, ITEM_DUNGEONS, getTemplate, getTowerFloor, getFloorCount, getGymLeader, getLeagueChampion } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
 import { startBattle, startDungeonBattle, startItemDungeonBattle } from '../services/battle.service';
 import { startTowerBattle } from '../services/dungeon.service';
@@ -181,9 +181,21 @@ export function TeamSelectPage() {
     headerText = `${dungeonDef.name} - B${dungeonFloor + 1}`;
   } else {
     const regionName = regionDef?.name ?? `Region ${region}`;
-    const floorName = regionDef?.floorNames[floor - 1] ?? `Floor ${floor}`;
     const diffLabel = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
-    headerText = `${regionName} - ${floor === 10 ? 'BOSS' : floorName} (${diffLabel})`;
+    if (region === 10) {
+      const champ = getLeagueChampion(floor);
+      headerText = champ
+        ? `${regionName} - ${champ.icon} ${champ.name} (${diffLabel})`
+        : `${regionName} - Floor ${floor} (${diffLabel})`;
+    } else if (floor === getFloorCount(region)) {
+      const leader = getGymLeader(region);
+      headerText = leader
+        ? `${regionName} - ${leader.icon} ${leader.name} (${diffLabel})`
+        : `${regionName} - BOSS (${diffLabel})`;
+    } else {
+      const floorName = regionDef?.floorNames[floor - 1] ?? `Floor ${floor}`;
+      headerText = `${regionName} - ${floorName} (${diffLabel})`;
+    }
   }
 
   const getSpriteUrl = (mon: OwnedPokemon) => {

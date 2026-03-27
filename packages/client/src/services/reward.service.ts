@@ -17,6 +17,7 @@ import {
   getTemplate,
   TOTAL_REGIONS,
   DITTO_TEMPLATE_ID,
+  getFloorCount,
 } from '@gatchamon/shared';
 import {
   loadRewardState,
@@ -63,7 +64,7 @@ export function loadOrInitRewardState(): RewardState {
       const progress = sp[diff] ?? {};
       let completed = 0;
       for (let r = 1; r <= TOTAL_REGIONS; r++) {
-        if (progress[r] === 11) completed++;
+        if (progress[r] === getFloorCount(r) + 1) completed++;
       }
       if (diff === 'normal') stats.highestRegionNormal = completed;
       else if (diff === 'hard') stats.highestRegionHard = completed;
@@ -323,7 +324,7 @@ export function getFloorRewardPreview(
   difficulty: Difficulty,
   enemies: FloorEnemy[],
 ): FloorRewardPreview {
-  const isBoss = floor === 10;
+  const isBoss = regionId === 10 || floor === getFloorCount(regionId);
   const diffMult = DIFFICULTY_REWARD_MULT[difficulty];
   const bossMult = isBoss ? 3 : 1;
   const pokeballBase = 2 + regionId + Math.floor(floor / 3);

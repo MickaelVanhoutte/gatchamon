@@ -5,11 +5,12 @@ import { removeDungeonBattle } from '../services/dungeon.service';
 import { useGameStore } from '../stores/gameStore';
 import { useBattleAnimation } from '../battle/useBattleAnimation';
 import { useAutoBattle } from '../battle/useAutoBattle';
-import { getTemplate, SKILLS, getTypeEffectiveness, ESSENCES, ITEM_SETS } from '@gatchamon/shared';
+import { getTemplate, SKILLS, getTypeEffectiveness, ESSENCES, ITEM_SETS, getBossDialogue } from '@gatchamon/shared';
 import type { BattleState, BattleMon, BattleLogEntry, BattleResult, PokemonType } from '@gatchamon/shared';
 import { assetUrl } from '../utils/asset-url';
 import { GameIcon, StarRating } from '../components/icons';
 import { BattleLoadingScreen } from '../components/BattleLoadingScreen';
+import { GymLeaderDialogue } from '../components/GymLeaderDialogue';
 import './BattlePage.css';
 
 type Phase = 'player_turn' | 'animating' | 'victory' | 'defeat';
@@ -29,6 +30,7 @@ export function BattlePage() {
   const [animatingLog, setAnimatingLog] = useState<BattleLogEntry | null>(null);
   const [rewards, setRewards] = useState<BattleResult['rewards']>(undefined);
   const [assetsReady, setAssetsReady] = useState(false);
+  const [dialogueComplete, setDialogueComplete] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [arenaEl, setArenaEl] = useState<HTMLDivElement | null>(null);
   const monRefs = useRef<Map<string, HTMLElement>>(new Map());
@@ -219,6 +221,24 @@ export function BattlePage() {
     return (
       <div className="battle-page">
         <BattleLoadingScreen assetUrls={assetUrls} onReady={handleAssetsReady} />
+      </div>
+    );
+  }
+
+  // Show gym leader / champion dialogue before battle starts
+  const dialogueData = !dialogueComplete && state.mode === 'story'
+    ? getBossDialogue(state.floor.region, state.floor.floor)
+    : null;
+
+  if (!dialogueComplete && dialogueData) {
+    return (
+      <div className="battle-page" style={{ backgroundImage: `url(${backgroundUrl})` }}>
+        <GymLeaderDialogue
+          name={dialogueData.name}
+          icon={dialogueData.icon}
+          dialogue={dialogueData.dialogue}
+          onComplete={() => setDialogueComplete(true)}
+        />
       </div>
     );
   }

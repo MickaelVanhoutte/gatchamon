@@ -982,6 +982,41 @@ export const GEN6_SKILLS: Record<string, SkillDefinition> = {
     target: 'self',
   },
 
+  // --- aegislash (steel/ghost) ---
+  aegislash_skill1: {
+    id: 'aegislash_skill1',
+    name: 'Sacred Sword',
+    description: 'A powerful steel-type slash that ignores defense.',
+    type: 'steel',
+    category: 'basic',
+    cooldown: 0,
+    multiplier: 1.1,
+    effects: [],
+    target: 'single_enemy',
+  },
+  aegislash_skill2: {
+    id: 'aegislash_skill2',
+    name: 'Shadow Ball',
+    description: 'A powerful ghost-type special attack that may lower resistance.',
+    type: 'ghost',
+    category: 'active',
+    cooldown: 4,
+    multiplier: 2.4,
+    effects: [{"type":"debuff","stat":"res","value":-20,"duration":2,"chance":65}],
+    target: 'single_enemy',
+  },
+  aegislash_skill3: {
+    id: 'aegislash_skill3',
+    name: "King's Shield",
+    description: "Stance change boosts attack and defense.",
+    type: 'steel',
+    category: 'passive',
+    cooldown: 0,
+    multiplier: 0,
+    effects: [{"type":"buff","stat":"def","value":25,"duration":999,"chance":100},{"type":"buff","stat":"atk","value":15,"duration":999,"chance":100}],
+    target: 'self',
+  },
+
   // --- spritzee (fairy) ---
   spritzee_skill1: {
     id: 'spritzee_skill1',

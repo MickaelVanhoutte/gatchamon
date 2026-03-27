@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { GameIcon, StarRating } from '../components/icons';
-import { getTemplate, REGIONS } from '@gatchamon/shared';
+import { getTemplate, REGIONS, getFloorCount, getGymLeader, getLeagueChampion } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
 import { getFloorDefsForRegion } from '../services/floor.service';
 import { getFloorRewardPreview } from '../services/reward.service';
@@ -118,15 +118,15 @@ export function StoryModePage() {
   function getRegionStatus(regionId: number) {
     const floor = regionProgress[regionId];
     if (floor === undefined) return 'locked';
-    if (floor === 11) return 'completed';
+    if (floor === getFloorCount(regionId) + 1) return 'completed';
     return 'available';
   }
 
   function getRegionStars(regionId: number) {
     const floor = regionProgress[regionId] ?? 0;
-    // Completed floors = floor - 1, capped at 10
-    const completed = floor === 11 ? 10 : Math.max(0, floor - 1);
-    return { completed, total: 10 };
+    const total = getFloorCount(regionId);
+    const completed = floor === total + 1 ? total : Math.max(0, floor - 1);
+    return { completed, total };
   }
 
   function handleDifficultyChange(diff: Difficulty) {
@@ -1603,9 +1603,21 @@ export function StoryModePage() {
                 >
                   <div className="floor-entry-info">
                     <span className="floor-entry-number">
-                      {floor.isBoss
-                        ? `BOSS - ${selectedRegion.floorNames[9]}`
-                        : `${floor.floor}. ${selectedRegion.floorNames[floor.floor - 1]}`}
+                      {(() => {
+                        if (selectedRegion.id === 10) {
+                          const champ = getLeagueChampion(floor.floor);
+                          return champ
+                            ? `${champ.icon} ${champ.name}`
+                            : `${floor.floor}. ${selectedRegion.floorNames[floor.floor - 1] ?? ''}`;
+                        }
+                        if (floor.isBoss) {
+                          const leader = getGymLeader(selectedRegion.id);
+                          return leader
+                            ? `BOSS - ${leader.icon} ${leader.name}`
+                            : `BOSS - ${selectedRegion.floorNames[getFloorCount(selectedRegion.id) - 1] ?? ''}`;
+                        }
+                        return `${floor.floor}. ${selectedRegion.floorNames[floor.floor - 1] ?? ''}`;
+                      })()}
                     </span>
                     <div className="floor-entry-enemies">
                       {floor.enemies.map((enemy, i) => (
