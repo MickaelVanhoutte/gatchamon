@@ -4,6 +4,7 @@
   height: 100%;
   overflow: hidden;
   position: relative;
+  overscroll-behavior: none;
 }
 
 /* ========================================
@@ -27,6 +28,7 @@
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
 }
 
 /* Map background layers */

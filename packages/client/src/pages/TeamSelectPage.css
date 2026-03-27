@@ -175,6 +175,9 @@
   position: relative;
   transition: box-shadow 0.15s, transform 0.15s;
   overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .ts-mini-card:hover {

@@ -36,13 +36,10 @@ export function App() {
     useTutorialStore.getState().loadTutorial();
   }, [loadPlayer]);
 
-  // Only auto-focus when the device is truly in landscape (not using CSS rotation hack)
+  // Auto-focus name input (onboarding is no longer CSS-rotated, so keyboard always aligns)
   useEffect(() => {
     if (!player && !showLoading && inputRef.current) {
-      const isPortrait = window.matchMedia('(orientation: portrait)').matches;
-      if (!isPortrait) {
-        inputRef.current.focus();
-      }
+      inputRef.current.focus();
     }
   }, [player, showLoading]);
 
@@ -52,7 +49,7 @@ export function App() {
 
   if (!player) {
     return (
-      <div className="app">
+      <div className="app app--onboarding">
         <div className="onboarding">
           <h1>Gatchamon</h1>
           <p>Choose your trainer name</p>

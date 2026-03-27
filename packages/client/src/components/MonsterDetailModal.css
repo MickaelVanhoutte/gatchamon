@@ -219,3 +219,11 @@
   font-size: 0.65rem;
   color: var(--text-secondary, #5a6a7a);
 }
+
+/* When CSS rotation is active, vh/vw are swapped visually */
+@media (orientation: portrait) {
+  .mdm-modal {
+    max-height: 80vw;
+    max-width: min(520px, 90vh);
+  }
+}

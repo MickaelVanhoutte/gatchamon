@@ -279,6 +279,7 @@ export function TeamSelectPage() {
                   key={mon.instance.instanceId}
                   className={`ts-mini-card ${isSelected ? 'selected' : ''}`}
                   style={{ borderColor: starColor }}
+                  onContextMenu={e => e.preventDefault()}
                   onClick={() => {
                     if (longPressTriggered.current) {
                       longPressTriggered.current = false;
