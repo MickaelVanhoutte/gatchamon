@@ -384,7 +384,7 @@ export class AnimationEngine {
 		const color = options.color ?? '#ffffff';
 
 		await Promise.all([
-			this.showSpriteEffect('impact', target as PokemonSprite, {
+			this.showSpriteEffect('impact', target, {
 				scale: 1.2,
 				duration: duration,
 				tint: color
@@ -397,10 +397,15 @@ export class AnimationEngine {
 		const timeline = gsap.timeline();
 		this.activeTimelines.add(timeline);
 
+		// Save current transform state so we restore to it (not 0),
+		// avoiding clobbering ongoing moveSpriteTo animations
+		const baseX = gsap.getProperty(element, 'x') as number || 0;
+		const baseY = gsap.getProperty(element, 'y') as number || 0;
+
 		const shakeCount = Math.floor(duration / 50);
 		for (let i = 0; i < shakeCount; i++) {
-			const xOffset = (Math.random() - 0.5) * intensity * 2;
-			const yOffset = (Math.random() - 0.5) * intensity * 2;
+			const xOffset = baseX + (Math.random() - 0.5) * intensity * 2;
+			const yOffset = baseY + (Math.random() - 0.5) * intensity * 2;
 			timeline.to(element, {
 				x: xOffset,
 				y: yOffset,
@@ -409,14 +414,13 @@ export class AnimationEngine {
 		}
 
 		timeline.to(element, {
-			x: 0,
-			y: 0,
+			x: baseX,
+			y: baseY,
 			duration: 0.05
 		});
 
 		await timeline.then(() => {});
 		this.activeTimelines.delete(timeline);
-		gsap.set(element, { clearProps: 'x,y' });
 	}
 
 	async backgroundFlash(color: string, duration: number, opacity: number = 0.5): Promise<void> {
@@ -473,6 +477,14 @@ export class AnimationEngine {
 
 		await timeline.then(() => {});
 		this.activeTimelines.delete(timeline);
+	}
+
+	/** Create a GSAP timeline that is tracked for cleanup by cancelAll(). */
+	createTimeline(): gsap.core.Timeline {
+		const tl = gsap.timeline();
+		this.activeTimelines.add(tl);
+		tl.then(() => this.activeTimelines.delete(tl));
+		return tl;
 	}
 
 	resetSpriteToHome(sprite: PokemonSprite): void {

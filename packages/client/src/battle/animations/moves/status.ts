@@ -4,7 +4,6 @@ import {
 	type MoveAnimation,
 	TYPE_HUE_ANGLES
 } from '../animation-engine';
-import { gsap } from 'gsap';
 
 export const statusMoves: Record<string, MoveAnimation> = {};
 
@@ -43,19 +42,10 @@ async function debuffAnimation(engine: AnimationEngine, context: MoveContext): P
 		zIndex: engine.getEffectZIndex(attacker.isPlayer)
 	});
 
-	await new Promise<void>((resolve) => {
-		gsap.to(target.element, {
-			filter: 'brightness(0.7) saturate(0.8)',
-			duration: 0.2,
-			onComplete: () => {
-				gsap.to(target.element, {
-					filter: 'brightness(1) saturate(1)',
-					duration: 0.3,
-					onComplete: resolve
-				});
-			}
-		});
-	});
+	const tl = engine.createTimeline();
+	tl.to(target.element, { filter: 'brightness(0.7) saturate(0.8)', duration: 0.2 })
+		.to(target.element, { filter: 'brightness(1) saturate(1)', duration: 0.3 });
+	await tl.then(() => {});
 }
 
 async function healAnimation(engine: AnimationEngine, context: MoveContext): Promise<void> {
@@ -93,19 +83,13 @@ async function statusConditionAnimation(
 		zIndex: engine.getEffectZIndex(attacker.isPlayer)
 	});
 
-	await new Promise<void>((resolve) => {
-		const tl = gsap.timeline({ onComplete: resolve });
-		tl.to(target.element, {
-			filter: `drop-shadow(0 0 8px ${color}) brightness(1.3)`,
-			duration: 0.15
-		})
-			.to(target.element, { filter: 'none', duration: 0.15 })
-			.to(target.element, {
-				filter: `drop-shadow(0 0 8px ${color}) brightness(1.3)`,
-				duration: 0.15
-			})
-			.to(target.element, { filter: 'none', duration: 0.15 });
-	});
+	const flashTl = engine.createTimeline();
+	flashTl
+		.to(target.element, { filter: `drop-shadow(0 0 8px ${color}) brightness(1.3)`, duration: 0.15 })
+		.to(target.element, { filter: 'none', duration: 0.15 })
+		.to(target.element, { filter: `drop-shadow(0 0 8px ${color}) brightness(1.3)`, duration: 0.15 })
+		.to(target.element, { filter: 'none', duration: 0.15 });
+	await flashTl.then(() => {});
 }
 
 async function protectAnimation(engine: AnimationEngine, context: MoveContext): Promise<void> {
@@ -119,7 +103,7 @@ async function protectAnimation(engine: AnimationEngine, context: MoveContext): 
 		border-radius: 50%;
 		border: 4px solid rgba(100, 200, 255, 0.8);
 		background: radial-gradient(circle, rgba(100, 200, 255, 0.3) 0%, transparent 70%);
-		z-index: 100;
+		z-index: ${engine.getEffectZIndex(attacker.isPlayer)};
 		transform: scale(0);
 	`;
 
@@ -130,12 +114,12 @@ async function protectAnimation(engine: AnimationEngine, context: MoveContext): 
 	shield.style.top = `${attackerCenter.y - 60}px`;
 	container.appendChild(shield);
 
-	await new Promise<void>((resolve) => {
-		const tl = gsap.timeline({ onComplete: resolve });
-		tl.to(shield, { scale: 1, opacity: 1, duration: 0.2, ease: 'back.out' })
-			.to(shield, { opacity: 0.6, duration: 0.3 })
-			.to(shield, { scale: 1.2, opacity: 0, duration: 0.3, onComplete: () => shield.remove() });
-	});
+	const shieldTl = engine.createTimeline();
+	shieldTl
+		.to(shield, { scale: 1, opacity: 1, duration: 0.2, ease: 'back.out' })
+		.to(shield, { opacity: 0.6, duration: 0.3 })
+		.to(shield, { scale: 1.2, opacity: 0, duration: 0.3, onComplete: () => shield.remove() });
+	await shieldTl.then(() => {});
 }
 
 export async function whipAnimation(engine: AnimationEngine, context: MoveContext): Promise<void> {
@@ -182,7 +166,7 @@ const BUFF_MOVES = [
 	'magic-room', 'role-play', 'ally-switch', 'power-trick', 'trick',
 	'speed-swap', 'teleport', 'gravity', 'trick-room', 'psycho-shift',
 	'heart-swap', 'aromatic-mist', 'haze', 'harden', 'withdraw',
-	'growth', 'howl', 'defense-curl'
+	'howl', 'defense-curl'
 ];
 
 const DEBUFF_MOVES = [

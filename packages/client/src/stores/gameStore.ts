@@ -12,6 +12,7 @@ import * as runeService from '../services/rune.service';
 import { regenerateEnergy } from '../services/energy.service';
 import { getUnclaimedMissionCount, getUnclaimedTrophyCount } from '../services/reward.service';
 import { getUnreadInboxCount } from '../services/inbox.service';
+import { useTutorialStore } from './tutorialStore';
 
 export interface OwnedPokemon {
   instance: PokemonInstance;
@@ -46,6 +47,8 @@ interface GameState {
   allocateTrainerSkill: (skill: keyof TrainerSkills) => void;
 }
 
+let energyRegenInterval: ReturnType<typeof setInterval> | null = null;
+
 export const useGameStore = create<GameState>((set, get) => ({
   player: null,
   collection: [],
@@ -73,8 +76,13 @@ export const useGameStore = create<GameState>((set, get) => ({
       set({ player });
       get().refreshRewards();
 
+      // Clear any previous energy regen interval before creating a new one
+      if (energyRegenInterval !== null) {
+        clearInterval(energyRegenInterval);
+      }
+
       // Periodic energy regen check every 60s
-      setInterval(() => {
+      energyRegenInterval = setInterval(() => {
         let p = storage.loadPlayer();
         if (!p) return;
         const mE = getMaxEnergy(p.trainerSkills);
@@ -98,8 +106,18 @@ export const useGameStore = create<GameState>((set, get) => ({
     const { player } = get();
     if (!player) throw new Error('No player');
 
+    const tutorialStep = useTutorialStore.getState().step;
+
     let results: gachaService.SummonResult[];
-    if (type === 'legendary') {
+    if (tutorialStep === 4 && type === 'regular' && count === 1) {
+      // Tutorial step 4: always summon Vulpix
+      results = [gachaService.summonSingleRegular(37)];
+    } else if (tutorialStep === 5 && type === 'premium' && count === 1) {
+      // Tutorial step 5: random starter (Bulbasaur, Charmander, Squirtle)
+      const starters = [1, 4, 7];
+      const pick = starters[Math.floor(Math.random() * starters.length)];
+      results = [gachaService.summonSinglePremium(pick)];
+    } else if (type === 'legendary') {
       results = [gachaService.summonSingleLegendary()];
     } else if (type === 'premium') {
       results = count === 10

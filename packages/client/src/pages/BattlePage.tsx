@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getBattleState as fetchBattleState, resolvePlayerAction } from '../services/battle.service';
+import { getBattleState as fetchBattleState, resolvePlayerAction, deleteBattle } from '../services/battle.service';
+import { removeDungeonBattle } from '../services/dungeon.service';
 import { useGameStore } from '../stores/gameStore';
 import { useBattleAnimation } from '../battle/useBattleAnimation';
 import { useAutoBattle } from '../battle/useAutoBattle';
@@ -28,8 +29,10 @@ export function BattlePage() {
   const [animatingLog, setAnimatingLog] = useState<BattleLogEntry | null>(null);
   const [rewards, setRewards] = useState<BattleResult['rewards']>(undefined);
   const [assetsReady, setAssetsReady] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [arenaEl, setArenaEl] = useState<HTMLDivElement | null>(null);
   const monRefs = useRef<Map<string, HTMLElement>>(new Map());
+  const isActingRef = useRef(false);
 
   const { playLogEntry, playMultiTargetEntries } = useBattleAnimation(arenaEl, monRefs);
 
@@ -49,7 +52,8 @@ export function BattlePage() {
   }, [loadBattle]);
 
   const handleAction = async (skillId: string, targetId: string) => {
-    if (!battleId || !state) return;
+    if (!battleId || !state || isActingRef.current || isPaused) return;
+    isActingRef.current = true;
     setPhase('animating');
     setSelectedSkill(null);
 
@@ -140,10 +144,35 @@ export function BattlePage() {
     } catch (err: any) {
       console.error('[Battle error]', err.message);
       setPhase('player_turn');
+    } finally {
+      isActingRef.current = false;
     }
   };
 
-  const { isAutoOn, toggleAuto } = useAutoBattle(state, phase, handleAction);
+  const { isAutoOn, toggleAuto } = useAutoBattle(state, phase, handleAction, isPaused);
+
+  const navigateAway = useCallback(() => {
+    refreshPlayer();
+    loadCollection();
+    if (state?.mode === 'tower') {
+      navigate('/dungeons?tab=tower');
+    } else if (state?.mode === 'dungeon' || state?.mode === 'item-dungeon') {
+      const tab = state.mode === 'item-dungeon' ? 'items' : 'essence';
+      const dungeonId = state.dungeonId ?? '';
+      const floor = (state.floor?.floor ?? 1) - 1;
+      navigate(`/dungeons?tab=${tab}&dungeonId=${dungeonId}&floor=${floor}`);
+    } else {
+      navigate('/story');
+    }
+  }, [state, navigate, refreshPlayer, loadCollection]);
+
+  const handleQuit = useCallback(() => {
+    if (battleId) {
+      deleteBattle(battleId);
+      removeDungeonBattle(battleId);
+    }
+    navigateAway();
+  }, [battleId, navigateAway]);
 
   const handleSkillSelect = (skillId: string) => {
     if (!state) return;
@@ -198,7 +227,7 @@ export function BattlePage() {
     ? [...state.playerTeam, ...state.enemyTeam].find(m => m.instanceId === state.currentActorId)
     : null;
 
-  const isPlayerTurn = phase === 'player_turn' && currentActor?.isPlayerOwned;
+  const isPlayerTurn = phase === 'player_turn' && currentActor?.isPlayerOwned && !isPaused;
 
   return (
     <div
@@ -226,6 +255,7 @@ export function BattlePage() {
               </div>
             );
           })}
+        <button className="pause-toggle" onClick={() => setIsPaused(true)}>| |</button>
         <button className={`auto-toggle ${isAutoOn ? 'active' : ''}`} onClick={toggleAuto}>
           Auto
         </button>
@@ -317,6 +347,21 @@ export function BattlePage() {
         </div>
       )}
 
+      {/* Pause overlay */}
+      {isPaused && phase !== 'victory' && phase !== 'defeat' && (
+        <div className="battle-overlay">
+          <div className="overlay-content">
+            <h2>Paused</h2>
+            <button className="return-btn" onClick={() => setIsPaused(false)}>
+              Resume
+            </button>
+            <button className="return-btn quit-btn" onClick={handleQuit}>
+              Quit Battle
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Victory / Defeat overlay */}
       {(phase === 'victory' || phase === 'defeat') && (
         <div className="battle-overlay">
@@ -389,23 +434,7 @@ export function BattlePage() {
                 )}
               </div>
             )}
-            <button
-              className="return-btn"
-              onClick={() => {
-                refreshPlayer();
-                loadCollection();
-                if (state?.mode === 'tower') {
-                  navigate('/dungeons?tab=tower');
-                } else if (state?.mode === 'dungeon' || state?.mode === 'item-dungeon') {
-                  const tab = state.mode === 'item-dungeon' ? 'items' : 'essence';
-                  const dungeonId = state.dungeonId ?? '';
-                  const floor = (state.floor?.floor ?? 1) - 1;
-                  navigate(`/dungeons?tab=${tab}&dungeonId=${dungeonId}&floor=${floor}`);
-                } else {
-                  navigate('/story');
-                }
-              }}
-            >
+            <button className="return-btn" onClick={navigateAway}>
               Continue
             </button>
           </div>

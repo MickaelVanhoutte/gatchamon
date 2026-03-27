@@ -59,15 +59,11 @@ async function ohkoAnimation(engine: AnimationEngine, context: MoveContext): Pro
 		engine.flashSprite(target, color, 300)
 	]);
 
-	await new Promise<void>((resolve) => {
-		gsap.to(target.element, {
-			filter: 'brightness(3) contrast(2)',
-			duration: 0.2,
-			onComplete: () => {
-				gsap.to(target.element, { filter: 'none', duration: 0.3, onComplete: resolve });
-			}
-		});
-	});
+	const flashTl = engine.createTimeline();
+	flashTl
+		.to(target.element, { filter: 'brightness(3) contrast(2)', duration: 0.2 })
+		.to(target.element, { filter: 'none', duration: 0.3 });
+	await flashTl.then(() => {});
 }
 
 const HAZARD_SETTING_MOVES = ['spikes', 'toxic-spikes', 'stealth-rock', 'sticky-web'];
@@ -107,15 +103,15 @@ async function hazardAnimation(engine: AnimationEngine, context: MoveContext): P
 		width: 40px;
 		height: 40px;
 		pointer-events: none;
-		z-index: 1000;
+		z-index: ${engine.getEffectZIndex(attacker.isPlayer)};
 		transform: translate(-50%, -50%);
 	`;
 	container.appendChild(projectile);
 
 	await new Promise<void>((resolve) => {
 		gsap.to(projectile, {
-			left: endX,
-			top: endY,
+			x: endX - startX,
+			y: endY - startY,
 			duration: 0.4,
 			ease: 'power2.in',
 			onComplete: () => {
@@ -156,12 +152,11 @@ async function fieldAnimation(engine: AnimationEngine, context: MoveContext): Pr
 async function transformAnimation(engine: AnimationEngine, context: MoveContext): Promise<void> {
 	const { attacker } = context;
 
-	await new Promise<void>((resolve) => {
-		const tl = gsap.timeline({ onComplete: resolve });
-		tl.to(attacker.element, { filter: 'brightness(3)', scale: 0.8, duration: 0.2 })
-			.to(attacker.element, { filter: 'brightness(5)', scale: 1.2, duration: 0.15 })
-			.to(attacker.element, { filter: 'brightness(1)', scale: 1, duration: 0.25 });
-	});
+	const tl = engine.createTimeline();
+	tl.to(attacker.element, { filter: 'brightness(3)', scale: 0.8, duration: 0.2 })
+		.to(attacker.element, { filter: 'brightness(5)', scale: 1.2, duration: 0.15 })
+		.to(attacker.element, { filter: 'brightness(1)', scale: 1, duration: 0.25 });
+	await tl.then(() => {});
 }
 
 async function weatherAnimation(engine: AnimationEngine, context: MoveContext): Promise<void> {
@@ -207,12 +202,11 @@ async function sizeChangeAnimation(engine: AnimationEngine, context: MoveContext
 	const shrinkMoves = ['minimize'];
 
 	if (shrinkMoves.includes(moveName)) {
-		await new Promise<void>((resolve) => {
-			const tl = gsap.timeline({ onComplete: resolve });
-			tl.to(attacker.element, { scale: 0.6, duration: 0.3, ease: 'power2.in' })
-				.to(attacker.element, { scale: 0.7, duration: 0.1 })
-				.to(attacker.element, { scale: 1, duration: 0.2, ease: 'power2.out' });
-		});
+		const tl = engine.createTimeline();
+		tl.to(attacker.element, { scale: 0.6, duration: 0.3, ease: 'power2.in' })
+			.to(attacker.element, { scale: 0.7, duration: 0.1 })
+			.to(attacker.element, { scale: 1, duration: 0.2, ease: 'power2.out' });
+		await tl.then(() => {});
 	} else {
 		await engine.pulseScale(attacker, 1.25, 400);
 		await engine.showSpriteEffect('buff', attacker, {

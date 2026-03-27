@@ -6,6 +6,7 @@ import type { PokemonTemplate, PokemonInstance } from '@gatchamon/shared';
 import { loadPlayer, savePlayer, loadCollection, updateInstance, addToCollection } from './storage';
 import { trackStat, incrementMission, checkAndUpdateTrophies } from './reward.service';
 import { grantTrainerXp } from './player.service';
+import { applyPassives, advanceToNextActor, autoResolveEnemyTurns } from './battle.service';
 
 const activeBattles = new Map<string, BattleState>();
 
@@ -119,8 +120,20 @@ export function startDungeonBattle(
     dungeonId,
   };
 
-  // Use the same battle engine - import the resolution functions
-  // For dungeons, we store the battle and let the existing battle flow handle it
+  applyPassives(state);
+
+  const firstActorId = advanceToNextActor(state);
+  const allMons = [...state.playerTeam, ...state.enemyTeam];
+  const firstActor = allMons.find(m => m.instanceId === firstActorId);
+
+  if (firstActor && !firstActor.isPlayerOwned) {
+    state.currentActorId = firstActorId;
+    const enemyLogs = autoResolveEnemyTurns(state);
+    state.log.push(...enemyLogs);
+  } else {
+    state.currentActorId = firstActorId;
+  }
+
   activeBattles.set(battleId, state);
 
   return { state };
@@ -245,6 +258,21 @@ export function startTowerBattle(
     floor: { region: 0, floor: towerFloor, difficulty: 'normal' },
     mode: 'tower',
   };
+
+  applyPassives(state);
+
+  // Determine first actor
+  const firstActorId = advanceToNextActor(state);
+  const allMons = [...state.playerTeam, ...state.enemyTeam];
+  const firstActor = allMons.find(m => m.instanceId === firstActorId);
+
+  if (firstActor && !firstActor.isPlayerOwned) {
+    state.currentActorId = firstActorId;
+    const enemyLogs = autoResolveEnemyTurns(state);
+    state.log.push(...enemyLogs);
+  } else {
+    state.currentActorId = firstActorId;
+  }
 
   activeBattles.set(battleId, state);
 

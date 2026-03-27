@@ -8,10 +8,21 @@ const TUTORIAL_KEY = 'gatchamon_tutorial';
 const INBOX_KEY = 'gatchamon_inbox';
 const RETRY_SUMMON_KEY = 'gatchamon_retry_summon';
 
+function safeParse<T>(raw: string | null, fallback: T): T {
+  if (!raw) return fallback;
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    console.error('[storage] Failed to parse JSON, returning fallback');
+    return fallback;
+  }
+}
+
 export function loadPlayer(): Player | null {
   const raw = localStorage.getItem(PLAYER_KEY);
   if (!raw) return null;
-  const player = JSON.parse(raw) as Player;
+  const player = safeParse<Player | null>(raw, null);
+  if (!player) return null;
   // Migration: add stardust for existing players
   if (player.stardust === undefined) {
     player.stardust = 0;
@@ -72,7 +83,8 @@ export function savePlayer(player: Player): void {
 export function loadCollection(): PokemonInstance[] {
   const raw = localStorage.getItem(COLLECTION_KEY);
   if (!raw) return [];
-  const collection = JSON.parse(raw) as PokemonInstance[];
+  const collection = safeParse<PokemonInstance[]>(raw, []);
+  if (collection.length === 0 && raw.length > 2) return []; // corrupted data
   // Migration: add skillLevels for existing monsters
   let needsSave = false;
   for (const inst of collection) {
@@ -107,7 +119,7 @@ export function updateInstance(instanceId: string, updates: Partial<PokemonInsta
 export function loadHeldItems(): HeldItemInstance[] {
   const raw = localStorage.getItem(HELD_ITEMS_KEY);
   if (!raw) return [];
-  return JSON.parse(raw) as HeldItemInstance[];
+  return safeParse<HeldItemInstance[]>(raw, []);
 }
 
 export function saveHeldItems(items: HeldItemInstance[]): void {
@@ -139,7 +151,7 @@ const LAST_TEAM_KEY = 'gatchamon_last_team';
 export function loadLastTeam(): string[] {
   const raw = localStorage.getItem(LAST_TEAM_KEY);
   if (!raw) return [];
-  return JSON.parse(raw) as string[];
+  return safeParse<string[]>(raw, []);
 }
 
 export function saveLastTeam(instanceIds: string[]): void {
@@ -151,7 +163,7 @@ const REWARDS_KEY = 'gatchamon_rewards';
 export function loadRewardState(): import('@gatchamon/shared').RewardState | null {
   const raw = localStorage.getItem(REWARDS_KEY);
   if (!raw) return null;
-  return JSON.parse(raw);
+  return safeParse<import('@gatchamon/shared').RewardState | null>(raw, null);
 }
 
 export function saveRewardState(state: import('@gatchamon/shared').RewardState): void {
@@ -167,7 +179,7 @@ export function loadTutorialStep(): number {
     const hasPlayer = localStorage.getItem(PLAYER_KEY) !== null;
     return hasPlayer ? 99 : 0;
   }
-  return JSON.parse(raw) as number;
+  return safeParse<number>(raw, 0);
 }
 
 export function saveTutorialStep(step: number): void {
@@ -179,7 +191,7 @@ export function saveTutorialStep(step: number): void {
 export function loadInbox(): InboxItem[] {
   const raw = localStorage.getItem(INBOX_KEY);
   if (!raw) return [];
-  return JSON.parse(raw) as InboxItem[];
+  return safeParse<InboxItem[]>(raw, []);
 }
 
 export function saveInbox(items: InboxItem[]): void {

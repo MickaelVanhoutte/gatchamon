@@ -78,7 +78,8 @@ async function projectileAnimation(engine: AnimationEngine, context: MoveContext
 		border-radius: 50%;
 		background: radial-gradient(circle, ${color} 0%, transparent 70%);
 		filter: hue-rotate(${hue}deg) blur(2px);
-		z-index: 100;
+		z-index: ${engine.getEffectZIndex(attacker.isPlayer)};
+		transform: translate(-50%, -50%);
 	`;
 
 	const attackerCenter = engine.getLocalCenter(attacker.element);
@@ -91,8 +92,8 @@ async function projectileAnimation(engine: AnimationEngine, context: MoveContext
 
 	await new Promise<void>((resolve) => {
 		gsap.to(projectile, {
-			left: targetCenter.x,
-			top: targetCenter.y,
+			x: targetCenter.x - attackerCenter.x,
+			y: targetCenter.y - attackerCenter.y,
 			duration: 0.3,
 			ease: 'power2.in',
 			onComplete: () => {
@@ -180,20 +181,23 @@ async function drainAnimation(engine: AnimationEngine, context: MoveContext): Pr
 			height: 20px;
 			border-radius: 50%;
 			background: radial-gradient(circle, ${color} 0%, transparent 70%);
-			z-index: 100;
+			z-index: ${engine.getEffectZIndex(attacker.isPlayer)};
+			transform: translate(-50%, -50%);
 		`;
 
 		const targetCenter = engine.getLocalCenter(target.element);
 		const attackerCenter = engine.getLocalCenter(attacker.element);
 		const container = engine.getContainer();
 
-		orb.style.left = `${targetCenter.x + (i - 1) * 20}px`;
-		orb.style.top = `${targetCenter.y}px`;
+		const orbStartX = targetCenter.x + (i - 1) * 20;
+		const orbStartY = targetCenter.y;
+		orb.style.left = `${orbStartX}px`;
+		orb.style.top = `${orbStartY}px`;
 		container.appendChild(orb);
 
 		gsap.to(orb, {
-			left: attackerCenter.x,
-			top: attackerCenter.y,
+			x: attackerCenter.x - orbStartX,
+			y: attackerCenter.y - orbStartY,
 			duration: 0.5,
 			delay: i * 0.1,
 			ease: 'power2.inOut',
@@ -332,7 +336,8 @@ export async function throwAnimation(engine: AnimationEngine, context: MoveConte
 		border-radius: 50%;
 		background: radial-gradient(circle, ${color} 0%, transparent 70%);
 		filter: hue-rotate(${hue}deg) blur(1px);
-		z-index: 100;
+		z-index: ${engine.getEffectZIndex(attacker.isPlayer)};
+		transform: translate(-50%, -50%);
 	`;
 
 	const attackerCenter = engine.getLocalCenter(attacker.element);
@@ -348,6 +353,7 @@ export async function throwAnimation(engine: AnimationEngine, context: MoveConte
 	projectile.style.top = `${startY}px`;
 	container.appendChild(projectile);
 
+	const midX = (startX + endX) / 2;
 	const midY = Math.min(startY, endY) - 60;
 
 	await new Promise<void>((resolve) => {
@@ -358,13 +364,13 @@ export async function throwAnimation(engine: AnimationEngine, context: MoveConte
 			}
 		});
 		tl.to(projectile, {
-			left: (startX + endX) / 2,
-			top: midY,
+			x: midX - startX,
+			y: midY - startY,
 			duration: 0.2,
 			ease: 'power2.out'
 		}).to(projectile, {
-			left: endX,
-			top: endY,
+			x: endX - startX,
+			y: endY - startY,
 			duration: 0.15,
 			ease: 'power2.in'
 		});

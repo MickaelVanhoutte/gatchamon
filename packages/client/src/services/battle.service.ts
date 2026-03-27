@@ -109,7 +109,7 @@ function allDead(team: BattleMon[]): boolean {
 }
 
 /** Apply passive skills for all mons at battle start. */
-function applyPassives(state: BattleState): void {
+export function applyPassives(state: BattleState): void {
   const allMons = [...state.playerTeam, ...state.enemyTeam];
   for (const mon of allMons) {
     const template = getTemplate(mon.templateId);
@@ -184,7 +184,7 @@ function isStunned(mon: BattleMon): boolean {
 // Turn order — action gauge simulation
 // ---------------------------------------------------------------------------
 
-function advanceToNextActor(state: BattleState): string {
+export function advanceToNextActor(state: BattleState): string {
   const allMons = [...state.playerTeam, ...state.enemyTeam].filter(m => m.isAlive);
 
   // eslint-disable-next-line no-constant-condition
@@ -481,7 +481,7 @@ function getStatus(state: BattleState): BattleState['status'] {
 // Auto-resolve enemy turns
 // ---------------------------------------------------------------------------
 
-function autoResolveEnemyTurns(state: BattleState): BattleLogEntry[] {
+export function autoResolveEnemyTurns(state: BattleState): BattleLogEntry[] {
   const logs: BattleLogEntry[] = [];
 
   while (state.status === 'active') {
@@ -1122,7 +1122,7 @@ export function startItemDungeonBattle(
 }
 
 export function resolvePlayerAction(battleId: string, action: BattleAction): BattleResult {
-  const state = activeBattles.get(battleId);
+  const state = getBattleState(battleId);
   if (!state) throw new Error('Battle not found');
   if (state.status !== 'active') throw new Error('Battle is already over');
 
@@ -1264,4 +1264,8 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
 
 export function getBattleState(battleId: string): BattleState | null {
   return activeBattles.get(battleId) ?? getDungeonBattle(battleId);
+}
+
+export function deleteBattle(battleId: string): void {
+  activeBattles.delete(battleId);
 }

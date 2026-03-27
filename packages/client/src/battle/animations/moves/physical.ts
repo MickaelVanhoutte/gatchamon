@@ -4,7 +4,6 @@ import {
 	type MoveAnimation,
 	TYPE_HUE_ANGLES
 } from '../animation-engine';
-import { gsap } from 'gsap';
 
 export const physicalMoves: Record<string, MoveAnimation> = {};
 
@@ -403,52 +402,29 @@ export async function aerialAnimation(
 	const moveX = deltaX * ratio;
 	const moveY = deltaY * ratio;
 
-	await new Promise<void>((resolve) => {
-		gsap.to(attacker.element, {
-			y: -80,
-			scale: 0.9,
-			duration: 0.25,
-			ease: 'power2.out',
-			onComplete: resolve
-		});
-	});
+	const tl = engine.createTimeline();
 
-	await engine.wait(80);
-
-	await new Promise<void>((resolve) => {
-		gsap.to(attacker.element, {
-			x: moveX,
-			y: moveY,
-			scale: 1,
-			duration: 0.12,
-			ease: 'power4.in',
-			onComplete: resolve
-		});
-	});
-
-	const effects = Promise.all([
+	// Rise up
+	tl.to(attacker.element, { y: -80, scale: 0.9, duration: 0.25, ease: 'power2.out' });
+	// Pause in air
+	tl.to(attacker.element, { duration: 0.08 });
+	// Swoop down to target
+	tl.to(attacker.element, { x: moveX, y: moveY, scale: 1, duration: 0.12, ease: 'power4.in' });
+	// Trigger effects at impact
+	tl.add(() => {
 		engine.showSpriteEffect('wind', target, {
 			hueRotate: hue,
 			scale: 1.4,
 			tint: typeColor,
 			zIndex: engine.getEffectZIndex(attacker.isPlayer)
-		}),
-		engine.showImpact(target, { intensity: 12, color: typeColor }),
-		engine.screenShake(8, 200)
-	]);
-
-	const returnHome = new Promise<void>((resolve) => {
-		gsap.to(attacker.element, {
-			x: 0,
-			y: 0,
-			scale: 1,
-			duration: 0.3,
-			ease: 'power2.out',
-			onComplete: resolve
 		});
+		engine.showImpact(target, { intensity: 12, color: typeColor });
+		engine.screenShake(8, 200);
 	});
+	// Return home
+	tl.to(attacker.element, { x: 0, y: 0, scale: 1, duration: 0.3, ease: 'power2.out' });
 
-	await Promise.all([effects, returnHome]);
+	await tl.then(() => {});
 	engine.resetSpriteToHome(attacker);
 }
 

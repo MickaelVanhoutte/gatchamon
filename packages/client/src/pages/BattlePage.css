@@ -34,9 +34,28 @@
   image-rendering: pixelated;
 }
 
+/* Pause toggle button */
+.pause-toggle {
+  margin-left: auto;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 2px solid var(--card-border, #d0e4ea);
+  border-radius: 16px;
+  color: var(--text-secondary, #5a6a7a);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  letter-spacing: 2px;
+}
+
+.pause-toggle:hover {
+  transform: scale(1.05);
+}
+
 /* Auto toggle button */
 .auto-toggle {
-  margin-left: auto;
   padding: 4px 12px;
   background: rgba(255, 255, 255, 0.85);
   border: 2px solid var(--card-border, #d0e4ea);
@@ -501,6 +520,14 @@
 
 .return-btn:hover {
   background: var(--accent-hover, #14b8a6);
+}
+
+.quit-btn {
+  background: #ef4444;
+}
+
+.quit-btn:hover {
+  background: #dc2626;
 }
 
 @keyframes fadeIn {

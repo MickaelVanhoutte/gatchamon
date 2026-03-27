@@ -156,6 +156,7 @@ export function useAutoBattle(
   state: BattleState | null,
   phase: Phase,
   handleAction: (skillId: string, targetId: string) => Promise<void>,
+  isPaused: boolean,
 ): { isAutoOn: boolean; toggleAuto: () => void } {
   const [isAutoOn, setIsAutoOn] = useState(false);
   const handleActionRef = useRef(handleAction);
@@ -164,7 +165,7 @@ export function useAutoBattle(
   const toggleAuto = useCallback(() => setIsAutoOn(prev => !prev), []);
 
   useEffect(() => {
-    if (!isAutoOn || phase !== 'player_turn' || !state) return;
+    if (!isAutoOn || phase !== 'player_turn' || !state || isPaused) return;
 
     const actor = state.playerTeam.find(m => m.instanceId === state.currentActorId);
     if (!actor || !actor.isAlive || !actor.isPlayerOwned) return;
@@ -177,7 +178,7 @@ export function useAutoBattle(
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [isAutoOn, phase, state]);
+  }, [isAutoOn, phase, state, isPaused]);
 
   return { isAutoOn, toggleAuto };
 }

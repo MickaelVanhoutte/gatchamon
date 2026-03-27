@@ -52,6 +52,12 @@
   align-items: flex-start;
 }
 
+.tutorial-dialog--compact {
+  bottom: 12px;
+  left: 12px;
+  right: auto;
+}
+
 @keyframes dialog-enter {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }

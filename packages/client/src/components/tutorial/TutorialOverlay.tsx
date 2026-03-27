@@ -68,6 +68,7 @@ export function TutorialOverlay() {
   const navigate = useNavigate();
   const [lineIndex, setLineIndex] = useState(0);
   const [spot, setSpot] = useState<SpotRect | null>(null);
+  const [autoCollapsed, setAutoCollapsed] = useState(false);
   const prevStep = useRef(step);
 
   // Reset line index when step changes
@@ -75,6 +76,7 @@ export function TutorialOverlay() {
     if (step !== prevStep.current) {
       setLineIndex(0);
       setSpot(null);
+      setAutoCollapsed(false);
       prevStep.current = step;
     }
   }, [step]);
@@ -96,6 +98,14 @@ export function TutorialOverlay() {
       useGameStore.getState().refreshInbox();
     }
   }, [step, completeTutorial]);
+
+  // Auto-collapse dialog after 3s on summon steps so buttons are accessible
+  useEffect(() => {
+    if ((step === 4 || step === 5) && !autoCollapsed) {
+      const timer = setTimeout(() => setAutoCollapsed(true), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [step, autoCollapsed]);
 
   // Redirect to correct page if on wrong page mid-tutorial
   useEffect(() => {
@@ -190,25 +200,38 @@ export function TutorialOverlay() {
       )}
 
       {/* Professor dialog — passthrough clicks when user must interact with the page */}
-      {hasDialog && (
-        <div
-          className={`tutorial-dialog ${TOP_DIALOG_STEPS.has(step) ? 'tutorial-dialog--top' : ''}`}
-          style={INTERACT_STEPS.has(step) && lineIndex >= dialogLines.length - 1 ? { pointerEvents: 'none' } : undefined}
-          onClick={handleDialogTap}
-        >
-          <div className="professor-avatar">
-            <span role="img" aria-label="Professor">👨‍🔬</span>
+      {hasDialog && (() => {
+        const isInteractReady = INTERACT_STEPS.has(step) && (lineIndex >= dialogLines.length - 1 || autoCollapsed);
+        // On interact steps once the user has read all dialog lines (or auto-collapsed),
+        // collapse to just the professor head so buttons are accessible
+        if (isInteractReady) {
+          return (
+            <div className="tutorial-dialog tutorial-dialog--compact" style={{ pointerEvents: 'none' }}>
+              <div className="professor-avatar">
+                <span role="img" aria-label="Professor">👨‍🔬</span>
+              </div>
+            </div>
+          );
+        }
+        return (
+          <div
+            className={`tutorial-dialog ${TOP_DIALOG_STEPS.has(step) ? 'tutorial-dialog--top' : ''}`}
+            onClick={handleDialogTap}
+          >
+            <div className="professor-avatar">
+              <span role="img" aria-label="Professor">👨‍🔬</span>
+            </div>
+            <div className="speech-bubble">
+              <p className="speech-bubble-text">{dialogLines[lineIndex]}</p>
+              {lineIndex < dialogLines.length - 1 ? (
+                <span className="speech-bubble-tap">Tap to continue...</span>
+              ) : !INTERACT_STEPS.has(step) ? (
+                <span className="speech-bubble-tap">Tap to proceed</span>
+              ) : null}
+            </div>
           </div>
-          <div className="speech-bubble">
-            <p className="speech-bubble-text">{dialogLines[lineIndex]}</p>
-            {lineIndex < dialogLines.length - 1 ? (
-              <span className="speech-bubble-tap">Tap to continue...</span>
-            ) : !INTERACT_STEPS.has(step) ? (
-              <span className="speech-bubble-tap">Tap to proceed</span>
-            ) : null}
-          </div>
-        </div>
-      )}
+        );
+      })()}
     </>
   );
 }

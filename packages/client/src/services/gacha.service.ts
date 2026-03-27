@@ -73,15 +73,16 @@ function trackSummons(count: number): void {
 
 // ── Regular Pokeball (1-2★) ──
 
-export function summonSingleRegular(): SummonResult {
+export function summonSingleRegular(forcedTemplateId?: number): SummonResult {
   const player = loadPlayer();
   if (!player) throw new Error('Player not found');
   if (player.regularPokeballs < REGULAR_SINGLE_COST) throw new Error('Not enough pokeballs');
 
   savePlayer({ ...player, regularPokeballs: player.regularPokeballs - REGULAR_SINGLE_COST });
 
-  const stars = rollRegularStarRating();
-  const template = pickFromPool(stars);
+  const template = forcedTemplateId != null
+    ? POKEDEX.find(p => p.id === forcedTemplateId)!
+    : pickFromPool(rollRegularStarRating());
   const pokemon = createInstance(template, player.id);
   addToCollection([pokemon]);
   trackSummons(1);
@@ -116,15 +117,16 @@ export function summonMultiRegular(): SummonResult[] {
 
 // ── Premium Pokeball (3-5★) ──
 
-export function summonSinglePremium(): SummonResult {
+export function summonSinglePremium(forcedTemplateId?: number): SummonResult {
   const player = loadPlayer();
   if (!player) throw new Error('Player not found');
   if (player.premiumPokeballs < PREMIUM_SINGLE_COST) throw new Error('Not enough premium pokeballs');
 
   savePlayer({ ...player, premiumPokeballs: player.premiumPokeballs - PREMIUM_SINGLE_COST });
 
-  const stars = rollPremiumStarRating();
-  const template = pickFromPool(stars);
+  const template = forcedTemplateId != null
+    ? POKEDEX.find(p => p.id === forcedTemplateId)!
+    : pickFromPool(rollPremiumStarRating());
   const pokemon = createInstance(template, player.id);
   addToCollection([pokemon]);
   trackSummons(1);
