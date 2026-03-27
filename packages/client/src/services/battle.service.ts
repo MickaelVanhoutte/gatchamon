@@ -26,7 +26,7 @@ import {
 import { grantTrainerXp } from './player.service';
 import { rollItemDrop } from './rune.service';
 import { addHeldItem } from './storage';
-import { calculateTowerRewards as calculateTowerRewardsImported } from './dungeon.service';
+import { calculateTowerRewards as calculateTowerRewardsImported, getDungeonBattle } from './dungeon.service';
 
 // Map instanceId → active set effects for proc handling in battle
 const battleSetEffects = new Map<string, ActiveSetEffect[]>();
@@ -1263,5 +1263,5 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
 }
 
 export function getBattleState(battleId: string): BattleState | null {
-  return activeBattles.get(battleId) ?? null;
+  return activeBattles.get(battleId) ?? getDungeonBattle(battleId);
 }
