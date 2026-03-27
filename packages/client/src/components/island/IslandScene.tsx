@@ -6,12 +6,35 @@ import './IslandScene.css';
 // World size in px (the pannable area)
 const WORLD_W = 1200;
 const WORLD_H = 800;
-const MIN_ZOOM = 0.6;
 const MAX_ZOOM = 1.5;
 
 interface IslandSceneProps {
   monsters: OwnedPokemon[];
   onNavigate: (path: string) => void;
+}
+
+/* ── Coordinate helpers ─────────────────────────────────────────────
+   In portrait mode the .app container is CSS-rotated 90° CW so the
+   game appears landscape.  Pointer events still report in screen
+   (portrait) coordinates, but translate() operates in local (rotated)
+   space.  These helpers convert between the two systems.
+   ────────────────────────────────────────────────────────────────── */
+function isPortrait() {
+  return window.innerHeight > window.innerWidth;
+}
+
+/** Convert a screen-space delta to local element delta */
+function screenDeltaToLocal(sdx: number, sdy: number) {
+  if (isPortrait()) return { dx: sdy, dy: -sdx };
+  return { dx: sdx, dy: sdy };
+}
+
+/** Convert a screen point to local coordinates relative to the element */
+function screenPointToLocal(sx: number, sy: number, rect: DOMRect) {
+  if (isPortrait()) {
+    return { x: sy - rect.top, y: rect.width - (sx - rect.left) };
+  }
+  return { x: sx - rect.left, y: sy - rect.top };
 }
 
 function touchDist(a: React.Touch, b: React.Touch) {
@@ -35,6 +58,13 @@ export function IslandScene({ monsters, onNavigate }: IslandSceneProps) {
   const lastZoom = useRef(1);
   const lastPinchCenter = useRef({ x: 0, y: 0 });
 
+  /** Min zoom so the world always fills the viewport (no outside visible) */
+  const getMinZoom = useCallback(() => {
+    const el = sceneRef.current;
+    if (!el) return 1;
+    return Math.max(el.clientWidth / WORLD_W, el.clientHeight / WORLD_H);
+  }, []);
+
   const clampPan = useCallback((x: number, y: number, z: number) => {
     const el = sceneRef.current;
     if (!el) return { x, y };
@@ -53,6 +83,34 @@ export function IslandScene({ monsters, onNavigate }: IslandSceneProps) {
     };
   }, []);
 
+  // Set initial zoom to fill viewport & center the view
+  useEffect(() => {
+    const minZ = getMinZoom();
+    setZoom(minZ);
+    lastZoom.current = minZ;
+    const el = sceneRef.current;
+    if (el) {
+      const cx = -(WORLD_W * minZ - el.clientWidth) / 2;
+      const cy = -(WORLD_H * minZ - el.clientHeight) / 2;
+      setPan(clampPan(cx, cy, minZ));
+    }
+  }, [getMinZoom, clampPan]);
+
+  // Re-clamp on orientation / resize changes
+  useEffect(() => {
+    const onResize = () => {
+      const minZ = getMinZoom();
+      setZoom(prev => {
+        const z = Math.max(minZ, prev);
+        lastZoom.current = z;
+        return z;
+      });
+      setPan(prev => clampPan(prev.x, prev.y, lastZoom.current));
+    };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [getMinZoom, clampPan]);
+
   // --- Mouse / single-finger drag (pointer events) ---
   const onPointerDown = useCallback((e: React.PointerEvent) => {
     if (pinching.current) return;
@@ -62,8 +120,10 @@ export function IslandScene({ monsters, onNavigate }: IslandSceneProps) {
 
   const onPointerMove = useCallback((e: React.PointerEvent) => {
     if (!dragging.current || pinching.current) return;
-    const dx = e.clientX - lastPt.current.x;
-    const dy = e.clientY - lastPt.current.y;
+    const { dx, dy } = screenDeltaToLocal(
+      e.clientX - lastPt.current.x,
+      e.clientY - lastPt.current.y,
+    );
     lastPt.current = { x: e.clientX, y: e.clientY };
     setPan(prev => clampPan(prev.x + dx, prev.y + dy, lastZoom.current));
   }, [clampPan]);
@@ -87,23 +147,25 @@ export function IslandScene({ monsters, onNavigate }: IslandSceneProps) {
     const dist = touchDist(e.touches[0], e.touches[1]);
     const center = touchCenter(e.touches[0], e.touches[1]);
     const scaleFactor = dist / lastDist.current;
-    const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, lastZoom.current * scaleFactor));
+    const minZ = getMinZoom();
+    const newZoom = Math.max(minZ, Math.min(MAX_ZOOM, lastZoom.current * scaleFactor));
 
     // Adjust pan so the pinch center stays fixed
     const el = sceneRef.current;
     if (el) {
       const rect = el.getBoundingClientRect();
-      // Point in scene-space under the pinch center
-      const cx = center.x - rect.left;
-      const cy = center.y - rect.top;
-      // How pan shifts to keep pinch center stable
-      const dx = center.x - lastPinchCenter.current.x;
-      const dy = center.y - lastPinchCenter.current.y;
+      // Convert screen pinch center → local element coords
+      const local = screenPointToLocal(center.x, center.y, rect);
+      // Convert screen movement → local delta
+      const { dx, dy } = screenDeltaToLocal(
+        center.x - lastPinchCenter.current.x,
+        center.y - lastPinchCenter.current.y,
+      );
 
       setPan(prev => {
         const r = newZoom / lastZoom.current;
-        const px = prev.x * r + cx * (1 - r) + dx;
-        const py = prev.y * r + cy * (1 - r) + dy;
+        const px = prev.x * r + local.x * (1 - r) + dx;
+        const py = prev.y * r + local.y * (1 - r) + dy;
         return clampPan(px, py, newZoom);
       });
     }
@@ -112,13 +174,39 @@ export function IslandScene({ monsters, onNavigate }: IslandSceneProps) {
     lastZoom.current = newZoom;
     lastDist.current = dist;
     lastPinchCenter.current = center;
-  }, [clampPan]);
+  }, [clampPan, getMinZoom]);
 
   const onTouchEnd = useCallback((e: React.TouchEvent) => {
     if (e.touches.length < 2) {
       pinching.current = false;
     }
   }, []);
+
+  // Wheel zoom for desktop testing
+  useEffect(() => {
+    const el = sceneRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const minZ = getMinZoom();
+      const factor = e.deltaY > 0 ? 0.95 : 1.05;
+      const newZoom = Math.max(minZ, Math.min(MAX_ZOOM, lastZoom.current * factor));
+      const rect = el.getBoundingClientRect();
+      const local = screenPointToLocal(e.clientX, e.clientY, rect);
+      setPan(prev => {
+        const r = newZoom / lastZoom.current;
+        return clampPan(
+          prev.x * r + local.x * (1 - r),
+          prev.y * r + local.y * (1 - r),
+          newZoom,
+        );
+      });
+      setZoom(newZoom);
+      lastZoom.current = newZoom;
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, [clampPan, getMinZoom]);
 
   // Keep lastZoom ref in sync
   useEffect(() => { lastZoom.current = zoom; }, [zoom]);
