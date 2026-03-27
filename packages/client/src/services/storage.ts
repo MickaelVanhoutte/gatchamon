@@ -4,6 +4,7 @@ import { defaultTrainerSkills, shouldResetTower, getCurrentTowerResetDate } from
 const PLAYER_KEY = 'gatchamon_player';
 const COLLECTION_KEY = 'gatchamon_collection';
 const HELD_ITEMS_KEY = 'gatchamon_held_items';
+const TUTORIAL_KEY = 'gatchamon_tutorial';
 
 export function loadPlayer(): Player | null {
   const raw = localStorage.getItem(PLAYER_KEY);
@@ -155,9 +156,26 @@ export function saveRewardState(state: import('@gatchamon/shared').RewardState):
   localStorage.setItem(REWARDS_KEY, JSON.stringify(state));
 }
 
+// ── Tutorial ─────────────────────────────────────────────────────────
+
+export function loadTutorialStep(): number {
+  const raw = localStorage.getItem(TUTORIAL_KEY);
+  if (!raw) {
+    // Existing players (have save but no tutorial key) skip tutorial
+    const hasPlayer = localStorage.getItem(PLAYER_KEY) !== null;
+    return hasPlayer ? 99 : 0;
+  }
+  return JSON.parse(raw) as number;
+}
+
+export function saveTutorialStep(step: number): void {
+  localStorage.setItem(TUTORIAL_KEY, JSON.stringify(step));
+}
+
 export function clearAll(): void {
   localStorage.removeItem(PLAYER_KEY);
   localStorage.removeItem(COLLECTION_KEY);
   localStorage.removeItem(REWARDS_KEY);
   localStorage.removeItem(HELD_ITEMS_KEY);
+  localStorage.removeItem(TUTORIAL_KEY);
 }

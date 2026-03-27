@@ -15,7 +15,9 @@ import { PokedexPage } from './pages/PokedexPage';
 import { AltarPage } from './pages/AltarPage';
 import { BottomNav } from './components/layout/BottomNav';
 import { TopHUD } from './components/layout/TopHUD';
+import { TutorialOverlay } from './components/tutorial/TutorialOverlay';
 import { LoadingScreen } from './components/LoadingScreen';
+import { useTutorialStore } from './stores/tutorialStore';
 import { useRotatedScroll } from './hooks/useRotatedScroll';
 
 export function App() {
@@ -29,6 +31,7 @@ export function App() {
 
   useEffect(() => {
     loadPlayer();
+    useTutorialStore.getState().loadTutorial();
   }, [loadPlayer]);
 
   // Only auto-focus when the device is truly in landscape (not using CSS rotation hack)
@@ -55,7 +58,8 @@ export function App() {
             e.preventDefault();
             if (nameInput.trim()) {
               await createPlayer(nameInput.trim());
-              navigate('/summon');
+              useTutorialStore.getState().advanceStep(); // step 0 → 1
+              navigate('/');
             }
           }}>
             <input
@@ -95,6 +99,7 @@ export function App() {
         </Routes>
       </div>
       <BottomNav />
+      <TutorialOverlay />
     </div>
   );
 }

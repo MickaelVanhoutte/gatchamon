@@ -1,5 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
+import { useTutorialStore } from '../stores/tutorialStore';
 import { SummonPortal } from '../components/summon/SummonPortal';
 import { SummonRevealSequence } from '../components/summon/SummonRevealSequence';
 import { SummonResult } from '../components/summon/SummonResult';
@@ -12,11 +13,22 @@ type Phase = 'idle' | 'summoning' | 'revealing' | 'done';
 
 export function SummonPage() {
   const { player, summon } = useGameStore();
+  const tutorialStep = useTutorialStore(s => s.step);
+  const advanceStep = useTutorialStore(s => s.advanceStep);
+  const inTutorial = tutorialStep === 4 || tutorialStep === 5;
+
   const [phase, setPhase] = useState<Phase>('idle');
   const [results, setResults] = useState<OwnedPokemon[]>([]);
   const [resultsReady, setResultsReady] = useState(false);
   const [error, setError] = useState('');
   const [selectedBall, setSelectedBall] = useState<PokeballType>('regular');
+
+  // Tutorial step 5: auto-switch to premium
+  useEffect(() => {
+    if (tutorialStep === 5) {
+      setSelectedBall('premium');
+    }
+  }, [tutorialStep]);
 
   const costs = SUMMON_COSTS[selectedBall];
   const currency = selectedBall === 'legendary'
@@ -54,10 +66,14 @@ export function SummonPage() {
   }, []);
 
   const handleDone = useCallback(() => {
+    // Advance tutorial after summon completes
+    if (inTutorial) {
+      advanceStep();
+    }
     setPhase('idle');
     setResults([]);
     setResultsReady(false);
-  }, []);
+  }, [inTutorial, advanceStep]);
 
   if (!player) return null;
 
@@ -65,42 +81,57 @@ export function SummonPage() {
     <div className="page summon-page">
       {phase === 'idle' && (
         <div className="summon-idle">
-          <div className="summon-top-row">
-            <div className="pokeball-type-selector">
-              <button
-                className={`pokeball-type-tab ${selectedBall === 'regular' ? 'active' : ''}`}
-                onClick={() => setSelectedBall('regular')}
-              >
-                <GameIcon id="pokeball" size={16} />
-                <span>Regular</span>
-              </button>
-              <button
-                className={`pokeball-type-tab ${selectedBall === 'premium' ? 'active' : ''}`}
-                onClick={() => setSelectedBall('premium')}
-              >
-                <GameIcon id="premiumPokeball" size={16} />
-                <span>Premium</span>
-              </button>
-              <button
-                className={`pokeball-type-tab legendary ${selectedBall === 'legendary' ? 'active' : ''}`}
-                onClick={() => setSelectedBall('legendary')}
-              >
-                <GameIcon id="legendaryPokeball" size={16} />
-                <span>Legendary</span>
-              </button>
+          {/* Hide type selector during tutorial */}
+          {!inTutorial && (
+            <div className="summon-top-row">
+              <div className="pokeball-type-selector">
+                <button
+                  className={`pokeball-type-tab ${selectedBall === 'regular' ? 'active' : ''}`}
+                  onClick={() => setSelectedBall('regular')}
+                >
+                  <GameIcon id="pokeball" size={16} />
+                  <span>Regular</span>
+                </button>
+                <button
+                  className={`pokeball-type-tab ${selectedBall === 'premium' ? 'active' : ''}`}
+                  onClick={() => setSelectedBall('premium')}
+                >
+                  <GameIcon id="premiumPokeball" size={16} />
+                  <span>Premium</span>
+                </button>
+                <button
+                  className={`pokeball-type-tab legendary ${selectedBall === 'legendary' ? 'active' : ''}`}
+                  onClick={() => setSelectedBall('legendary')}
+                >
+                  <GameIcon id="legendaryPokeball" size={16} />
+                  <span>Legendary</span>
+                </button>
+              </div>
+              <div className="pokeball-type-info">
+                {selectedBall === 'regular'
+                  ? 'Summons 1-3★ monsters'
+                  : selectedBall === 'premium'
+                  ? 'Summons 3-5★ monsters'
+                  : 'Guarantees a 5★ monster'}
+              </div>
             </div>
-            <div className="pokeball-type-info">
-              {selectedBall === 'regular'
-                ? 'Summons 1-3★ monsters'
-                : selectedBall === 'premium'
-                ? 'Summons 3-5★ monsters'
-                : 'Guarantees a 5★ monster'}
+          )}
+
+          {/* During tutorial, show a label for which summon type */}
+          {inTutorial && (
+            <div className="summon-top-row">
+              <div className="pokeball-type-info">
+                {tutorialStep === 4
+                  ? 'Regular Summon — catch your first monster!'
+                  : 'Premium Summon — try a stronger Pokeball!'}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="summon-center-row">
             <button
-              className="summon-btn summon-single"
+              className={`summon-btn summon-single ${inTutorial ? 'tutorial-target' : ''}`}
+              data-tutorial-id="summon-btn-single"
               onClick={() => handleSummon(1)}
               disabled={currency < costs.single}
             >
@@ -118,7 +149,8 @@ export function SummonPage() {
               </div>
             </div>
 
-            {selectedBall !== 'legendary' && 'multi' in costs && (
+            {/* Hide x10 during tutorial */}
+            {!inTutorial && selectedBall !== 'legendary' && 'multi' in costs && (
               <button
                 className="summon-btn summon-multi"
                 onClick={() => handleSummon(10)}

@@ -88,6 +88,11 @@
   justify-content: center;
 }
 
+.toolbar-btn-disabled {
+  opacity: 0.25;
+  pointer-events: none;
+}
+
 .toolbar-badge {
   position: absolute;
   top: 4px;
