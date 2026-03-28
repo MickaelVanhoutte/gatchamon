@@ -6,7 +6,7 @@ import type { PokemonTemplate, PokemonInstance } from '@gatchamon/shared';
 import { loadPlayer, savePlayer, loadCollection, updateInstance, addToCollection } from './storage';
 import { trackStat, incrementMission, checkAndUpdateTrophies } from './reward.service';
 import { grantTrainerXp } from './player.service';
-import { applyPassives, advanceToNextActor, autoResolveEnemyTurns } from './battle.service';
+import { applyPassives, advanceToNextActor, autoResolveEnemyTurns } from '@gatchamon/shared';
 
 const activeBattles = new Map<string, BattleState>();
 

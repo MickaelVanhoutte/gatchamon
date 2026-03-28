@@ -22,5 +22,6 @@ export function getAllMoveNames(): string[] {
 
 export { physicalMoves } from './physical';
 export { specialMoves } from './special';
-export { statusMoves } from './status';
+export { statusMoves, EFFECT_ANIMATIONS } from './status';
+export type { EffectAnimation } from './status';
 export { otherMoves } from './other';

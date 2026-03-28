@@ -1,5 +1,5 @@
-import type { SkillDefinition } from '@gatchamon/shared';
-import { getSkillMultiplierBonus, MAX_SKILL_LEVEL } from '@gatchamon/shared';
+import type { SkillDefinition, SkillEffect } from '@gatchamon/shared';
+import { getSkillMultiplierBonus, MAX_SKILL_LEVEL, EFFECT_REGISTRY } from '@gatchamon/shared';
 
 const EFFECT_LABELS: Record<string, string> = {
   buff: 'Buff',
@@ -8,6 +8,16 @@ const EFFECT_LABELS: Record<string, string> = {
   heal: 'Heal',
   stun: 'Stun',
 };
+
+function getEffectLabel(eff: SkillEffect): string {
+  if (eff.id && EFFECT_REGISTRY[eff.id]) return EFFECT_REGISTRY[eff.id].name;
+  return EFFECT_LABELS[eff.type ?? 'buff'] ?? 'Effect';
+}
+
+function getEffectTypeClass(eff: SkillEffect): string {
+  if (eff.id && EFFECT_REGISTRY[eff.id]) return EFFECT_REGISTRY[eff.id].category;
+  return eff.type ?? 'buff';
+}
 
 const CATEGORY_LABELS: Record<string, string> = {
   basic: 'Basic',
@@ -72,13 +82,11 @@ export function SkillCard({ skill, index, skillLevel = 1 }: { skill: SkillDefini
         <div className="skill-effects">
           {skill.effects.map((eff, i) => (
             <div key={i} className="skill-effect">
-              <span className={`skill-effect-type skill-effect--${eff.type}`}>
-                {EFFECT_LABELS[eff.type]}
+              <span className={`skill-effect-type skill-effect--${getEffectTypeClass(eff)}`}>
+                {getEffectLabel(eff)}
               </span>
               <span className="skill-effect-detail">
-                {eff.stat && (
-                  <>{eff.stat.toUpperCase()} {eff.value > 0 ? '+' : ''}{eff.value} · </>
-                )}
+                {eff.value !== 0 && <>{eff.value > 0 ? '+' : ''}{eff.value} · </>}
                 {eff.duration}t · {eff.chance}%
               </span>
             </div>

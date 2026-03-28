@@ -5,8 +5,8 @@ import { removeDungeonBattle } from '../services/dungeon.service';
 import { useGameStore } from '../stores/gameStore';
 import { useBattleAnimation } from '../battle/useBattleAnimation';
 import { useAutoBattle } from '../battle/useAutoBattle';
-import { getTemplate, SKILLS, getTypeEffectiveness, ESSENCES, ITEM_SETS, getBossDialogue } from '@gatchamon/shared';
-import type { BattleState, BattleMon, BattleLogEntry, BattleResult, PokemonType } from '@gatchamon/shared';
+import { getTemplate, SKILLS, getTypeEffectiveness, ESSENCES, ITEM_SETS, getBossDialogue, EFFECT_REGISTRY } from '@gatchamon/shared';
+import type { BattleState, BattleMon, BattleLogEntry, BattleResult, PokemonType, EffectId, ActiveEffect } from '@gatchamon/shared';
 import { assetUrl } from '../utils/asset-url';
 import { GameIcon, StarRating } from '../components/icons';
 import { BattleLoadingScreen } from '../components/BattleLoadingScreen';
@@ -27,7 +27,6 @@ export function BattlePage() {
   const [phase, setPhase] = useState<Phase>('animating');
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
   const [logEntries, setLogEntries] = useState<BattleLogEntry[]>([]);
-  const [animatingLog, setAnimatingLog] = useState<BattleLogEntry | null>(null);
   const [rewards, setRewards] = useState<BattleResult['rewards']>(undefined);
   const [assetsReady, setAssetsReady] = useState(false);
   const [dialogueComplete, setDialogueComplete] = useState(false);
@@ -37,6 +36,55 @@ export function BattlePage() {
   const isActingRef = useRef(false);
 
   const { playLogEntry, playMultiTargetEntries } = useBattleAnimation(arenaEl, monRefs);
+
+  const spawnFloatingNumber = useCallback((entry: BattleLogEntry) => {
+    const el = monRefs.current.get(entry.targetId);
+    if (!el) return;
+    const container = el.closest('.battle-mon') as HTMLElement | null;
+    if (!container) return;
+
+    const parts: { text: string; cls: string }[] = [];
+    if (entry.damage > 0) {
+      let cls = 'float-dmg';
+      if (entry.isCrit) cls += ' float-crit';
+      if (entry.isGlancing) cls += ' float-glancing';
+      if (entry.effectiveness > 1) cls += ' float-super';
+      if (entry.effectiveness < 1 && entry.effectiveness > 0) cls += ' float-resist';
+      parts.push({ text: `-${entry.damage}`, cls });
+    }
+    if ((entry.shieldAbsorbed ?? 0) > 0) {
+      parts.push({ text: `${entry.shieldAbsorbed} shielded`, cls: 'float-shield' });
+    }
+    if (entry.endured) {
+      parts.push({ text: 'Endured!', cls: 'float-endure' });
+    }
+    if (entry.resisted) {
+      parts.push({ text: 'Resisted!', cls: 'float-resist-label' });
+    }
+    // Heals show as positive green number on the actor
+    const healEffect = entry.effects.find(e => e === 'heal' || e === 'recovery');
+    if (healEffect && entry.damage <= 0) {
+      const actorEl = monRefs.current.get(entry.actorId);
+      const actorContainer = actorEl?.closest('.battle-mon') as HTMLElement | null;
+      if (actorContainer) {
+        spawnFloat(actorContainer, '+Heal', 'float-heal');
+      }
+    }
+
+    let delay = 0;
+    for (const part of parts) {
+      setTimeout(() => spawnFloat(container, part.text, part.cls), delay);
+      delay += 80;
+    }
+  }, []);
+
+  const spawnFloat = useCallback((container: HTMLElement, text: string, cls: string) => {
+    const span = document.createElement('span');
+    span.className = `floating-number ${cls}`;
+    span.textContent = text;
+    container.appendChild(span);
+    setTimeout(() => span.remove(), 1200);
+  }, []);
 
   const loadBattle = useCallback(() => {
     if (!battleId) return;
@@ -112,20 +160,19 @@ export function BattlePage() {
           ]);
         }
 
-        // Apply HP changes for all entries in this group
+        // Apply HP changes for all entries in this group + spawn floating numbers
         for (const entry of group) {
           const mon = allMons.find(m => m.instanceId === entry.targetId);
           if (mon) {
             mon.currentHp = Math.max(0, mon.currentHp - entry.damage);
             if (mon.currentHp <= 0) mon.isAlive = false;
           }
+          spawnFloatingNumber(entry);
         }
 
-        setAnimatingLog(group[0]);
         setState({ ...result.state });
         await new Promise(r => setTimeout(r, 400));
       }
-      setAnimatingLog(null);
 
       // Restore final computed HP (catches heals, buffs, and other effects)
       for (const mon of allMons) {
@@ -264,8 +311,8 @@ export function BattlePage() {
         {[...state.playerTeam, ...state.enemyTeam]
           .filter(m => m.isAlive)
           .sort((a, b) => {
-            const spdA = a.stats.spd + (a.buffs?.filter(b => b.stat === 'spd').reduce((s, b) => s + b.value, 0) ?? 0) + (a.debuffs?.filter(d => d.stat === 'spd').reduce((s, d) => s + d.value, 0) ?? 0);
-            const spdB = b.stats.spd + (b.buffs?.filter(b => b.stat === 'spd').reduce((s, b) => s + b.value, 0) ?? 0) + (b.debuffs?.filter(d => d.stat === 'spd').reduce((s, d) => s + d.value, 0) ?? 0);
+            const spdA = a.stats.spd * (1 + (a.buffs?.some(b => b.id === 'spd_buff') ? 0.3 : 0) + (a.debuffs?.some(d => d.id === 'spd_slow') ? -0.3 : 0));
+            const spdB = b.stats.spd * (1 + (b.buffs?.some(b => b.id === 'spd_buff') ? 0.3 : 0) + (b.debuffs?.some(d => d.id === 'spd_slow') ? -0.3 : 0));
             return spdB - spdA;
           })
           .slice(0, 6)
@@ -288,19 +335,6 @@ export function BattlePage() {
 
       {/* Arena area */}
       <div className="battle-arena" ref={setArenaEl}>
-        {/* Floating damage/log */}
-        {animatingLog && (
-          <div className="floating-log">
-            <span className={`log-text ${animatingLog.isCrit ? 'crit' : ''}`}>
-              {animatingLog.actorName} → {animatingLog.skillName} → {animatingLog.targetName}
-              {' '}{animatingLog.damage > 0 ? `-${animatingLog.damage}` : ''}
-              {animatingLog.isCrit ? ' CRIT!' : ''}
-              {animatingLog.effectiveness > 1 ? ' Super effective!' : ''}
-              {animatingLog.effectiveness < 1 && animatingLog.effectiveness > 0 ? ' Not effective...' : ''}
-            </span>
-          </div>
-        )}
-
         {/* Enemy team */}
         <div className="battle-field enemy-field">
           {state.enemyTeam.map(mon => {
@@ -366,7 +400,7 @@ export function BattlePage() {
         </div>
       )}
 
-      {phase === 'animating' && !animatingLog && (
+      {phase === 'animating' && (
         <div className="skill-panel">
           <p className="waiting-text">...</p>
         </div>
@@ -483,6 +517,139 @@ function EffectivenessArrow({ effectiveness }: { effectiveness: number }) {
   }
 }
 
+const EFFECT_ABBREV: Partial<Record<EffectId, string>> = {
+  atk_buff: 'ATK\u2191', def_buff: 'DEF\u2191', spd_buff: 'SPD\u2191', crit_rate_buff: 'CRI\u2191',
+  immunity: 'IMM', invincibility: 'INV', endure: 'END', shield: 'SHD',
+  reflect: 'RFL', counter: 'CTR', recovery: 'REC', vampire: 'VMP',
+  atk_break: 'ATK\u2193', def_break: 'DEF\u2193', spd_slow: 'SPD\u2193',
+  glancing: 'GLN', brand: 'BRD', unrecoverable: 'UNR', silence: 'SIL',
+  oblivion: 'OBL', buff_block: 'BLK', provoke: 'PRV',
+  poison: 'PSN', burn: 'BRN', freeze: 'FRZ', paralysis: 'PAR', confusion: 'CNF', sleep: 'SLP',
+};
+
+const MAX_EFFECT_ICONS = 8;
+
+function EffectInfoModal({ effectId, stacks, turns, onClose }: {
+  effectId: EffectId; stacks: number; turns: number; onClose: () => void;
+}) {
+  const meta = EFFECT_REGISTRY[effectId];
+  if (!meta) return null;
+  const bgClass =
+    meta.category === 'buff' ? 'effect-modal-buff' :
+    meta.category === 'status' ? 'effect-modal-status' :
+    'effect-modal-debuff';
+
+  return (
+    <div className="effect-modal-backdrop" onClick={onClose}>
+      <div className={`effect-modal ${bgClass}`} onClick={e => e.stopPropagation()}>
+        <div className="effect-modal-header">
+          <span className="effect-modal-name" style={{ color: meta.color }}>{meta.name}</span>
+          <span className="effect-modal-cat">{meta.category}</span>
+        </div>
+        <p className="effect-modal-desc">{meta.description}</p>
+        <div className="effect-modal-stats">
+          {turns < 999 && <span>{turns} turn{turns !== 1 ? 's' : ''} remaining</span>}
+          {turns >= 999 && <span>Permanent</span>}
+          {stacks > 1 && <span> &middot; {stacks} stacks</span>}
+        </div>
+        <button className="effect-modal-close" onClick={onClose}>OK</button>
+      </div>
+    </div>
+  );
+}
+
+function EffectIcons({ mon }: { mon: BattleMon }) {
+  const [selectedEffect, setSelectedEffect] = useState<{ id: EffectId; stacks: number; turns: number } | null>(null);
+  const allEffects = [...mon.buffs, ...mon.debuffs];
+  if (allEffects.length === 0) return null;
+
+  // Count stacks for stackable effects
+  const stackCounts = new Map<EffectId, number>();
+  for (const eff of allEffects) {
+    stackCounts.set(eff.id, (stackCounts.get(eff.id) ?? 0) + 1);
+  }
+
+  // Deduplicate: keep first occurrence of each effect id, attach stack count
+  const seen = new Set<EffectId>();
+  const unique: (ActiveEffect & { stacks: number })[] = [];
+  for (const eff of allEffects) {
+    if (!seen.has(eff.id)) {
+      seen.add(eff.id);
+      unique.push({ ...eff, stacks: stackCounts.get(eff.id) ?? 1 });
+    }
+  }
+
+  const visible = unique.slice(0, MAX_EFFECT_ICONS);
+  const overflow = unique.length - MAX_EFFECT_ICONS;
+
+  return (
+    <>
+      <div className="effect-icons-row">
+        {visible.map((eff) => {
+          const meta = EFFECT_REGISTRY[eff.id];
+          if (!meta) return null;
+          const abbrev = EFFECT_ABBREV[eff.id] ?? eff.id.slice(0, 3).toUpperCase();
+          const bgClass =
+            meta.category === 'buff' ? 'effect-icon-buff' :
+            meta.category === 'status' ? 'effect-icon-status' :
+            'effect-icon-debuff';
+          return (
+            <div
+              key={eff.id}
+              className={`effect-icon ${bgClass}`}
+              style={{ borderColor: meta.color }}
+              onClick={(e) => { e.stopPropagation(); setSelectedEffect({ id: eff.id, stacks: eff.stacks, turns: eff.remainingTurns }); }}
+            >
+              <span className="effect-icon-label">{abbrev}</span>
+              {eff.stacks > 1 && (
+                <span className="effect-icon-stacks">x{eff.stacks}</span>
+              )}
+              <span className="effect-icon-turns">{eff.remainingTurns}</span>
+            </div>
+          );
+        })}
+        {overflow > 0 && (
+          <div className="effect-icon effect-icon-overflow">
+            +{overflow}
+          </div>
+        )}
+      </div>
+      {selectedEffect && (
+        <EffectInfoModal
+          effectId={selectedEffect.id}
+          stacks={selectedEffect.stacks}
+          turns={selectedEffect.turns}
+          onClose={() => setSelectedEffect(null)}
+        />
+      )}
+    </>
+  );
+}
+
+function StatusOverlay({ mon }: { mon: BattleMon }) {
+  const allEffects = [...mon.buffs, ...mon.debuffs];
+  const has = (id: EffectId) => allEffects.some(e => e.id === id);
+
+  const overlays: React.ReactElement[] = [];
+
+  if (has('freeze')) overlays.push(<div key="freeze" className="status-overlay status-freeze" />);
+  if (has('burn')) overlays.push(<div key="burn" className="status-overlay status-burn"><span /><span /><span /><span /><span /><span /></div>);
+  if (has('poison')) overlays.push(<div key="poison" className="status-overlay status-poison"><span /><span /><span /><span /><span /></div>);
+  if (has('paralysis')) overlays.push(<div key="paralysis" className="status-overlay status-paralysis"><span /><span /><span /><span /></div>);
+  if (has('sleep')) overlays.push(<div key="sleep" className="status-overlay status-sleep"><span>Z</span><span>z</span><span>z</span></div>);
+  if (has('confusion')) overlays.push(<div key="confusion" className="status-overlay status-confusion"><span>★</span><span>★</span><span>★</span></div>);
+  if (has('shield')) overlays.push(<div key="shield" className="status-overlay status-shield" />);
+  if (has('immunity')) overlays.push(<div key="immunity" className="status-overlay status-immunity" />);
+  if (has('invincibility')) overlays.push(<div key="invinc" className="status-overlay status-invincibility" />);
+  if (has('recovery')) overlays.push(<div key="recovery" className="status-overlay status-recovery"><span>+</span><span>+</span><span>+</span></div>);
+  if (has('endure')) overlays.push(<div key="endure" className="status-overlay status-endure" />);
+  if (has('reflect')) overlays.push(<div key="reflect" className="status-overlay status-reflect" />);
+  if (has('silence')) overlays.push(<div key="silence" className="status-overlay status-silence" />);
+
+  if (overlays.length === 0) return null;
+  return <>{overlays}</>;
+}
+
 function BattleMonSprite({
   mon,
   isTargetable,
@@ -528,13 +695,20 @@ function BattleMonSprite({
       <div className="mon-hp-bar-bg">
         <div className="mon-hp-bar" style={{ width: `${hpPct}%`, background: hpColor }} />
       </div>
+      <div className="mon-atb-bar-bg">
+        <div className="mon-atb-bar" style={{ width: `${Math.min(100, (mon.actionGauge / 1000) * 100)}%` }} />
+      </div>
       <span className="mon-hp-text">{mon.currentHp}/{mon.maxHp}</span>
-      <img
-        src={animatedSpriteUrl}
-        alt={tmpl.name}
-        className="battle-sprite"
-        style={{ transform: `scale(${sizeScale})` }}
-      />
+      <div className="sprite-container">
+        <img
+          src={animatedSpriteUrl}
+          alt={tmpl.name}
+          className="battle-sprite"
+          style={{ transform: `scale(${sizeScale})` }}
+        />
+        {mon.isAlive && <StatusOverlay mon={mon} />}
+      </div>
+      {mon.isAlive && <EffectIcons mon={mon} />}
       <span className="mon-name">{tmpl.name}</span>
     </div>
   );

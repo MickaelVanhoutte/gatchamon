@@ -1,31 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { getTemplate, SKILLS, getTypeEffectiveness, getSkillMultiplierBonus } from '@gatchamon/shared';
-import type { BattleState, BattleMon, PokemonType, BaseStats } from '@gatchamon/shared';
+import { getTemplate, SKILLS, getTypeEffectiveness, getSkillMultiplierBonus, getEffectiveStats, EFFECT_REGISTRY } from '@gatchamon/shared';
+import type { BattleState, BattleMon, PokemonType, BaseStats, SkillEffect, EffectId } from '@gatchamon/shared';
 
 type Phase = 'player_turn' | 'animating' | 'victory' | 'defeat';
 
 interface AutoAction {
   skillId: string;
   targetId: string;
-}
-
-function getEffectiveStats(mon: BattleMon): BaseStats {
-  const stats = { ...mon.stats };
-  for (const buff of mon.buffs) {
-    if (buff.stat && buff.stat in stats) {
-      (stats as any)[buff.stat] += buff.value;
-    }
-  }
-  for (const debuff of mon.debuffs) {
-    if (debuff.stat && debuff.stat in stats) {
-      (stats as any)[debuff.stat] += debuff.value;
-    }
-  }
-  stats.hp = Math.max(1, stats.hp);
-  stats.atk = Math.max(1, stats.atk);
-  stats.def = Math.max(1, stats.def);
-  stats.spd = Math.max(1, stats.spd);
-  return stats;
 }
 
 function estimateDamage(
@@ -45,33 +26,68 @@ function estimateDamage(
   return Math.max(1, baseDmg * stabBonus * typeEff * expectedCrit);
 }
 
+function resolveEffectId(eff: SkillEffect): EffectId {
+  if (eff.id) return eff.id;
+  // Legacy mapping
+  switch (eff.type) {
+    case 'buff': return 'atk_buff';
+    case 'debuff': return 'atk_break';
+    case 'dot': return 'poison';
+    case 'stun': return 'freeze';
+    case 'heal': return 'heal';
+    default: return 'atk_buff';
+  }
+}
+
 function scoreEffects(
-  effects: { type: string; stat?: string; value: number; duration: number; chance: number }[],
+  effects: SkillEffect[],
   actor: BattleMon,
   target: BattleMon,
 ): number {
   let score = 0;
   for (const eff of effects) {
     const proc = eff.chance / 100;
-    switch (eff.type) {
-      case 'stun':
-        score += 300 * proc;
+    const effectId = resolveEffectId(eff);
+    const meta = EFFECT_REGISTRY[effectId];
+    if (!meta) continue;
+
+    switch (meta.category) {
+      case 'status':
+        // CC effects are very valuable
+        if (meta.cc === 'stun') score += 300 * proc;
+        else if (meta.cc === 'conditional') score += 200 * proc;
+        // DoTs
+        if (meta.dot) score += target.maxHp * (meta.dot.percentHp / 100) * eff.duration * proc;
         break;
       case 'debuff':
-        score += Math.abs(eff.value) * eff.duration * proc;
+        // Stat debuffs
+        if (meta.statMod) score += Math.abs(meta.statMod.percent) * eff.duration * proc;
+        // Special debuffs
+        if (effectId === 'def_break') score += 400 * proc;
+        else if (effectId === 'silence') score += 250 * proc;
+        else if (effectId === 'provoke') score += 200 * proc;
+        else if (effectId === 'brand') score += 150 * proc;
+        else if (effectId === 'strip') score += 300 * proc;
+        else score += 100 * eff.duration * proc;
         break;
       case 'buff':
-        score += eff.value * eff.duration * proc;
+        if (effectId === 'immunity') score += 350 * proc;
+        else if (effectId === 'invincibility') score += 400 * proc;
+        else if (effectId === 'shield') score += eff.value * proc;
+        else if (meta.statMod) score += meta.statMod.percent * eff.duration * proc;
+        else score += 100 * eff.duration * proc;
         break;
-      case 'dot':
-        score += target.maxHp * (eff.value / 100) * eff.duration * proc;
+      case 'instant':
+        if (effectId === 'heal') {
+          const missingRatio = 1 - actor.currentHp / actor.maxHp;
+          const healAmt = actor.maxHp * (eff.value / 100);
+          score += missingRatio * healAmt * 2 * proc;
+        } else if (effectId === 'atb_boost') score += 150 * proc;
+        else if (effectId === 'atb_reduce') score += 150 * proc;
+        else if (effectId === 'cleanse') score += 200 * proc;
+        else if (effectId === 'cd_reset') score += 300 * proc;
+        else if (effectId === 'cd_reduce') score += 200 * proc;
         break;
-      case 'heal': {
-        const missingRatio = 1 - actor.currentHp / actor.maxHp;
-        const healAmt = actor.maxHp * (eff.value / 100);
-        score += missingRatio * healAmt * 2 * proc;
-        break;
-      }
     }
   }
   return score;

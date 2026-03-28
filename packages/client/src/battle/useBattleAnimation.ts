@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { AnimationEngine } from './animations/animation-engine';
 import { AudioManager } from './animations/audio-manager';
-import { registerAllMoves } from './animations/moves';
+import { registerAllMoves, EFFECT_ANIMATIONS } from './animations/moves';
 import { skillNameToSlug, resolveAnimationCategory } from './animations/move-registry';
 import { SKILLS } from '@gatchamon/shared';
 import type { BattleLogEntry } from '@gatchamon/shared';
@@ -90,6 +90,25 @@ export function useBattleAnimation(
 			moveType,
 		});
 
+		// Play one-shot effect animations for applied effects
+		if (entry.effects && entry.effects.length > 0) {
+			const effectPromises: Promise<void>[] = [];
+			for (const effectId of entry.effects) {
+				const effectAnim = EFFECT_ANIMATIONS[effectId];
+				if (effectAnim) {
+					// Determine target: buffs/heals play on attacker's side, debuffs on defender
+					const isSelfEffect = ['heal', 'atb_boost', 'cd_reset', 'cd_reduce', 'cleanse',
+						'atk_buff', 'def_buff', 'spd_buff', 'crit_rate_buff', 'immunity',
+						'invincibility', 'endure', 'shield', 'reflect', 'counter', 'recovery', 'vampire'].includes(effectId);
+					const target = isSelfEffect ? attacker : defender;
+					effectPromises.push(effectAnim(engine, target));
+				}
+			}
+			if (effectPromises.length > 0) {
+				await Promise.all(effectPromises);
+			}
+		}
+
 		// Play effectiveness SFX
 		if (entry.damage > 0) {
 			if (entry.effectiveness > 1) {
@@ -146,6 +165,27 @@ export function useBattleAnimation(
 			moveCategory,
 			moveType,
 		});
+
+		// Play one-shot effect animations for applied effects on each target
+		const effectPromises: Promise<void>[] = [];
+		for (let i = 0; i < entries.length; i++) {
+			const logEntry = entries[i];
+			const target = defenders[i];
+			if (!logEntry.effects || logEntry.effects.length === 0 || !target) continue;
+
+			for (const effectId of logEntry.effects) {
+				const effectAnim = EFFECT_ANIMATIONS[effectId];
+				if (effectAnim) {
+					const isSelfEffect = ['heal', 'atb_boost', 'cd_reset', 'cd_reduce', 'cleanse',
+						'atk_buff', 'def_buff', 'spd_buff', 'crit_rate_buff', 'immunity',
+						'invincibility', 'endure', 'shield', 'reflect', 'counter', 'recovery', 'vampire'].includes(effectId);
+					effectPromises.push(effectAnim(engine, isSelfEffect ? attacker : target));
+				}
+			}
+		}
+		if (effectPromises.length > 0) {
+			await Promise.all(effectPromises);
+		}
 
 		// Play best effectiveness SFX
 		const hasDamage = entries.some(e => e.damage > 0);

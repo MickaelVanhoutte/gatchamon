@@ -1,5 +1,13 @@
-import type { BaseStats } from './pokemon.js';
+import type { BaseStats, EffectId } from './pokemon.js';
 import type { Difficulty } from './player.js';
+
+export interface ActiveEffect {
+  id: EffectId;               // e.g., 'atk_buff', 'poison', 'shield'
+  type: 'buff' | 'debuff';   // For cleanse/strip targeting
+  value: number;              // Magnitude (shield HP remaining, 1 for unique effects)
+  remainingTurns: number;     // Countdown, 999 = permanent (legacy passives)
+  sourceId?: string;          // Who applied it (for provoke targeting)
+}
 
 export interface BattleMon {
   instanceId: string;
@@ -15,13 +23,6 @@ export interface BattleMon {
   actionGauge: number;
   isBoss?: boolean;
   skillLevels?: [number, number, number];
-}
-
-export interface ActiveEffect {
-  type: string;
-  stat?: keyof BaseStats;
-  value: number;
-  remainingTurns: number;
 }
 
 export interface BattleState {
@@ -50,6 +51,11 @@ export interface BattleLogEntry {
   isCrit: boolean;
   effectiveness: number;
   effects: string[];
+  isGlancing?: boolean;
+  shieldAbsorbed?: number;
+  reflected?: number;
+  endured?: boolean;
+  resisted?: boolean;
 }
 
 export interface BattleAction {
@@ -78,3 +84,6 @@ export interface BattleResult {
   state: BattleState;
   rewards?: BattleRewards;
 }
+
+// Re-export for convenience — set effects from held items
+export type { ActiveSetEffect } from './held-item.js';

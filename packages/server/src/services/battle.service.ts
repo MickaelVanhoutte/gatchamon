@@ -1,7 +1,18 @@
 import { v4 as uuidv4 } from 'uuid';
-import { getTemplate as getTemplateShared, computeStats, calculateDamage, xpToNextLevel } from '@gatchamon/shared';
-import { SKILLS, getSkillsForPokemon } from '@gatchamon/shared';
+import { getTemplate as getTemplateShared, computeStats, xpToNextLevel } from '@gatchamon/shared';
+import { getSkillsForPokemon } from '@gatchamon/shared';
 import { REGIONS, TOTAL_REGIONS, getFloorCount, getGymLeaderTeam, getLeagueChampion } from '@gatchamon/shared';
+import {
+  applyPassives,
+  advanceToNextActor,
+  autoResolveEnemyTurns,
+  processStartOfTurn,
+  resolveSkill,
+  getCCState,
+  checkBattleEnd,
+  getEffectiveStats,
+  allDead,
+} from '@gatchamon/shared';
 import type {
   BattleState,
   BattleMon,
@@ -11,7 +22,7 @@ import type {
   BattleResult,
   Difficulty,
 } from '@gatchamon/shared';
-import type { PokemonInstance, PokemonTemplate, SkillDefinition, BaseStats, StoryProgress } from '@gatchamon/shared';
+import type { PokemonTemplate, SkillDefinition, StoryProgress } from '@gatchamon/shared';
 import { getDb } from '../db/schema.js';
 
 // ---------------------------------------------------------------------------
@@ -210,434 +221,9 @@ function makeBattleMon(
   };
 }
 
-/** Apply passive skills for all mons at battle start. */
-function applyPassives(state: BattleState): void {
-  const allMons = [...state.playerTeam, ...state.enemyTeam];
-  for (const mon of allMons) {
-    const template = getTemplate(mon.templateId);
-    const skills = getSkillsForPokemon(template.skillIds);
-    for (const skill of skills) {
-      if (skill.category !== 'passive') continue;
-      for (const effect of skill.effects) {
-        const roll = Math.random() * 100;
-        if (roll >= effect.chance) continue;
-
-        // Determine targets for the passive
-        let targets: BattleMon[];
-        if (skill.target === 'self') {
-          targets = [mon];
-        } else if (skill.target === 'all_allies') {
-          targets = mon.isPlayerOwned
-            ? state.playerTeam.filter(m => m.isAlive)
-            : state.enemyTeam.filter(m => m.isAlive);
-        } else if (skill.target === 'all_enemies') {
-          targets = mon.isPlayerOwned
-            ? state.enemyTeam.filter(m => m.isAlive)
-            : state.playerTeam.filter(m => m.isAlive);
-        } else {
-          targets = [mon];
-        }
-
-        for (const target of targets) {
-          const activeEffect = {
-            type: effect.type as 'buff' | 'debuff' | 'dot' | 'heal' | 'stun',
-            stat: effect.stat,
-            value: effect.value,
-            remainingTurns: 999, // Passives last the entire battle
-          };
-          if (effect.type === 'buff' || effect.type === 'heal') {
-            target.buffs.push(activeEffect);
-          } else {
-            target.debuffs.push(activeEffect);
-          }
-        }
-      }
-    }
-  }
-}
-
-function allDead(team: BattleMon[]): boolean {
-  return team.every(m => !m.isAlive);
-}
-
-function getEffectiveStats(mon: BattleMon): BaseStats {
-  const stats = { ...mon.stats };
-
-  for (const buff of mon.buffs) {
-    if (buff.stat && buff.stat in stats) {
-      (stats as any)[buff.stat] += buff.value;
-    }
-  }
-  for (const debuff of mon.debuffs) {
-    if (debuff.stat && debuff.stat in stats) {
-      (stats as any)[debuff.stat] += debuff.value; // value is negative for debuffs
-    }
-  }
-
-  // Floor stats at 1 (except critRate/critDmg/acc/res which can be 0)
-  stats.hp = Math.max(1, stats.hp);
-  stats.atk = Math.max(1, stats.atk);
-  stats.def = Math.max(1, stats.def);
-  stats.spd = Math.max(1, stats.spd);
-
-  return stats;
-}
-
-function isStunned(mon: BattleMon): boolean {
-  return mon.debuffs.some(d => d.type === 'stun' && d.remainingTurns > 0);
-}
-
-// ---------------------------------------------------------------------------
-// Turn order — action gauge simulation
-// ---------------------------------------------------------------------------
-
-/** Advance gauges tick by tick until one monster hits 1000. Return its instanceId. */
-function advanceToNextActor(state: BattleState): string {
-  const allMons = [...state.playerTeam, ...state.enemyTeam].filter(m => m.isAlive);
-
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    for (const mon of allMons) {
-      const effectiveStats = getEffectiveStats(mon);
-      mon.actionGauge += effectiveStats.spd;
-    }
-    // Check who reached 1000 (could be multiple — pick highest gauge)
-    const ready = allMons
-      .filter(m => m.actionGauge >= 1000)
-      .sort((a, b) => b.actionGauge - a.actionGauge);
-
-    if (ready.length > 0) {
-      const actor = ready[0];
-      actor.actionGauge = 0;
-      return actor.instanceId;
-    }
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Effect processing — start of turn
-// ---------------------------------------------------------------------------
-
-function processStartOfTurn(mon: BattleMon, state: BattleState): string[] {
-  const effects: string[] = [];
-  const template = getTemplate(mon.templateId);
-
-  // Process DoTs
-  for (const debuff of mon.debuffs) {
-    if (debuff.type === 'dot' && debuff.remainingTurns > 0) {
-      const dotDmg = Math.floor(mon.maxHp * (debuff.value / 100));
-      mon.currentHp = Math.max(0, mon.currentHp - dotDmg);
-      effects.push(`${template.name} takes ${dotDmg} DoT damage`);
-      if (mon.currentHp <= 0) {
-        mon.isAlive = false;
-        effects.push(`${template.name} fainted from DoT!`);
-      }
-    }
-  }
-
-  // Tick buff/debuff durations
-  for (const buff of mon.buffs) {
-    buff.remainingTurns--;
-  }
-  for (const debuff of mon.debuffs) {
-    debuff.remainingTurns--;
-  }
-
-  // Remove expired effects
-  mon.buffs = mon.buffs.filter(b => b.remainingTurns > 0);
-  mon.debuffs = mon.debuffs.filter(d => d.remainingTurns > 0);
-
-  return effects;
-}
-
-// ---------------------------------------------------------------------------
-// Skill resolution
-// ---------------------------------------------------------------------------
-
-function resolveSkill(
-  actor: BattleMon,
-  skill: SkillDefinition,
-  targets: BattleMon[],
-  state: BattleState,
-): BattleLogEntry[] {
-  const logs: BattleLogEntry[] = [];
-  const actorTemplate = getTemplate(actor.templateId);
-  const attackerStats = getEffectiveStats(actor);
-
-  for (const target of targets) {
-    const targetTemplate = getTemplate(target.templateId);
-    let damage = 0;
-    let isCrit = false;
-    let effectiveness = 1;
-    const appliedEffects: string[] = [];
-
-    // Handle heal skills (target is self or ally)
-    if (skill.target === 'self' || skill.target === 'single_ally' || skill.target === 'all_allies') {
-      // For heal-type skills with multiplier 0, no damage is dealt
-      if (skill.multiplier > 0) {
-        // Some skills on self/ally still deal damage (unusual but handle it)
-        const result = calculateDamage(
-          attackerStats,
-          getEffectiveStats(target),
-          skill,
-          actorTemplate.types,
-          targetTemplate.types,
-        );
-        damage = result.damage;
-        isCrit = result.isCrit;
-        effectiveness = result.effectiveness;
-
-        target.currentHp = Math.max(0, target.currentHp - damage);
-        if (target.currentHp <= 0) {
-          target.isAlive = false;
-          appliedEffects.push(`${targetTemplate.name} fainted!`);
-        }
-      }
-    } else {
-      // Offensive skill
-      const result = calculateDamage(
-        attackerStats,
-        getEffectiveStats(target),
-        skill,
-        actorTemplate.types,
-        targetTemplate.types,
-      );
-      damage = result.damage;
-      isCrit = result.isCrit;
-      effectiveness = result.effectiveness;
-
-      target.currentHp = Math.max(0, target.currentHp - damage);
-      if (target.currentHp <= 0) {
-        target.isAlive = false;
-        appliedEffects.push(`${targetTemplate.name} fainted!`);
-      }
-    }
-
-    // Apply skill effects
-    for (const effect of skill.effects) {
-      const roll = Math.random() * 100;
-      if (roll >= effect.chance) continue;
-
-      switch (effect.type) {
-        case 'buff': {
-          const buffTarget = (skill.target === 'self' || skill.target === 'single_ally' || skill.target === 'all_allies')
-            ? actor
-            : actor; // buffs from offensive skills still go on the caster
-          buffTarget.buffs.push({
-            type: 'buff',
-            stat: effect.stat,
-            value: effect.value,
-            remainingTurns: effect.duration,
-          });
-          appliedEffects.push(`${actorTemplate.name} gained ${effect.stat} buff`);
-          break;
-        }
-        case 'debuff': {
-          if (target.isAlive) {
-            target.debuffs.push({
-              type: 'debuff',
-              stat: effect.stat,
-              value: effect.value,
-              remainingTurns: effect.duration,
-            });
-            appliedEffects.push(`${targetTemplate.name} got ${effect.stat} debuff`);
-          }
-          break;
-        }
-        case 'dot': {
-          if (target.isAlive) {
-            target.debuffs.push({
-              type: 'dot',
-              stat: effect.stat,
-              value: effect.value,
-              remainingTurns: effect.duration,
-            });
-            appliedEffects.push(`${targetTemplate.name} is burning!`);
-          }
-          break;
-        }
-        case 'stun': {
-          if (target.isAlive) {
-            target.debuffs.push({
-              type: 'stun',
-              value: 0,
-              remainingTurns: effect.duration,
-            });
-            appliedEffects.push(`${targetTemplate.name} is stunned!`);
-          }
-          break;
-        }
-        case 'heal': {
-          const healTarget = (skill.target === 'self' || skill.target === 'single_ally' || skill.target === 'all_allies')
-            ? target
-            : actor;
-          const healAmount = Math.floor(healTarget.maxHp * (effect.value / 100));
-          healTarget.currentHp = Math.min(healTarget.maxHp, healTarget.currentHp + healAmount);
-          appliedEffects.push(`${getTemplate(healTarget.templateId).name} healed ${healAmount} HP`);
-          break;
-        }
-      }
-    }
-
-    logs.push({
-      turn: state.turnNumber,
-      actorId: actor.instanceId,
-      actorName: actorTemplate.name,
-      skillUsed: skill.id,
-      skillName: skill.name,
-      targetId: target.instanceId,
-      targetName: targetTemplate.name,
-      damage,
-      isCrit,
-      effectiveness,
-      effects: appliedEffects,
-    });
-  }
-
-  // Set cooldown for the skill
-  if (skill.cooldown > 0) {
-    actor.skillCooldowns[skill.id] = skill.cooldown;
-  }
-
-  // Tick all cooldowns for this actor (each turn the actor takes, decrement by 1)
-  for (const skId of Object.keys(actor.skillCooldowns)) {
-    if (skId !== skill.id && actor.skillCooldowns[skId] > 0) {
-      actor.skillCooldowns[skId]--;
-    }
-  }
-
-  return logs;
-}
-
-// ---------------------------------------------------------------------------
-// AI Logic
-// ---------------------------------------------------------------------------
-
-function pickEnemyAction(actor: BattleMon, state: BattleState): { skill: SkillDefinition; targets: BattleMon[] } {
-  const template = getTemplate(actor.templateId);
-  const skills = getSkillsForPokemon(template.skillIds).filter(s => s.category !== 'passive');
-
-  // Pick highest-numbered available skill (prefer skill2 > skill1)
-  let chosenSkill: SkillDefinition | null = null;
-  for (let i = skills.length - 1; i >= 0; i--) {
-    const sk = skills[i];
-    if ((actor.skillCooldowns[sk.id] ?? 0) <= 0) {
-      chosenSkill = sk;
-      break;
-    }
-  }
-  // Fallback: if all on cooldown (shouldn't happen since skill1 has cd 0), use skill1
-  if (!chosenSkill) {
-    chosenSkill = skills[0];
-  }
-
-  // Pick targets
-  let targets: BattleMon[];
-  if (chosenSkill.target === 'self') {
-    targets = [actor];
-  } else if (chosenSkill.target === 'single_ally' || chosenSkill.target === 'all_allies') {
-    // For enemies, allies are the other enemies
-    targets = chosenSkill.target === 'all_allies'
-      ? state.enemyTeam.filter(m => m.isAlive)
-      : [actor]; // Simple AI: target self for single ally skills
-  } else if (chosenSkill.target === 'all_enemies') {
-    // Enemy's "enemies" are the player team
-    targets = state.playerTeam.filter(m => m.isAlive);
-  } else {
-    // single_enemy — target player mon with lowest HP%
-    const alive = state.playerTeam.filter(m => m.isAlive);
-    alive.sort((a, b) => (a.currentHp / a.maxHp) - (b.currentHp / b.maxHp));
-    targets = [alive[0]];
-  }
-
-  return { skill: chosenSkill, targets };
-}
-
-// ---------------------------------------------------------------------------
-// Check battle end
-// ---------------------------------------------------------------------------
-
-function checkBattleEnd(state: BattleState): void {
-  if (allDead(state.enemyTeam)) {
-    (state as any).status = 'victory';
-  } else if (allDead(state.playerTeam)) {
-    (state as any).status = 'defeat';
-  }
-}
-
 /** Read status bypassing TS narrowing (status is mutated by checkBattleEnd). */
 function getStatus(state: BattleState): BattleState['status'] {
   return state.status;
-}
-
-// ---------------------------------------------------------------------------
-// Auto-resolve enemy turns
-// ---------------------------------------------------------------------------
-
-function autoResolveEnemyTurns(state: BattleState): BattleLogEntry[] {
-  const logs: BattleLogEntry[] = [];
-
-  while (state.status === 'active') {
-    const nextActorId = advanceToNextActor(state);
-    const allMons = [...state.playerTeam, ...state.enemyTeam];
-    const actor = allMons.find(m => m.instanceId === nextActorId);
-    if (!actor) break;
-
-    // If next actor is a player mon, set it as current and stop
-    if (actor.isPlayerOwned) {
-      state.currentActorId = actor.instanceId;
-      break;
-    }
-
-    // Enemy turn
-    state.turnNumber++;
-
-    // Process start-of-turn effects
-    const turnEffects = processStartOfTurn(actor, state);
-    if (!actor.isAlive) {
-      checkBattleEnd(state);
-      continue;
-    }
-
-    // Check stun
-    if (isStunned(actor)) {
-      const template = getTemplate(actor.templateId);
-      logs.push({
-        turn: state.turnNumber,
-        actorId: actor.instanceId,
-        actorName: template.name,
-        skillUsed: '',
-        skillName: 'Stunned',
-        targetId: actor.instanceId,
-        targetName: template.name,
-        damage: 0,
-        isCrit: false,
-        effectiveness: 1,
-        effects: [`${template.name} is stunned and cannot act!`, ...turnEffects],
-      });
-      // Tick cooldowns even when stunned
-      for (const skId of Object.keys(actor.skillCooldowns)) {
-        if (actor.skillCooldowns[skId] > 0) {
-          actor.skillCooldowns[skId]--;
-        }
-      }
-      checkBattleEnd(state);
-      continue;
-    }
-
-    // Pick and resolve action
-    const { skill, targets } = pickEnemyAction(actor, state);
-    const actionLogs = resolveSkill(actor, skill, targets, state);
-    // Prepend turn effects to the first log entry
-    if (actionLogs.length > 0 && turnEffects.length > 0) {
-      actionLogs[0].effects = [...turnEffects, ...actionLogs[0].effects];
-    }
-    logs.push(...actionLogs);
-
-    checkBattleEnd(state);
-  }
-
-  return logs;
 }
 
 // ---------------------------------------------------------------------------
@@ -865,22 +451,29 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
     return result;
   }
 
-  // Check stun
-  if (isStunned(actor)) {
+  // Check CC (stun, paralysis, etc.)
+  const cc = getCCState(actor);
+  if (cc.type === 'stun' || cc.type === 'skip') {
+    const ccLabel = cc.type === 'stun'
+      ? (cc.reason === 'freeze' ? 'Frozen' : 'Asleep')
+      : 'Paralyzed';
+    const ccMsg = cc.type === 'stun'
+      ? `${template.name} is ${cc.reason === 'freeze' ? 'frozen' : 'asleep'} and cannot act!`
+      : `${template.name} is paralyzed and cannot move!`;
     logs.push({
       turn: state.turnNumber,
       actorId: actor.instanceId,
       actorName: template.name,
       skillUsed: '',
-      skillName: 'Stunned',
+      skillName: ccLabel,
       targetId: actor.instanceId,
       targetName: template.name,
       damage: 0,
       isCrit: false,
       effectiveness: 1,
-      effects: [`${template.name} is stunned and cannot act!`, ...turnEffects],
+      effects: [ccMsg, ...turnEffects],
     });
-    // Tick cooldowns even when stunned
+    // Tick cooldowns even when stunned/skipped
     for (const skId of Object.keys(actor.skillCooldowns)) {
       if (actor.skillCooldowns[skId] > 0) {
         actor.skillCooldowns[skId]--;
@@ -896,6 +489,14 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
     const result: BattleResult = { state };
     if (getStatus(state) === 'victory') result.rewards = calculateRewards(state);
     return result;
+  }
+
+  // Paralysis CD increase: increase all cooldowns by 1 but still act
+  if (cc.type === 'cd_increase') {
+    for (const skId of Object.keys(actor.skillCooldowns)) {
+      actor.skillCooldowns[skId]++;
+    }
+    turnEffects.push(`${template.name} is paralyzed! Cooldowns increased!`);
   }
 
   // Resolve the player's chosen skill

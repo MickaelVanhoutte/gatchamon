@@ -215,6 +215,248 @@ STATUS_CONDITION_MOVES.forEach((move) => { statusMoves[move] = statusConditionAn
 PROTECT_MOVES.forEach((move) => { statusMoves[move] = protectAnimation; });
 WHIP_MOVES.forEach((move) => { statusMoves[move] = whipAnimation; });
 
+// ---------------------------------------------------------------------------
+// One-shot effect animations — triggered after skill resolution based on
+// which effects were applied (e.g. strip, cleanse, ATB boost, freeze, etc.)
+// ---------------------------------------------------------------------------
+
+export type EffectAnimation = (
+	engine: AnimationEngine,
+	target: { instanceId: string; element: HTMLElement; isPlayer: boolean }
+) => Promise<void>;
+
+async function stripAnimation(engine: AnimationEngine, target: { instanceId: string; element: HTMLElement; isPlayer: boolean }): Promise<void> {
+	const tl = engine.createTimeline();
+	// Shatter flash — quick red flashes to indicate buffs being torn off
+	tl.to(target.element, { filter: 'brightness(1.8) hue-rotate(-20deg)', duration: 0.08 })
+		.to(target.element, { filter: 'brightness(0.8)', duration: 0.08 })
+		.to(target.element, { filter: 'brightness(1.5) hue-rotate(-20deg)', duration: 0.08 })
+		.to(target.element, { filter: 'brightness(1) hue-rotate(0deg)', duration: 0.12 });
+	await tl.then(() => {});
+}
+
+async function cleanseAnimation(engine: AnimationEngine, target: { instanceId: string; element: HTMLElement; isPlayer: boolean }): Promise<void> {
+	// Sparkle purify — bright green/white flash
+	const tl = engine.createTimeline();
+	tl.to(target.element, {
+		filter: 'brightness(1.6) drop-shadow(0 0 12px #10b981)',
+		duration: 0.15,
+		ease: 'power2.out',
+	})
+		.to(target.element, {
+			filter: 'brightness(1.3) drop-shadow(0 0 8px #10b981)',
+			duration: 0.1,
+		})
+		.to(target.element, {
+			filter: 'brightness(1) drop-shadow(0 0 0 transparent)',
+			duration: 0.2,
+		});
+	await tl.then(() => {});
+}
+
+async function atbBoostAnimation(engine: AnimationEngine, target: { instanceId: string; element: HTMLElement; isPlayer: boolean }): Promise<void> {
+	// Speed lines burst — quick scale pulse with cyan glow
+	const tl = engine.createTimeline();
+	tl.to(target.element, {
+		filter: 'brightness(1.4) drop-shadow(0 0 10px #06b6d4)',
+		scale: 1.08,
+		duration: 0.12,
+		ease: 'power2.out',
+	})
+		.to(target.element, {
+			filter: 'brightness(1) drop-shadow(0 0 0 transparent)',
+			scale: 1,
+			duration: 0.2,
+			ease: 'power2.in',
+		});
+	await tl.then(() => {});
+}
+
+async function atbReduceAnimation(engine: AnimationEngine, target: { instanceId: string; element: HTMLElement; isPlayer: boolean }): Promise<void> {
+	// Slow down effect — brief purple darken
+	const tl = engine.createTimeline();
+	tl.to(target.element, {
+		filter: 'brightness(0.6) drop-shadow(0 0 8px #8b5cf6)',
+		duration: 0.15,
+	})
+		.to(target.element, {
+			filter: 'brightness(1) drop-shadow(0 0 0 transparent)',
+			duration: 0.25,
+		});
+	await tl.then(() => {});
+}
+
+async function freezeHitAnimation(engine: AnimationEngine, target: { instanceId: string; element: HTMLElement; isPlayer: boolean }): Promise<void> {
+	// Ice encasement flash
+	await engine.showSpriteEffect('ice', target, {
+		scale: 1.2,
+		tint: '#67e8f9',
+		zIndex: engine.getEffectZIndex(target.isPlayer),
+	});
+}
+
+async function burnHitAnimation(engine: AnimationEngine, target: { instanceId: string; element: HTMLElement; isPlayer: boolean }): Promise<void> {
+	await engine.showSpriteEffect('fire', target, {
+		scale: 0.8,
+		hueRotate: 0,
+		tint: '#f97316',
+		zIndex: engine.getEffectZIndex(target.isPlayer),
+	});
+}
+
+async function poisonHitAnimation(engine: AnimationEngine, target: { instanceId: string; element: HTMLElement; isPlayer: boolean }): Promise<void> {
+	await engine.showSpriteEffect('poison', target, {
+		scale: 0.9,
+		hueRotate: 280,
+		tint: '#a855f7',
+		zIndex: engine.getEffectZIndex(target.isPlayer),
+	});
+}
+
+async function paralysisHitAnimation(engine: AnimationEngine, target: { instanceId: string; element: HTMLElement; isPlayer: boolean }): Promise<void> {
+	await engine.showSpriteEffect('thunder', target, {
+		scale: 0.8,
+		hueRotate: 50,
+		tint: '#facc15',
+		zIndex: engine.getEffectZIndex(target.isPlayer),
+	});
+}
+
+async function sleepHitAnimation(engine: AnimationEngine, target: { instanceId: string; element: HTMLElement; isPlayer: boolean }): Promise<void> {
+	const tl = engine.createTimeline();
+	tl.to(target.element, {
+		filter: 'brightness(0.7) saturate(0.5)',
+		duration: 0.2,
+	})
+		.to(target.element, {
+			filter: 'brightness(1) saturate(1)',
+			duration: 0.4,
+		});
+	await tl.then(() => {});
+}
+
+async function confusionHitAnimation(engine: AnimationEngine, target: { instanceId: string; element: HTMLElement; isPlayer: boolean }): Promise<void> {
+	await engine.showSpriteEffect('psychic', target, {
+		scale: 1.0,
+		hueRotate: 320,
+		tint: '#f472b6',
+		zIndex: engine.getEffectZIndex(target.isPlayer),
+	});
+}
+
+async function shieldHitAnimation(engine: AnimationEngine, target: { instanceId: string; element: HTMLElement; isPlayer: boolean }): Promise<void> {
+	// Blue shield flash
+	const tl = engine.createTimeline();
+	tl.to(target.element, {
+		filter: 'brightness(1.3) drop-shadow(0 0 10px #60a5fa)',
+		duration: 0.15,
+	})
+		.to(target.element, {
+			filter: 'brightness(1) drop-shadow(0 0 0 transparent)',
+			duration: 0.2,
+		});
+	await tl.then(() => {});
+}
+
+async function immunityHitAnimation(engine: AnimationEngine, target: { instanceId: string; element: HTMLElement; isPlayer: boolean }): Promise<void> {
+	// Golden flash
+	const tl = engine.createTimeline();
+	tl.to(target.element, {
+		filter: 'brightness(1.5) drop-shadow(0 0 10px #fbbf24)',
+		duration: 0.12,
+	})
+		.to(target.element, {
+			filter: 'brightness(1) drop-shadow(0 0 0 transparent)',
+			duration: 0.2,
+		});
+	await tl.then(() => {});
+}
+
+async function healHitAnimation(engine: AnimationEngine, target: { instanceId: string; element: HTMLElement; isPlayer: boolean }): Promise<void> {
+	await engine.showSpriteEffect('heal', target, {
+		scale: 0.7,
+		tint: '#22c55e',
+		zIndex: engine.getEffectZIndex(target.isPlayer),
+	});
+}
+
+async function buffGenericAnimation(engine: AnimationEngine, target: { instanceId: string; element: HTMLElement; isPlayer: boolean }): Promise<void> {
+	await engine.showSpriteEffect('buff', target, {
+		scale: 0.8,
+		opacity: 0.8,
+		tint: '#3b82f6',
+		zIndex: engine.getEffectZIndex(target.isPlayer),
+	});
+}
+
+async function debuffGenericAnimation(engine: AnimationEngine, target: { instanceId: string; element: HTMLElement; isPlayer: boolean }): Promise<void> {
+	await engine.showSpriteEffect('debuff', target, {
+		scale: 0.9,
+		tint: '#ef4444',
+		zIndex: engine.getEffectZIndex(target.isPlayer),
+	});
+}
+
+async function cdResetAnimation(engine: AnimationEngine, target: { instanceId: string; element: HTMLElement; isPlayer: boolean }): Promise<void> {
+	// Teal flash
+	const tl = engine.createTimeline();
+	tl.to(target.element, {
+		filter: 'brightness(1.5) drop-shadow(0 0 10px #14b8a6)',
+		duration: 0.15,
+	})
+		.to(target.element, {
+			filter: 'brightness(1) drop-shadow(0 0 0 transparent)',
+			duration: 0.2,
+		});
+	await tl.then(() => {});
+}
+
+/** Map from EffectId → one-shot animation when that effect is applied. */
+export const EFFECT_ANIMATIONS: Record<string, EffectAnimation> = {
+	// Instant effects
+	strip: stripAnimation,
+	cleanse: cleanseAnimation,
+	atb_boost: atbBoostAnimation,
+	atb_reduce: atbReduceAnimation,
+	heal: healHitAnimation,
+	cd_reset: cdResetAnimation,
+	cd_reduce: cdResetAnimation,
+
+	// Status applications
+	freeze: freezeHitAnimation,
+	burn: burnHitAnimation,
+	poison: poisonHitAnimation,
+	paralysis: paralysisHitAnimation,
+	sleep: sleepHitAnimation,
+	confusion: confusionHitAnimation,
+
+	// Buff applications
+	shield: shieldHitAnimation,
+	immunity: immunityHitAnimation,
+	invincibility: immunityHitAnimation,
+	atk_buff: buffGenericAnimation,
+	def_buff: buffGenericAnimation,
+	spd_buff: buffGenericAnimation,
+	crit_rate_buff: buffGenericAnimation,
+	endure: buffGenericAnimation,
+	recovery: healHitAnimation,
+	reflect: shieldHitAnimation,
+	counter: buffGenericAnimation,
+	vampire: buffGenericAnimation,
+
+	// Debuff applications
+	atk_break: debuffGenericAnimation,
+	def_break: debuffGenericAnimation,
+	spd_slow: debuffGenericAnimation,
+	glancing: debuffGenericAnimation,
+	brand: debuffGenericAnimation,
+	unrecoverable: debuffGenericAnimation,
+	silence: debuffGenericAnimation,
+	oblivion: debuffGenericAnimation,
+	buff_block: debuffGenericAnimation,
+	provoke: debuffGenericAnimation,
+};
+
 export function registerStatusMoves(engine: AnimationEngine): void {
 	Object.entries(statusMoves).forEach(([name, animation]) => {
 		engine.registerMove(name, animation);

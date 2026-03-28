@@ -3,6 +3,8 @@ export * from './types/player.js';
 export * from './types/battle.js';
 export * from './constants/type-chart.js';
 export * from './constants/formulas.js';
+export * from './constants/effects.js';
+export * from './battle/index.js';
 export * from './types/evolution.js';
 export { POKEDEX, POKEDEX_MAP, getTemplate } from './data/pokedex/index.js';
 export { SKILLS, getSkillsForPokemon } from './data/skills/index.js';

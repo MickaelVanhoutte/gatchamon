@@ -106,35 +106,148 @@
 }
 
 /* Floating log */
-.floating-log {
+/* ── Floating damage/heal numbers ─────────────────────────────────── */
+.floating-number {
   position: absolute;
-  bottom: 80px;
   left: 50%;
+  top: 30%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.75);
-  padding: 6px 14px;
-  border-radius: 8px;
-  z-index: 50;
-  animation: fadeInOut 0.6s ease;
-}
-
-.log-text {
-  font-size: 0.85rem;
+  font-weight: 800;
+  font-size: 1.1rem;
+  pointer-events: none;
+  z-index: 300;
   white-space: nowrap;
+  animation: float-up 1.1s ease-out forwards;
+}
+
+.float-dmg {
   color: #ffffff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.9), 0 1px 2px #000;
 }
 
-.log-text.crit {
-  color: var(--star-gold);
+.float-crit {
+  color: var(--star-gold, #fbbf24);
+  font-size: 1.4rem;
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.6), 0 1px 3px #000;
+}
+
+.float-super {
+  color: #ff4444;
+  text-shadow: 0 0 6px rgba(255, 68, 68, 0.5), 0 1px 3px #000;
+}
+
+.float-resist {
+  color: #60a5fa;
+  font-size: 0.9rem;
+}
+
+.float-glancing {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.float-heal {
+  color: #4ade80;
+  text-shadow: 0 0 6px rgba(74, 222, 128, 0.6), 0 1px 2px #000;
+}
+
+.float-shield {
+  color: #60a5fa;
+  font-size: 0.8rem;
+}
+
+.float-endure {
+  color: #f59e0b;
+  font-size: 0.85rem;
+}
+
+.float-resist-label {
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+@keyframes float-up {
+  0% { opacity: 1; transform: translateX(-50%) translateY(0) scale(0.8); }
+  15% { opacity: 1; transform: translateX(-50%) translateY(-8px) scale(1.1); }
+  70% { opacity: 1; transform: translateX(-50%) translateY(-30px) scale(1); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-45px) scale(0.8); }
+}
+
+/* ── Effect info modal ───────────────────────────────────────────── */
+.effect-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  animation: fadeIn 0.15s ease;
+}
+
+.effect-modal {
+  background: #1e1e2e;
+  border-radius: 12px;
+  padding: 16px 20px;
+  max-width: 260px;
+  width: 90%;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.effect-modal-buff { border-color: rgba(59, 130, 246, 0.5); }
+.effect-modal-debuff { border-color: rgba(239, 68, 68, 0.5); }
+.effect-modal-status { border-color: rgba(168, 85, 247, 0.5); }
+
+.effect-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.effect-modal-name {
   font-weight: 700;
+  font-size: 1.05rem;
 }
 
-@keyframes fadeInOut {
-  0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
-  20% { opacity: 1; transform: translateX(-50%) translateY(0); }
-  80% { opacity: 1; }
-  100% { opacity: 0.6; }
+.effect-modal-cat {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.effect-modal-desc {
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin: 0 0 10px;
+}
+
+.effect-modal-stats {
+  color: #94a3b8;
+  font-size: 0.78rem;
+  margin-bottom: 12px;
+}
+
+.effect-modal-close {
+  width: 100%;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.effect-modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Battle fields — no background, monsters float on arena (stays dark) */
@@ -164,6 +277,7 @@
 
 /* Battle mon */
 .battle-mon {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -250,6 +364,24 @@
   transition: width 0.4s ease;
 }
 
+/* ATB bar — thin cyan bar below HP */
+.mon-atb-bar-bg {
+  width: 80%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 1px;
+}
+
+.mon-atb-bar {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #06b6d4, #22d3ee);
+  transition: width 0.3s ease;
+  box-shadow: 0 0 4px rgba(6, 182, 212, 0.5);
+}
+
 .mon-hp-text {
   font-size: 0.6rem;
   color: #fff;
@@ -260,6 +392,99 @@
   width: clamp(64px, 10vw, 120px);
   height: clamp(64px, 10vw, 120px);
   object-fit: contain;
+}
+
+/* Effect icons row — buff/debuff indicators below sprite */
+.effect-icons-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+  max-width: 100%;
+  margin: 1px 0;
+}
+
+.effect-icon {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.effect-icon:active {
+  transform: scale(1.3);
+}
+
+.effect-icon-buff {
+  background: rgba(59, 130, 246, 0.7);
+}
+
+.effect-icon-debuff {
+  background: rgba(239, 68, 68, 0.7);
+}
+
+.effect-icon-status {
+  background: rgba(168, 85, 247, 0.7);
+}
+
+.effect-icon-overflow {
+  background: rgba(100, 116, 139, 0.7);
+  width: auto;
+  padding: 0 3px;
+  font-size: 0.45rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.effect-icon-label {
+  font-size: 0.35rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.effect-icon-turns {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  font-size: 0.4rem;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 3px;
+  min-width: 8px;
+  height: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0 1px;
+}
+
+.effect-icon-stacks {
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  font-size: 0.4rem;
+  font-weight: 700;
+  color: #fbbf24;
+  background: rgba(0, 0, 0, 0.75);
+  border-radius: 3px;
+  min-width: 8px;
+  height: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0 1px;
 }
 
 .mon-name {
@@ -533,4 +758,224 @@
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+/* ── Sprite container for status overlays ────────────────────────────── */
+.sprite-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Base overlay — covers the sprite area */
+.status-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+/* ── Freeze: ice-blue tint + pulsing border ─────────────────────────── */
+.status-freeze {
+  background: radial-gradient(circle, rgba(103, 232, 249, 0.25) 0%, transparent 70%);
+  border: 2px solid rgba(103, 232, 249, 0.6);
+  animation: freeze-pulse 1.5s ease-in-out infinite;
+}
+@keyframes freeze-pulse {
+  0%, 100% { border-color: rgba(103, 232, 249, 0.6); box-shadow: inset 0 0 12px rgba(103, 232, 249, 0.2); }
+  50% { border-color: rgba(103, 232, 249, 0.9); box-shadow: inset 0 0 20px rgba(103, 232, 249, 0.4); }
+}
+
+/* ── Burn: rising orange/red particles ──────────────────────────────── */
+.status-burn {
+  overflow: hidden;
+}
+.status-burn > span {
+  position: absolute;
+  bottom: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #f97316;
+  box-shadow: 0 0 4px #f97316, 0 0 8px #ef4444;
+  animation: burn-rise 1s ease-in infinite;
+}
+.status-burn > span:nth-child(1) { left: 15%; animation-delay: 0s; animation-duration: 0.9s; }
+.status-burn > span:nth-child(2) { left: 35%; animation-delay: 0.2s; animation-duration: 1.1s; }
+.status-burn > span:nth-child(3) { left: 55%; animation-delay: 0.4s; animation-duration: 0.8s; }
+.status-burn > span:nth-child(4) { left: 75%; animation-delay: 0.1s; animation-duration: 1.0s; }
+.status-burn > span:nth-child(5) { left: 45%; animation-delay: 0.6s; animation-duration: 1.2s; }
+.status-burn > span:nth-child(6) { left: 25%; animation-delay: 0.3s; animation-duration: 0.85s; }
+@keyframes burn-rise {
+  0% { transform: translateY(0) scale(1); opacity: 0.9; }
+  100% { transform: translateY(-40px) scale(0.3); opacity: 0; }
+}
+
+/* ── Poison: rising green bubbles ───────────────────────────────────── */
+.status-poison {
+  overflow: hidden;
+}
+.status-poison > span {
+  position: absolute;
+  bottom: 10%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(168, 85, 247, 0.7);
+  box-shadow: 0 0 4px #a855f7;
+  animation: poison-bubble 1.6s ease-out infinite;
+}
+.status-poison > span:nth-child(1) { left: 20%; animation-delay: 0s; }
+.status-poison > span:nth-child(2) { left: 40%; animation-delay: 0.4s; }
+.status-poison > span:nth-child(3) { left: 60%; animation-delay: 0.8s; }
+.status-poison > span:nth-child(4) { left: 50%; animation-delay: 0.2s; width: 4px; height: 4px; }
+.status-poison > span:nth-child(5) { left: 30%; animation-delay: 1.0s; width: 5px; height: 5px; }
+@keyframes poison-bubble {
+  0% { transform: translateY(0) scale(0.5); opacity: 0; }
+  20% { opacity: 0.8; transform: translateY(-5px) scale(1); }
+  100% { transform: translateY(-35px) scale(0.3); opacity: 0; }
+}
+
+/* ── Paralysis: yellow electric sparks ──────────────────────────────── */
+.status-paralysis {
+  overflow: hidden;
+}
+.status-paralysis > span {
+  position: absolute;
+  width: 3px;
+  height: 10px;
+  background: #facc15;
+  box-shadow: 0 0 6px #facc15, 0 0 12px #fde047;
+  animation: spark-flash 0.5s linear infinite;
+  border-radius: 1px;
+}
+.status-paralysis > span:nth-child(1) { top: 20%; left: 25%; transform: rotate(30deg); animation-delay: 0s; }
+.status-paralysis > span:nth-child(2) { top: 40%; left: 65%; transform: rotate(-45deg); animation-delay: 0.15s; }
+.status-paralysis > span:nth-child(3) { top: 60%; left: 40%; transform: rotate(60deg); animation-delay: 0.3s; }
+.status-paralysis > span:nth-child(4) { top: 30%; left: 55%; transform: rotate(-20deg); animation-delay: 0.45s; }
+@keyframes spark-flash {
+  0%, 100% { opacity: 0; }
+  30%, 70% { opacity: 1; }
+}
+
+/* ── Sleep: floating Z-z-z text ─────────────────────────────────────── */
+.status-sleep > span {
+  position: absolute;
+  color: #818cf8;
+  font-weight: 700;
+  text-shadow: 0 0 4px rgba(129, 140, 248, 0.6);
+  animation: sleep-float 2s ease-in-out infinite;
+}
+.status-sleep > span:nth-child(1) { top: 10%; right: 10%; font-size: 14px; animation-delay: 0s; }
+.status-sleep > span:nth-child(2) { top: 0%; right: 0%; font-size: 11px; animation-delay: 0.5s; }
+.status-sleep > span:nth-child(3) { top: -5%; right: -8%; font-size: 8px; animation-delay: 1s; }
+@keyframes sleep-float {
+  0% { transform: translate(0, 0) scale(0.8); opacity: 0; }
+  30% { opacity: 1; transform: translate(4px, -6px) scale(1); }
+  100% { transform: translate(10px, -18px) scale(0.6); opacity: 0; }
+}
+
+/* ── Confusion: spinning stars ──────────────────────────────────────── */
+.status-confusion {
+  animation: confusion-orbit 2s linear infinite;
+}
+.status-confusion > span {
+  position: absolute;
+  font-size: 10px;
+  color: #f472b6;
+  text-shadow: 0 0 4px #f472b6;
+}
+.status-confusion > span:nth-child(1) { top: 5%; left: 50%; }
+.status-confusion > span:nth-child(2) { top: 5%; left: 25%; }
+.status-confusion > span:nth-child(3) { top: 5%; left: 75%; }
+@keyframes confusion-orbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ── Shield: blue translucent dome ──────────────────────────────────── */
+.status-shield {
+  border: 2px solid rgba(96, 165, 250, 0.6);
+  background: radial-gradient(circle, rgba(96, 165, 250, 0.15) 0%, transparent 70%);
+  animation: shield-shimmer 2s ease-in-out infinite;
+}
+@keyframes shield-shimmer {
+  0%, 100% { border-color: rgba(96, 165, 250, 0.4); }
+  50% { border-color: rgba(96, 165, 250, 0.8); box-shadow: 0 0 12px rgba(96, 165, 250, 0.3); }
+}
+
+/* ── Immunity: golden glow/aura ─────────────────────────────────────── */
+.status-immunity {
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.5), inset 0 0 10px rgba(251, 191, 36, 0.15);
+  animation: immunity-glow 1.8s ease-in-out infinite;
+}
+@keyframes immunity-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(251, 191, 36, 0.4), inset 0 0 8px rgba(251, 191, 36, 0.1); }
+  50% { box-shadow: 0 0 16px rgba(251, 191, 36, 0.7), inset 0 0 14px rgba(251, 191, 36, 0.2); }
+}
+
+/* ── Invincibility: white glowing outline ───────────────────────────── */
+.status-invincibility {
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.6), inset 0 0 14px rgba(255, 255, 255, 0.15);
+  animation: invinc-pulse 1.2s ease-in-out infinite;
+}
+@keyframes invinc-pulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.1); }
+  50% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.8), inset 0 0 18px rgba(255, 255, 255, 0.25); }
+}
+
+/* ── Recovery: green plus signs floating up ─────────────────────────── */
+.status-recovery {
+  overflow: hidden;
+}
+.status-recovery > span {
+  position: absolute;
+  bottom: 20%;
+  font-size: 10px;
+  font-weight: 700;
+  color: #4ade80;
+  text-shadow: 0 0 4px rgba(74, 222, 128, 0.6);
+  animation: recovery-float 2s ease-out infinite;
+}
+.status-recovery > span:nth-child(1) { left: 30%; animation-delay: 0s; }
+.status-recovery > span:nth-child(2) { left: 50%; animation-delay: 0.7s; }
+.status-recovery > span:nth-child(3) { left: 70%; animation-delay: 1.4s; }
+@keyframes recovery-float {
+  0% { transform: translateY(0); opacity: 0; }
+  20% { opacity: 0.9; }
+  100% { transform: translateY(-25px); opacity: 0; }
+}
+
+/* ── Endure: orange pulsing border ──────────────────────────────────── */
+.status-endure {
+  border: 2px solid rgba(217, 119, 6, 0.6);
+  animation: endure-pulse 1.5s ease-in-out infinite;
+}
+@keyframes endure-pulse {
+  0%, 100% { border-color: rgba(217, 119, 6, 0.4); }
+  50% { border-color: rgba(217, 119, 6, 0.9); box-shadow: inset 0 0 10px rgba(217, 119, 6, 0.2); }
+}
+
+/* ── Reflect: purple shimmer ────────────────────────────────────────── */
+.status-reflect {
+  border: 1px solid rgba(167, 139, 250, 0.5);
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.1) 0%, transparent 70%);
+  animation: reflect-shimmer 2.5s ease-in-out infinite;
+}
+@keyframes reflect-shimmer {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* ── Silence: dark muted overlay ────────────────────────────────────── */
+.status-silence {
+  background: radial-gradient(circle, rgba(71, 85, 105, 0.2) 0%, transparent 70%);
+  border: 1px solid rgba(71, 85, 105, 0.4);
+  animation: silence-dim 2s ease-in-out infinite;
+}
+@keyframes silence-dim {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
