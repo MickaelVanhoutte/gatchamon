@@ -138,7 +138,7 @@ export function RuneUpgradeModal({ item: initialItem, playerStardust, onClose, o
               onClick={handleUpgrade}
               disabled={!canAfford || animating}
             >
-              {animating ? 'Upgrading...' : `Upgrade (${cost.toLocaleString()} <GameIcon id="stardust" size={12} />)`}
+              {animating ? 'Upgrading...' : <>Upgrade ({cost.toLocaleString()} <GameIcon id="stardust" size={12} />)</>}
             </button>
           ) : (
             <div className="rune-upgrade-maxed">MAX LEVEL</div>

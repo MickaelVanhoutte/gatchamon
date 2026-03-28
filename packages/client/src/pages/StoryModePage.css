@@ -69,9 +69,9 @@
 }
 
 .zone-marker.locked {
-  opacity: 0.4;
-  cursor: not-allowed;
-  filter: grayscale(0.8);
+  opacity: 0.5;
+  cursor: pointer;
+  filter: grayscale(0.6);
 }
 
 /* The pin / node on map */

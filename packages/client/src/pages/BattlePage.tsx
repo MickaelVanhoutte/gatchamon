@@ -164,7 +164,12 @@ export function BattlePage() {
       const floor = (state.floor?.floor ?? 1) - 1;
       navigate(`/dungeons?tab=${tab}&dungeonId=${dungeonId}&floor=${floor}`);
     } else {
-      navigate('/story');
+      const params = new URLSearchParams();
+      if (state?.floor) {
+        params.set('region', String(state.floor.region));
+        params.set('difficulty', state.floor.difficulty);
+      }
+      navigate(`/story?${params.toString()}`);
     }
   }, [state, navigate, refreshPlayer, loadCollection]);
 

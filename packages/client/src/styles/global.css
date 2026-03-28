@@ -75,7 +75,7 @@ body {
 
 /* Force landscape: rotate the app when device is in portrait */
 @media (orientation: portrait) {
-  .app:not(.app--onboarding),
+  .app,
   .loading-screen {
     transform: rotate(90deg);
     transform-origin: top left;

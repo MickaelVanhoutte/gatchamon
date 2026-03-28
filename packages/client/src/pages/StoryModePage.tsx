@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { GameIcon, StarRating } from '../components/icons';
 import { getTemplate, REGIONS, getFloorCount, getGymLeader, getLeagueChampion } from '@gatchamon/shared';
@@ -62,6 +62,7 @@ function getMonsterName(templateId: number): string {
 export function StoryModePage() {
   const { player } = useGameStore();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [floors, setFloors] = useState<FloorInfo[]>([]);
   const [selectedRegionId, setSelectedRegionId] = useState<number | null>(null);
   const [difficulty, setDifficulty] = useState<Difficulty>('normal');
@@ -69,6 +70,20 @@ export function StoryModePage() {
   const worldMapRef = useRef<HTMLDivElement>(null);
   useRotatedScroll(floorListRef);
   useRotatedHorizontalScroll(worldMapRef);
+
+  // Auto-open region from query params (e.g. returning from battle)
+  useEffect(() => {
+    const regionParam = searchParams.get('region');
+    const diffParam = searchParams.get('difficulty') as Difficulty | null;
+    if (regionParam) {
+      if (diffParam && ['normal', 'hard', 'hell'].includes(diffParam)) {
+        setDifficulty(diffParam);
+      }
+      setSelectedRegionId(Number(regionParam));
+      // Clean up query params
+      setSearchParams({}, { replace: true });
+    }
+  }, []);
 
   useEffect(() => {
     if (selectedRegionId) {
@@ -1527,8 +1542,7 @@ export function StoryModePage() {
               key={region.id}
               className={`zone-marker ${status} ${isSelected ? 'selected' : ''}`}
               style={{ left: `${(region.mapPosition.x / MAP_W) * 100}%`, top: `${(region.mapPosition.y / MAP_H) * 100}%` }}
-              onClick={() => status !== 'locked' && setSelectedRegionId(isSelected ? null : region.id)}
-              disabled={status === 'locked'}
+              onClick={() => setSelectedRegionId(isSelected ? null : region.id)}
             >
               <div className="zone-pin" style={{ '--zone-color': region.color } as React.CSSProperties}>
                 <span className="zone-icon"><GameIcon id={region.icon} size={16} /></span>

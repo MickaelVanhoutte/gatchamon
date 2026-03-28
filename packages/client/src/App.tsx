@@ -36,7 +36,7 @@ export function App() {
     useTutorialStore.getState().loadTutorial();
   }, [loadPlayer]);
 
-  // Auto-focus name input (onboarding is no longer CSS-rotated, so keyboard always aligns)
+  // Auto-focus name input
   useEffect(() => {
     if (!player && !showLoading && inputRef.current) {
       inputRef.current.focus();
