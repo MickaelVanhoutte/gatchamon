@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { useGameStore } from './stores/gameStore';
 import { HomePage } from './pages/HomePage';
 import { SummonPage } from './pages/SummonPage';
@@ -21,8 +21,10 @@ import { TutorialOverlay } from './components/tutorial/TutorialOverlay';
 import { LoadingScreen } from './components/LoadingScreen';
 import { useTutorialStore } from './stores/tutorialStore';
 import { useRotatedScroll } from './hooks/useRotatedScroll';
+import { AdminPage } from './pages/admin/AdminPage';
 
 export function App() {
+  const location = useLocation();
   const { player, createPlayer, loadPlayer } = useGameStore();
   const [nameInput, setNameInput] = useState('');
   const [showLoading, setShowLoading] = useState(true);
@@ -42,6 +44,10 @@ export function App() {
       inputRef.current.focus();
     }
   }, [player, showLoading]);
+
+  if (location.pathname === '/admin') {
+    return <AdminPage />;
+  }
 
   if (showLoading) {
     return <LoadingScreen onStart={() => setShowLoading(false)} />;
