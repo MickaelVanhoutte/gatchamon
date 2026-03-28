@@ -6,7 +6,7 @@ import { useGameStore } from '../stores/gameStore';
 import { useBattleAnimation } from '../battle/useBattleAnimation';
 import { useAutoBattle } from '../battle/useAutoBattle';
 import { getTemplate, SKILLS, getTypeEffectiveness, ESSENCES, ITEM_SETS, getBossDialogue, EFFECT_REGISTRY } from '@gatchamon/shared';
-import type { BattleState, BattleMon, BattleLogEntry, BattleResult, PokemonType, EffectId, ActiveEffect } from '@gatchamon/shared';
+import type { BattleState, BattleMon, BattleLogEntry, BattleResult, PokemonType, EffectId, ActiveEffect, SkillDefinition } from '@gatchamon/shared';
 import { assetUrl } from '../utils/asset-url';
 import { GameIcon, StarRating } from '../components/icons';
 import { BattleLoadingScreen } from '../components/BattleLoadingScreen';
@@ -18,6 +18,132 @@ type Phase = 'player_turn' | 'animating' | 'victory' | 'defeat';
 const LEVEL_BACKGROUNDS: Record<number, string> = {
   1: assetUrl('backgrounds/forest-arena.png'),
 };
+
+const PASSIVE_TRIGGER_LABELS: Record<string, string> = {
+  battle_start: 'Battle Start',
+  turn_start: 'Turn Start',
+  on_attack: 'On Attack',
+  on_hit: 'On Hit',
+  on_crit: 'On Crit',
+  on_kill: 'On Kill',
+  on_ally_death: 'On Ally Death',
+  hp_threshold: 'HP Threshold',
+  always: 'Always Active',
+};
+
+function SkillDetailModal({ skill, onClose }: { skill: SkillDefinition; onClose: () => void }) {
+  return (
+    <div className="effect-modal-backdrop" onClick={onClose}>
+      <div className="skill-detail-modal" onClick={e => e.stopPropagation()}>
+        <div className="skill-detail-header">
+          <span className="skill-detail-name">{skill.name}</span>
+          <span className="skill-detail-type" style={{ background: `var(--type-${skill.type})` }}>{skill.type}</span>
+        </div>
+        <span className="skill-detail-cat">{skill.category}{skill.passiveTrigger ? ` \u2014 ${PASSIVE_TRIGGER_LABELS[skill.passiveTrigger] ?? skill.passiveTrigger}` : ''}</span>
+        <p className="skill-detail-desc">{skill.description}</p>
+        <div className="skill-detail-stats">
+          {skill.multiplier > 0 && <span>Multiplier: {skill.multiplier}x</span>}
+          {skill.cooldown > 0 && <span>Cooldown: {skill.cooldown} turns</span>}
+          <span>Target: {skill.target.replace(/_/g, ' ')}</span>
+        </div>
+        {skill.effects.length > 0 && (
+          <div className="skill-detail-effects">
+            {skill.effects.map((eff, i) => {
+              const meta = eff.id ? EFFECT_REGISTRY[eff.id] : null;
+              return (
+                <div key={i} className="skill-detail-eff-row">
+                  <span className="skill-detail-eff-name" style={meta ? { color: meta.color } : undefined}>
+                    {meta?.name ?? eff.id ?? eff.type ?? 'Effect'}
+                  </span>
+                  <span className="skill-detail-eff-info">
+                    {eff.value !== 0 && <>{eff.value > 0 ? '+' : ''}{eff.value} &middot; </>}
+                    {eff.duration}t &middot; {eff.chance}%
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        <button className="effect-modal-close" onClick={onClose}>OK</button>
+      </div>
+    </div>
+  );
+}
+
+function SkillPanel({ actor, selectedSkill, onSkillSelect, onCancelSelect, onSkillDetail }: {
+  actor: BattleMon;
+  selectedSkill: string | null;
+  onSkillSelect: (skillId: string) => void;
+  onCancelSelect: () => void;
+  onSkillDetail: (skill: SkillDefinition) => void;
+}) {
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const didLongPress = useRef(false);
+
+  const tmpl = getTemplate(actor.templateId);
+  const allSkillIds = tmpl?.skillIds ?? [];
+
+  const handlePointerDown = useCallback((skill: SkillDefinition) => {
+    didLongPress.current = false;
+    longPressTimer.current = setTimeout(() => {
+      didLongPress.current = true;
+      onSkillDetail(skill);
+    }, 400);
+  }, [onSkillDetail]);
+
+  const handlePointerUp = useCallback((skillId: string) => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+    if (!didLongPress.current) {
+      onSkillSelect(skillId);
+    }
+  }, [onSkillSelect]);
+
+  const handlePointerLeave = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }, []);
+
+  if (selectedSkill) {
+    return (
+      <div className="skill-panel">
+        <p className="target-hint">Tap an enemy</p>
+        <button className="cancel-btn" onClick={onCancelSelect}>X</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="skill-panel">
+      {allSkillIds.map((skillId) => {
+        const skill = SKILLS[skillId];
+        if (!skill) return null;
+        const isPassive = skill.category === 'passive';
+        const cd = actor.skillCooldowns[skillId] ?? 0;
+        const isReady = cd === 0 && !isPassive;
+        return (
+          <button
+            key={skillId}
+            className={`skill-btn ${!isReady && !isPassive ? 'on-cd' : ''} ${isPassive ? 'skill-passive' : ''}`}
+            disabled={!isReady && !isPassive}
+            onPointerDown={isPassive ? undefined : () => handlePointerDown(skill)}
+            onPointerUp={isPassive ? undefined : () => handlePointerUp(skillId)}
+            onPointerLeave={isPassive ? undefined : handlePointerLeave}
+            onClick={isPassive ? () => onSkillDetail(skill) : undefined}
+          >
+            <span className="skill-name">{skill.name}</span>
+            {!isReady && !isPassive && <span className="cd-overlay">{cd}</span>}
+            {isPassive && <span className="passive-label">P</span>}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 export function BattlePage() {
   const { battleId } = useParams();
@@ -31,11 +157,17 @@ export function BattlePage() {
   const [assetsReady, setAssetsReady] = useState(false);
   const [dialogueComplete, setDialogueComplete] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [selectedEffect, setSelectedEffect] = useState<{ id: EffectId; stacks: number; turns: number } | null>(null);
+  const [detailSkill, setDetailSkill] = useState<SkillDefinition | null>(null);
   const [arenaEl, setArenaEl] = useState<HTMLDivElement | null>(null);
   const monRefs = useRef<Map<string, HTMLElement>>(new Map());
   const isActingRef = useRef(false);
 
   const { playLogEntry, playMultiTargetEntries } = useBattleAnimation(arenaEl, monRefs);
+
+  const handleEffectClick = useCallback((id: EffectId, stacks: number, turns: number) => {
+    setSelectedEffect({ id, stacks, turns });
+  }, []);
 
   const spawnFloatingNumber = useCallback((entry: BattleLogEntry) => {
     const el = monRefs.current.get(entry.targetId);
@@ -346,6 +478,7 @@ export function BattlePage() {
                 isTargetable={isPlayerTurn && selectedSkill !== null}
                 onClick={() => selectedSkill && handleAction(selectedSkill, mon.instanceId)}
                 skillType={skill?.type}
+                onEffectClick={handleEffectClick}
                 registerRef={(el) => {
                   if (el) monRefs.current.set(mon.instanceId, el);
                   else monRefs.current.delete(mon.instanceId);
@@ -362,6 +495,7 @@ export function BattlePage() {
               key={mon.instanceId}
               mon={mon}
               isActive={mon.instanceId === state.currentActorId}
+              onEffectClick={handleEffectClick}
               registerRef={(el) => {
                 if (el) monRefs.current.set(mon.instanceId, el);
                 else monRefs.current.delete(mon.instanceId);
@@ -373,31 +507,13 @@ export function BattlePage() {
 
       {/* Skill panel */}
       {isPlayerTurn && currentActor && !isAutoOn && (
-        <div className="skill-panel">
-          {selectedSkill ? (
-            <>
-              <p className="target-hint">Tap an enemy</p>
-              <button className="cancel-btn" onClick={() => setSelectedSkill(null)}>X</button>
-            </>
-          ) : (
-            Object.entries(currentActor.skillCooldowns).map(([skillId, cd]) => {
-              const skill = SKILLS[skillId];
-              if (!skill || skill.category === 'passive') return null;
-              const isReady = cd === 0;
-              return (
-                <button
-                  key={skillId}
-                  className={`skill-btn ${!isReady ? 'on-cd' : ''}`}
-                  disabled={!isReady}
-                  onClick={() => handleSkillSelect(skillId)}
-                >
-                  <span className="skill-name">{skill.name}</span>
-                  {!isReady && <span className="cd-overlay">{cd}</span>}
-                </button>
-              );
-            })
-          )}
-        </div>
+        <SkillPanel
+          actor={currentActor}
+          selectedSkill={selectedSkill}
+          onSkillSelect={handleSkillSelect}
+          onCancelSelect={() => setSelectedSkill(null)}
+          onSkillDetail={setDetailSkill}
+        />
       )}
 
       {phase === 'animating' && (
@@ -499,6 +615,19 @@ export function BattlePage() {
           </div>
         </div>
       )}
+
+      {/* Modals rendered at battle-page level to avoid CSS transform containment */}
+      {selectedEffect && (
+        <EffectInfoModal
+          effectId={selectedEffect.id}
+          stacks={selectedEffect.stacks}
+          turns={selectedEffect.turns}
+          onClose={() => setSelectedEffect(null)}
+        />
+      )}
+      {detailSkill && (
+        <SkillDetailModal skill={detailSkill} onClose={() => setDetailSkill(null)} />
+      )}
     </div>
   );
 }
@@ -558,8 +687,7 @@ function EffectInfoModal({ effectId, stacks, turns, onClose }: {
   );
 }
 
-function EffectIcons({ mon }: { mon: BattleMon }) {
-  const [selectedEffect, setSelectedEffect] = useState<{ id: EffectId; stacks: number; turns: number } | null>(null);
+function EffectIcons({ mon, onEffectClick }: { mon: BattleMon; onEffectClick?: (id: EffectId, stacks: number, turns: number) => void }) {
   const allEffects = [...mon.buffs, ...mon.debuffs];
   if (allEffects.length === 0) return null;
 
@@ -583,46 +711,36 @@ function EffectIcons({ mon }: { mon: BattleMon }) {
   const overflow = unique.length - MAX_EFFECT_ICONS;
 
   return (
-    <>
-      <div className="effect-icons-row">
-        {visible.map((eff) => {
-          const meta = EFFECT_REGISTRY[eff.id];
-          if (!meta) return null;
-          const abbrev = EFFECT_ABBREV[eff.id] ?? eff.id.slice(0, 3).toUpperCase();
-          const bgClass =
-            meta.category === 'buff' ? 'effect-icon-buff' :
-            meta.category === 'status' ? 'effect-icon-status' :
-            'effect-icon-debuff';
-          return (
-            <div
-              key={eff.id}
-              className={`effect-icon ${bgClass}`}
-              style={{ borderColor: meta.color }}
-              onClick={(e) => { e.stopPropagation(); setSelectedEffect({ id: eff.id, stacks: eff.stacks, turns: eff.remainingTurns }); }}
-            >
-              <span className="effect-icon-label">{abbrev}</span>
-              {eff.stacks > 1 && (
-                <span className="effect-icon-stacks">x{eff.stacks}</span>
-              )}
-              <span className="effect-icon-turns">{eff.remainingTurns}</span>
-            </div>
-          );
-        })}
-        {overflow > 0 && (
-          <div className="effect-icon effect-icon-overflow">
-            +{overflow}
+    <div className="effect-icons-row">
+      {visible.map((eff) => {
+        const meta = EFFECT_REGISTRY[eff.id];
+        if (!meta) return null;
+        const abbrev = EFFECT_ABBREV[eff.id] ?? eff.id.slice(0, 3).toUpperCase();
+        const bgClass =
+          meta.category === 'buff' ? 'effect-icon-buff' :
+          meta.category === 'status' ? 'effect-icon-status' :
+          'effect-icon-debuff';
+        return (
+          <div
+            key={eff.id}
+            className={`effect-icon ${bgClass}`}
+            style={{ borderColor: meta.color }}
+            onClick={(e) => { e.stopPropagation(); onEffectClick?.(eff.id, stackCounts.get(eff.id) ?? 1, eff.remainingTurns); }}
+          >
+            <span className="effect-icon-label">{abbrev}</span>
+            {eff.stacks > 1 && (
+              <span className="effect-icon-stacks">x{eff.stacks}</span>
+            )}
+            <span className="effect-icon-turns">{eff.remainingTurns}</span>
           </div>
-        )}
-      </div>
-      {selectedEffect && (
-        <EffectInfoModal
-          effectId={selectedEffect.id}
-          stacks={selectedEffect.stacks}
-          turns={selectedEffect.turns}
-          onClose={() => setSelectedEffect(null)}
-        />
+        );
+      })}
+      {overflow > 0 && (
+        <div className="effect-icon effect-icon-overflow">
+          +{overflow}
+        </div>
       )}
-    </>
+    </div>
   );
 }
 
@@ -657,6 +775,7 @@ function BattleMonSprite({
   onClick,
   skillType,
   registerRef,
+  onEffectClick,
 }: {
   mon: BattleMon;
   isTargetable?: boolean;
@@ -664,6 +783,7 @@ function BattleMonSprite({
   onClick?: () => void;
   skillType?: PokemonType;
   registerRef?: (el: HTMLDivElement | null) => void;
+  onEffectClick?: (id: EffectId, stacks: number, turns: number) => void;
 }) {
   const tmpl = getTemplate(mon.templateId);
   if (!tmpl) return null;
@@ -708,7 +828,7 @@ function BattleMonSprite({
         />
         {mon.isAlive && <StatusOverlay mon={mon} />}
       </div>
-      {mon.isAlive && <EffectIcons mon={mon} />}
+      {mon.isAlive && <EffectIcons mon={mon} onEffectClick={onEffectClick} />}
       <span className="mon-name">{tmpl.name}</span>
     </div>
   );
