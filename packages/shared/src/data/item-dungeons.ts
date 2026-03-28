@@ -38,15 +38,15 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
         { setId: 'choice_band', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 35, hero: 35, legend: 15 } },
         { setId: 'power_band', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 35, hero: 35, legend: 15 } },
       ], stardustReward: [60, 80] },
-      { enemyLevel: 36, enemies: [111, 76, 75], drops: [
+      { enemyLevel: 36, enemies: [112, 76, 95], enemyStars: 4, drops: [  // Rhydon, Golem, Onix
         { setId: 'choice_band', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 30, hero: 40, legend: 20 } },
         { setId: 'power_band', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 30, hero: 40, legend: 20 } },
       ], stardustReward: [70, 90] },
-      { enemyLevel: 40, enemies: [76, 111, 76], drops: [
+      { enemyLevel: 40, enemies: [112, 76, 95], enemyStars: 4, statBoost: 1.15, drops: [  // Rhydon, Golem, Onix
         { setId: 'choice_band', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 25, hero: 45, legend: 25 } },
         { setId: 'power_band', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 25, hero: 45, legend: 25 } },
       ], stardustReward: [80, 100] },
-      { enemyLevel: 45, enemies: [76, 111, 95], drops: [
+      { enemyLevel: 45, enemies: [112, 76, 95], enemyStars: 5, statBoost: 1.3, drops: [  // Rhydon, Golem, Onix
         { setId: 'choice_band', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 20, hero: 45, legend: 35 } },
         { setId: 'power_band', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 20, hero: 45, legend: 35 } },
       ], stardustReward: [90, 120] },
@@ -89,15 +89,15 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
         { setId: 'leftovers', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 35, hero: 35, legend: 15 } },
         { setId: 'razor_fang', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 35, hero: 35, legend: 15 } },
       ], stardustReward: [60, 80] },
-      { enemyLevel: 36, enemies: [45, 44, 69], drops: [
+      { enemyLevel: 36, enemies: [3, 45, 71], enemyStars: 4, drops: [  // Venusaur, Vileplume, Victreebel
         { setId: 'leftovers', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 30, hero: 40, legend: 20 } },
         { setId: 'razor_fang', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 30, hero: 40, legend: 20 } },
       ], stardustReward: [70, 90] },
-      { enemyLevel: 40, enemies: [45, 44, 1], drops: [
+      { enemyLevel: 40, enemies: [3, 45, 71], enemyStars: 4, statBoost: 1.15, drops: [  // Venusaur, Vileplume, Victreebel
         { setId: 'leftovers', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 25, hero: 45, legend: 25 } },
         { setId: 'razor_fang', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 25, hero: 45, legend: 25 } },
       ], stardustReward: [80, 100] },
-      { enemyLevel: 45, enemies: [45, 44, 45], drops: [
+      { enemyLevel: 45, enemies: [3, 45, 71], enemyStars: 5, statBoost: 1.3, drops: [  // Venusaur, Vileplume, Victreebel
         { setId: 'leftovers', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 20, hero: 45, legend: 35 } },
         { setId: 'razor_fang', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 20, hero: 45, legend: 35 } },
       ], stardustReward: [90, 120] },
@@ -140,15 +140,15 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
         { setId: 'swift_wing', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 35, hero: 35, legend: 15 } },
         { setId: 'quick_claw', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 35, hero: 35, legend: 15 } },
       ], stardustReward: [60, 80] },
-      { enemyLevel: 36, enemies: [26, 82, 26], drops: [
+      { enemyLevel: 36, enemies: [125, 82, 101], enemyStars: 4, drops: [  // Electabuzz, Magneton, Electrode
         { setId: 'swift_wing', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 30, hero: 40, legend: 20 } },
         { setId: 'quick_claw', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 30, hero: 40, legend: 20 } },
       ], stardustReward: [70, 90] },
-      { enemyLevel: 40, enemies: [26, 82, 82], drops: [
+      { enemyLevel: 40, enemies: [125, 82, 101], enemyStars: 4, statBoost: 1.15, drops: [  // Electabuzz, Magneton, Electrode
         { setId: 'swift_wing', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 25, hero: 45, legend: 25 } },
         { setId: 'quick_claw', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 25, hero: 45, legend: 25 } },
       ], stardustReward: [80, 100] },
-      { enemyLevel: 45, enemies: [26, 82, 26], drops: [
+      { enemyLevel: 45, enemies: [125, 82, 101], enemyStars: 5, statBoost: 1.3, drops: [  // Electabuzz, Magneton, Electrode
         { setId: 'swift_wing', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 20, hero: 45, legend: 35 } },
         { setId: 'quick_claw', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 20, hero: 45, legend: 35 } },
       ], stardustReward: [90, 120] },
@@ -191,15 +191,15 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
         { setId: 'scope_lens', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 35, hero: 35, legend: 15 } },
         { setId: 'wise_glasses', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 35, hero: 35, legend: 15 } },
       ], stardustReward: [65, 85] },
-      { enemyLevel: 38, enemies: [144, 124, 131], drops: [
+      { enemyLevel: 38, enemies: [144, 124, 131], enemyStars: 5, drops: [  // Articuno, Jynx, Lapras
         { setId: 'scope_lens', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 30, hero: 40, legend: 20 } },
         { setId: 'wise_glasses', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 30, hero: 40, legend: 20 } },
       ], stardustReward: [75, 95] },
-      { enemyLevel: 42, enemies: [144, 131, 124], drops: [
+      { enemyLevel: 42, enemies: [144, 131, 124], enemyStars: 5, statBoost: 1.15, drops: [  // Articuno, Lapras, Jynx
         { setId: 'scope_lens', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 25, hero: 45, legend: 25 } },
         { setId: 'wise_glasses', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 25, hero: 45, legend: 25 } },
       ], stardustReward: [85, 110] },
-      { enemyLevel: 48, enemies: [144, 131, 144], drops: [
+      { enemyLevel: 48, enemies: [144, 131, 144], enemyStars: 5, statBoost: 1.3, drops: [  // Articuno, Lapras, Articuno
         { setId: 'scope_lens', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 20, hero: 45, legend: 35 } },
         { setId: 'wise_glasses', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 20, hero: 45, legend: 35 } },
       ], stardustReward: [95, 130] },
@@ -242,15 +242,15 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
         { setId: 'focus_sash', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 35, hero: 35, legend: 15 } },
         { setId: 'kings_rock', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 35, hero: 35, legend: 15 } },
       ], stardustReward: [65, 85] },
-      { enemyLevel: 38, enemies: [149, 130, 148], drops: [
+      { enemyLevel: 38, enemies: [149, 130, 142], enemyStars: 5, drops: [  // Dragonite, Gyarados, Aerodactyl
         { setId: 'focus_sash', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 30, hero: 40, legend: 20 } },
         { setId: 'kings_rock', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 30, hero: 40, legend: 20 } },
       ], stardustReward: [75, 95] },
-      { enemyLevel: 42, enemies: [149, 142, 130], drops: [
+      { enemyLevel: 42, enemies: [149, 142, 130], enemyStars: 5, statBoost: 1.15, drops: [  // Dragonite, Aerodactyl, Gyarados
         { setId: 'focus_sash', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 25, hero: 45, legend: 25 } },
         { setId: 'kings_rock', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 25, hero: 45, legend: 25 } },
       ], stardustReward: [85, 110] },
-      { enemyLevel: 48, enemies: [149, 142, 149], drops: [
+      { enemyLevel: 48, enemies: [149, 142, 149], enemyStars: 5, statBoost: 1.3, drops: [  // Dragonite, Aerodactyl, Dragonite
         { setId: 'focus_sash', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 20, hero: 45, legend: 35 } },
         { setId: 'kings_rock', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 20, hero: 45, legend: 35 } },
       ], stardustReward: [95, 130] },

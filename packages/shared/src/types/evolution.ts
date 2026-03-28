@@ -35,6 +35,10 @@ export interface DungeonFloor {
   enemyLevel: number;
   enemies: number[];
   drops: DungeonDrop[];
+  /** Override naturalStars for enemies on this floor */
+  enemyStars?: number;
+  /** Multiplier applied to enemy stats after normal computation (e.g. 1.3 = +30%) */
+  statBoost?: number;
 }
 
 export interface DungeonDef {

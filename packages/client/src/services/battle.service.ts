@@ -564,7 +564,16 @@ export function startDungeonBattle(
     const templateId = floor.enemies[i];
     const template = getTemplate(templateId);
     const id = `dungeon_enemy_${crypto.randomUUID()}`;
-    const mon = makeBattleMon(id, templateId, floor.enemyLevel, template.naturalStars, false);
+    const stars = floor.enemyStars ?? template.naturalStars;
+    const mon = makeBattleMon(id, templateId, floor.enemyLevel, stars, false);
+    if (floor.statBoost) {
+      mon.stats.hp = Math.floor(mon.stats.hp * floor.statBoost);
+      mon.stats.atk = Math.floor(mon.stats.atk * floor.statBoost);
+      mon.stats.def = Math.floor(mon.stats.def * floor.statBoost);
+      mon.stats.spd = Math.floor(mon.stats.spd * floor.statBoost);
+      mon.maxHp = mon.stats.hp;
+      mon.currentHp = mon.stats.hp;
+    }
     if (isLastFloor && i === bossIndex) mon.isBoss = true;
     enemyTeam.push(mon);
   }
@@ -612,7 +621,16 @@ export function startItemDungeonBattle(
     const templateId = floor.enemies[i];
     const template = getTemplate(templateId);
     const id = `item_dungeon_enemy_${crypto.randomUUID()}`;
-    const mon = makeBattleMon(id, templateId, floor.enemyLevel, template.naturalStars, false);
+    const stars = floor.enemyStars ?? template.naturalStars;
+    const mon = makeBattleMon(id, templateId, floor.enemyLevel, stars, false);
+    if (floor.statBoost) {
+      mon.stats.hp = Math.floor(mon.stats.hp * floor.statBoost);
+      mon.stats.atk = Math.floor(mon.stats.atk * floor.statBoost);
+      mon.stats.def = Math.floor(mon.stats.def * floor.statBoost);
+      mon.stats.spd = Math.floor(mon.stats.spd * floor.statBoost);
+      mon.maxHp = mon.stats.hp;
+      mon.currentHp = mon.stats.hp;
+    }
     if (isLastFloor && i === bossIndex) mon.isBoss = true;
     enemyTeam.push(mon);
   }

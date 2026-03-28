@@ -84,6 +84,10 @@ export interface ItemDungeonFloor {
   enemies: number[];
   drops: ItemDungeonDrop[];
   stardustReward: [number, number];
+  /** Override naturalStars for enemies on this floor */
+  enemyStars?: number;
+  /** Multiplier applied to enemy stats after normal computation (e.g. 1.3 = +30%) */
+  statBoost?: number;
 }
 
 export interface ItemDungeonDef {

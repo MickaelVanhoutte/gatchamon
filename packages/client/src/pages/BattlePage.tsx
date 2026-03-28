@@ -506,7 +506,7 @@ export function BattlePage() {
       </div>
 
       {/* Skill panel */}
-      {isPlayerTurn && currentActor && !isAutoOn && (
+      {isPlayerTurn && currentActor && !isAutoOn ? (
         <SkillPanel
           actor={currentActor}
           selectedSkill={selectedSkill}
@@ -514,13 +514,30 @@ export function BattlePage() {
           onCancelSelect={() => setSelectedSkill(null)}
           onSkillDetail={setDetailSkill}
         />
-      )}
-
-      {phase === 'animating' && (
-        <div className="skill-panel">
-          <p className="waiting-text">...</p>
-        </div>
-      )}
+      ) : phase !== 'victory' && phase !== 'defeat' && (() => {
+        // Show passive skills even when it's not the player's manual turn
+        const aliveMon = state?.playerTeam.find(m => m.isAlive);
+        if (!aliveMon) return null;
+        const tmpl = getTemplate(aliveMon.templateId);
+        const passiveSkills = (tmpl?.skillIds ?? [])
+          .map(id => SKILLS[id])
+          .filter(s => s?.category === 'passive');
+        if (passiveSkills.length === 0) return null;
+        return (
+          <div className="skill-panel">
+            {passiveSkills.map(skill => (
+              <button
+                key={skill.id}
+                className="skill-btn skill-passive"
+                onClick={() => setDetailSkill(skill)}
+              >
+                <span className="skill-name">{skill.name}</span>
+                <span className="passive-label">P</span>
+              </button>
+            ))}
+          </div>
+        );
+      })()}
 
       {/* Pause overlay */}
       {isPaused && phase !== 'victory' && phase !== 'defeat' && (
@@ -798,10 +815,8 @@ function BattleMonSprite({
     ? getTypeEffectiveness(skillType, tmpl.types as PokemonType[])
     : null;
 
-  // Scale sprite based on species height: small Pokemon ~0.6x, large ~1.3x
-  // Boss monsters get a 1.8x multiplier for dramatic visual impact
-  const baseSizeScale = Math.min(1.3, Math.max(0.6, 0.4 + (tmpl.height ?? 1) * 0.4));
-  const sizeScale = mon.isBoss ? baseSizeScale * 1.8 : baseSizeScale;
+  // Scale sprite based on species height: small Pokemon ~0.8x, large ~1.5x
+  const sizeScale = Math.min(1.5, Math.max(0.8, 0.5 + (tmpl.height ?? 1) * 0.45));
 
   return (
     <div

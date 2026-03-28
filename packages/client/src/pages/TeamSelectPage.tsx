@@ -83,7 +83,7 @@ export function TeamSelectPage() {
           name: tmpl?.name ?? '???',
           spriteUrl: tmpl?.spriteUrl ?? '',
           level,
-          stars: tmpl?.naturalStars ?? 1,
+          stars: floorData?.enemyStars ?? tmpl?.naturalStars ?? 1,
         };
       });
     }
@@ -97,7 +97,7 @@ export function TeamSelectPage() {
           name: tmpl?.name ?? '???',
           spriteUrl: tmpl?.spriteUrl ?? '',
           level,
-          stars: tmpl?.naturalStars ?? 1,
+          stars: floorData?.enemyStars ?? tmpl?.naturalStars ?? 1,
         };
       });
     }
