@@ -118,3 +118,103 @@
   padding: 0 3px;
   border: 1.5px solid #115e59;
 }
+
+/* ── Beginner Bonus Badge ─────────────────────────────────── */
+
+.hud-beginner-wrapper {
+  position: relative;
+}
+
+.hud-beginner-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  animation: beginner-pulse 2s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+  transition: transform 0.15s;
+}
+
+.hud-beginner-badge:hover {
+  transform: scale(1.05);
+}
+
+.hud-beginner-timer {
+  opacity: 0.9;
+  font-weight: 600;
+  font-size: 0.55rem;
+}
+
+@keyframes beginner-pulse {
+  0%, 100% { box-shadow: 0 0 4px rgba(245, 158, 11, 0.4); }
+  50% { box-shadow: 0 0 10px rgba(245, 158, 11, 0.7); }
+}
+
+/* ── Beginner Tooltip Overlay ────────────────────────────── */
+
+.hud-beginner-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+}
+
+.hud-beginner-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 100;
+  min-width: 220px;
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  animation: tooltip-appear 0.15s ease-out;
+}
+
+@keyframes tooltip-appear {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hud-beginner-tooltip-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fbbf24;
+  margin-bottom: 2px;
+}
+
+.hud-beginner-tooltip-timer {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 8px;
+}
+
+.hud-beginner-tooltip-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hud-beginner-tooltip-list li {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.hud-beginner-tooltip-list .bonus-value {
+  display: inline-block;
+  min-width: 36px;
+  font-weight: 700;
+  color: #34d399;
+}
