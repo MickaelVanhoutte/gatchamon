@@ -1,5 +1,7 @@
 import type { InboxItem, MissionReward } from '@gatchamon/shared';
+import { isBeginnerBonusActive } from '@gatchamon/shared';
 import { loadInbox, updateInboxItem, addInboxItem } from './storage';
+import { loadPlayer } from './storage';
 import { applyReward } from './reward.service';
 
 export function getInboxItems(): InboxItem[] {
@@ -55,4 +57,17 @@ export function sendRetrySummonGift(): void {
       'Congratulations on completing the tutorial! Use this special ticket to perform a x10 premium summon up to 100 times. Save a backup and keep the best result!',
     specialItem: 'retry-summon-100',
   });
+
+  // Beginner bonus: 2 extra retry summon tickets for new players
+  const player = loadPlayer();
+  if (player && isBeginnerBonusActive(player.createdAt)) {
+    for (let i = 0; i < 2; i++) {
+      sendInboxItem({
+        title: `Beginner Bonus: 100x Retry Summon (${i + 1}/2)`,
+        message:
+          'As a new trainer, enjoy this bonus 100x Retry Summon! Perform a x10 premium summon up to 100 times and keep the best result.',
+        specialItem: 'retry-summon-100',
+      });
+    }
+  }
 }
