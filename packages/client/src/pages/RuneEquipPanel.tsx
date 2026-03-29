@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { HeldItemInstance, HeldItemSlot, BaseStats } from '@gatchamon/shared';
 import { getItemSet, computeStatsWithItems, computeStats, getActiveSetEffects } from '@gatchamon/shared';
 import type { OwnedPokemon } from '../stores/gameStore';
 import { RuneCard } from '../components/rune/RuneCard';
 import { RuneSelectModal } from './RuneSelectModal';
 import { RuneUpgradeModal } from './RuneUpgradeModal';
+import { useTutorialStore } from '../stores/tutorialStore';
 import './RuneEquipPanel.css';
 
 const STAT_LABELS: Record<keyof BaseStats, string> = {
@@ -24,11 +25,38 @@ export function RuneEquipPanel({ pokemon, heldItems, player }: RuneEquipPanelPro
   const [selectSlot, setSelectSlot] = useState<HeldItemSlot | null>(null);
   const [upgradeItem, setUpgradeItem] = useState<HeldItemInstance | null>(null);
 
+  const tutorialStep = useTutorialStore(s => s.step);
+  const prevSelectSlot = useRef(selectSlot);
+  const prevUpgradeItem = useRef(upgradeItem);
+
   const equippedItems = heldItems.filter(i => i.equippedTo === pokemon.instance.instanceId);
   const equippedBySlot: Record<number, HeldItemInstance | undefined> = {};
   for (const item of equippedItems) {
     equippedBySlot[item.slot] = item;
   }
+
+  // Tutorial step 15: detect when equip modal closes and slot 1 is now equipped
+  useEffect(() => {
+    if (tutorialStep === 15 && prevSelectSlot.current !== null && selectSlot === null) {
+      // Modal just closed — check if slot 1 now has an item
+      if (equippedBySlot[1]) {
+        useTutorialStore.getState().advanceStep(); // 15 → 16
+      }
+    }
+    prevSelectSlot.current = selectSlot;
+  }, [selectSlot, tutorialStep, equippedBySlot]);
+
+  // Tutorial step 16: detect when upgrade modal closes and item level > 0
+  useEffect(() => {
+    if (tutorialStep === 16 && prevUpgradeItem.current !== null && upgradeItem === null) {
+      // Modal just closed — check if item was upgraded
+      const slot1Item = equippedBySlot[1];
+      if (slot1Item && slot1Item.level > 0) {
+        useTutorialStore.getState().advanceStep(); // 16 → 17
+      }
+    }
+    prevUpgradeItem.current = upgradeItem;
+  }, [upgradeItem, tutorialStep, equippedBySlot]);
 
   // Stats comparison
   const baseStats = computeStats(pokemon.template, pokemon.instance.level, pokemon.instance.stars);
@@ -52,8 +80,15 @@ export function RuneEquipPanel({ pokemon, heldItems, player }: RuneEquipPanelPro
       <div className="rune-slots-grid">
         {([1, 2, 3, 4, 5, 6] as HeldItemSlot[]).map(slot => {
           const equipped = equippedBySlot[slot];
+          const modalOpen = selectSlot !== null || upgradeItem !== null;
+          const isTutorialTarget = slot === 1 && (tutorialStep === 15 || tutorialStep === 16) && !modalOpen;
           return (
-            <div key={slot} className="rune-slot" onClick={() => handleSlotClick(slot)}>
+            <div
+              key={slot}
+              className={`rune-slot ${isTutorialTarget ? 'tutorial-target' : ''}`}
+              data-tutorial-id={slot === 1 && !modalOpen ? 'rune-slot-1' : undefined}
+              onClick={() => handleSlotClick(slot)}
+            >
               {equipped ? (
                 <RuneCard item={equipped} compact />
               ) : (

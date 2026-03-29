@@ -19,6 +19,7 @@ const TABS = [
 const TUTORIAL_ALLOWED_TAB: Record<number, string> = {
   3: '/summon',
   7: '/story',
+  12: '/collection',
 };
 
 export function BottomNav() {
@@ -27,11 +28,11 @@ export function BottomNav() {
   const unclaimedRewardCount = useGameStore(s => s.unclaimedRewardCount);
   const tutorialStep = useTutorialStore(s => s.step);
   const advanceStep = useTutorialStore(s => s.advanceStep);
-  const tutorialActive = tutorialStep > 0 && tutorialStep < 8;
+  const tutorialActive = tutorialStep > 0 && tutorialStep < 18;
   const [expanded, setExpanded] = useState(false);
 
-  // Force expand during tutorial steps 3 and 7
-  const forceExpanded = tutorialActive && (tutorialStep === 3 || tutorialStep === 7);
+  // Force expand during tutorial steps 3, 7, and 12
+  const forceExpanded = tutorialActive && (tutorialStep === 3 || tutorialStep === 7 || tutorialStep === 12);
 
   // Auto-collapse when navigating (unless tutorial forces it open)
   useEffect(() => {
@@ -46,10 +47,10 @@ export function BottomNav() {
   if (location.pathname.startsWith('/battle/')) return null;
 
   // During tutorial steps that don't involve nav, hide completely
-  if (tutorialActive && tutorialStep === 1) return null;
+  if (tutorialActive && ![2, 3, 7, 12].includes(tutorialStep)) return null;
 
   // Elevate nav above tutorial overlay during nav-targeted steps
-  const elevate = tutorialActive && (tutorialStep === 2 || tutorialStep === 3 || tutorialStep === 7);
+  const elevate = tutorialActive && (tutorialStep === 2 || tutorialStep === 3 || tutorialStep === 7 || tutorialStep === 12);
 
   if (!expanded && !forceExpanded) {
     return (

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTutorial } from '../../hooks/useTutorial';
+import { useTutorialStore } from '../../stores/tutorialStore';
 import { useGameStore } from '../../stores/gameStore';
 import { sendRetrySummonGift } from '../../services/inbox.service';
 import './TutorialOverlay.css';
@@ -14,11 +15,20 @@ const STEP_ROUTE: Record<number, string> = {
   5: '/summon',
   6: '/',
   7: '/',
+  8: '/story',
+  9: '/story',
+  10: '/battle/team-select',
+  12: '/',
+  13: '/collection',
+  14: '/collection',
+  15: '/collection',
+  16: '/collection',
+  17: '/collection',
 };
 
-const SPOTLIGHT_STEPS = new Set([2, 3, 4, 5, 7]);
-const TOP_DIALOG_STEPS = new Set([2, 3, 7]);
-const INTERACT_STEPS = new Set([2, 3, 4, 5, 7]);
+const SPOTLIGHT_STEPS = new Set([2, 3, 4, 5, 7, 8, 9, 12, 13, 14, 15, 16]);
+const TOP_DIALOG_STEPS = new Set([2, 3, 7, 8, 9, 10, 12]);
+const INTERACT_STEPS = new Set([2, 3, 4, 5, 7, 8, 9, 10, 12, 13, 14, 15, 16]);
 
 interface SpotRect {
   top: number; left: number; width: number; height: number; borderRadius: string;
@@ -90,18 +100,26 @@ export function TutorialOverlay() {
     }
   }, [step, navigate, advanceStep]);
 
-  // Step 8: tutorial done — send welcome gift
+  // Step 18: tutorial done — send welcome gift
   useEffect(() => {
-    if (step === 8) {
+    if (step === 18) {
       completeTutorial();
       sendRetrySummonGift();
       useGameStore.getState().refreshInbox();
     }
   }, [step, completeTutorial]);
 
-  // Auto-collapse dialog after 3s on summon steps so buttons are accessible
+  // Step 11 recovery: if player refreshes mid-battle, battle state is lost.
+  // Reset to step 8 so they can retry from the story page.
   useEffect(() => {
-    if ((step === 4 || step === 5) && !autoCollapsed) {
+    if (step === 11 && !location.pathname.startsWith('/battle')) {
+      useTutorialStore.getState().setStep(8);
+    }
+  }, [step, location.pathname]);
+
+  // Auto-collapse dialog after 3s on interact steps with buttons (summon + team-select)
+  useEffect(() => {
+    if ((step === 4 || step === 5 || step === 10) && !autoCollapsed) {
       const timer = setTimeout(() => setAutoCollapsed(true), 3000);
       return () => clearTimeout(timer);
     }

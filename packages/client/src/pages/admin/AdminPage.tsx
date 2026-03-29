@@ -5,6 +5,8 @@ import { assetUrl } from '../../utils/asset-url';
 import { useAdminStore } from './useAdminStore';
 import { AdminEditorPanel } from './AdminEditorPanel';
 import { AdminSkillPicker } from './AdminSkillPicker';
+import { AdminDistributionPanel } from './AdminDistributionPanel';
+import { STAR_COLORS } from './constants';
 import './AdminPage.css';
 
 const ALL_TYPES: PokemonType[] = [
@@ -12,10 +14,6 @@ const ALL_TYPES: PokemonType[] = [
   'fighting', 'poison', 'ground', 'flying', 'psychic',
   'bug', 'rock', 'ghost', 'dragon', 'fairy', 'dark', 'steel',
 ];
-
-const STAR_COLORS: Record<number, string> = {
-  1: '#aaa', 2: '#4ade80', 3: '#60a5fa', 4: '#c084fc', 5: '#ff4444',
-};
 
 export function AdminPage() {
   const {
@@ -26,6 +24,7 @@ export function AdminPage() {
     exportDiff, importDiff, resetAll, getDiffCount, getEffective,
   } = useAdminStore();
 
+  const [activeTab, setActiveTab] = useState<'editor' | 'distribution'>('editor');
   const [showImport, setShowImport] = useState(false);
   const [importText, setImportText] = useState('');
   const diffCount = getDiffCount();
@@ -86,6 +85,16 @@ export function AdminPage() {
         <span className={`admin-badge ${diffCount === 0 ? 'admin-badge--zero' : ''}`}>
           {diffCount} change{diffCount !== 1 ? 's' : ''}
         </span>
+        <div className="admin-tabs">
+          <button
+            className={`admin-tab ${activeTab === 'editor' ? 'admin-tab--active' : ''}`}
+            onClick={() => setActiveTab('editor')}
+          >Editor</button>
+          <button
+            className={`admin-tab ${activeTab === 'distribution' ? 'admin-tab--active' : ''}`}
+            onClick={() => setActiveTab('distribution')}
+          >Distribution</button>
+        </div>
         <div className="admin-topbar-actions">
           <button className="admin-btn" onClick={() => setShowImport(true)}>Import</button>
           <button className="admin-btn admin-btn--primary" onClick={handleExport} disabled={diffCount === 0}>
@@ -97,104 +106,110 @@ export function AdminPage() {
         </div>
       </div>
 
-      {/* ─── Left: Grid Panel ─── */}
-      <div className="admin-grid-panel">
-        <div className="admin-filters">
-          <input
-            className="admin-search"
-            type="text"
-            placeholder="Search name..."
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-          />
-          <select
-            className="admin-select"
-            value={typeFilter ?? ''}
-            onChange={e => setTypeFilter((e.target.value || null) as PokemonType | null)}
-          >
-            <option value="">All Types</option>
-            {ALL_TYPES.map(t => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
-          <select
-            className="admin-select"
-            value={starFilter ?? ''}
-            onChange={e => setStarFilter(e.target.value ? Number(e.target.value) : null)}
-          >
-            <option value="">All Stars</option>
-            {[1, 2, 3, 4, 5].map(s => (
-              <option key={s} value={s}>{s} star</option>
-            ))}
-          </select>
-          <select
-            className="admin-select"
-            value={summonableFilter}
-            onChange={e => setSummonableFilter(e.target.value as 'all' | 'yes' | 'no')}
-          >
-            <option value="all">Summonable: All</option>
-            <option value="yes">Summonable</option>
-            <option value="no">Not Summonable</option>
-          </select>
-          <select
-            className="admin-select"
-            value={sortBy}
-            onChange={e => setSortBy(e.target.value as 'id' | 'stars' | 'name')}
-          >
-            <option value="id">Sort: ID</option>
-            <option value="stars">Sort: Stars</option>
-            <option value="name">Sort: Name</option>
-          </select>
-          <label className="admin-toggle">
-            <input type="checkbox" checked={showForms} onChange={e => setShowForms(e.target.checked)} />
-            Forms
-          </label>
-          <label className="admin-toggle">
-            <input type="checkbox" checked={changesOnly} onChange={e => setChangesOnly(e.target.checked)} />
-            Changed
-          </label>
-          <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>
-            {filtered.length} shown
-          </span>
-        </div>
-
-        <div className="admin-grid">
-          {filtered.map(t => {
-            const eff = getEffective(t);
-            const hasChange = diffs.has(t.id);
-            return (
-              <div
-                key={t.id}
-                className={`admin-card${selectedId === t.id ? ' admin-card--selected' : ''}${hasChange ? ' admin-card--changed' : ''}`}
-                onClick={() => setSelectedId(t.id)}
+      {activeTab === 'editor' ? (
+        <>
+          {/* ─── Left: Grid Panel ─── */}
+          <div className="admin-grid-panel">
+            <div className="admin-filters">
+              <input
+                className="admin-search"
+                type="text"
+                placeholder="Search name..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+              <select
+                className="admin-select"
+                value={typeFilter ?? ''}
+                onChange={e => setTypeFilter((e.target.value || null) as PokemonType | null)}
               >
-                {eff.summonable === false && (
-                  <span className="admin-card-not-summonable" title="Not summonable">NS</span>
-                )}
-                <img
-                  className="admin-card-sprite"
-                  src={assetUrl(t.spriteUrl)}
-                  alt={t.name}
-                  loading="lazy"
-                />
-                <span className="admin-card-name" title={t.name}>{t.name}</span>
-                <span className="admin-card-stars" style={{ color: STAR_COLORS[eff.naturalStars] }}>
-                  {'★'.repeat(eff.naturalStars)}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+                <option value="">All Types</option>
+                {ALL_TYPES.map(t => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+              <select
+                className="admin-select"
+                value={starFilter ?? ''}
+                onChange={e => setStarFilter(e.target.value ? Number(e.target.value) : null)}
+              >
+                <option value="">All Stars</option>
+                {[1, 2, 3, 4, 5].map(s => (
+                  <option key={s} value={s}>{s} star</option>
+                ))}
+              </select>
+              <select
+                className="admin-select"
+                value={summonableFilter}
+                onChange={e => setSummonableFilter(e.target.value as 'all' | 'yes' | 'no')}
+              >
+                <option value="all">Summonable: All</option>
+                <option value="yes">Summonable</option>
+                <option value="no">Not Summonable</option>
+              </select>
+              <select
+                className="admin-select"
+                value={sortBy}
+                onChange={e => setSortBy(e.target.value as 'id' | 'stars' | 'name')}
+              >
+                <option value="id">Sort: ID</option>
+                <option value="stars">Sort: Stars</option>
+                <option value="name">Sort: Name</option>
+              </select>
+              <label className="admin-toggle">
+                <input type="checkbox" checked={showForms} onChange={e => setShowForms(e.target.checked)} />
+                Forms
+              </label>
+              <label className="admin-toggle">
+                <input type="checkbox" checked={changesOnly} onChange={e => setChangesOnly(e.target.checked)} />
+                Changed
+              </label>
+              <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>
+                {filtered.length} shown
+              </span>
+            </div>
 
-      {/* ─── Right: Editor Panel ─── */}
-      <div className="admin-editor">
-        {selectedTemplate ? (
-          <AdminEditorPanel template={selectedTemplate} />
-        ) : (
-          <div className="admin-editor-empty">Select a Pokemon to edit</div>
-        )}
-      </div>
+            <div className="admin-grid">
+              {filtered.map(t => {
+                const eff = getEffective(t);
+                const hasChange = diffs.has(t.id);
+                return (
+                  <div
+                    key={t.id}
+                    className={`admin-card${selectedId === t.id ? ' admin-card--selected' : ''}${hasChange ? ' admin-card--changed' : ''}`}
+                    onClick={() => setSelectedId(t.id)}
+                  >
+                    {eff.summonable === false && (
+                      <span className="admin-card-not-summonable" title="Not summonable">NS</span>
+                    )}
+                    <img
+                      className="admin-card-sprite"
+                      src={assetUrl(t.spriteUrl)}
+                      alt={t.name}
+                      loading="lazy"
+                    />
+                    <span className="admin-card-name" title={t.name}>{t.name}</span>
+                    <span className="admin-card-stars" style={{ color: STAR_COLORS[eff.naturalStars] }}>
+                      {'★'.repeat(eff.naturalStars)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ─── Right: Editor Panel ─── */}
+          <div className="admin-editor">
+            {selectedTemplate ? (
+              <AdminEditorPanel template={selectedTemplate} />
+            ) : (
+              <div className="admin-editor-empty">Select a Pokemon to edit</div>
+            )}
+          </div>
+        </>
+      ) : (
+        <AdminDistributionPanel />
+      )}
 
       {/* ─── Skill Picker Modal ─── */}
       {skillPickerSlot !== null && selectedTemplate && (

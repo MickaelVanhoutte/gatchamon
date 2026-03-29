@@ -16,6 +16,36 @@ const TUTORIAL_DIALOG: Record<number, string[]> = {
     'Outstanding, {name}! You\'ve summoned your first companions!',
     "Now it's time for adventure. Tap the Story icon to begin your journey!",
   ],
+  8: ['Time for your first adventure! Tap Verdant Woods!'],
+  9: ['Tap GO to enter your first battle!'],
+  10: ["I've selected your monsters for you! Tap GO to fight!"],
+  12: [
+    'Congratulations on your first victory, {name}!',
+    'Did you notice the held item you found? Held items boost your monsters\' stats!',
+    'Each monster has 6 equipment slots. Items come in sets that grant bonus effects when combined!',
+    'Let me show you how to equip and upgrade them. Go to your Collection!',
+  ],
+  13: [
+    'Here is your Collection! Each monster can be equipped with held items.',
+    'Select your monster to see its details!',
+  ],
+  14: [
+    'Now let\'s manage this monster\'s equipment.',
+    'Tap the Items tab to see its equipment slots!',
+  ],
+  15: [
+    'Each slot can hold one item. Let\'s equip the item you just found!',
+    'Tap the first slot to open the equipment menu!',
+  ],
+  16: [
+    'Well done! Your monster is now stronger with that item equipped!',
+    'Items can be upgraded to increase their stats. Tap the item to upgrade it!',
+  ],
+  17: [
+    'Excellent work, {name}! You\'ve learned the basics of held items!',
+    'Keep battling to find more items, and upgrade them to make your team unstoppable!',
+    'You\'re ready to explore the world and become a Pokémon Champion! Good luck!',
+  ],
 };
 
 const STEP_HIGHLIGHT: Record<number, string> = {
@@ -24,15 +54,24 @@ const STEP_HIGHLIGHT: Record<number, string> = {
   4: 'summon-btn-single',
   5: 'summon-btn-single',
   7: 'nav-story',
+  8: 'story-region-1',
+  9: 'story-floor-go',
+  10: 'team-select-go',
+  12: 'nav-collection',
+  13: 'collection-first-mon',
+  14: 'collection-tab-items',
+  15: 'rune-slot-1',
+  16: 'rune-slot-1',
 };
 
 export function useTutorial() {
   const step = useTutorialStore(s => s.step);
   const advanceStep = useTutorialStore(s => s.advanceStep);
+  const setStep = useTutorialStore(s => s.setStep);
   const completeTutorial = useTutorialStore(s => s.completeTutorial);
   const playerName = useGameStore(s => s.player?.name ?? 'Trainer');
 
-  const isActive = step > 0 && step < 8;
+  const isActive = step > 0 && step < 18 && step !== 11;
 
   const dialogLines = (TUTORIAL_DIALOG[step] ?? []).map(line =>
     line.replace('{name}', playerName),
@@ -44,5 +83,5 @@ export function useTutorial() {
     return highlightTarget === id;
   }
 
-  return { step, isActive, advanceStep, completeTutorial, dialogLines, highlightTarget, shouldHighlight };
+  return { step, isActive, advanceStep, setStep, completeTutorial, dialogLines, highlightTarget, shouldHighlight };
 }

@@ -11,6 +11,7 @@ import { assetUrl } from '../utils/asset-url';
 import { GameIcon, StarRating } from '../components/icons';
 import { BattleLoadingScreen } from '../components/BattleLoadingScreen';
 import { GymLeaderDialogue } from '../components/GymLeaderDialogue';
+import { useTutorialStore } from '../stores/tutorialStore';
 import './BattlePage.css';
 
 type Phase = 'player_turn' | 'animating' | 'victory' | 'defeat';
@@ -335,6 +336,20 @@ export function BattlePage() {
   const navigateAway = useCallback(() => {
     refreshPlayer();
     loadCollection();
+
+    const tutorialStep = useTutorialStore.getState().step;
+    if (tutorialStep === 11) {
+      if (phase === 'victory') {
+        useTutorialStore.getState().setStep(12);
+        navigate('/');
+      } else {
+        // Defeat during tutorial — retry from story page
+        useTutorialStore.getState().setStep(8);
+        navigate('/story');
+      }
+      return;
+    }
+
     if (state?.mode === 'tower') {
       navigate('/dungeons?tab=tower');
     } else if (state?.mode === 'dungeon' || state?.mode === 'item-dungeon') {
@@ -350,7 +365,7 @@ export function BattlePage() {
       }
       navigate(`/story?${params.toString()}`);
     }
-  }, [state, navigate, refreshPlayer, loadCollection]);
+  }, [state, phase, navigate, refreshPlayer, loadCollection]);
 
   const handleQuit = useCallback(() => {
     if (battleId) {

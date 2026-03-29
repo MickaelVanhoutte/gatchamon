@@ -8,10 +8,11 @@ interface RuneCardProps {
   compact?: boolean;
   selected?: boolean;
   equippedPokemonName?: string | null;
+  className?: string;
   onClick?: () => void;
 }
 
-export function RuneCard({ item, compact, selected, equippedPokemonName, onClick }: RuneCardProps) {
+export function RuneCard({ item, compact, selected, equippedPokemonName, className, onClick }: RuneCardProps) {
   const setDef = getItemSet(item.setId);
   const gradeColor = GRADE_COLORS[item.grade];
 
@@ -33,7 +34,7 @@ export function RuneCard({ item, compact, selected, equippedPokemonName, onClick
 
   return (
     <div
-      className={`rune-card ${selected ? 'rune-card--selected' : ''}`}
+      className={`rune-card ${selected ? 'rune-card--selected' : ''} ${className ?? ''}`}
       style={{ borderColor: gradeColor }}
       onClick={onClick}
     >

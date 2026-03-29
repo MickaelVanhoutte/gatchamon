@@ -6,6 +6,7 @@ interface TutorialState {
 
   loadTutorial: () => void;
   advanceStep: () => void;
+  setStep: (n: number) => void;
   completeTutorial: () => void;
 }
 
@@ -21,6 +22,11 @@ export const useTutorialStore = create<TutorialState>((set, get) => ({
     const next = get().step + 1;
     storage.saveTutorialStep(next);
     set({ step: next });
+  },
+
+  setStep: (n: number) => {
+    storage.saveTutorialStep(n);
+    set({ step: n });
   },
 
   completeTutorial: () => {

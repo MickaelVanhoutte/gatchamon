@@ -153,3 +153,37 @@
   position: relative;
   z-index: 205 !important;
 }
+
+/* Story page tutorial targets */
+[data-tutorial-id="story-region-1"].tutorial-target {
+  position: relative;
+  z-index: 205 !important;
+}
+
+[data-tutorial-id="story-floor-go"].tutorial-target {
+  position: relative;
+  z-index: 205 !important;
+}
+
+/* Team select GO button */
+[data-tutorial-id="team-select-go"].tutorial-target {
+  position: relative;
+  z-index: 205 !important;
+}
+
+/* Collection page tutorial targets */
+[data-tutorial-id="collection-first-mon"].tutorial-target {
+  position: relative;
+  z-index: 205 !important;
+}
+
+[data-tutorial-id="collection-tab-items"].tutorial-target {
+  position: relative;
+  z-index: 205 !important;
+}
+
+/* Rune slot tutorial target */
+[data-tutorial-id="rune-slot-1"].tutorial-target {
+  position: relative;
+  z-index: 205 !important;
+}

@@ -10,6 +10,7 @@ import type { PokemonType, BaseStats } from '@gatchamon/shared';
 import { assetUrl } from '../utils/asset-url';
 import { RuneEquipPanel } from './RuneEquipPanel';
 import { SkillCard } from '../components/monster/SkillCard';
+import { useTutorialStore } from '../stores/tutorialStore';
 import './CollectionPage.css';
 
 const ALL_TYPES: PokemonType[] = [
@@ -55,6 +56,9 @@ export function CollectionPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<DetailTab>('info');
 
+  const tutorialStep = useTutorialStore(s => s.step);
+  const advanceTutorial = useTutorialStore(s => s.advanceStep);
+
   useEffect(() => {
     loadCollection();
     loadHeldItems();
@@ -63,6 +67,8 @@ export function CollectionPage() {
   useEffect(() => {
     if (!selectedId && collection.length > 0) {
       setSelectedId(collection[0].instance.instanceId);
+      // Auto-select advances tutorial from step 13 → 14
+      if (tutorialStep === 13) advanceTutorial();
     }
   }, [collection, selectedId]);
 
@@ -140,14 +146,19 @@ export function CollectionPage() {
         {/* Left: Compact grid */}
         <div className="box-grid-panel">
           <div className="box-grid">
-            {filtered.map(mon => {
+            {filtered.map((mon, idx) => {
               const starColor = STAR_COLORS[mon.instance.stars] ?? STAR_COLORS[1];
               const isSelected = mon.instance.instanceId === selectedId;
+              const isTutorialTarget = idx === 0 && tutorialStep === 13;
               return (
                 <div
                   key={mon.instance.instanceId}
-                  className={`box-cell ${isSelected ? 'box-cell--selected' : ''}`}
-                  onClick={() => setSelectedId(mon.instance.instanceId)}
+                  className={`box-cell ${isSelected ? 'box-cell--selected' : ''} ${isTutorialTarget ? 'tutorial-target' : ''}`}
+                  data-tutorial-id={idx === 0 ? 'collection-first-mon' : undefined}
+                  onClick={() => {
+                    setSelectedId(mon.instance.instanceId);
+                    if (tutorialStep === 13) advanceTutorial(); // step 13 → 14
+                  }}
                 >
                   <div className="box-cell-stars" style={{ color: starColor }}>
                     <StarRating count={mon.instance.stars} size={10} />
@@ -186,8 +197,12 @@ export function CollectionPage() {
                   onClick={() => setActiveTab('skill')}
                 >Skill</button>
                 <button
-                  className={`box-tab ${activeTab === 'items' ? 'box-tab--active' : ''}`}
-                  onClick={() => setActiveTab('items')}
+                  className={`box-tab ${activeTab === 'items' ? 'box-tab--active' : ''} ${tutorialStep === 14 ? 'tutorial-target' : ''}`}
+                  data-tutorial-id="collection-tab-items"
+                  onClick={() => {
+                    setActiveTab('items');
+                    if (tutorialStep === 14) advanceTutorial(); // step 14 → 15
+                  }}
                 >Items</button>
               </div>
 

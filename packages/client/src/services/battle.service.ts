@@ -37,8 +37,9 @@ import {
   checkAndUpdateTrophies,
 } from './reward.service';
 import { grantTrainerXp } from './player.service';
-import { rollItemDrop } from './rune.service';
+import { rollItemDrop, generateItem } from './rune.service';
 import { addHeldItem } from './storage';
+import { useTutorialStore } from '../stores/tutorialStore';
 import { calculateTowerRewards as calculateTowerRewardsImported, getDungeonBattle } from './dungeon.service';
 
 // Map instanceId → active set effects for proc handling in battle
@@ -384,6 +385,20 @@ function calculateRewards(state: BattleState): BattleRewards {
   }
   checkAndUpdateTrophies();
 
+  // Tutorial: guarantee a held item drop on the first story battle
+  const tutorialStep = useTutorialStore.getState().step;
+  const itemDrops: Array<{ itemId: string; setId: string; stars: number; grade: string }> = [];
+  let tutorialStardustBonus = 0;
+  if (tutorialStep === 11 && regionId === 1 && floorNum === 1) {
+    const tutorialPlayer = loadPlayer()!;
+    const item = generateItem('power_band', 1, 1, 'common', tutorialPlayer.id);
+    addHeldItem(item);
+    itemDrops.push({ itemId: item.itemId, setId: item.setId, stars: item.stars, grade: item.grade });
+    // Grant bonus stardust so the player can afford the tutorial upgrade (500 cost)
+    tutorialStardustBonus = 1000;
+    savePlayer({ ...loadPlayer()!, stardust: (loadPlayer()!.stardust ?? 0) + tutorialStardustBonus });
+  }
+
   const trainerXpBase = regionId * 5 + floorNum * 2;
   const trainerResult = grantTrainerXp(trainerXpBase);
 
@@ -395,7 +410,8 @@ function calculateRewards(state: BattleState): BattleRewards {
     levelUps,
     isFirstClear: firstClear,
     monsterLoot: monsterLoot ?? undefined,
-    stardust: stardustReward,
+    stardust: stardustReward + tutorialStardustBonus,
+    itemDrops: itemDrops.length > 0 ? itemDrops : undefined,
     trainerXpGained: trainerXpBase,
     trainerLeveledUp: trainerResult.leveledUp,
     trainerNewLevel: trainerResult.newLevel,

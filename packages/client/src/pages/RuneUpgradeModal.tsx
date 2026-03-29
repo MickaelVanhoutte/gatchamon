@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { HeldItemInstance, HeldItemSlot } from '@gatchamon/shared';
 import { getUpgradeCost, getUpgradeSuccessRate, STAT_TYPE_LABELS, getItemSet, GRADE_COLORS, getItemSellValue } from '@gatchamon/shared';
 import { useGameStore } from '../stores/gameStore';
+import { useTutorialStore } from '../stores/tutorialStore';
 import { GameIcon, StarRating } from '../components/icons';
 import './RuneUpgradeModal.css';
 
@@ -14,6 +15,8 @@ interface RuneUpgradeModalProps {
 
 export function RuneUpgradeModal({ item: initialItem, playerStardust, onClose, onEquipSlot }: RuneUpgradeModalProps) {
   const { upgradeItem: storeUpgrade, sellItem: storeSell, heldItems } = useGameStore();
+  const tutorialStep = useTutorialStore(s => s.step);
+  const isTutorial = tutorialStep === 16;
   const [lastResult, setLastResult] = useState<{ success: boolean; message: string } | null>(null);
   const [animating, setAnimating] = useState(false);
   const [confirmSell, setConfirmSell] = useState(false);
@@ -134,7 +137,7 @@ export function RuneUpgradeModal({ item: initialItem, playerStardust, onClose, o
           </button>
           {!isMaxLevel ? (
             <button
-              className="rune-upgrade-btn"
+              className={`rune-upgrade-btn ${isTutorial ? 'tutorial-highlight' : ''}`}
               onClick={handleUpgrade}
               disabled={!canAfford || animating}
             >

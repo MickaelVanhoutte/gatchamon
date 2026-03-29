@@ -4,6 +4,7 @@ import { ITEM_SETS, GRADE_COLORS, ITEM_REMOVAL_COST, computeStatsWithItems, comp
 import { POKEDEX } from '@gatchamon/shared';
 import type { OwnedPokemon } from '../stores/gameStore';
 import { useGameStore } from '../stores/gameStore';
+import { useTutorialStore } from '../stores/tutorialStore';
 import { RuneCard } from '../components/rune/RuneCard';
 import { GameIcon } from '../components/icons';
 import './RuneSelectModal.css';
@@ -34,6 +35,9 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
   const [sellMode, setSellMode] = useState(false);
   const [sellSelection, setSellSelection] = useState<Set<string>>(new Set());
   const [confirmBulkSell, setConfirmBulkSell] = useState(false);
+
+  const tutorialStep = useTutorialStore(s => s.step);
+  const isTutorial = tutorialStep === 15;
 
   const currentEquipped = equippedItems.find(i => i.slot === slot);
 
@@ -121,15 +125,17 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
             {availableItems.length === 0 && (
               <div className="rune-select-empty">No items for slot {slot}</div>
             )}
-            {availableItems.map(item => {
+            {availableItems.map((item, idx) => {
               const isEquipped = item.equippedTo !== null;
               const isSellSelected = sellSelection.has(item.itemId);
+              const tutorialHighlightItem = isTutorial && idx === 0 && !selectedItemId;
               return (
                 <RuneCard
                   key={item.itemId}
                   item={item}
                   selected={sellMode ? isSellSelected : item.itemId === selectedItemId}
                   equippedPokemonName={getEquippedPokemonName(item)}
+                  className={tutorialHighlightItem ? 'tutorial-highlight' : undefined}
                   onClick={() => {
                     if (sellMode) {
                       if (isEquipped) return; // can't sell equipped items
@@ -220,7 +226,7 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
                 </button>
               )}
               <button
-                className="rune-equip-action-btn"
+                className={`rune-equip-action-btn ${isTutorial && selectedItem ? 'tutorial-highlight' : ''}`}
                 onClick={handleEquip}
                 disabled={!selectedItem}
               >

@@ -11,6 +11,7 @@ import { useRotatedHorizontalScroll } from '../hooks/useRotatedHorizontalScroll'
 import { MonsterDetailModal } from '../components/MonsterDetailModal';
 import { GameIcon, StarRating } from '../components/icons';
 import { assetUrl } from '../utils/asset-url';
+import { useTutorialStore } from '../stores/tutorialStore';
 import './TeamSelectPage.css';
 
 const STAR_COLORS: Record<number, string> = {
@@ -61,12 +62,18 @@ export function TeamSelectPage() {
   // Restore last team once collection is loaded
   useEffect(() => {
     if (teamRestored || collection.length === 0) return;
-    const saved = loadLastTeam();
-    const validIds = saved
-      .filter(id => collection.some(m => m.instance.instanceId === id))
-      .slice(0, 4);
-    if (validIds.length > 0) {
-      setSelected(validIds);
+    const tStep = useTutorialStore.getState().step;
+    if (tStep === 10) {
+      // Tutorial: auto-select all monsters
+      setSelected(collection.map(m => m.instance.instanceId).slice(0, 4));
+    } else {
+      const saved = loadLastTeam();
+      const validIds = saved
+        .filter(id => collection.some(m => m.instance.instanceId === id))
+        .slice(0, 4);
+      if (validIds.length > 0) {
+        setSelected(validIds);
+      }
     }
     setTeamRestored(true);
   }, [collection, teamRestored]);
@@ -142,6 +149,8 @@ export function TeamSelectPage() {
     });
   };
 
+  const tutorialStep = useTutorialStore(s => s.step);
+
   const handleStart = () => {
     if (!player || selected.length === 0) return;
     setIsStarting(true);
@@ -159,6 +168,7 @@ export function TeamSelectPage() {
         navigate(`/battle/${result.state.battleId}`);
       } else {
         const result = startBattle(selected, { region, floor, difficulty });
+        if (tutorialStep === 10) useTutorialStore.getState().setStep(11);
         navigate(`/battle/${result.state.battleId}`);
       }
     } catch (err: any) {
@@ -344,7 +354,8 @@ export function TeamSelectPage() {
             </div>
           )}
           <button
-            className="ts-go-btn"
+            className={`ts-go-btn ${tutorialStep === 10 ? 'tutorial-target' : ''}`}
+            data-tutorial-id="team-select-go"
             onClick={handleStart}
             disabled={selected.length === 0 || isStarting}
           >

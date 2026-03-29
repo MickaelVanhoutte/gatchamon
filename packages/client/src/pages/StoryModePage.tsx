@@ -10,6 +10,7 @@ import type { FloorRewardPreview } from '../services/reward.service';
 import { assetUrl } from '../utils/asset-url';
 import { useRotatedScroll } from '../hooks/useRotatedScroll';
 import { useRotatedHorizontalScroll } from '../hooks/useRotatedHorizontalScroll';
+import { useTutorialStore } from '../stores/tutorialStore';
 import './StoryModePage.css';
 
 interface FloorEnemy {
@@ -70,6 +71,17 @@ export function StoryModePage() {
   const worldMapRef = useRef<HTMLDivElement>(null);
   useRotatedScroll(floorListRef);
   useRotatedHorizontalScroll(worldMapRef);
+
+  const tutorialStep = useTutorialStore(s => s.step);
+  const advanceTutorial = useTutorialStore(s => s.advanceStep);
+
+  // Tutorial: auto-select region 1 when arriving at step 8
+  useEffect(() => {
+    if (tutorialStep === 8 && !selectedRegionId) {
+      setSelectedRegionId(1);
+      advanceTutorial(); // advance to step 9 (floor GO spotlight)
+    }
+  }, [tutorialStep]);
 
   // Auto-open region from query params (e.g. returning from battle)
   useEffect(() => {
@@ -1540,8 +1552,9 @@ export function StoryModePage() {
           return (
             <button
               key={region.id}
-              className={`zone-marker ${status} ${isSelected ? 'selected' : ''}`}
+              className={`zone-marker ${status} ${isSelected ? 'selected' : ''} ${tutorialStep === 8 && region.id === 1 ? 'tutorial-target' : ''}`}
               style={{ left: `${(region.mapPosition.x / MAP_W) * 100}%`, top: `${(region.mapPosition.y / MAP_H) * 100}%` }}
+              data-tutorial-id={region.id === 1 ? 'story-region-1' : undefined}
               onClick={() => setSelectedRegionId(isSelected ? null : region.id)}
             >
               <div className="zone-pin" style={{ '--zone-color': region.color } as React.CSSProperties}>
@@ -1658,11 +1671,14 @@ export function StoryModePage() {
                     )}
                   </div>
                   <button
-                    className="floor-go-btn"
+                    className={`floor-go-btn ${tutorialStep === 9 && floor.floor === 1 ? 'tutorial-target' : ''}`}
+                    data-tutorial-id={floor.floor === 1 ? 'story-floor-go' : undefined}
                     disabled={!isUnlocked}
-                    onClick={() => isUnlocked && navigate(
-                      `/battle/team-select?region=${selectedRegion.id}&floor=${floor.floor}&difficulty=${difficulty}`
-                    )}
+                    onClick={() => {
+                      if (!isUnlocked) return;
+                      if (tutorialStep === 9 && floor.floor === 1) advanceTutorial(); // step 9 → 10
+                      navigate(`/battle/team-select?region=${selectedRegion.id}&floor=${floor.floor}&difficulty=${difficulty}`);
+                    }}
                   >
                     {!isUnlocked ? (
                       <span className="go-lock"><GameIcon id="lock" size={14} /></span>
