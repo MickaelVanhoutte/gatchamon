@@ -1,4 +1,4 @@
-import { getTemplate as getTemplateShared, computeStats, getDungeon, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel, getTowerFloor, DITTO_TEMPLATE_ID, getCurrentTowerResetDate } from '@gatchamon/shared';
+import { getTemplate as getTemplateShared, computeStats, getDungeon, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel, getTowerFloor, DITTO_TEMPLATE_ID, getCurrentTowerResetDate, BEGINNER_BONUS, isBeginnerBonusActive } from '@gatchamon/shared';
 import { getSkillsForPokemon } from '@gatchamon/shared';
 import type { BattleState, BattleMon, BattleAction, BattleResult, BattleRewards } from '@gatchamon/shared';
 import type { DungeonRewards, DungeonDef } from '@gatchamon/shared';
@@ -152,11 +152,19 @@ export function calculateDungeonRewards(state: BattleState): DungeonRewards & Ba
   if (!dungeonDef) throw new Error('Dungeon not found');
 
   const floorIndex = (state.floor.floor - 1);
-  const essences = rollDungeonDrops(dungeonDef, floorIndex);
+  const player = loadPlayer();
+  const beginner = player ? isBeginnerBonusActive(player.createdAt) : false;
+  const essencesRaw = rollDungeonDrops(dungeonDef, floorIndex);
+  // Apply beginner bonus to essence quantities
+  const essences: Record<string, number> = {};
+  for (const [essId, qty] of Object.entries(essencesRaw)) {
+    essences[essId] = beginner ? Math.floor(qty * BEGINNER_BONUS.essenceMult) : qty;
+  }
 
   // XP based on floor enemy level
   const floor = dungeonDef.floors[floorIndex];
-  const xpPerMon = Math.floor(floor.enemyLevel * 8);
+  const xpMult = beginner ? BEGINNER_BONUS.xpMult : 1;
+  const xpPerMon = Math.floor(floor.enemyLevel * 8 * xpMult);
 
   // Apply XP
   const levelUps: Array<{ instanceId: string; newLevel: number }> = [];
@@ -188,12 +196,12 @@ export function calculateDungeonRewards(state: BattleState): DungeonRewards & Ba
   }
 
   // Add essences to player inventory
-  const player = loadPlayer()!;
-  const materials = { ...(player.materials ?? {}) };
+  const dungeonPlayer = loadPlayer()!;
+  const materials = { ...(dungeonPlayer.materials ?? {}) };
   for (const [essId, qty] of Object.entries(essences)) {
     materials[essId] = (materials[essId] ?? 0) + qty;
   }
-  savePlayer({ ...player, materials });
+  savePlayer({ ...dungeonPlayer, materials });
 
   return { essences, xpPerMon, regularPokeballs: 0, premiumPokeballs: 0, levelUps };
 }
@@ -292,7 +300,9 @@ export function calculateTowerRewards(state: BattleState): BattleRewards {
   const floorDef = getTowerFloor(towerFloor);
   if (!floorDef) throw new Error('Invalid tower floor');
 
-  const xpPerMon = Math.floor(floorDef.enemyLevel * 8);
+  const towerPlayer = loadPlayer();
+  const beginnerTower = towerPlayer ? isBeginnerBonusActive(towerPlayer.createdAt) : false;
+  const xpPerMon = Math.floor(floorDef.enemyLevel * 8 * (beginnerTower ? BEGINNER_BONUS.xpMult : 1));
   const levelUps: Array<{ instanceId: string; newLevel: number }> = [];
 
   // Apply XP
@@ -324,31 +334,33 @@ export function calculateTowerRewards(state: BattleState): BattleRewards {
 
   const reward = floorDef.reward;
 
-  // Apply reward to player
-  const player = loadPlayer()!;
-  const updates: Partial<typeof player> = {};
-  if (reward.regularPokeballs) updates.regularPokeballs = player.regularPokeballs + reward.regularPokeballs;
-  if (reward.premiumPokeballs) updates.premiumPokeballs = player.premiumPokeballs + reward.premiumPokeballs;
-  if (reward.legendaryPokeballs) updates.legendaryPokeballs = (player.legendaryPokeballs ?? 0) + reward.legendaryPokeballs;
-  if (reward.stardust) updates.stardust = (player.stardust ?? 0) + reward.stardust;
+  // Apply reward to player (beginner bonus on stardust & essences)
+  const towerRewardPlayer = loadPlayer()!;
+  const updates: Partial<typeof towerRewardPlayer> = {};
+  if (reward.regularPokeballs) updates.regularPokeballs = towerRewardPlayer.regularPokeballs + reward.regularPokeballs;
+  if (reward.premiumPokeballs) updates.premiumPokeballs = towerRewardPlayer.premiumPokeballs + reward.premiumPokeballs;
+  if (reward.legendaryPokeballs) updates.legendaryPokeballs = (towerRewardPlayer.legendaryPokeballs ?? 0) + reward.legendaryPokeballs;
+  const towerStardustMult = beginnerTower ? BEGINNER_BONUS.stardustMult : 1;
+  if (reward.stardust) updates.stardust = (towerRewardPlayer.stardust ?? 0) + Math.floor(reward.stardust * towerStardustMult);
   if (reward.essences) {
-    const materials = { ...(player.materials ?? {}) };
+    const materials = { ...(towerRewardPlayer.materials ?? {}) };
+    const towerEssenceMult = beginnerTower ? BEGINNER_BONUS.essenceMult : 1;
     for (const [essId, qty] of Object.entries(reward.essences)) {
-      materials[essId] = (materials[essId] ?? 0) + qty;
+      materials[essId] = (materials[essId] ?? 0) + Math.floor(qty * towerEssenceMult);
     }
     updates.materials = materials;
   }
 
   // Advance tower progress
-  if ((player.towerProgress ?? 0) < towerFloor) {
+  if ((towerRewardPlayer.towerProgress ?? 0) < towerFloor) {
     updates.towerProgress = towerFloor;
     // Set reset date if not set yet
-    if (!player.towerResetDate) {
+    if (!towerRewardPlayer.towerResetDate) {
       updates.towerResetDate = getCurrentTowerResetDate();
     }
   }
 
-  savePlayer({ ...player, ...updates });
+  savePlayer({ ...towerRewardPlayer, ...updates });
 
   // Ditto reward — create Ditto instances
   if (reward.dittos && reward.dittos > 0) {

@@ -5,6 +5,8 @@ import {
   getMaxEnergy,
   MAX_TRAINER_LEVEL,
   TRAINER_SKILL_MAX,
+  BEGINNER_BONUS,
+  isBeginnerBonusActive,
 } from '@gatchamon/shared';
 import { loadPlayer, savePlayer } from './storage';
 
@@ -78,8 +80,9 @@ export function grantTrainerXp(amount: number): TrainerXpResult {
   const player = loadPlayer();
   if (!player) throw new Error('No player found');
 
-  // Apply XP bonus from trainer skills
-  const bonusMult = 1 + player.trainerSkills.xpBonus * 0.1;
+  // Apply XP bonus from trainer skills + beginner bonus
+  const beginnerMult = isBeginnerBonusActive(player.createdAt) ? BEGINNER_BONUS.xpMult : 1;
+  const bonusMult = (1 + player.trainerSkills.xpBonus * 0.1) * beginnerMult;
   let xpToAdd = Math.floor(amount * bonusMult);
 
   const startLevel = player.trainerLevel;

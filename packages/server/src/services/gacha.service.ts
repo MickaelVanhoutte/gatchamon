@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { POKEDEX } from '@gatchamon/shared';
+import { POKEDEX, BEGINNER_BONUS, isBeginnerBonusActive } from '@gatchamon/shared';
 import type { PokemonTemplate, PokemonInstance, PokeballType } from '@gatchamon/shared';
 import { getDb } from '../db/schema.js';
 import { DEBUG_MODE } from '../config.js';
@@ -11,6 +11,12 @@ const PREMIUM_MULTI_COST = 10;
 const MULTI_COUNT = 10;
 const SHINY_RATE = DEBUG_MODE ? 0.5 : 0.001;
 
+function getPlayerCreatedAt(playerId: string): string | null {
+  const db = getDb();
+  const row = db.prepare('SELECT created_at FROM players WHERE id = ?').get(playerId) as any;
+  return row?.created_at ?? null;
+}
+
 function rollRegularStarRating(guaranteeMinTwo = false): 1 | 2 | 3 {
   if (guaranteeMinTwo) return 2;
   const roll = Math.random() * 100;
@@ -18,11 +24,13 @@ function rollRegularStarRating(guaranteeMinTwo = false): 1 | 2 | 3 {
   return roll < 62 ? 1 : 2;
 }
 
-function rollPremiumStarRating(): 3 | 4 | 5 {
+function rollPremiumStarRating(beginner = false): 3 | 4 | 5 {
   const roll = Math.random() * 100;
-  if (roll < 75) return 3;
-  if (roll < 95) return 4;
-  return 5;
+  const fiveStarThreshold = beginner ? 100 - (5 + BEGINNER_BONUS.summon5StarBonus) : 95;
+  const fourStarThreshold = beginner ? fiveStarThreshold - (20 + BEGINNER_BONUS.summon4StarBonus) : 75;
+  if (roll >= fiveStarThreshold) return 5;
+  if (roll >= fourStarThreshold) return 4;
+  return 3;
 }
 
 function rollShiny(): boolean {
@@ -117,7 +125,9 @@ export function summonSinglePremium(playerId: string): SummonResult {
 
   db.prepare('UPDATE players SET premium_pokeballs = premium_pokeballs - ? WHERE id = ?').run(PREMIUM_SINGLE_COST, playerId);
 
-  const stars = rollPremiumStarRating();
+  const createdAt = getPlayerCreatedAt(playerId);
+  const beginner = createdAt ? isBeginnerBonusActive(createdAt) : false;
+  const stars = rollPremiumStarRating(beginner);
   const template = pickFromPool(stars);
   const pokemon = createInstance(template, playerId);
 
@@ -150,9 +160,11 @@ export function summonMultiPremium(playerId: string): SummonResult[] {
 
   db.prepare('UPDATE players SET premium_pokeballs = premium_pokeballs - ? WHERE id = ?').run(PREMIUM_MULTI_COST, playerId);
 
+  const createdAt = getPlayerCreatedAt(playerId);
+  const beginner = createdAt ? isBeginnerBonusActive(createdAt) : false;
   const results: SummonResult[] = [];
   for (let i = 0; i < MULTI_COUNT; i++) {
-    const stars = rollPremiumStarRating();
+    const stars = rollPremiumStarRating(beginner);
     const template = pickFromPool(stars);
     const pokemon = createInstance(template, playerId);
     results.push({ pokemon, template });

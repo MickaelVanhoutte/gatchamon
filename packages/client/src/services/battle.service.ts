@@ -1,4 +1,4 @@
-import { getTemplate as getTemplateShared, computeStats, computeStatsWithItems, getActiveSetEffects, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel } from '@gatchamon/shared';
+import { getTemplate as getTemplateShared, computeStats, computeStatsWithItems, getActiveSetEffects, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel, BEGINNER_BONUS, isBeginnerBonusActive } from '@gatchamon/shared';
 import { getSkillsForPokemon } from '@gatchamon/shared';
 import { TOTAL_REGIONS, getFloorCount } from '@gatchamon/shared';
 import {
@@ -132,9 +132,10 @@ function calculateDungeonRewards(state: BattleState): BattleRewards {
   // Trainer skill bonuses
   const trainerPlayer = loadPlayer();
   const tSkills = trainerPlayer?.trainerSkills;
-  const stardustMult = tSkills ? 1 + tSkills.stardustBonus * 0.1 : 1;
-  const xpMult = tSkills ? 1 + tSkills.xpBonus * 0.1 : 1;
-  const essenceMult = tSkills ? 1 + tSkills.essenceBonus * 0.1 : 1;
+  const beginner = trainerPlayer ? isBeginnerBonusActive(trainerPlayer.createdAt) : false;
+  const stardustMult = (tSkills ? 1 + tSkills.stardustBonus * 0.1 : 1) * (beginner ? BEGINNER_BONUS.stardustMult : 1);
+  const xpMult = (tSkills ? 1 + tSkills.xpBonus * 0.1 : 1) * (beginner ? BEGINNER_BONUS.xpMult : 1);
+  const essenceMult = (tSkills ? 1 + tSkills.essenceBonus * 0.1 : 1) * (beginner ? BEGINNER_BONUS.essenceMult : 1);
 
   // Roll material drops
   const essences: Record<string, number> = {};
@@ -215,8 +216,9 @@ function calculateItemDungeonRewards(state: BattleState): BattleRewards {
   // Trainer skill bonuses
   const trainerPlayer = loadPlayer();
   const tSkills = trainerPlayer?.trainerSkills;
-  const stardustMult = tSkills ? 1 + tSkills.stardustBonus * 0.1 : 1;
-  const xpMult = tSkills ? 1 + tSkills.xpBonus * 0.1 : 1;
+  const beginnerItem = trainerPlayer ? isBeginnerBonusActive(trainerPlayer.createdAt) : false;
+  const stardustMult = (tSkills ? 1 + tSkills.stardustBonus * 0.1 : 1) * (beginnerItem ? BEGINNER_BONUS.stardustMult : 1);
+  const xpMult = (tSkills ? 1 + tSkills.xpBonus * 0.1 : 1) * (beginnerItem ? BEGINNER_BONUS.xpMult : 1);
 
   const xpPerMon = Math.floor(floor.enemyLevel * 8 * xpMult);
   const levelUps: Array<{ instanceId: string; newLevel: number }> = [];
@@ -241,10 +243,11 @@ function calculateItemDungeonRewards(state: BattleState): BattleRewards {
     updateInstance(mon.instanceId, { level: currentLevel, exp: currentExp });
   }
 
-  // Roll item drops (1-2 items per clear)
+  // Roll item drops (1-2 items per clear, beginner bonus increases chance of extra drop)
   const player = loadPlayer()!;
   const itemDrops: Array<{ itemId: string; setId: string; stars: number; grade: string }> = [];
-  const numDrops = Math.random() < 0.3 ? 2 : 1;
+  const extraDropChance = beginnerItem ? 0.3 + BEGINNER_BONUS.itemDropBonusChance : 0.3;
+  const numDrops = Math.random() < extraDropChance ? 2 : 1;
   for (let i = 0; i < numDrops; i++) {
     const dropDef = floor.drops[Math.floor(Math.random() * floor.drops.length)];
     const item = rollItemDrop(dropDef, player.id);
@@ -293,9 +296,10 @@ function calculateRewards(state: BattleState): BattleRewards {
   // Load player for trainer skill bonuses
   const trainerPlayer = loadPlayer();
   const tSkills = trainerPlayer?.trainerSkills;
+  const beginnerStory = trainerPlayer ? isBeginnerBonusActive(trainerPlayer.createdAt) : false;
   const pokeballMult = tSkills ? 1 + tSkills.pokeballBonus * 0.1 : 1;
-  const stardustMult = tSkills ? 1 + tSkills.stardustBonus * 0.1 : 1;
-  const xpMult = tSkills ? 1 + tSkills.xpBonus * 0.1 : 1;
+  const stardustMult = (tSkills ? 1 + tSkills.stardustBonus * 0.1 : 1) * (beginnerStory ? BEGINNER_BONUS.stardustMult : 1);
+  const xpMult = (tSkills ? 1 + tSkills.xpBonus * 0.1 : 1) * (beginnerStory ? BEGINNER_BONUS.xpMult : 1);
 
   const pokeballBase = 2 + regionId + Math.floor(floorNum / 3);
   const pokeballs = Math.floor(pokeballBase * diffMult * bossMult * pokeballMult);
