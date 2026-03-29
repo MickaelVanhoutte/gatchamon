@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "concurrently \"npm run dev -w @gatchamon/server\" \"npm run dev -w @gatchamon/client\"",
     "build": "npm run build -w @gatchamon/shared && npm run build -w @gatchamon/server && npm run build -w @gatchamon/client",
-    "build:static": "npm run build -w @gatchamon/shared && npm run build -w @gatchamon/client"
+    "build:static": "npm run build -w @gatchamon/shared && npm run build -w @gatchamon/client",
+    "apply-diff": "npx tsx packages/shared/scripts/apply-pokedex-diff.ts"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
