@@ -11,6 +11,20 @@ export interface PokemonDiff {
 
 type SortBy = 'id' | 'stars' | 'name';
 type SummonableFilter = 'all' | 'yes' | 'no';
+type GenFilter = null | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+
+export function getGeneration(id: number): number {
+  if (id >= 10000) return 0; // forms
+  if (id >= 906) return 9;
+  if (id >= 810) return 8;
+  if (id >= 722) return 7;
+  if (id >= 650) return 6;
+  if (id >= 494) return 5;
+  if (id >= 388) return 4;
+  if (id >= 252) return 3;
+  if (id >= 152) return 2;
+  return 1;
+}
 
 interface AdminState {
   diffs: Map<number, PokemonDiff>;
@@ -20,6 +34,7 @@ interface AdminState {
   starFilter: number | null;
   summonableFilter: SummonableFilter;
   sortBy: SortBy;
+  genFilter: GenFilter;
   showForms: boolean;
   changesOnly: boolean;
   skillPickerSlot: number | null; // null = closed, 0/1/2 = which slot
@@ -30,6 +45,7 @@ interface AdminState {
   setStarFilter: (s: number | null) => void;
   setSummonableFilter: (f: SummonableFilter) => void;
   setSortBy: (s: SortBy) => void;
+  setGenFilter: (g: GenFilter) => void;
   setShowForms: (v: boolean) => void;
   setChangesOnly: (v: boolean) => void;
   setSkillPickerSlot: (slot: number | null) => void;
@@ -116,6 +132,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   starFilter: null,
   summonableFilter: 'all',
   sortBy: 'id',
+  genFilter: null,
   showForms: false,
   changesOnly: false,
   skillPickerSlot: null,
@@ -126,6 +143,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   setStarFilter: (s) => set({ starFilter: s }),
   setSummonableFilter: (f) => set({ summonableFilter: f }),
   setSortBy: (s) => set({ sortBy: s }),
+  setGenFilter: (g) => set({ genFilter: g }),
   setShowForms: (v) => set({ showForms: v }),
   setChangesOnly: (v) => set({ changesOnly: v }),
   setSkillPickerSlot: (slot) => set({ skillPickerSlot: slot }),

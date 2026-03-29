@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { POKEDEX } from '@gatchamon/shared';
 import type { PokemonType } from '@gatchamon/shared';
 import { assetUrl } from '../../utils/asset-url';
-import { useAdminStore } from './useAdminStore';
+import { useAdminStore, getGeneration } from './useAdminStore';
 import { AdminEditorPanel } from './AdminEditorPanel';
 import { AdminSkillPicker } from './AdminSkillPicker';
 import { AdminDistributionPanel } from './AdminDistributionPanel';
@@ -18,9 +18,9 @@ const ALL_TYPES: PokemonType[] = [
 export function AdminPage() {
   const {
     diffs, selectedId, searchQuery, typeFilter, starFilter,
-    summonableFilter, sortBy, showForms, changesOnly, skillPickerSlot,
+    summonableFilter, sortBy, genFilter, showForms, changesOnly, skillPickerSlot,
     setSelectedId, setSearchQuery, setTypeFilter, setStarFilter,
-    setSummonableFilter, setSortBy, setShowForms, setChangesOnly,
+    setSummonableFilter, setSortBy, setGenFilter, setShowForms, setChangesOnly,
     exportDiff, importDiff, resetAll, getDiffCount, getEffective,
   } = useAdminStore();
 
@@ -36,6 +36,7 @@ export function AdminPage() {
         if (searchQuery && !t.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
         if (typeFilter && !t.types.includes(typeFilter)) return false;
         if (starFilter !== null && t.naturalStars !== starFilter) return false;
+        if (genFilter !== null && getGeneration(t.id) !== genFilter) return false;
         if (summonableFilter === 'yes' && t.summonable === false) return false;
         if (summonableFilter === 'no' && t.summonable !== false) return false;
         if (changesOnly && !diffs.has(t.id)) return false;
@@ -46,7 +47,7 @@ export function AdminPage() {
         if (sortBy === 'stars') return b.naturalStars - a.naturalStars || a.id - b.id;
         return a.name.localeCompare(b.name);
       });
-  }, [searchQuery, typeFilter, starFilter, summonableFilter, sortBy, showForms, changesOnly, diffs]);
+  }, [searchQuery, typeFilter, starFilter, genFilter, summonableFilter, sortBy, showForms, changesOnly, diffs]);
 
   const selectedTemplate = useMemo(
     () => selectedId !== null ? POKEDEX.find(p => p.id === selectedId) ?? null : null,
@@ -136,6 +137,16 @@ export function AdminPage() {
                 <option value="">All Stars</option>
                 {[1, 2, 3, 4, 5].map(s => (
                   <option key={s} value={s}>{s} star</option>
+                ))}
+              </select>
+              <select
+                className="admin-select"
+                value={genFilter ?? ''}
+                onChange={e => setGenFilter(e.target.value ? Number(e.target.value) as 1|2|3|4|5|6|7|8|9 : null)}
+              >
+                <option value="">All Gens</option>
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(g => (
+                  <option key={g} value={g}>Gen {g}</option>
                 ))}
               </select>
               <select
