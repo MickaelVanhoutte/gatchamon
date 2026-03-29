@@ -70,6 +70,15 @@
   margin-left: auto;
 }
 
+.rune-set-bonus--inactive {
+  opacity: 0.5;
+}
+
+.rune-set-desc--hidden {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
 /* Stats table */
 .rune-stats {
   display: flex;

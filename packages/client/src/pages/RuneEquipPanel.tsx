@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import type { HeldItemInstance, HeldItemSlot, BaseStats } from '@gatchamon/shared';
-import { getItemSet, computeStatsWithItems, computeStats, getActiveSetEffects } from '@gatchamon/shared';
+import { getItemSet, computeStatsWithItems, computeStats, getActiveSetEffects, ITEM_SETS } from '@gatchamon/shared';
 import type { OwnedPokemon } from '../stores/gameStore';
 import { RuneCard } from '../components/rune/RuneCard';
 import { RuneSelectModal } from './RuneSelectModal';
@@ -65,6 +65,13 @@ export function RuneEquipPanel({ pokemon, heldItems, player }: RuneEquipPanelPro
   // Active set bonuses
   const activeEffects = getActiveSetEffects(equippedItems);
 
+  // Count all equipped items per set (including incomplete sets)
+  const setCounts: Record<string, number> = {};
+  for (const item of equippedItems) {
+    setCounts[item.setId] = (setCounts[item.setId] ?? 0) + 1;
+  }
+  const activeSetIds = new Set(activeEffects.map(e => e.setId));
+
   function handleSlotClick(slot: HeldItemSlot) {
     const equipped = equippedBySlot[slot];
     if (equipped) {
@@ -102,18 +109,23 @@ export function RuneEquipPanel({ pokemon, heldItems, player }: RuneEquipPanelPro
       </div>
 
       {/* Set bonuses */}
-      {activeEffects.length > 0 && (
+      {Object.keys(setCounts).length > 0 && (
         <div className="rune-set-bonuses">
-          {activeEffects.map(eff => {
-            const setDef = getItemSet(eff.setId);
+          {Object.entries(setCounts).map(([setId, count]) => {
+            const setDef = ITEM_SETS.find(s => s.id === setId);
+            if (!setDef) return null;
+            const isActive = activeSetIds.has(setId);
+            const eff = activeEffects.find(e => e.setId === setId);
             return (
-              <div key={eff.setId} className="rune-set-bonus" style={{ borderColor: setDef?.color }}>
-                <span className="rune-set-icon">{setDef?.icon}</span>
-                <span className="rune-set-name">{eff.setName} ({setDef?.pieces})</span>
-                <span className="rune-set-desc">
-                  {eff.effectType === 'stat'
-                    ? `${eff.bonusStat?.toUpperCase()} +${eff.bonusValue}${eff.bonusType === 'percent' ? '%' : ''}`
-                    : setDef?.procDescription}
+              <div key={setId} className={`rune-set-bonus ${!isActive ? 'rune-set-bonus--inactive' : ''}`} style={{ borderColor: isActive ? setDef.color : undefined }}>
+                <span className="rune-set-icon">{setDef.icon}</span>
+                <span className="rune-set-name">{setDef.name} ({count}/{setDef.pieces})</span>
+                <span className={`rune-set-desc ${!isActive ? 'rune-set-desc--hidden' : ''}`}>
+                  {isActive && eff
+                    ? (eff.effectType === 'stat'
+                      ? `${eff.bonusStat?.toUpperCase()} +${eff.bonusValue}${eff.bonusType === 'percent' ? '%' : ''}`
+                      : setDef.procDescription)
+                    : '???'}
                 </span>
               </div>
             );
