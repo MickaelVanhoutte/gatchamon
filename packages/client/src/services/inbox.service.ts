@@ -58,16 +58,30 @@ export function sendRetrySummonGift(): void {
     specialItem: 'retry-summon-100',
   });
 
-  // Beginner bonus: 2 extra retry summon tickets for new players
+  // Also grant the beginner bonus tickets right away
+  grantBeginnerBonusRetries();
+}
+
+/**
+ * Grant 2 beginner-bonus x100 retry summon tickets.
+ * Safe to call on every app load — skips if already granted or not eligible.
+ */
+export function grantBeginnerBonusRetries(): void {
   const player = loadPlayer();
-  if (player && isBeginnerBonusActive(player.createdAt)) {
-    for (let i = 0; i < 2; i++) {
-      sendInboxItem({
-        title: `Beginner Bonus: 100x Retry Summon (${i + 1}/2)`,
-        message:
-          'As a new trainer, enjoy this bonus 100x Retry Summon! Perform a x10 premium summon up to 100 times and keep the best result.',
-        specialItem: 'retry-summon-100',
-      });
-    }
+  if (!player || !isBeginnerBonusActive(player.createdAt)) return;
+
+  const items = loadInbox();
+  const alreadyGranted = items.filter(
+    i => i.specialItem === 'retry-summon-100' && i.title.startsWith('Beginner Bonus:'),
+  ).length;
+
+  const toSend = 2 - alreadyGranted;
+  for (let i = 0; i < toSend; i++) {
+    sendInboxItem({
+      title: `Beginner Bonus: 100x Retry Summon (${alreadyGranted + i + 1}/2)`,
+      message:
+        'As a new trainer, enjoy this bonus 100x Retry Summon! Perform a x10 premium summon up to 100 times and keep the best result.',
+      specialItem: 'retry-summon-100',
+    });
   }
 }
