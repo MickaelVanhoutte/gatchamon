@@ -12,6 +12,7 @@ import { GameIcon, StarRating } from '../components/icons';
 import { BattleLoadingScreen } from '../components/BattleLoadingScreen';
 import { GymLeaderDialogue } from '../components/GymLeaderDialogue';
 import { useTutorialStore } from '../stores/tutorialStore';
+import gsap from 'gsap';
 import './BattlePage.css';
 
 type Phase = 'player_turn' | 'animating' | 'victory' | 'defeat';
@@ -161,10 +162,27 @@ export function BattlePage() {
   const [selectedEffect, setSelectedEffect] = useState<{ id: EffectId; stacks: number; turns: number } | null>(null);
   const [detailSkill, setDetailSkill] = useState<SkillDefinition | null>(null);
   const [arenaEl, setArenaEl] = useState<HTMLDivElement | null>(null);
+  const [battleSpeed, setBattleSpeed] = useState(1);
+  const battleSpeedRef = useRef(1);
   const monRefs = useRef<Map<string, HTMLElement>>(new Map());
   const isActingRef = useRef(false);
 
   const { playLogEntry, playMultiTargetEntries } = useBattleAnimation(arenaEl, monRefs);
+
+  const toggleSpeed = useCallback(() => {
+    setBattleSpeed(prev => {
+      const next = prev === 1 ? 2 : 1;
+      battleSpeedRef.current = next;
+      gsap.globalTimeline.timeScale(next);
+      return next;
+    });
+  }, []);
+
+  // Reset GSAP timeScale on mount/unmount
+  useEffect(() => {
+    gsap.globalTimeline.timeScale(battleSpeedRef.current);
+    return () => { gsap.globalTimeline.timeScale(1); };
+  }, []);
 
   const handleEffectClick = useCallback((id: EffectId, stacks: number, turns: number) => {
     setSelectedEffect({ id, stacks, turns });
@@ -280,16 +298,17 @@ export function BattlePage() {
 
       // Animate each group, applying HP changes after each animation
       for (const group of groups) {
+        const spd = battleSpeedRef.current;
         if (group.length > 1) {
           // Multi-target: play animation once on all targets
           await Promise.race([
             playMultiTargetEntries(group),
-            new Promise(r => setTimeout(r, 2000)),
+            new Promise(r => setTimeout(r, 2000 / spd)),
           ]);
         } else {
           await Promise.race([
             playLogEntry(group[0]),
-            new Promise(r => setTimeout(r, 2000)),
+            new Promise(r => setTimeout(r, 2000 / spd)),
           ]);
         }
 
@@ -304,7 +323,7 @@ export function BattlePage() {
         }
 
         setState({ ...result.state });
-        await new Promise(r => setTimeout(r, 400));
+        await new Promise(r => setTimeout(r, 400 / spd));
       }
 
       // Restore final computed HP (catches heals, buffs, and other effects)
@@ -331,7 +350,7 @@ export function BattlePage() {
     }
   };
 
-  const { isAutoOn, toggleAuto } = useAutoBattle(state, phase, handleAction, isPaused);
+  const { isAutoOn, toggleAuto } = useAutoBattle(state, phase, handleAction, isPaused, battleSpeedRef);
 
   const navigateAway = useCallback(() => {
     refreshPlayer();
@@ -474,6 +493,9 @@ export function BattlePage() {
               </div>
             );
           })}
+        <button className={`speed-toggle ${battleSpeed === 2 ? 'active' : ''}`} onClick={toggleSpeed}>
+          {battleSpeed === 2 ? '>>x2' : '>>x1'}
+        </button>
         <button className="pause-toggle" onClick={() => setIsPaused(true)}>| |</button>
         <button className={`auto-toggle ${isAutoOn ? 'active' : ''}`} onClick={toggleAuto}>
           Auto

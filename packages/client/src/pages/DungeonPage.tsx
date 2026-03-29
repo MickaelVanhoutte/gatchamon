@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { DUNGEONS, ESSENCES, ITEM_DUNGEONS, getItemSet, BATTLE_TOWER, getCurrentTowerResetDate } from '@gatchamon/shared';
@@ -144,24 +144,6 @@ export function DungeonPage() {
             </div>
           </div>
 
-          {/* Floor info */}
-          <div className="dungeon-floor-info">
-            <div className="dungeon-info-row">
-              <span>Enemy Level</span>
-              <span>Lv.{floor?.enemyLevel ?? '?'}</span>
-            </div>
-            <div className="dungeon-info-row">
-              <span>Energy Cost</span>
-              <span>{selectedDungeon.energyCost}</span>
-            </div>
-            {isItemDungeon && floor && 'stardustReward' in floor && (
-              <div className="dungeon-info-row">
-                <span>Stardust</span>
-                <span><GameIcon id="stardust" size={12} /> {(floor as any).stardustReward[0]}–{(floor as any).stardustReward[1]}</span>
-              </div>
-            )}
-          </div>
-
           {/* Drops */}
           <div className="dungeon-drops">
             <span className="dungeon-drops-label">Possible Drops</span>
@@ -200,7 +182,7 @@ export function DungeonPage() {
             disabled={!player || player.energy < selectedDungeon.energyCost}
             style={{ background: selectedDungeon.color }}
           >
-            Enter Dungeon
+            Go ({selectedDungeon.energyCost} <GameIcon id="energy" size={14} />)
           </button>
         </div>
       </div>}
@@ -233,6 +215,11 @@ function TowerPanel({ player, navigate }: { player: any; navigate: any }) {
   const nextFloorDef = BATTLE_TOWER[nextFloor - 1];
   const isCompleted = towerProgress >= 100;
   const resetTimer = useMemo(() => formatTimeUntilReset(), []);
+  const currentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    currentRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }, []);
 
   const handleEnterTower = () => {
     if (!player || isCompleted) return;
@@ -243,60 +230,20 @@ function TowerPanel({ player, navigate }: { player: any; navigate: any }) {
     navigate(`/battle/team-select?mode=tower&floor=${nextFloor}`);
   };
 
+  // Key floors: every 5th + floor 1 + current floor
+  const keyFloorSet = new Set<number>([1]);
+  for (let i = 5; i <= 100; i += 5) keyFloorSet.add(i);
+  keyFloorSet.add(nextFloor);
+  const keyFloors = BATTLE_TOWER.filter(f => keyFloorSet.has(f.floor)).reverse();
+
   return (
     <div className="tower-layout">
-      <div className="tower-header">
-        <h3><GameIcon id="tower" size={18} /> Battle Tower</h3>
-        <p className="tower-desc">
-          A 100-floor gauntlet of increasingly powerful foes. Earn rewards at every floor, with premium pokeballs every 10 floors and a legendary pokeball at the top!
-        </p>
+      <div className="tower-status-bar">
+        <span className="tower-status-progress">
+          <GameIcon id="tower" size={14} /> Floor {towerProgress} / 100
+        </span>
+        <span className="tower-reset-timer">Resets in {resetTimer}</span>
       </div>
-
-      <div className="tower-progress-section">
-        <div className="tower-progress-label">
-          Progress: Floor {towerProgress} / 100
-          <span className="tower-reset-timer">Resets in {resetTimer}</span>
-        </div>
-        <div className="tower-progress-bar">
-          <div className="tower-progress-fill" style={{ width: `${towerProgress}%` }} />
-        </div>
-      </div>
-
-      {!isCompleted && nextFloorDef && (
-        <div className="tower-next-floor">
-          <h4>Next: Floor {nextFloor}</h4>
-          <div className="dungeon-floor-info">
-            <div className="dungeon-info-row">
-              <span>Enemy Level</span>
-              <span>Lv.{nextFloorDef.enemyLevel}</span>
-            </div>
-            <div className="dungeon-info-row">
-              <span>Enemy Stars</span>
-              <span>{'★'.repeat(nextFloorDef.enemyStars)}</span>
-            </div>
-            <div className="dungeon-info-row">
-              <span>Enemies</span>
-              <span>{nextFloorDef.enemyCount}</span>
-            </div>
-            <div className="dungeon-info-row">
-              <span>Energy Cost</span>
-              <span>{nextFloorDef.energyCost}</span>
-            </div>
-            <div className="dungeon-info-row">
-              <span>Reward</span>
-              <span className="tower-reward-text">{getRewardSummary(nextFloorDef.reward)}</span>
-            </div>
-          </div>
-
-          <button
-            className="dungeon-enter-btn tower-enter-btn"
-            onClick={handleEnterTower}
-            disabled={!player || player.energy < nextFloorDef.energyCost}
-          >
-            Enter Floor {nextFloor}
-          </button>
-        </div>
-      )}
 
       {isCompleted && (
         <div className="tower-completed">
@@ -305,26 +252,52 @@ function TowerPanel({ player, navigate }: { player: any; navigate: any }) {
         </div>
       )}
 
-      <div className="tower-floor-list">
-        <h4>All Floors</h4>
-        <div className="tower-floors-scroll">
-          {BATTLE_TOWER.map(f => {
-            const isMilestone = f.floor % 10 === 0;
-            const isCleared = f.floor <= towerProgress;
-            const isCurrent = f.floor === nextFloor;
-            const isLocked = f.floor > nextFloor;
-            return (
-              <div
-                key={f.floor}
-                className={`tower-floor-row ${isMilestone ? 'tower-floor-milestone' : ''} ${isCleared ? 'tower-floor-cleared' : ''} ${isCurrent ? 'tower-floor-current' : ''} ${isLocked ? 'tower-floor-locked' : ''}`}
-              >
-                <span className="tower-floor-num">F{f.floor}</span>
-                <span className="tower-floor-reward">{getRewardSummary(f.reward)}</span>
-                {isCleared && <span className="tower-floor-check"><GameIcon id="check" size={12} /></span>}
+      <div className="tower-timeline">
+        {keyFloors.map((f, idx) => {
+          const isCleared = f.floor <= towerProgress;
+          const isCurrent = f.floor === nextFloor && !isCompleted;
+          const isLocked = f.floor > nextFloor;
+          const isLast = idx === keyFloors.length - 1;
+
+          return (
+            <div
+              key={f.floor}
+              ref={isCurrent ? currentRef : undefined}
+              className={[
+                'tower-node',
+                isCleared && 'tower-node--cleared',
+                isCurrent && 'tower-node--current',
+                isLocked && 'tower-node--locked',
+                isLast && 'tower-node--last',
+              ].filter(Boolean).join(' ')}
+            >
+              <div className="tower-node-spine">
+                <div className="tower-node-dot">
+                  {isCleared && <GameIcon id="check" size={8} />}
+                </div>
               </div>
-            );
-          })}
-        </div>
+              <div className="tower-node-body">
+                <span className="tower-node-floor">F{f.floor}</span>
+                {isCurrent && (
+                  <div className="tower-node-current-info">
+                    <span className="tower-node-badge">READY</span>
+                    <span className="tower-node-reward">{getRewardSummary(f.reward)}</span>
+                    <button
+                      className="tower-go-btn"
+                      onClick={handleEnterTower}
+                      disabled={!player || player.energy < f.energyCost}
+                    >
+                      Go ({f.energyCost} <GameIcon id="energy" size={12} />)
+                    </button>
+                  </div>
+                )}
+                {!isCurrent && (
+                  <span className="tower-node-reward">{getRewardSummary(f.reward)}</span>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

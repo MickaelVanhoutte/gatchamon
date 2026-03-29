@@ -173,6 +173,7 @@ export function useAutoBattle(
   phase: Phase,
   handleAction: (skillId: string, targetId: string) => Promise<void>,
   isPaused: boolean,
+  battleSpeedRef?: React.RefObject<number>,
 ): { isAutoOn: boolean; toggleAuto: () => void } {
   const [isAutoOn, setIsAutoOn] = useState(false);
   const handleActionRef = useRef(handleAction);
@@ -189,9 +190,10 @@ export function useAutoBattle(
     const best = pickBestAction(actor, state);
     if (!best) return;
 
+    const spd = battleSpeedRef?.current ?? 1;
     const timer = setTimeout(() => {
       handleActionRef.current(best.skillId, best.targetId);
-    }, 300);
+    }, 300 / spd);
 
     return () => clearTimeout(timer);
   }, [isAutoOn, phase, state, isPaused]);

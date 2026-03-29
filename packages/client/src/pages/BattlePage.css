@@ -34,9 +34,35 @@
   image-rendering: pixelated;
 }
 
+/* Speed toggle button */
+.speed-toggle {
+  margin-left: auto;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 2px solid var(--card-border, #d0e4ea);
+  border-radius: 16px;
+  color: var(--text-secondary, #5a6a7a);
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  letter-spacing: 1px;
+}
+
+.speed-toggle.active {
+  border-color: #f97316;
+  color: #ea580c;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.3);
+}
+
+.speed-toggle:hover {
+  transform: scale(1.05);
+}
+
 /* Pause toggle button */
 .pause-toggle {
-  margin-left: auto;
   padding: 4px 10px;
   background: rgba(255, 255, 255, 0.85);
   border: 2px solid var(--card-border, #d0e4ea);

@@ -6,6 +6,7 @@ import { SummonRevealSequence } from '../components/summon/SummonRevealSequence'
 import { SummonResult } from '../components/summon/SummonResult';
 import { GameIcon } from '../components/icons';
 import { SUMMON_COSTS } from '../services/gacha.service';
+import { assetUrl } from '../utils/asset-url';
 import type { PokeballType } from '@gatchamon/shared';
 import './SummonPage.css';
 
@@ -49,6 +50,13 @@ export function SummonPage() {
 
     try {
       const newPokemon = await summon(count, selectedBall);
+      // Preload reveal sprites while the portal animation is still playing
+      for (const p of newPokemon) {
+        const name = p.template.name.toLowerCase();
+        const dir = p.instance.isShiny ? 'monsters/ani-shiny' : 'monsters/ani';
+        const img = new Image();
+        img.src = assetUrl(`${dir}/${name}.gif`);
+      }
       setResults(newPokemon);
       setResultsReady(true);
     } catch (err: any) {
@@ -113,6 +121,26 @@ export function SummonPage() {
                   : selectedBall === 'premium'
                   ? 'Summons 3-5★ monsters'
                   : 'Guarantees a 5★ monster'}
+              </div>
+              <div className="summon-rates">
+                {selectedBall === 'regular' && (
+                  <>
+                    <span className="rate-item"><GameIcon id="star" size={12} /> 57%</span>
+                    <span className="rate-item"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 38%</span>
+                    <span className="rate-item rate-rare"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 5%</span>
+                  </>
+                )}
+                {selectedBall === 'premium' && (
+                  <>
+                    <span className="rate-item"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 75%</span>
+                    <span className="rate-item rate-rare"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 20%</span>
+                    <span className="rate-item rate-legendary"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 5%</span>
+                  </>
+                )}
+                {selectedBall === 'legendary' && (
+                  <span className="rate-item rate-legendary"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 100%</span>
+                )}
+                <span className="rate-item rate-shiny"><GameIcon id="shiny" size={12} /> 0.1%</span>
               </div>
             </div>
           )}

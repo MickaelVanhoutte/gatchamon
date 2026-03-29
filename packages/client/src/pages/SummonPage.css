@@ -79,6 +79,40 @@
   font-weight: 500;
 }
 
+/* Summoning rates display */
+.summon-rates {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 6px 12px;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--card-border, #d0e4ea);
+  border-radius: 8px;
+  box-shadow: var(--card-shadow, 0 2px 8px rgba(0, 0, 0, 0.08));
+}
+
+.rate-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary, #5a6a7a);
+}
+
+.rate-item.rate-rare {
+  color: #60a5fa;
+}
+
+.rate-item.rate-legendary {
+  color: #ff4444;
+}
+
+.rate-item.rate-shiny {
+  color: #f59e0b;
+}
+
 /* Idle Pokeball */
 .idle-pokeball {
   width: min(140px, 22vh);
