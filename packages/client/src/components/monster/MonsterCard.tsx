@@ -35,7 +35,7 @@ export function MonsterCard({ owned, compact, onClick, selected }: Props) {
   const spriteUrl = isShiny
     ? assetUrl(`monsters/ani-shiny/${template.name.toLowerCase()}.gif`)
     : assetUrl(template.spriteUrl);
-  const spriteSize = compact ? 64 : 80;
+  const spriteSize = compact ? 44 : 80;
 
   return (
     <div

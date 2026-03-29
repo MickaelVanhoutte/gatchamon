@@ -4,6 +4,7 @@
   height: 100%;
   overflow: hidden;
   background: var(--bg-primary);
+  padding: 0;
 }
 
 /* ─── Intro ─── */
@@ -77,18 +78,27 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 8px;
-  gap: 6px;
-  overflow-y: auto;
+  padding: 4px 8px;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.retry-main-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  flex: 1;
+  min-height: 0;
 }
 
 .retry-results-header {
   text-align: center;
   flex-shrink: 0;
+  line-height: 1;
 }
 
 .retry-counter {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -155,13 +165,24 @@
 .retry-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 6px;
-  width: 100%;
-  flex-shrink: 0;
+  grid-template-rows: 1fr 1fr;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .retry-grid .result-card-wrapper {
   animation: card-pop-in 0.3s ease-out backwards;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.retry-grid .result-card-wrapper .monster-card {
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
 }
 
 @keyframes card-pop-in {
@@ -181,25 +202,25 @@
   flex-direction: column;
   gap: 6px;
   flex-shrink: 0;
-  padding-top: 4px;
-}
-
-.retry-actions-row {
-  display: flex;
-  gap: 8px;
+  width: 100px;
   justify-content: center;
 }
 
 .retry-btn {
-  padding: 8px 16px;
+  padding: 12px 6px;
   border: none;
   border-radius: 8px;
-  font-size: 0.78rem;
+  font-size: 0.68rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s;
-  flex: 1;
-  max-width: 200px;
+  width: 100%;
+  text-align: center;
+  line-height: 1.2;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .retry-btn-backup {

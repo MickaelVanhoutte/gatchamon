@@ -13,12 +13,57 @@ import { trackStat, incrementMission, checkAndUpdateTrophies } from '../services
 import { SummonPortal } from '../components/summon/SummonPortal';
 import { SummonRevealSequence } from '../components/summon/SummonRevealSequence';
 import { MonsterCard } from '../components/monster/MonsterCard';
+import { MonsterDetailModal } from '../components/MonsterDetailModal';
 import { GameIcon, StarRating } from '../components/icons';
 import './RetrySummonPage.css';
+
+const LONG_PRESS_MS = 400;
+
+function useLongPress(onLongPress: () => void) {
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const firedRef = useRef(false);
+
+  const start = useCallback(() => {
+    firedRef.current = false;
+    timerRef.current = setTimeout(() => {
+      firedRef.current = true;
+      onLongPress();
+    }, LONG_PRESS_MS);
+  }, [onLongPress]);
+
+  const cancel = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = null;
+  }, []);
+
+  const onClick = useCallback((e: React.MouseEvent) => {
+    if (firedRef.current) e.preventDefault();
+  }, []);
+
+  return {
+    onPointerDown: start,
+    onPointerUp: cancel,
+    onPointerLeave: cancel,
+    onClick,
+  };
+}
 
 type Phase = 'intro' | 'rolling' | 'revealing' | 'results' | 'confirming' | 'done';
 
 const MAX_ATTEMPTS = 100;
+
+function LongPressCard({ mon, index, onLongPress }: { mon: OwnedPokemon; index: number; onLongPress: (m: OwnedPokemon) => void }) {
+  const handlers = useLongPress(useCallback(() => onLongPress(mon), [mon, onLongPress]));
+  return (
+    <div
+      className="result-card-wrapper"
+      style={{ animationDelay: `${index * 0.06}s` }}
+      {...handlers}
+    >
+      <MonsterCard owned={mon} compact />
+    </div>
+  );
+}
 
 interface PersistedState {
   attemptsUsed: number;
@@ -50,6 +95,7 @@ export function RetrySummonPage() {
   const [resultsReady, setResultsReady] = useState(false);
   const [selectedChoice, setSelectedChoice] = useState<'current' | 'backup'>('current');
   const [inboxItemId, setInboxItemId] = useState('');
+  const [detailMon, setDetailMon] = useState<OwnedPokemon | null>(null);
   const didInit = useRef(false);
 
   // On mount: verify inbox item exists OR resume from persisted state
@@ -240,7 +286,39 @@ export function RetrySummonPage() {
             </span>
           </div>
 
-          {/* Backup preview */}
+          {/* Grid + Action buttons side by side */}
+          <div className="retry-main-row">
+            {/* Current results */}
+            <div className="retry-grid">
+              {currentResults.map((mon, i) => (
+                <LongPressCard key={mon.instance.instanceId} mon={mon} index={i} onLongPress={setDetailMon} />
+              ))}
+            </div>
+
+            {/* Action buttons — vertical on the right */}
+            <div className="retry-actions">
+              {!isLastAttempt && (
+                <button className="retry-btn retry-btn-backup" onClick={handleSaveAsBackup}>
+                  Save & Reroll
+                </button>
+              )}
+              {!isLastAttempt && (
+                <button className="retry-btn retry-btn-reroll" onClick={handleSummonAgain}>
+                  Reroll
+                </button>
+              )}
+              <button className="retry-btn retry-btn-keep" onClick={() => handleKeep('current')}>
+                Keep Current
+              </button>
+              {backupResults && (
+                <button className="retry-btn retry-btn-keep-backup" onClick={() => handleKeep('backup')}>
+                  Keep Backup
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Backup preview — bottom */}
           {backupResults && (
             <div className="retry-backup-section">
               <div className="retry-backup-label">
@@ -263,45 +341,6 @@ export function RetrySummonPage() {
               </div>
             </div>
           )}
-
-          {/* Current results */}
-          <div className="retry-grid">
-            {currentResults.map((mon, i) => (
-              <div
-                key={mon.instance.instanceId}
-                className="result-card-wrapper"
-                style={{ animationDelay: `${i * 0.06}s` }}
-              >
-                <MonsterCard owned={mon} compact />
-              </div>
-            ))}
-          </div>
-
-          {/* Action buttons */}
-          <div className="retry-actions">
-            <div className="retry-actions-row">
-              {!isLastAttempt && (
-                <button className="retry-btn retry-btn-backup" onClick={handleSaveAsBackup}>
-                  Save as Backup & Reroll
-                </button>
-              )}
-              {!isLastAttempt && (
-                <button className="retry-btn retry-btn-reroll" onClick={handleSummonAgain}>
-                  Reroll
-                </button>
-              )}
-            </div>
-            <div className="retry-actions-row">
-              <button className="retry-btn retry-btn-keep" onClick={() => handleKeep('current')}>
-                Keep Current
-              </button>
-              {backupResults && (
-                <button className="retry-btn retry-btn-keep-backup" onClick={() => handleKeep('backup')}>
-                  Keep Backup
-                </button>
-              )}
-            </div>
-          </div>
         </div>
       )}
 
@@ -313,13 +352,7 @@ export function RetrySummonPage() {
           </h3>
           <div className="retry-grid">
             {chosenResults.map((mon, i) => (
-              <div
-                key={mon.instance.instanceId}
-                className="result-card-wrapper"
-                style={{ animationDelay: `${i * 0.06}s` }}
-              >
-                <MonsterCard owned={mon} compact />
-              </div>
+              <LongPressCard key={mon.instance.instanceId} mon={mon} index={i} onLongPress={setDetailMon} />
             ))}
           </div>
           <div className="retry-confirm-actions">
@@ -338,6 +371,11 @@ export function RetrySummonPage() {
         <div className="retry-done">
           <h3>Monsters added to your collection!</h3>
         </div>
+      )}
+
+      {/* ── Detail Modal ── */}
+      {detailMon && (
+        <MonsterDetailModal pokemon={detailMon} onClose={() => setDetailMon(null)} />
       )}
     </div>
   );

@@ -92,29 +92,6 @@ export function MonsterDetailModal({ pokemon, onClose }: MonsterDetailModalProps
           </div>
         </div>
 
-        {/* Held Items */}
-        <div className="mdm-section">
-          <h4>Held Items</h4>
-          <div className="mdm-items-grid">
-            {([1, 2, 3, 4, 5, 6] as const).map(slot => {
-              const item = equippedItems.find(i => i.slot === slot);
-              const setDef = item ? getItemSet(item.setId) : null;
-              return (
-                <div key={slot} className={`mdm-item-slot ${item ? 'filled' : ''}`}>
-                  {item && setDef ? (
-                    <>
-                      <span className="mdm-item-icon"><GameIcon id={setDef.icon} size={14} /></span>
-                      <span className="mdm-item-level">+{item.level}</span>
-                    </>
-                  ) : (
-                    <span className="mdm-item-empty">{slot}</span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
         {/* Skills */}
         <div className="mdm-section">
           <h4>Skills</h4>
@@ -135,6 +112,29 @@ export function MonsterDetailModal({ pokemon, onClose }: MonsterDetailModalProps
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Held Items */}
+        <div className="mdm-section">
+          <h4>Held Items</h4>
+          <div className="mdm-items-grid">
+            {([1, 2, 3, 4, 5, 6] as const).map(slot => {
+              const item = equippedItems.find(i => i.slot === slot);
+              const setDef = item ? getItemSet(item.setId) : null;
+              return (
+                <div key={slot} className={`mdm-item-slot ${item ? 'filled' : ''}`}>
+                  {item && setDef ? (
+                    <>
+                      <span className="mdm-item-icon"><GameIcon id={setDef.icon} size={14} /></span>
+                      <span className="mdm-item-level">+{item.level}</span>
+                    </>
+                  ) : (
+                    <span className="mdm-item-empty">{slot}</span>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

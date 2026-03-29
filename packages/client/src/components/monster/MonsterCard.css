@@ -26,8 +26,21 @@
 }
 
 .monster-card.compact {
-  padding: 8px;
-  gap: 4px;
+  padding: 4px;
+  gap: 2px;
+}
+
+.compact .card-name {
+  font-size: 0.65rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.compact .card-stars {
+  font-size: 0.7rem;
+  letter-spacing: 0;
 }
 
 .card-sprite {
@@ -56,9 +69,6 @@
   color: var(--text-primary, #1a2332);
 }
 
-.compact .card-name {
-  font-size: 0.8rem;
-}
 
 .card-stars {
   font-size: 0.85rem;
