@@ -21,6 +21,7 @@ export interface BattleMon {
   debuffs: ActiveEffect[];
   isAlive: boolean;
   actionGauge: number;
+  hpThresholdTriggered?: boolean;
   isBoss?: boolean;
   skillLevels?: [number, number, number];
 }

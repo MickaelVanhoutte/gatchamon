@@ -205,10 +205,16 @@ export function getEffectiveStats(mon: BattleMon): BaseStats {
   let critDmgMod = 0;
 
   // Process buffs
+  const processedBuffStackable = new Set<EffectId>();
   for (const effect of mon.buffs) {
     const meta = EFFECT_REGISTRY[effect.id];
     if (!meta?.statMod) continue;
-    const pct = meta.statMod.perStack ? meta.statMod.percent : meta.statMod.percent;
+    let pct = meta.statMod.percent;
+    if (meta.statMod.perStack) {
+      if (processedBuffStackable.has(effect.id)) continue;
+      processedBuffStackable.add(effect.id);
+      pct = meta.statMod.percent * countStacks(mon, effect.id);
+    }
     switch (meta.statMod.stat) {
       case 'atk': atkMod += pct; break;
       case 'def': defMod += pct; break;
@@ -221,11 +227,13 @@ export function getEffectiveStats(mon: BattleMon): BaseStats {
   }
 
   // Process debuffs (including status effects like burn)
+  const processedDebuffStackable = new Set<EffectId>();
   for (const effect of mon.debuffs) {
     const meta = EFFECT_REGISTRY[effect.id];
     if (!meta?.statMod) continue;
     if (meta.statMod.perStack) {
-      // Stackable: count stacks
+      if (processedDebuffStackable.has(effect.id)) continue;
+      processedDebuffStackable.add(effect.id);
       const stacks = countStacks(mon, effect.id);
       switch (meta.statMod.stat) {
         case 'atk': atkMod += meta.statMod.percent * stacks; break;
@@ -236,8 +244,6 @@ export function getEffectiveStats(mon: BattleMon): BaseStats {
         case 'res': resMod += meta.statMod.percent * stacks; break;
         case 'critDmg': critDmgMod += meta.statMod.percent * stacks; break;
       }
-      // Only count once for stackable (we processed all stacks)
-      break;
     } else {
       switch (meta.statMod.stat) {
         case 'atk': atkMod += meta.statMod.percent; break;
@@ -500,6 +506,9 @@ export function processPassiveTrigger(
   // Check oblivion — disables passives
   if (hasDebuff(mon, 'oblivion')) return effects;
 
+  // hp_threshold passives can only trigger once per battle
+  if (trigger === 'hp_threshold' && mon.hpThresholdTriggered) return effects;
+
   const template = getTemplate(mon.templateId);
   const skills = getSkillsForPokemon(template.skillIds);
 
@@ -511,6 +520,11 @@ export function processPassiveTrigger(
     if (skill.passiveCondition?.hpBelow) {
       const hpPct = (mon.currentHp / mon.maxHp) * 100;
       if (hpPct >= skill.passiveCondition.hpBelow) continue;
+    }
+
+    // Mark hp_threshold as triggered (once per battle)
+    if (trigger === 'hp_threshold') {
+      mon.hpThresholdTriggered = true;
     }
 
     // Resolve passive effects
