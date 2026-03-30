@@ -1,6 +1,6 @@
 import type { InboxItem, MissionReward, HeldItemInstance, HeldItemSlot, HeldItemMainStatType } from '@gatchamon/shared';
 import { isBeginnerBonusActive, computeMainStatValue } from '@gatchamon/shared';
-import { loadInbox, updateInboxItem, addInboxItem, removeReadInboxItems, loadPlayer, addHeldItem } from './storage';
+import { loadInbox, updateInboxItem, addInboxItem, removeReadInboxItems, loadPlayer, addHeldItem, hasGrantedFlag, setGrantedFlag } from './storage';
 import { applyReward } from './reward.service';
 
 export function getInboxItems(): InboxItem[] {
@@ -63,8 +63,7 @@ export function sendInboxItem(
 }
 
 export function sendRetrySummonGift(): void {
-  const items = loadInbox();
-  if (items.some(i => i.specialItem === 'retry-summon-100')) return;
+  if (hasGrantedFlag('retry-summon-welcome')) return;
 
   sendInboxItem({
     title: 'Welcome Gift: 100x Retry Summon!',
@@ -72,6 +71,7 @@ export function sendRetrySummonGift(): void {
       'Congratulations on completing the tutorial! Use this special ticket to perform a x10 premium summon up to 100 times. Save a backup and keep the best result!',
     specialItem: 'retry-summon-100',
   });
+  setGrantedFlag('retry-summon-welcome');
 
   // Also grant the beginner bonus tickets right away
   grantBeginnerBonusRetries();
@@ -82,23 +82,20 @@ export function sendRetrySummonGift(): void {
  * Safe to call on every app load — skips if already granted or not eligible.
  */
 export function grantBeginnerBonusRetries(): void {
+  if (hasGrantedFlag('beginner-bonus-retries')) return;
+
   const player = loadPlayer();
   if (!player || !isBeginnerBonusActive(player.createdAt)) return;
 
-  const items = loadInbox();
-  const alreadyGranted = items.filter(
-    i => i.specialItem === 'retry-summon-100' && i.title.startsWith('Beginner Bonus:'),
-  ).length;
-
-  const toSend = 2 - alreadyGranted;
-  for (let i = 0; i < toSend; i++) {
+  for (let i = 1; i <= 2; i++) {
     sendInboxItem({
-      title: `Beginner Bonus: 100x Retry Summon (${alreadyGranted + i + 1}/2)`,
+      title: `Beginner Bonus: 100x Retry Summon (${i}/2)`,
       message:
         'As a new trainer, enjoy this bonus 100x Retry Summon! Perform a x10 premium summon up to 100 times and keep the best result.',
       specialItem: 'retry-summon-100',
     });
   }
+  setGrantedFlag('beginner-bonus-retries');
 }
 
 // ── Beginner Item Set ──────────────────────────────────────────────────
@@ -181,6 +178,8 @@ function createBeginnerItemSet(ownerId: string): HeldItemInstance[] {
  * Safe to call on every app load — skips if already granted or not eligible.
  */
 export function grantNewPlayerEnergyBonus(): void {
+  if (hasGrantedFlag('new-player-energy-bonus')) return;
+
   const player = loadPlayer();
   if (!player) return;
 
@@ -190,9 +189,6 @@ export function grantNewPlayerEnergyBonus(): void {
   threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
   if (new Date(player.createdAt) < threeMonthsAgo) return;
 
-  const items = loadInbox();
-  if (items.some(i => i.title.startsWith('New Player Bonus: 100 Energy'))) return;
-
   for (let i = 1; i <= 3; i++) {
     sendInboxItem({
       title: `New Player Bonus: 100 Energy (${i}/3)`,
@@ -200,6 +196,7 @@ export function grantNewPlayerEnergyBonus(): void {
       reward: { energy: 100 },
     });
   }
+  setGrantedFlag('new-player-energy-bonus');
 }
 
 /**
@@ -209,6 +206,8 @@ export function grantNewPlayerEnergyBonus(): void {
  * that were created before the field existed — they still deserve the starter set).
  */
 export function grantBeginnerItemSet(): void {
+  if (hasGrantedFlag('beginner-item-set')) return;
+
   const player = loadPlayer();
   if (!player) return;
 
@@ -216,13 +215,11 @@ export function grantBeginnerItemSet(): void {
   const eligible = !player.createdAt || isBeginnerBonusActive(player.createdAt);
   if (!eligible) return;
 
-  const items = loadInbox();
-  if (items.some(i => i.specialItem === 'beginner-item-set')) return;
-
   sendInboxItem({
     title: 'Beginner Bonus: Starter Item Set!',
     message:
       "Here's a full set of max-level held items to get you started! 4x King's Rock (22% extra turn) + 2x Quick Claw (+12% SPD) — all optimized for speed, crit damage, and attack.",
     specialItem: 'beginner-item-set',
   });
+  setGrantedFlag('beginner-item-set');
 }

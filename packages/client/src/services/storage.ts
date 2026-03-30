@@ -8,6 +8,7 @@ const TUTORIAL_KEY = 'gatchamon_tutorial';
 const INBOX_KEY = 'gatchamon_inbox';
 const RETRY_SUMMON_KEY = 'gatchamon_retry_summon';
 const LOGIN_CALENDAR_KEY = 'gatchamon_login_calendar';
+const GRANTED_FLAGS_KEY = 'gatchamon_granted_flags';
 
 function safeParse<T>(raw: string | null, fallback: T): T {
   if (!raw) return fallback;
@@ -274,6 +275,23 @@ export function saveBattleSettings(settings: Partial<BattleSettings>): void {
   localStorage.setItem(BATTLE_SETTINGS_KEY, JSON.stringify({ ...current, ...settings }));
 }
 
+// ── Granted Flags ────────────────────────────────────────────────────
+
+function loadGrantedFlags(): Record<string, boolean> {
+  const raw = localStorage.getItem(GRANTED_FLAGS_KEY);
+  return safeParse<Record<string, boolean>>(raw, {});
+}
+
+export function hasGrantedFlag(flag: string): boolean {
+  return !!loadGrantedFlags()[flag];
+}
+
+export function setGrantedFlag(flag: string): void {
+  const flags = loadGrantedFlags();
+  flags[flag] = true;
+  localStorage.setItem(GRANTED_FLAGS_KEY, JSON.stringify(flags));
+}
+
 // ── Reset ──────────────────────────────────────────────────────────────
 
 export function checkAndResetTower(): void {
@@ -297,4 +315,5 @@ export function clearAll(): void {
   localStorage.removeItem(LOGIN_CALENDAR_KEY);
   localStorage.removeItem(BATTLE_SETTINGS_KEY);
   localStorage.removeItem(LAST_TEAM_KEY);
+  localStorage.removeItem(GRANTED_FLAGS_KEY);
 }
