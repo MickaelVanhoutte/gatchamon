@@ -924,7 +924,7 @@ function BattleMonSprite({
     : null;
 
   // Scale sprite based on species height: small Pokemon ~0.8x, large ~1.5x
-  const sizeScale = Math.min(1.5, Math.max(0.8, 0.5 + (tmpl.height ?? 1) * 0.45)) * getSpriteBoost(tmpl.name);
+  const sizeScale = Math.min(1.5, Math.max(0.8, 0.5 + (tmpl.height ?? 1) * 0.45)) * Math.max(0.6, Math.min(1.8, getSpriteBoost(tmpl.name)));
 
   return (
     <div

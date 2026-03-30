@@ -56,9 +56,9 @@ export const REGIONS: RegionDef[] = [
     icon: 'electric',
     color: '#f0c030',
     // Diverse mix + a few electric types
-    commonPool: [20, 17, 81, 100, 25, 66, 96, 88, 50, 83, 98, 58, 74, 84],
+    commonPool: [20, 17, 81, 100, 25, 66, 96, 88, 50, 56, 98, 58, 74, 84],
     // Raticate, Pidgeotto, Magnemite, Voltorb, Pikachu, Machop, Drowzee,
-    // Grimer, Diglett, Farfetchd, Krabby, Growlithe, Geodude, Doduo
+    // Grimer, Diglett, Mankey, Krabby, Growlithe, Geodude, Doduo
     bossPool: [26],                        // Raichu
     bossCompanions: [100, 81],             // Voltorb, Magnemite
     floorNames: [
