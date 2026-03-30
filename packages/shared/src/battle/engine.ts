@@ -28,6 +28,8 @@ import {
   isDebuffEffect,
   isInstantEffect,
   isStackable,
+  isBeneficialEffect,
+  isHarmfulEffect,
   MAX_DEBUFFS,
 } from '../constants/effects.js';
 import { getTemplate as getTemplateShared } from '../data/pokedex/index.js';
@@ -72,6 +74,22 @@ function resolveEffectId(effect: SkillEffect): EffectId {
 /** Normalize a skill effect to always have an EffectId */
 function normalizeEffect(effect: SkillEffect): SkillEffect & { id: EffectId } {
   return { ...effect, id: resolveEffectId(effect) };
+}
+
+/**
+ * Infer the correct default target for an effect when no explicit effect.target is set.
+ * Beneficial effects on offensive skills default to 'self' (not the enemy).
+ * Harmful effects on support/self skills default to 'all_enemies' (not allies).
+ */
+function inferEffectTarget(effectId: EffectId, skillTarget: SkillTarget): SkillTarget {
+  const isSkillOffensive = skillTarget === 'single_enemy' || skillTarget === 'all_enemies';
+  if (isBeneficialEffect(effectId) && isSkillOffensive) {
+    return 'self';
+  }
+  if (isHarmfulEffect(effectId) && !isSkillOffensive) {
+    return 'all_enemies';
+  }
+  return skillTarget;
 }
 
 // ---------------------------------------------------------------------------
@@ -428,7 +446,7 @@ export function processPassiveTrigger(
       if (roll >= effect.chance) continue;
 
       // Determine targets for this effect
-      const effectTarget = effect.target || skill.target;
+      const effectTarget = effect.target || inferEffectTarget(effect.id, skill.target);
       let targets: BattleMon[];
 
       if (effectTarget === 'self') {
@@ -478,7 +496,7 @@ export function applyPassives(state: BattleState): void {
         const roll = Math.random() * 100;
         if (roll >= effect.chance) continue;
 
-        const effectTarget = effect.target || skill.target;
+        const effectTarget = effect.target || inferEffectTarget(effect.id, skill.target);
         let targets: BattleMon[];
         if (effectTarget === 'self') {
           targets = [mon];
@@ -713,7 +731,7 @@ export function resolveSkill(
 
     const isOffensive = effectiveSkill.target === 'single_enemy' || effectiveSkill.target === 'all_enemies';
 
-    if (effectiveSkill.multiplier > 0) {
+    if (isOffensive && effectiveSkill.multiplier > 0) {
       // Calculate base damage
       const result = calculateDamage(
         attackerStats,
@@ -821,7 +839,7 @@ export function resolveSkill(
       const effectMeta = getEffectMeta(effect.id);
 
       // Determine the target for this effect
-      const effectTarget = effect.target || skill.target;
+      const effectTarget = effect.target || inferEffectTarget(effect.id, skill.target);
       let effectTargets: BattleMon[];
 
       if (effectTarget === 'self') {

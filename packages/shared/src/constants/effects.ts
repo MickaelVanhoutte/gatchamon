@@ -214,6 +214,22 @@ export function isInstantEffect(id: EffectId): boolean {
   return EFFECT_REGISTRY[id].category === 'instant';
 }
 
+const BENEFICIAL_INSTANTS: ReadonlySet<EffectId> = new Set([
+  'heal', 'cleanse', 'atb_boost', 'cd_reset', 'cd_reduce',
+] as EffectId[]);
+
+const HARMFUL_INSTANTS: ReadonlySet<EffectId> = new Set([
+  'strip', 'atb_reduce', 'cd_increase',
+] as EffectId[]);
+
+export function isBeneficialEffect(id: EffectId): boolean {
+  return isBuffEffect(id) || BENEFICIAL_INSTANTS.has(id);
+}
+
+export function isHarmfulEffect(id: EffectId): boolean {
+  return isDebuffEffect(id) || HARMFUL_INSTANTS.has(id);
+}
+
 export function isStackable(id: EffectId): boolean {
   return !EFFECT_REGISTRY[id].unique;
 }
