@@ -200,6 +200,9 @@ export function getEffectiveStats(mon: BattleMon): BaseStats {
   let defMod = 0;
   let spdMod = 0;
   let critRateMod = 0;
+  let accMod = 0;
+  let resMod = 0;
+  let critDmgMod = 0;
 
   // Process buffs
   for (const effect of mon.buffs) {
@@ -211,6 +214,9 @@ export function getEffectiveStats(mon: BattleMon): BaseStats {
       case 'def': defMod += pct; break;
       case 'spd': spdMod += pct; break;
       case 'critRate': critRateMod += pct; break;
+      case 'acc': accMod += pct; break;
+      case 'res': resMod += pct; break;
+      case 'critDmg': critDmgMod += pct; break;
     }
   }
 
@@ -226,6 +232,9 @@ export function getEffectiveStats(mon: BattleMon): BaseStats {
         case 'def': defMod += meta.statMod.percent * stacks; break;
         case 'spd': spdMod += meta.statMod.percent * stacks; break;
         case 'critRate': critRateMod += meta.statMod.percent * stacks; break;
+        case 'acc': accMod += meta.statMod.percent * stacks; break;
+        case 'res': resMod += meta.statMod.percent * stacks; break;
+        case 'critDmg': critDmgMod += meta.statMod.percent * stacks; break;
       }
       // Only count once for stackable (we processed all stacks)
       break;
@@ -235,6 +244,9 @@ export function getEffectiveStats(mon: BattleMon): BaseStats {
         case 'def': defMod += meta.statMod.percent; break;
         case 'spd': spdMod += meta.statMod.percent; break;
         case 'critRate': critRateMod += meta.statMod.percent; break;
+        case 'acc': accMod += meta.statMod.percent; break;
+        case 'res': resMod += meta.statMod.percent; break;
+        case 'critDmg': critDmgMod += meta.statMod.percent; break;
       }
     }
   }
@@ -244,6 +256,9 @@ export function getEffectiveStats(mon: BattleMon): BaseStats {
   stats.def = Math.max(1, Math.floor(stats.def * (1 + defMod / 100)));
   stats.spd = Math.max(1, Math.floor(stats.spd * (1 + spdMod / 100)));
   stats.critRate = Math.max(0, Math.floor(stats.critRate + critRateMod));
+  stats.acc = Math.max(0, Math.floor(stats.acc * (1 + accMod / 100)));
+  stats.res = Math.max(0, Math.floor(stats.res * (1 + resMod / 100)));
+  stats.critDmg = Math.max(50, Math.floor(stats.critDmg + critDmgMod));
   stats.hp = Math.max(1, stats.hp);
 
   return stats;
@@ -255,7 +270,7 @@ export function getEffectiveStats(mon: BattleMon): BaseStats {
 
 export type CCResult =
   | { type: 'none' }
-  | { type: 'stun'; reason: 'freeze' | 'sleep' }
+  | { type: 'stun'; reason: 'freeze' | 'sleep' | 'petrify' }
   | { type: 'skip'; reason: 'paralysis_skip' }
   | { type: 'cd_increase'; reason: 'paralysis_cd' }
   | { type: 'confusion' }
@@ -263,7 +278,8 @@ export type CCResult =
   | { type: 'silence' };
 
 export function getCCState(mon: BattleMon): CCResult {
-  // Hard CC — full stun (freeze, sleep)
+  // Hard CC — full stun (freeze, sleep, petrify)
+  if (hasDebuff(mon, 'petrify')) return { type: 'stun', reason: 'petrify' };
   if (hasDebuff(mon, 'freeze')) return { type: 'stun', reason: 'freeze' };
   if (hasDebuff(mon, 'sleep')) return { type: 'stun', reason: 'sleep' };
 
@@ -328,27 +344,31 @@ export function processStartOfTurn(mon: BattleMon, state: BattleState): string[]
   const hasInvincibility = hasBuff(mon, 'invincibility');
   const hasUnrecoverable = hasDebuff(mon, 'unrecoverable');
 
+  const hasAntiHeal = hasDebuff(mon, 'anti_heal');
+
   // 1. Process Recovery (HoT) buff
   if (hasBuff(mon, 'recovery') && !hasUnrecoverable) {
-    const healAmt = Math.floor(mon.maxHp * 0.15);
+    let healAmt = Math.floor(mon.maxHp * 0.15);
+    if (hasAntiHeal) healAmt = Math.floor(healAmt * 0.5);
     const oldHp = mon.currentHp;
     mon.currentHp = Math.min(mon.maxHp, mon.currentHp + healAmt);
     const healed = mon.currentHp - oldHp;
     trackHeal(state, mon.instanceId, healed);
     if (healed > 0) {
-      effects.push(`${template.name} recovered ${healed} HP (Recovery)`);
+      effects.push(`${template.name} recovered ${healed} HP (Recovery)${hasAntiHeal ? ' (Anti-Heal)' : ''}`);
     }
   }
 
   // 2. Process Sleep heal
   if (hasDebuff(mon, 'sleep') && !hasUnrecoverable) {
-    const healAmt = Math.floor(mon.maxHp * 0.10);
+    let healAmt = Math.floor(mon.maxHp * 0.10);
+    if (hasAntiHeal) healAmt = Math.floor(healAmt * 0.5);
     const oldHp = mon.currentHp;
     mon.currentHp = Math.min(mon.maxHp, mon.currentHp + healAmt);
     const healed = mon.currentHp - oldHp;
     trackHeal(state, mon.instanceId, healed);
     if (healed > 0) {
-      effects.push(`${template.name} recovered ${healed} HP while sleeping`);
+      effects.push(`${template.name} recovered ${healed} HP while sleeping${hasAntiHeal ? ' (Anti-Heal)' : ''}`);
     }
   }
 
@@ -364,6 +384,10 @@ export function processStartOfTurn(mon: BattleMon, state: BattleState): string[]
         if (hasBuff(mon, 'endure')) {
           mon.currentHp = 1;
           effects.push(`${template.name} endured!`);
+        } else if (hasBuff(mon, 'soul_protect')) {
+          mon.currentHp = Math.floor(mon.maxHp * 0.3);
+          mon.buffs = mon.buffs.filter(b => b.id !== 'soul_protect');
+          effects.push(`${template.name}'s Soul Protect activated! Revived with 30% HP`);
         } else {
           mon.isAlive = false;
           effects.push(`${template.name} fainted from poison!`);
@@ -383,9 +407,59 @@ export function processStartOfTurn(mon: BattleMon, state: BattleState): string[]
         if (hasBuff(mon, 'endure')) {
           mon.currentHp = 1;
           effects.push(`${template.name} endured!`);
+        } else if (hasBuff(mon, 'soul_protect')) {
+          mon.currentHp = Math.floor(mon.maxHp * 0.3);
+          mon.buffs = mon.buffs.filter(b => b.id !== 'soul_protect');
+          effects.push(`${template.name}'s Soul Protect activated! Revived with 30% HP`);
         } else {
           mon.isAlive = false;
           effects.push(`${template.name} fainted from burn!`);
+        }
+      }
+    }
+  }
+
+  // 4b. Process Bleed DoT (blocked by invincibility)
+  if (!hasInvincibility) {
+    const bleedStacks = mon.debuffs.filter(d => d.id === 'bleed' && d.remainingTurns > 0).length;
+    if (bleedStacks > 0) {
+      const dotDmg = Math.floor(mon.maxHp * 0.04 * bleedStacks);
+      mon.currentHp = Math.max(0, mon.currentHp - dotDmg);
+      effects.push(`${template.name} takes ${dotDmg} bleed damage (${bleedStacks} stacks)`);
+      if (mon.currentHp <= 0) {
+        if (hasBuff(mon, 'endure')) {
+          mon.currentHp = 1;
+          effects.push(`${template.name} endured!`);
+        } else if (hasBuff(mon, 'soul_protect')) {
+          mon.currentHp = Math.floor(mon.maxHp * 0.3);
+          mon.buffs = mon.buffs.filter(b => b.id !== 'soul_protect');
+          effects.push(`${template.name}'s Soul Protect activated! Revived with 30% HP`);
+        } else {
+          mon.isAlive = false;
+          effects.push(`${template.name} fainted from bleed!`);
+        }
+      }
+    }
+  }
+
+  // 4c. Process Bomb detonation (bombs that are about to expire)
+  if (!hasInvincibility) {
+    const expiringBombs = mon.debuffs.filter(d => d.id === 'bomb' && d.remainingTurns === 1);
+    if (expiringBombs.length > 0) {
+      const bombDmg = Math.floor(mon.maxHp * 0.25 * expiringBombs.length);
+      mon.currentHp = Math.max(0, mon.currentHp - bombDmg);
+      effects.push(`${template.name} takes ${bombDmg} bomb damage (${expiringBombs.length} bombs detonated!)`);
+      if (mon.currentHp <= 0) {
+        if (hasBuff(mon, 'endure')) {
+          mon.currentHp = 1;
+          effects.push(`${template.name} endured!`);
+        } else if (hasBuff(mon, 'soul_protect')) {
+          mon.currentHp = Math.floor(mon.maxHp * 0.3);
+          mon.buffs = mon.buffs.filter(b => b.id !== 'soul_protect');
+          effects.push(`${template.name}'s Soul Protect activated! Revived with 30% HP`);
+        } else {
+          mon.isAlive = false;
+          effects.push(`${template.name} fainted from bomb explosion!`);
         }
       }
     }
@@ -570,6 +644,12 @@ function applySingleEffect(
       return `${targetTemplate.name} is immune!`;
     }
 
+    // Nullify blocks next debuff (consumed)
+    if (hasBuff(target, 'nullify')) {
+      target.buffs = target.buffs.filter(b => b.id !== 'nullify');
+      return `${targetTemplate.name}'s Nullify blocked ${meta.name}!`;
+    }
+
     // Accuracy vs Resistance check
     const attackerStats = getEffectiveStats(actor);
     const defenderStats = getEffectiveStats(target);
@@ -605,7 +685,8 @@ function applyInstantEffect(
       if (hasDebuff(target, 'unrecoverable')) {
         return `${targetTemplate.name} cannot be healed!`;
       }
-      const healAmount = Math.floor(target.maxHp * (effect.value / 100));
+      let healAmount = Math.floor(target.maxHp * (effect.value / 100));
+      if (hasDebuff(target, 'anti_heal')) healAmount = Math.floor(healAmount * 0.5);
       const oldHp = target.currentHp;
       target.currentHp = Math.min(target.maxHp, target.currentHp + healAmount);
       const healed = target.currentHp - oldHp;
@@ -686,6 +767,149 @@ function applyInstantEffect(
       }
       return `${targetTemplate.name} cleansed ${count} debuff(s)!`;
     }
+
+    case 'revive': {
+      // Find first dead ally on actor's team
+      const team = actor.isPlayerOwned ? state.playerTeam : state.enemyTeam;
+      const dead = team.find(m => !m.isAlive);
+      if (!dead) return null;
+      const deadTemplate = getTemplate(dead.templateId);
+      dead.currentHp = Math.floor(dead.maxHp * (effect.value / 100));
+      dead.isAlive = true;
+      dead.debuffs = []; // Clear debuffs on revive
+      return `${deadTemplate.name} was revived with ${effect.value}% HP!`;
+    }
+
+    case 'steal_buff': {
+      if (hasBuff(target, 'immunity')) {
+        return `${targetTemplate.name} is immune to buff steal!`;
+      }
+      const attackerStats2 = getEffectiveStats(actor);
+      const defenderStats2 = getEffectiveStats(target);
+      if (!resistCheck(attackerStats2.acc, defenderStats2.res)) {
+        return `${targetTemplate.name} resisted buff steal!`;
+      }
+      if (target.buffs.length === 0) return null;
+      const idx = Math.floor(Math.random() * target.buffs.length);
+      const stolen = target.buffs.splice(idx, 1)[0];
+      const stolenMeta = getEffectMeta(stolen.id);
+      applyBuff(actor, stolen.id, stolen.remainingTurns, stolen.value);
+      const actorTpl = getTemplate(actor.templateId);
+      return `${actorTpl.name} stole ${stolenMeta.name} from ${targetTemplate.name}!`;
+    }
+
+    case 'absorb_atb': {
+      if (hasBuff(target, 'immunity')) {
+        return `${targetTemplate.name} is immune to ATB absorption!`;
+      }
+      const attackerStats3 = getEffectiveStats(actor);
+      const defenderStats3 = getEffectiveStats(target);
+      if (!resistCheck(attackerStats3.acc, defenderStats3.res)) {
+        return `${targetTemplate.name} resisted ATB absorption!`;
+      }
+      const absorbAmount = Math.floor(1000 * (effect.value / 100));
+      const actualAbsorbed = Math.min(absorbAmount, target.actionGauge);
+      target.actionGauge = Math.max(0, target.actionGauge - absorbAmount);
+      actor.actionGauge = Math.min(1000, actor.actionGauge + actualAbsorbed);
+      const actorTpl2 = getTemplate(actor.templateId);
+      return `${actorTpl2.name} absorbed ${effect.value}% ATB from ${targetTemplate.name}!`;
+    }
+
+    case 'detonate': {
+      // Trigger all DoT damage instantly and consume stacks
+      const poisonStacks = target.debuffs.filter(d => d.id === 'poison').length;
+      const burnStacks = target.debuffs.filter(d => d.id === 'burn').length;
+      const bleedStacks = target.debuffs.filter(d => d.id === 'bleed').length;
+      const bombStacks = target.debuffs.filter(d => d.id === 'bomb').length;
+      const totalStacks = poisonStacks + burnStacks + bleedStacks + bombStacks;
+      if (totalStacks === 0) return null;
+
+      let totalDmg = 0;
+      totalDmg += Math.floor(target.maxHp * 0.05 * poisonStacks);
+      totalDmg += Math.floor(target.maxHp * 0.03 * burnStacks);
+      totalDmg += Math.floor(target.maxHp * 0.04 * bleedStacks);
+      totalDmg += Math.floor(target.maxHp * 0.25 * bombStacks);
+
+      if (hasBuff(target, 'invincibility')) {
+        return `${targetTemplate.name} is invincible! Detonation blocked.`;
+      }
+
+      // Remove consumed DoTs
+      target.debuffs = target.debuffs.filter(d =>
+        d.id !== 'poison' && d.id !== 'burn' && d.id !== 'bleed' && d.id !== 'bomb'
+      );
+
+      target.currentHp = Math.max(0, target.currentHp - totalDmg);
+      if (target.currentHp <= 0) {
+        if (hasBuff(target, 'endure')) {
+          target.currentHp = 1;
+          target.buffs = target.buffs.filter(b => b.id !== 'endure');
+        } else if (hasBuff(target, 'soul_protect')) {
+          target.currentHp = Math.floor(target.maxHp * 0.3);
+          target.buffs = target.buffs.filter(b => b.id !== 'soul_protect');
+        } else {
+          target.isAlive = false;
+        }
+      }
+      return `Detonated ${totalStacks} effects on ${targetTemplate.name} for ${totalDmg} damage!`;
+    }
+
+    case 'transfer_debuff': {
+      if (hasBuff(target, 'immunity')) {
+        return `${targetTemplate.name} is immune to debuff transfer!`;
+      }
+      const attackerStats4 = getEffectiveStats(actor);
+      const defenderStats4 = getEffectiveStats(target);
+      if (!resistCheck(attackerStats4.acc, defenderStats4.res)) {
+        return `${targetTemplate.name} resisted debuff transfer!`;
+      }
+      const actorDebuffs = [...actor.debuffs];
+      if (actorDebuffs.length === 0) return null;
+      // Transfer debuffs to target
+      for (const debuff of actorDebuffs) {
+        applyDebuff(target, debuff.id, debuff.remainingTurns, debuff.value, actor.instanceId);
+      }
+      actor.debuffs = [];
+      const actorTpl3 = getTemplate(actor.templateId);
+      return `${actorTpl3.name} transferred ${actorDebuffs.length} debuff(s) to ${targetTemplate.name}!`;
+    }
+
+    case 'extend_buffs': {
+      if (target.buffs.length === 0) return null;
+      for (const buff of target.buffs) {
+        if (buff.remainingTurns < 999) {
+          buff.remainingTurns = Math.min(buff.remainingTurns + 1, 5);
+        }
+      }
+      return `${targetTemplate.name}'s buff durations extended by 1 turn!`;
+    }
+
+    case 'shorten_debuffs': {
+      if (target.debuffs.length === 0) return null;
+      let removed = 0;
+      for (const debuff of target.debuffs) {
+        if (debuff.remainingTurns < 999) {
+          debuff.remainingTurns--;
+        }
+      }
+      target.debuffs = target.debuffs.filter(d => {
+        if (d.remainingTurns <= 0) { removed++; return false; }
+        return true;
+      });
+      return `${targetTemplate.name}'s debuff durations shortened by 1 turn!${removed > 0 ? ` (${removed} expired)` : ''}`;
+    }
+
+    case 'balance_hp': {
+      // Average HP% across all alive allies
+      const team = actor.isPlayerOwned ? state.playerTeam : state.enemyTeam;
+      const alive = team.filter(m => m.isAlive);
+      if (alive.length <= 1) return null;
+      const avgPct = alive.reduce((sum, m) => sum + (m.currentHp / m.maxHp), 0) / alive.length;
+      for (const m of alive) {
+        m.currentHp = Math.max(1, Math.floor(m.maxHp * avgPct));
+      }
+      return `HP balanced across all allies to ${Math.round(avgPct * 100)}%!`;
+    }
   }
 
   return null;
@@ -731,10 +955,26 @@ export function resolveSkill(
 
     const isOffensive = effectiveSkill.target === 'single_enemy' || effectiveSkill.target === 'all_enemies';
 
+    let evaded = false;
+
     if (isOffensive && effectiveSkill.multiplier > 0) {
+      // Evasion: 50% chance to dodge
+      if (hasBuff(target, 'evasion') && Math.random() < 0.5) {
+        damage = 0;
+        evaded = true;
+        appliedEffects.push(`${targetTemplate.name} dodged the attack!`);
+      }
+
+      if (!evaded) {
+      // Expose: +15% crit rate against this target
+      const exposeBonus = hasDebuff(target, 'expose') ? 15 : 0;
+      const calcStats = exposeBonus > 0
+        ? { ...attackerStats, critRate: attackerStats.critRate + exposeBonus }
+        : attackerStats;
+
       // Calculate base damage
       const result = calculateDamage(
-        attackerStats,
+        calcStats,
         getEffectiveStats(target),
         effectiveSkill,
         actorTemplate.types,
@@ -755,6 +995,18 @@ export function resolveSkill(
       // Brand: +25% damage
       if (isOffensive && hasDebuff(target, 'brand')) {
         damage = Math.floor(damage * 1.25);
+      }
+
+      // Mark: +15% damage
+      if (isOffensive && hasDebuff(target, 'mark')) {
+        damage = Math.floor(damage * 1.15);
+      }
+
+      // Amplify: +50% damage (consumed)
+      if (isOffensive && hasBuff(actor, 'amplify')) {
+        damage = Math.floor(damage * 1.5);
+        actor.buffs = actor.buffs.filter(b => b.id !== 'amplify');
+        appliedEffects.push('Amplified!');
       }
 
       // Invincibility: 0 damage
@@ -796,8 +1048,15 @@ export function resolveSkill(
         }
 
         if (target.currentHp <= 0) {
-          target.isAlive = false;
-          appliedEffects.push(`${targetTemplate.name} fainted!`);
+          // Soul Protect: revive with 30% HP
+          if (hasBuff(target, 'soul_protect')) {
+            target.currentHp = Math.floor(target.maxHp * 0.3);
+            target.buffs = target.buffs.filter(b => b.id !== 'soul_protect');
+            appliedEffects.push(`${targetTemplate.name}'s Soul Protect activated! Revived with 30% HP`);
+          } else {
+            target.isAlive = false;
+            appliedEffects.push(`${targetTemplate.name} fainted!`);
+          }
         }
       }
 
@@ -810,6 +1069,10 @@ export function resolveSkill(
           if (hasBuff(actor, 'endure')) {
             actor.currentHp = 1;
             actor.buffs = actor.buffs.filter(b => b.id !== 'endure');
+          } else if (hasBuff(actor, 'soul_protect')) {
+            actor.currentHp = Math.floor(actor.maxHp * 0.3);
+            actor.buffs = actor.buffs.filter(b => b.id !== 'soul_protect');
+            appliedEffects.push(`${actorTemplate.name}'s Soul Protect activated!`);
           } else {
             actor.isAlive = false;
             appliedEffects.push(`${actorTemplate.name} fainted from reflect!`);
@@ -821,15 +1084,19 @@ export function resolveSkill(
       if (isOffensive && hasBuff(actor, 'vampire') && damage > 0) {
         if (!hasDebuff(actor, 'unrecoverable')) {
           vampireHealed = Math.floor((damage + shieldAbsorbed) * 0.2);
+          if (hasDebuff(actor, 'anti_heal')) vampireHealed = Math.floor(vampireHealed * 0.5);
           actor.currentHp = Math.min(actor.maxHp, actor.currentHp + vampireHealed);
           trackHeal(state, actor.instanceId, vampireHealed);
         }
       }
+      } // end if (!evaded)
     }
 
     // Apply skill effects
     // Glancing hit blocks debuff application on offensive skills
-    const canApplyDebuffs = !isGlancing;
+    // Seal blocks basic attack effects; evasion blocks harmful effects
+    const canApplyDebuffs = !isGlancing && !evaded;
+    const isSealBlocked = skill.category === 'basic' && hasDebuff(actor, 'seal');
 
     for (const rawEffect of skill.effects) {
       const effect = normalizeEffect(rawEffect);
@@ -857,9 +1124,15 @@ export function resolveSkill(
       }
 
       for (const et of effectTargets) {
-        // Skip debuff application if glancing
+        // Skip debuff application if glancing or evaded
         if (isDebuffEffect(effect.id) && !canApplyDebuffs) {
-          appliedEffects.push(`${getTemplate(et.templateId).name} avoided ${effectMeta.name} (glancing)`);
+          appliedEffects.push(`${getTemplate(et.templateId).name} avoided ${effectMeta.name}${evaded ? ' (dodged)' : ' (glancing)'}`);
+          continue;
+        }
+
+        // Seal blocks all harmful effects from basic attacks
+        if (isSealBlocked && isHarmfulEffect(effect.id)) {
+          appliedEffects.push(`${actorTemplate.name}'s effects are sealed!`);
           continue;
         }
 
@@ -930,9 +1203,13 @@ export function resolveSkill(
     });
   }
 
-  // Set cooldown for the skill
+  // Set cooldown for the skill (Skill Refresh: skip cooldown, consumed)
   if (skill.cooldown > 0) {
-    actor.skillCooldowns[skill.id] = skill.cooldown;
+    if (hasBuff(actor, 'skill_refresh')) {
+      actor.buffs = actor.buffs.filter(b => b.id !== 'skill_refresh');
+    } else {
+      actor.skillCooldowns[skill.id] = skill.cooldown;
+    }
   }
 
   // Tick all cooldowns for this actor
@@ -1021,9 +1298,16 @@ export function pickEnemyAction(
     targets = state.playerTeam.filter(m => m.isAlive);
   } else {
     // single_enemy — target player mon with lowest HP%
+    // Threat buff: prioritize threat mons
     const alive = state.playerTeam.filter(m => m.isAlive);
-    alive.sort((a, b) => (a.currentHp / a.maxHp) - (b.currentHp / b.maxHp));
-    targets = [alive[0]];
+    const threatMons = alive.filter(m => hasBuff(m, 'threat'));
+    if (threatMons.length > 0) {
+      threatMons.sort((a, b) => (a.currentHp / a.maxHp) - (b.currentHp / b.maxHp));
+      targets = [threatMons[0]];
+    } else {
+      alive.sort((a, b) => (a.currentHp / a.maxHp) - (b.currentHp / b.maxHp));
+      targets = [alive[0]];
+    }
   }
 
   return { skill: chosenSkill, targets };
@@ -1089,11 +1373,11 @@ export function autoResolveEnemyTurns(state: BattleState): BattleLogEntry[] {
         actorId: actor.instanceId,
         actorName: template.name,
         skillUsed: '',
-        skillName: cc.reason === 'freeze' ? 'Frozen' : 'Asleep',
+        skillName: cc.reason === 'freeze' ? 'Frozen' : cc.reason === 'petrify' ? 'Petrified' : 'Asleep',
         targetId: actor.instanceId,
         targetName: template.name,
         damage: 0, isCrit: false, effectiveness: 1,
-        effects: [`${template.name} is ${cc.reason === 'freeze' ? 'frozen' : 'asleep'} and cannot act!`, ...allTurnEffects],
+        effects: [`${template.name} is ${cc.reason === 'freeze' ? 'frozen' : cc.reason === 'petrify' ? 'petrified' : 'asleep'} and cannot act!`, ...allTurnEffects],
       });
       tickCooldowns(actor);
       checkBattleEnd(state);

@@ -80,6 +80,45 @@ export const EFFECT_REGISTRY: Record<EffectId, EffectMeta> = {
     category: 'buff', name: 'Vampire', description: 'Recovers 20% of damage dealt as HP',
     unique: true, icon: 'vampire', color: '#b91c1c',
   },
+  soul_protect: {
+    category: 'buff', name: 'Soul Protect', description: 'Revives with 30% HP on lethal hit (consumed)',
+    unique: true, icon: 'soul-protect', color: '#e879f9',
+  },
+  acc_buff: {
+    category: 'buff', name: 'ACC Up', description: 'Accuracy increased by 50%',
+    unique: true, statMod: { stat: 'acc', percent: 50 },
+    icon: 'acc-up', color: '#22d3ee',
+  },
+  res_buff: {
+    category: 'buff', name: 'RES Up', description: 'Resistance increased by 50%',
+    unique: true, statMod: { stat: 'res', percent: 50 },
+    icon: 'res-up', color: '#a3e635',
+  },
+  crit_dmg_buff: {
+    category: 'buff', name: 'Crit DMG Up', description: 'Critical damage increased by 30%',
+    unique: true, statMod: { stat: 'critDmg', percent: 30 },
+    icon: 'cdmg-up', color: '#f43f5e',
+  },
+  threat: {
+    category: 'buff', name: 'Threat', description: 'Enemies prioritize targeting this monster',
+    unique: true, icon: 'threat', color: '#ef4444',
+  },
+  evasion: {
+    category: 'buff', name: 'Evasion', description: '50% chance to completely dodge attacks',
+    unique: true, icon: 'evasion', color: '#c4b5fd',
+  },
+  amplify: {
+    category: 'buff', name: 'Amplify', description: 'Next attack deals +50% damage (consumed)',
+    unique: true, icon: 'amplify', color: '#fb923c',
+  },
+  nullify: {
+    category: 'buff', name: 'Nullify', description: 'Blocks next debuff applied (consumed)',
+    unique: true, icon: 'nullify', color: '#fde047',
+  },
+  skill_refresh: {
+    category: 'buff', name: 'Skill Refresh', description: 'Next skill used has no cooldown (consumed)',
+    unique: true, icon: 'skill-refresh', color: '#2dd4bf',
+  },
 
   // ── SW Debuffs ───────────────────────────────────────────────────────
   atk_break: {
@@ -124,6 +163,46 @@ export const EFFECT_REGISTRY: Record<EffectId, EffectMeta> = {
   provoke: {
     category: 'debuff', name: 'Provoke', description: 'Forced to attack the provoker with basic attack',
     unique: true, cc: 'conditional', icon: 'provoke', color: '#dc2626',
+  },
+  bomb: {
+    category: 'debuff', name: 'Bomb', description: 'Detonates for 25% max HP damage when timer expires',
+    unique: false, maxStacks: 3, icon: 'bomb', color: '#f97316',
+  },
+  acc_break: {
+    category: 'debuff', name: 'ACC Break', description: 'Accuracy decreased by 50%',
+    unique: true, statMod: { stat: 'acc', percent: -50 },
+    icon: 'acc-down', color: '#06b6d4',
+  },
+  res_break: {
+    category: 'debuff', name: 'RES Break', description: 'Resistance decreased by 50%',
+    unique: true, statMod: { stat: 'res', percent: -50 },
+    icon: 'res-down', color: '#84cc16',
+  },
+  seal: {
+    category: 'debuff', name: 'Seal', description: 'Basic attack cannot apply additional effects',
+    unique: true, icon: 'seal', color: '#6b7280',
+  },
+  bleed: {
+    category: 'debuff', name: 'Bleed', description: 'Takes 4% max HP damage each turn (stackable)',
+    unique: false, maxStacks: 10, dot: { percentHp: 4 },
+    icon: 'bleed', color: '#dc2626',
+  },
+  expose: {
+    category: 'debuff', name: 'Expose', description: 'Attackers have +15% crit rate against this target',
+    unique: true, icon: 'expose', color: '#fbbf24',
+  },
+  anti_heal: {
+    category: 'debuff', name: 'Anti-Heal', description: 'Healing received reduced by 50%',
+    unique: true, icon: 'anti-heal', color: '#a855f7',
+  },
+  mark: {
+    category: 'debuff', name: 'Mark', description: 'Takes 15% more damage from all sources',
+    unique: true, icon: 'mark', color: '#f43f5e',
+  },
+  petrify: {
+    category: 'debuff', name: 'Petrify', description: 'Cannot act (turned to stone) but defense doubled',
+    unique: true, cc: 'stun', statMod: { stat: 'def', percent: 100 },
+    icon: 'petrify', color: '#78716c',
   },
 
   // ── Pokemon Status Effects ───────────────────────────────────────────
@@ -190,6 +269,38 @@ export const EFFECT_REGISTRY: Record<EffectId, EffectMeta> = {
     category: 'instant', name: 'Cleanse', description: 'Removes debuffs from ally',
     unique: true, icon: 'cleanse', color: '#10b981',
   },
+  revive: {
+    category: 'instant', name: 'Revive', description: 'Revives a fallen ally',
+    unique: true, icon: 'revive', color: '#16a34a',
+  },
+  steal_buff: {
+    category: 'instant', name: 'Steal Buff', description: 'Steals a buff from the target',
+    unique: true, icon: 'steal-buff', color: '#c084fc',
+  },
+  absorb_atb: {
+    category: 'instant', name: 'Absorb ATB', description: 'Steals action gauge from target',
+    unique: true, icon: 'absorb-atb', color: '#7c3aed',
+  },
+  detonate: {
+    category: 'instant', name: 'Detonate', description: 'Triggers all DoT damage instantly',
+    unique: true, icon: 'detonate', color: '#dc2626',
+  },
+  transfer_debuff: {
+    category: 'instant', name: 'Transfer Debuff', description: 'Transfers own debuffs to target',
+    unique: true, icon: 'transfer-debuff', color: '#fb7185',
+  },
+  extend_buffs: {
+    category: 'instant', name: 'Extend Buffs', description: 'Extends buff durations by 1 turn',
+    unique: true, icon: 'extend-buffs', color: '#34d399',
+  },
+  shorten_debuffs: {
+    category: 'instant', name: 'Shorten Debuffs', description: 'Reduces debuff durations by 1 turn',
+    unique: true, icon: 'shorten-debuffs', color: '#38bdf8',
+  },
+  balance_hp: {
+    category: 'instant', name: 'Balance HP', description: 'Equalizes HP% across all allies',
+    unique: true, icon: 'balance-hp', color: '#4ade80',
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -216,10 +327,12 @@ export function isInstantEffect(id: EffectId): boolean {
 
 const BENEFICIAL_INSTANTS: ReadonlySet<EffectId> = new Set([
   'heal', 'cleanse', 'atb_boost', 'cd_reset', 'cd_reduce',
+  'revive', 'extend_buffs', 'shorten_debuffs', 'balance_hp',
 ] as EffectId[]);
 
 const HARMFUL_INSTANTS: ReadonlySet<EffectId> = new Set([
   'strip', 'atb_reduce', 'cd_increase',
+  'steal_buff', 'absorb_atb', 'detonate', 'transfer_debuff',
 ] as EffectId[]);
 
 export function isBeneficialEffect(id: EffectId): boolean {

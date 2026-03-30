@@ -48,19 +48,25 @@ type SkillCategory = 'basic' | 'active' | 'passive';
 type BuffEffectId =
   | 'atk_buff' | 'def_buff' | 'spd_buff' | 'crit_rate_buff'
   | 'immunity' | 'invincibility' | 'endure' | 'shield'
-  | 'reflect' | 'counter' | 'recovery' | 'vampire';
+  | 'reflect' | 'counter' | 'recovery' | 'vampire'
+  | 'soul_protect' | 'acc_buff' | 'res_buff' | 'crit_dmg_buff'
+  | 'threat' | 'evasion' | 'amplify' | 'nullify' | 'skill_refresh';
 
 type DebuffEffectId =
   | 'atk_break' | 'def_break' | 'spd_slow' | 'glancing'
   | 'brand' | 'unrecoverable' | 'silence' | 'oblivion'
-  | 'buff_block' | 'provoke';
+  | 'buff_block' | 'provoke'
+  | 'bomb' | 'acc_break' | 'res_break' | 'seal'
+  | 'bleed' | 'expose' | 'anti_heal' | 'mark' | 'petrify';
 
 type StatusEffectId =
   | 'poison' | 'burn' | 'freeze' | 'paralysis' | 'confusion' | 'sleep';
 
 type InstantEffectId =
   | 'heal' | 'atb_boost' | 'atb_reduce' | 'cd_reset'
-  | 'cd_reduce' | 'cd_increase' | 'strip' | 'cleanse';
+  | 'cd_reduce' | 'cd_increase' | 'strip' | 'cleanse'
+  | 'revive' | 'steal_buff' | 'absorb_atb' | 'detonate'
+  | 'transfer_debuff' | 'extend_buffs' | 'shorten_debuffs' | 'balance_hp';
 
 type EffectId = BuffEffectId | DebuffEffectId | StatusEffectId | InstantEffectId;
 
@@ -147,24 +153,24 @@ function classifyRole(stats: BaseStats, pokemonId: number, types: PokemonType[])
 // Type-specific effect pools
 // ---------------------------------------------------------------------------
 const TYPE_EFFECT_POOL: Record<PokemonType, EffectId[]> = {
-  fire:     ['burn', 'atk_buff', 'brand'],
-  water:    ['spd_slow', 'recovery', 'cleanse', 'heal'],
-  grass:    ['poison', 'recovery', 'heal'],
-  electric: ['paralysis', 'atb_boost', 'spd_buff'],
-  ice:      ['freeze', 'spd_slow', 'atk_break'],
-  fighting: ['def_break', 'counter', 'provoke'],
-  poison:   ['poison', 'atk_break', 'unrecoverable'],
-  ground:   ['def_break', 'freeze', 'brand'],
-  flying:   ['spd_buff', 'atb_boost', 'glancing'],
-  psychic:  ['confusion', 'silence', 'atb_reduce', 'cd_increase'],
-  bug:      ['atk_break', 'glancing', 'buff_block'],
-  rock:     ['def_buff', 'freeze', 'shield'],
-  ghost:    ['oblivion', 'strip', 'confusion'],
-  dragon:   ['atk_buff', 'brand', 'def_break'],
-  fairy:    ['immunity', 'cleanse', 'heal'],
-  dark:     ['strip', 'oblivion', 'silence'],
-  steel:    ['def_buff', 'shield', 'immunity'],
-  normal:   ['counter', 'endure', 'reflect'],
+  fire:     ['burn', 'atk_buff', 'brand', 'bomb', 'crit_dmg_buff', 'detonate', 'amplify', 'expose'],
+  water:    ['spd_slow', 'recovery', 'cleanse', 'heal', 'res_buff', 'strip', 'shorten_debuffs', 'balance_hp'],
+  grass:    ['poison', 'recovery', 'heal', 'seal', 'unrecoverable', 'revive', 'extend_buffs', 'anti_heal'],
+  electric: ['paralysis', 'atb_boost', 'spd_buff', 'absorb_atb', 'bomb', 'acc_buff', 'skill_refresh', 'amplify'],
+  ice:      ['freeze', 'spd_slow', 'atk_break', 'acc_break', 'petrify', 'seal', 'bomb', 'anti_heal'],
+  fighting: ['def_break', 'counter', 'provoke', 'threat', 'crit_dmg_buff', 'brand', 'amplify', 'bleed'],
+  poison:   ['poison', 'atk_break', 'unrecoverable', 'bomb', 'detonate', 'res_break', 'bleed', 'anti_heal'],
+  ground:   ['def_break', 'freeze', 'brand', 'acc_break', 'bomb', 'provoke', 'petrify', 'mark'],
+  flying:   ['spd_buff', 'atb_boost', 'glancing', 'absorb_atb', 'acc_buff', 'strip', 'evasion', 'skill_refresh'],
+  psychic:  ['confusion', 'silence', 'atb_reduce', 'cd_increase', 'seal', 'sleep', 'transfer_debuff', 'nullify'],
+  bug:      ['atk_break', 'glancing', 'buff_block', 'acc_break', 'poison', 'seal', 'bleed', 'expose'],
+  rock:     ['def_buff', 'freeze', 'shield', 'threat', 'res_buff', 'reflect', 'petrify', 'mark'],
+  ghost:    ['oblivion', 'strip', 'confusion', 'soul_protect', 'steal_buff', 'silence', 'transfer_debuff', 'mark'],
+  dragon:   ['atk_buff', 'brand', 'def_break', 'crit_dmg_buff', 'detonate', 'vampire', 'amplify', 'expose'],
+  fairy:    ['immunity', 'cleanse', 'heal', 'soul_protect', 'revive', 'res_buff', 'nullify', 'extend_buffs'],
+  dark:     ['strip', 'oblivion', 'silence', 'steal_buff', 'absorb_atb', 'brand', 'mark', 'expose'],
+  steel:    ['def_buff', 'shield', 'immunity', 'threat', 'acc_buff', 'reflect', 'nullify', 'evasion'],
+  normal:   ['counter', 'endure', 'reflect', 'soul_protect', 'crit_rate_buff', 'acc_buff', 'amplify', 'balance_hp'],
 };
 
 // ---------------------------------------------------------------------------
@@ -254,15 +260,23 @@ function randRange(min: number, max: number, rng: () => number): number {
 /** Return an appropriate value for instant effects (which use value instead of duration). */
 function instantValue(effectId: EffectId, rng: () => number, isBasic: boolean = false): number {
   switch (effectId) {
-    case 'heal':       return isBasic ? randInt(5, 10, rng) : randInt(15, 25, rng);
-    case 'atb_boost':  return isBasic ? randInt(10, 20, rng) : randInt(15, 30, rng);
-    case 'atb_reduce': return isBasic ? randInt(10, 20, rng) : randInt(25, 50, rng);
-    case 'strip':      return isBasic ? 1 : randInt(1, 2, rng);
-    case 'cleanse':    return isBasic ? 1 : randInt(1, 2, rng);
-    case 'cd_reset':   return 0; // resets all, value irrelevant
-    case 'cd_reduce':  return 1;
-    case 'cd_increase':return 1;
-    default:           return 0;
+    case 'heal':             return isBasic ? randInt(5, 10, rng) : randInt(15, 25, rng);
+    case 'atb_boost':        return isBasic ? randInt(10, 20, rng) : randInt(15, 30, rng);
+    case 'atb_reduce':       return isBasic ? randInt(10, 20, rng) : randInt(25, 50, rng);
+    case 'strip':            return isBasic ? 1 : randInt(1, 2, rng);
+    case 'cleanse':          return isBasic ? 1 : randInt(1, 2, rng);
+    case 'cd_reset':         return 0;
+    case 'cd_reduce':        return 1;
+    case 'cd_increase':      return 1;
+    case 'revive':           return randInt(20, 35, rng);
+    case 'steal_buff':       return 1;
+    case 'absorb_atb':       return isBasic ? randInt(10, 15, rng) : randInt(15, 30, rng);
+    case 'detonate':         return 0;
+    case 'transfer_debuff':  return 0;
+    case 'extend_buffs':     return 1;
+    case 'shorten_debuffs':  return 1;
+    case 'balance_hp':       return 0;
+    default:                 return 0;
   }
 }
 
@@ -274,28 +288,40 @@ const EFFECT_NAMES: Record<EffectId, string> = {
   crit_rate_buff: 'Crit Rate Buff', immunity: 'Immunity', invincibility: 'Invincibility',
   endure: 'Endure', shield: 'Shield', reflect: 'Reflect', counter: 'Counter',
   recovery: 'Recovery', vampire: 'Vampire',
+  soul_protect: 'Soul Protect', acc_buff: 'ACC Buff', res_buff: 'RES Buff',
+  crit_dmg_buff: 'Crit DMG Buff', threat: 'Threat', evasion: 'Evasion',
+  amplify: 'Amplify', nullify: 'Nullify', skill_refresh: 'Skill Refresh',
   atk_break: 'ATK Break', def_break: 'DEF Break', spd_slow: 'Slow',
   glancing: 'Glancing Hit', brand: 'Brand', unrecoverable: 'Unrecoverable',
   silence: 'Silence', oblivion: 'Oblivion', buff_block: 'Buff Block', provoke: 'Provoke',
+  bomb: 'Bomb', acc_break: 'ACC Break', res_break: 'RES Break', seal: 'Seal',
+  bleed: 'Bleed', expose: 'Expose', anti_heal: 'Anti-Heal', mark: 'Mark', petrify: 'Petrify',
   poison: 'Poison', burn: 'Burn', freeze: 'Freeze', paralysis: 'Paralysis',
   confusion: 'Confusion', sleep: 'Sleep',
   heal: 'Heal', atb_boost: 'ATB Boost', atb_reduce: 'ATB Reduce',
   cd_reset: 'Cooldown Reset', cd_reduce: 'Cooldown Reduce',
   cd_increase: 'Cooldown Increase', strip: 'Strip', cleanse: 'Cleanse',
+  revive: 'Revive', steal_buff: 'Steal Buff', absorb_atb: 'Absorb ATB',
+  detonate: 'Detonate', transfer_debuff: 'Transfer Debuff',
+  extend_buffs: 'Extend Buffs', shorten_debuffs: 'Shorten Debuffs', balance_hp: 'Balance HP',
 };
 
 const INSTANT_EFFECTS: Set<EffectId> = new Set([
   'heal', 'atb_boost', 'atb_reduce', 'cd_reset', 'cd_reduce', 'cd_increase', 'strip', 'cleanse',
+  'revive', 'steal_buff', 'absorb_atb', 'detonate', 'transfer_debuff', 'extend_buffs', 'shorten_debuffs', 'balance_hp',
 ]);
 
 const BUFF_EFFECTS: Set<EffectId> = new Set([
   'atk_buff', 'def_buff', 'spd_buff', 'crit_rate_buff', 'immunity', 'invincibility',
   'endure', 'shield', 'reflect', 'counter', 'recovery', 'vampire',
+  'soul_protect', 'acc_buff', 'res_buff', 'crit_dmg_buff', 'threat', 'evasion',
+  'amplify', 'nullify', 'skill_refresh',
 ]);
 
 const DEBUFF_EFFECTS: Set<EffectId> = new Set([
   'atk_break', 'def_break', 'spd_slow', 'glancing', 'brand', 'unrecoverable',
   'silence', 'oblivion', 'buff_block', 'provoke',
+  'bomb', 'acc_break', 'res_break', 'seal', 'bleed', 'expose', 'anti_heal', 'mark', 'petrify',
 ]);
 
 const STATUS_EFFECTS: Set<EffectId> = new Set([
@@ -313,6 +339,14 @@ function describeEffect(eff: SkillEffect): string {
     if (eff.id === 'cd_reset') return `resets all cooldowns`;
     if (eff.id === 'cd_reduce') return `reduces cooldowns by ${eff.value} turn(s)`;
     if (eff.id === 'cd_increase') return `increases cooldowns by ${eff.value} turn(s)`;
+    if (eff.id === 'revive') return `revives a fallen ally with ${eff.value}% HP`;
+    if (eff.id === 'steal_buff') return `steals ${eff.value} buff(s) from the enemy`;
+    if (eff.id === 'absorb_atb') return `absorbs ${eff.value}% ATB from the enemy`;
+    if (eff.id === 'detonate') return `detonates all DoT effects on target`;
+    if (eff.id === 'transfer_debuff') return `transfers own debuffs to target`;
+    if (eff.id === 'extend_buffs') return `extends buff durations by 1 turn`;
+    if (eff.id === 'shorten_debuffs') return `shortens debuff durations by 1 turn`;
+    if (eff.id === 'balance_hp') return `equalizes HP across all allies`;
   }
   const dur = eff.duration > 0 ? ` for ${eff.duration} turn(s)` : '';
   const ch = eff.chance < 100 ? ` (${eff.chance}% chance)` : '';
@@ -658,88 +692,215 @@ function generateSkillsForPokemon(
   let activeEffects: SkillEffect[] = [];
   let activeMult = mult;
 
+  // Helper to create a typed debuff from pool
+  const pickDebuff = (p: EffectId[]) => {
+    const candidates = p.filter(e => isOffensiveDebuff(e));
+    return candidates.length > 0 ? pick(candidates, rng) : pick(p, rng);
+  };
+  const aCh = () => randInt(scaling.activeChance[0], scaling.activeChance[1], rng);
+  const aDur = () => randInt(scaling.duration[0], scaling.duration[1], rng);
+  const makeEff = (id: EffectId, opts?: { ch?: number; dur?: number; val?: number; tgt?: SkillTarget }): SkillEffect => {
+    const isInst = INSTANT_EFFECTS.has(id);
+    return {
+      id,
+      value: opts?.val ?? (isInst ? instantValue(id, rng) : 0),
+      duration: opts?.dur ?? (isInst ? 0 : aDur()),
+      chance: opts?.ch ?? aCh(),
+      ...(opts?.tgt ? { target: opts.tgt } : {}),
+    };
+  };
+
   switch (role) {
     case 'attacker': {
       activeTarget = isAoe ? 'all_enemies' : 'single_enemy';
-      // Offensive debuff OR self-buff
-      if (rng() > 0.4) {
-        // Offensive debuff
-        const offEffect = pick(pool2.filter(e => isOffensiveDebuff(e)) || [pool2[0]], rng) || pool2[0];
-        const ch = randInt(scaling.activeChance[0], scaling.activeChance[1], rng);
-        const dur = INSTANT_EFFECTS.has(offEffect) ? 0 : randInt(scaling.duration[0], scaling.duration[1], rng);
-        const val = INSTANT_EFFECTS.has(offEffect) ? instantValue(offEffect, rng) : 0;
-        activeEffects.push({ id: offEffect, value: val, duration: dur, chance: ch });
+      const p = rng();
+      if (p < 0.20) {
+        // 1: Offensive debuff from pool
+        activeEffects.push(makeEff(pickDebuff(pool2)));
+      } else if (p < 0.35) {
+        // 2: Self-buff atk/crit
+        const selfBuff = pick(['atk_buff', 'crit_rate_buff', 'crit_dmg_buff'] as EffectId[], rng);
+        activeEffects.push(makeEff(selfBuff, { ch: 100, tgt: 'self' }));
+      } else if (p < 0.50) {
+        // 3: brand + def_break combo
+        activeEffects.push(makeEff('brand'));
+        activeEffects.push(makeEff('def_break'));
+      } else if (p < 0.65) {
+        // 4: Damage + steal_buff
+        activeEffects.push(makeEff('steal_buff', { ch: aCh() }));
+      } else if (p < 0.80) {
+        // 5: Damage + detonate
+        activeEffects.push(makeEff('detonate', { ch: 100, val: 0 }));
+      } else if (p < 0.90) {
+        // 6: Damage + expose + bleed
+        activeEffects.push(makeEff('expose'));
+        activeEffects.push(makeEff('bleed'));
       } else {
-        // Self-buff
-        const selfBuff = pick(['atk_buff', 'crit_rate_buff'] as EffectId[], rng);
-        const dur = randInt(scaling.duration[0], scaling.duration[1], rng);
-        activeEffects.push({ id: selfBuff, value: 0, duration: dur, chance: 100, target: 'self' });
+        // 7: Amplify self + crit_dmg_buff self + damage
+        activeEffects.push(makeEff('amplify', { ch: 100, tgt: 'self' }));
+        activeEffects.push(makeEff('crit_dmg_buff', { ch: 100, tgt: 'self' }));
       }
-      // High-star attackers may get a second effect
-      if (stars >= 4 && rng() > 0.4) {
-        const extra = pick(pool.filter(e => e !== activeEffects[0].id), rng) || pool[0];
-        const ch = randInt(scaling.activeChance[0] - 10, scaling.activeChance[1] - 10, rng);
-        const dur = INSTANT_EFFECTS.has(extra) ? 0 : randInt(1, 2, rng);
-        const val = INSTANT_EFFECTS.has(extra) ? instantValue(extra, rng) : 0;
-        activeEffects.push({ id: extra, value: val, duration: dur, chance: Math.max(15, ch) });
+      // High-star second effect
+      if (stars >= 4 && rng() > 0.5) {
+        const extra = pick(pool.filter(e => e !== activeEffects[0]?.id), rng) || pool[0];
+        activeEffects.push(makeEff(extra, { ch: Math.max(15, aCh() - 10) }));
       }
       break;
     }
     case 'tank': {
       activeTarget = isAoe ? 'all_enemies' : 'single_enemy';
       activeMult = Math.round((mult * 0.85) * 10) / 10;
-      if (rng() > 0.5) {
-        // Team buff
+      const p = rng();
+      if (p < 0.15) {
+        // 1: Team def/shield
         const teamBuff = pick(['def_buff', 'shield'] as EffectId[], rng);
-        const dur = randInt(scaling.duration[0], scaling.duration[1], rng);
         const val = teamBuff === 'shield' ? randInt(15, 25, rng) : 0;
-        activeEffects.push({ id: teamBuff, value: val, duration: dur, chance: 100, target: 'all_allies' });
-      } else {
-        // Enemy debuff
+        activeEffects.push(makeEff(teamBuff, { ch: 100, val, tgt: 'all_allies' }));
+      } else if (p < 0.30) {
+        // 2: Provoke/atk_break
         const debuff = pick(['provoke', 'atk_break'] as EffectId[], rng);
-        const dur = randInt(scaling.duration[0], scaling.duration[1], rng);
-        activeEffects.push({ id: debuff, value: 0, duration: dur, chance: randInt(scaling.activeChance[0], scaling.activeChance[1], rng) });
+        activeEffects.push(makeEff(debuff));
+      } else if (p < 0.45) {
+        // 3: Shield + counter + threat on self
+        activeEffects.push(makeEff('shield', { ch: 100, val: randInt(15, 20, rng), tgt: 'self' }));
+        activeEffects.push(makeEff('counter', { ch: 100, tgt: 'self' }));
+        activeEffects.push(makeEff('threat', { ch: 100, tgt: 'self' }));
+      } else if (p < 0.60) {
+        // 4: Strip + provoke
+        activeEffects.push(makeEff('strip', { ch: 100, val: randInt(1, 2, rng) }));
+        activeEffects.push(makeEff('provoke'));
+      } else if (p < 0.75) {
+        // 5: Team def_buff + endure self
+        activeEffects.push(makeEff('def_buff', { ch: 100, tgt: 'all_allies' }));
+        activeEffects.push(makeEff('endure', { ch: 100, tgt: 'self' }));
+      } else if (p < 0.88) {
+        // 6: Soul_protect all + team shield
+        activeEffects.push(makeEff('soul_protect', { ch: 100, tgt: 'all_allies' }));
+        activeEffects.push(makeEff('shield', { ch: 100, val: randInt(10, 20, rng), tgt: 'all_allies' }));
+      } else {
+        // 7: Damage + mark + def_break
+        activeEffects.push(makeEff('mark'));
+        activeEffects.push(makeEff('def_break'));
       }
       break;
     }
     case 'support': {
       activeMult = Math.round((mult * 0.6) * 10) / 10;
       activeTarget = 'all_allies';
-      // Heal + buff or cleanse
-      activeEffects.push({ id: 'heal', value: randInt(15, 25, rng), duration: 0, chance: 100, target: 'all_allies' });
-      const supportExtra = pick(['cleanse', 'spd_buff', 'recovery', 'immunity'] as EffectId[], rng);
-      if (supportExtra === 'cleanse') {
-        activeEffects.push({ id: 'cleanse', value: randInt(1, 2, rng), duration: 0, chance: 100, target: 'all_allies' });
+      const p = rng();
+      if (p < 0.15) {
+        // 1: Heal + cleanse/buff
+        activeEffects.push(makeEff('heal', { ch: 100, val: randInt(15, 25, rng), tgt: 'all_allies' }));
+        const extra = pick(['cleanse', 'spd_buff', 'recovery', 'immunity'] as EffectId[], rng);
+        if (extra === 'cleanse') {
+          activeEffects.push(makeEff('cleanse', { ch: 100, val: randInt(1, 2, rng), tgt: 'all_allies' }));
+        } else {
+          activeEffects.push(makeEff(extra, { ch: 100, tgt: 'all_allies' }));
+        }
+      } else if (p < 0.30) {
+        // 2: Heal + immunity all
+        activeEffects.push(makeEff('heal', { ch: 100, val: randInt(15, 25, rng), tgt: 'all_allies' }));
+        activeEffects.push(makeEff('immunity', { ch: 100, tgt: 'all_allies' }));
+      } else if (p < 0.42) {
+        // 3: Revive + heal
+        activeEffects.push(makeEff('revive', { ch: 100, val: randInt(25, 35, rng), tgt: 'all_allies' }));
+        activeEffects.push(makeEff('heal', { ch: 100, val: randInt(15, 20, rng), tgt: 'all_allies' }));
+      } else if (p < 0.57) {
+        // 4: Cleanse all + atb_boost all
+        activeEffects.push(makeEff('cleanse', { ch: 100, val: 2, tgt: 'all_allies' }));
+        activeEffects.push(makeEff('atb_boost', { ch: 100, val: randInt(20, 30, rng), tgt: 'all_allies' }));
+      } else if (p < 0.72) {
+        // 5: Soul_protect all + recovery
+        activeEffects.push(makeEff('soul_protect', { ch: 100, tgt: 'all_allies' }));
+        activeEffects.push(makeEff('recovery', { ch: 100, tgt: 'all_allies' }));
+      } else if (p < 0.85) {
+        // 6: Balance_hp + extend_buffs + heal
+        activeEffects.push(makeEff('balance_hp', { ch: 100, val: 0, tgt: 'all_allies' }));
+        activeEffects.push(makeEff('extend_buffs', { ch: 100, val: 1, tgt: 'all_allies' }));
+        activeEffects.push(makeEff('heal', { ch: 100, val: randInt(10, 15, rng), tgt: 'all_allies' }));
       } else {
-        const dur = randInt(scaling.duration[0], scaling.duration[1], rng);
-        activeEffects.push({ id: supportExtra, value: 0, duration: dur, chance: 100, target: 'all_allies' });
+        // 7: Shorten_debuffs all + heal + res_buff
+        activeEffects.push(makeEff('shorten_debuffs', { ch: 100, val: 1, tgt: 'all_allies' }));
+        activeEffects.push(makeEff('heal', { ch: 100, val: randInt(15, 20, rng), tgt: 'all_allies' }));
+        activeEffects.push(makeEff('res_buff', { ch: 100, tgt: 'all_allies' }));
       }
       break;
     }
     case 'debuffer': {
       activeTarget = isAoe ? 'all_enemies' : 'single_enemy';
       activeMult = Math.round((mult * 0.8) * 10) / 10;
-      // 2 debuffs
-      const debuff1 = pick(pool.filter(e => isOffensiveDebuff(e)) || [pool[0]], rng) || pool[0];
-      const ch1 = randInt(scaling.activeChance[0], scaling.activeChance[1], rng);
-      const dur1 = INSTANT_EFFECTS.has(debuff1) ? 0 : randInt(scaling.duration[0], scaling.duration[1], rng);
-      const val1 = INSTANT_EFFECTS.has(debuff1) ? instantValue(debuff1, rng) : 0;
-      activeEffects.push({ id: debuff1, value: val1, duration: dur1, chance: ch1 });
-
-      const remaining = pool2.filter(e => isOffensiveDebuff(e) && e !== debuff1);
-      const debuff2 = remaining.length > 0 ? pick(remaining, rng) : pick(pool2, rng);
-      const ch2 = Math.max(15, randInt(scaling.activeChance[0] - 10, scaling.activeChance[1] - 10, rng));
-      const dur2 = INSTANT_EFFECTS.has(debuff2) ? 0 : randInt(scaling.duration[0], scaling.duration[1], rng);
-      const val2 = INSTANT_EFFECTS.has(debuff2) ? instantValue(debuff2, rng) : 0;
-      activeEffects.push({ id: debuff2, value: val2, duration: dur2, chance: ch2 });
+      const p = rng();
+      if (p < 0.15) {
+        // 1: 2 debuffs from pool
+        const d1 = pickDebuff(pool);
+        activeEffects.push(makeEff(d1));
+        const remaining = pool2.filter(e => isOffensiveDebuff(e) && e !== d1);
+        const d2 = remaining.length > 0 ? pick(remaining, rng) : pick(pool2, rng);
+        activeEffects.push(makeEff(d2, { ch: Math.max(15, aCh() - 10) }));
+      } else if (p < 0.30) {
+        // 2: Strip + bomb
+        activeEffects.push(makeEff('strip', { ch: 100, val: randInt(1, 2, rng) }));
+        activeEffects.push(makeEff('bomb'));
+      } else if (p < 0.42) {
+        // 3: Seal + silence
+        activeEffects.push(makeEff('seal'));
+        activeEffects.push(makeEff('silence'));
+      } else if (p < 0.57) {
+        // 4: acc_break + res_break
+        activeEffects.push(makeEff('acc_break'));
+        activeEffects.push(makeEff('res_break'));
+      } else if (p < 0.72) {
+        // 5: Detonate + bomb
+        activeEffects.push(makeEff('detonate', { ch: 100, val: 0 }));
+        activeEffects.push(makeEff('bomb'));
+      } else if (p < 0.85) {
+        // 6: Transfer_debuff + bleed + poison
+        activeEffects.push(makeEff('transfer_debuff', { ch: 100, val: 0, tgt: 'single_enemy' }));
+        activeEffects.push(makeEff('bleed'));
+        activeEffects.push(makeEff('poison'));
+      } else {
+        // 7: Mark + expose + def_break
+        activeEffects.push(makeEff('mark'));
+        activeEffects.push(makeEff('expose'));
+        activeEffects.push(makeEff('def_break'));
+      }
       break;
     }
     case 'speedster': {
       activeTarget = isAoe ? 'all_enemies' : 'single_enemy';
-      // ATB reduce + self atb boost
-      const reduceChance = randInt(scaling.activeChance[0], scaling.activeChance[1], rng);
-      activeEffects.push({ id: 'atb_reduce', value: randInt(25, 50, rng), duration: 0, chance: reduceChance });
-      activeEffects.push({ id: 'atb_boost', value: randInt(15, 30, rng), duration: 0, chance: 100, target: 'self' });
+      const p = rng();
+      if (p < 0.15) {
+        // 1: ATB reduce + self ATB boost
+        activeEffects.push(makeEff('atb_reduce', { val: randInt(25, 50, rng) }));
+        activeEffects.push(makeEff('atb_boost', { ch: 100, val: randInt(15, 30, rng), tgt: 'self' }));
+      } else if (p < 0.30) {
+        // 2: Absorb_atb + spd_buff self
+        activeEffects.push(makeEff('absorb_atb', { val: randInt(20, 35, rng) }));
+        activeEffects.push(makeEff('spd_buff', { ch: 100, tgt: 'self' }));
+      } else if (p < 0.45) {
+        // 3: ATB reduce all + cd_increase
+        activeTarget = 'all_enemies';
+        activeEffects.push(makeEff('atb_reduce', { val: randInt(20, 40, rng) }));
+        activeEffects.push(makeEff('cd_increase', { val: 1 }));
+      } else if (p < 0.60) {
+        // 4: Strip + atb_reduce
+        activeEffects.push(makeEff('strip', { ch: 100, val: randInt(1, 2, rng) }));
+        activeEffects.push(makeEff('atb_reduce', { val: randInt(25, 50, rng) }));
+      } else if (p < 0.72) {
+        // 5: Spd_buff all + atb_boost all
+        activeTarget = 'all_allies';
+        activeMult = Math.round((mult * 0.6) * 10) / 10;
+        activeEffects.push(makeEff('spd_buff', { ch: 100, tgt: 'all_allies' }));
+        activeEffects.push(makeEff('atb_boost', { ch: 100, val: randInt(15, 25, rng), tgt: 'all_allies' }));
+      } else if (p < 0.85) {
+        // 6: Steal_buff + absorb_atb + damage
+        activeEffects.push(makeEff('steal_buff', { val: 1 }));
+        activeEffects.push(makeEff('absorb_atb', { val: randInt(15, 25, rng) }));
+      } else {
+        // 7: Skill_refresh self + atb_boost self + damage
+        activeEffects.push(makeEff('skill_refresh', { ch: 100, tgt: 'self' }));
+        activeEffects.push(makeEff('atb_boost', { ch: 100, val: randInt(20, 30, rng), tgt: 'self' }));
+      }
       break;
     }
   }
@@ -764,96 +925,377 @@ function generateSkillsForPokemon(
   let passiveEffects: SkillEffect[] = [];
   let passiveTarget: SkillTarget = 'self';
   let passiveCondition: { hpBelow?: number } | undefined;
+  const pCh = () => randInt(scaling.passiveChance[0], scaling.passiveChance[1], rng);
+  const pDur = () => randInt(1, 2, rng);
 
   switch (role) {
     case 'attacker': {
       const r = rng();
-      if (r < 0.4) {
-        // on_attack: apply type debuff
+      if (r < 0.07) {
+        // 1: on_attack: type debuff from pool
         passiveTrigger = 'on_attack';
-        const debuff = pick(pool.filter(e => isOffensiveDebuff(e)) || [pool[0]], rng) || pool[0];
-        const ch = randInt(scaling.passiveChance[0], scaling.passiveChance[1], rng);
-        const dur = INSTANT_EFFECTS.has(debuff) ? 0 : randInt(1, 2, rng);
+        const debuff = pickDebuff(pool);
+        const dur = INSTANT_EFFECTS.has(debuff) ? 0 : pDur();
         const val = INSTANT_EFFECTS.has(debuff) ? instantValue(debuff, rng) : 0;
-        passiveEffects.push({ id: debuff, value: val, duration: dur, chance: ch });
-      } else if (r < 0.7) {
-        // on_crit: atb_boost self
+        passiveEffects.push({ id: debuff, value: val, duration: dur, chance: pCh() });
+      } else if (r < 0.14) {
+        // 2: on_crit: atb_boost self
         passiveTrigger = 'on_crit';
         passiveEffects.push({ id: 'atb_boost', value: 20, duration: 0, chance: 100, target: 'self' });
-      } else {
-        // on_kill: atk_buff self
+      } else if (r < 0.21) {
+        // 3: on_kill: atk_buff self
         passiveTrigger = 'on_kill';
         passiveEffects.push({ id: 'atk_buff', value: 0, duration: 2, chance: 100, target: 'self' });
+      } else if (r < 0.28) {
+        // 4: on_crit: crit_dmg_buff self
+        passiveTrigger = 'on_crit';
+        passiveEffects.push({ id: 'crit_dmg_buff', value: 0, duration: 2, chance: 100, target: 'self' });
+      } else if (r < 0.35) {
+        // 5: on_attack: absorb_atb
+        passiveTrigger = 'on_attack';
+        passiveEffects.push({ id: 'absorb_atb', value: 10, duration: 0, chance: pCh() });
+      } else if (r < 0.42) {
+        // 6: on_kill: atb_boost + cd_reduce (snowball)
+        passiveTrigger = 'on_kill';
+        passiveEffects.push({ id: 'atb_boost', value: 30, duration: 0, chance: 100, target: 'self' });
+        passiveEffects.push({ id: 'cd_reduce', value: 1, duration: 0, chance: 100, target: 'self' });
+      } else if (r < 0.49) {
+        // 7: hp_threshold: vampire self
+        passiveTrigger = 'hp_threshold';
+        passiveCondition = { hpBelow: 50 };
+        passiveEffects.push({ id: 'vampire', value: 0, duration: 2, chance: 100, target: 'self' });
+      } else if (r < 0.56) {
+        // 8: on_attack: brand
+        passiveTrigger = 'on_attack';
+        passiveEffects.push({ id: 'brand', value: 0, duration: 2, chance: pCh() });
+      } else if (r < 0.63) {
+        // 9: battle_start: crit_rate_buff self
+        passiveTrigger = 'battle_start';
+        passiveEffects.push({ id: 'crit_rate_buff', value: 0, duration: 3, chance: 100, target: 'self' });
+      } else if (r < 0.70) {
+        // 10: on_attack: detonate
+        passiveTrigger = 'on_attack';
+        passiveEffects.push({ id: 'detonate', value: 0, duration: 0, chance: 20 });
+      } else if (r < 0.77) {
+        // 11: always: amplify self
+        passiveTrigger = 'always';
+        passiveEffects.push({ id: 'amplify', value: 0, duration: 999, chance: 100, target: 'self' });
+      } else if (r < 0.84) {
+        // 12: on_crit: atk_buff + spd_buff (crit burst)
+        passiveTrigger = 'on_crit';
+        passiveEffects.push({ id: 'atk_buff', value: 0, duration: 1, chance: 100, target: 'self' });
+        passiveEffects.push({ id: 'spd_buff', value: 0, duration: 1, chance: 100, target: 'self' });
+      } else if (r < 0.91) {
+        // 13: on_kill: heal self + cleanse (sustain)
+        passiveTrigger = 'on_kill';
+        passiveEffects.push({ id: 'heal', value: 15, duration: 0, chance: 100, target: 'self' });
+        passiveEffects.push({ id: 'cleanse', value: 1, duration: 0, chance: 100, target: 'self' });
+      } else if (r < 0.96) {
+        // 14: hp_threshold: amplify + crit_dmg_buff (berserk)
+        passiveTrigger = 'hp_threshold';
+        passiveCondition = { hpBelow: 30 };
+        passiveEffects.push({ id: 'amplify', value: 0, duration: 2, chance: 100, target: 'self' });
+        passiveEffects.push({ id: 'crit_dmg_buff', value: 0, duration: 2, chance: 100, target: 'self' });
+      } else {
+        // 15: on_attack: expose target
+        passiveTrigger = 'on_attack';
+        passiveEffects.push({ id: 'expose', value: 0, duration: 2, chance: pCh() });
       }
       break;
     }
     case 'tank': {
       const r = rng();
-      if (r < 0.35) {
-        // on_hit: counter
+      if (r < 0.07) {
+        // 1: on_hit: counter
         passiveTrigger = 'on_hit';
-        const ch = randInt(scaling.passiveChance[0], scaling.passiveChance[1], rng);
-        passiveEffects.push({ id: 'counter', value: 0, duration: 1, chance: ch, target: 'self' });
-      } else if (r < 0.65) {
-        // hp_threshold: endure
+        passiveEffects.push({ id: 'counter', value: 0, duration: 1, chance: pCh(), target: 'self' });
+      } else if (r < 0.14) {
+        // 2: hp_threshold: endure
         passiveTrigger = 'hp_threshold';
         passiveCondition = { hpBelow: 33 };
         passiveEffects.push({ id: 'endure', value: 0, duration: 1, chance: 100, target: 'self' });
-      } else {
-        // battle_start: def_buff all_allies
+      } else if (r < 0.21) {
+        // 3: battle_start: def_buff all_allies
         passiveTrigger = 'battle_start';
         passiveTarget = 'all_allies';
         passiveEffects.push({ id: 'def_buff', value: 0, duration: 2, chance: 100, target: 'all_allies' });
+      } else if (r < 0.28) {
+        // 4: on_hit: reflect self
+        passiveTrigger = 'on_hit';
+        passiveEffects.push({ id: 'reflect', value: 0, duration: 1, chance: pCh(), target: 'self' });
+      } else if (r < 0.35) {
+        // 5: battle_start: threat + shield (multi)
+        passiveTrigger = 'battle_start';
+        passiveEffects.push({ id: 'threat', value: 0, duration: 3, chance: 100, target: 'self' });
+        passiveEffects.push({ id: 'shield', value: randInt(15, 25, rng), duration: 3, chance: 100, target: 'self' });
+      } else if (r < 0.42) {
+        // 6: on_hit: provoke attacker
+        passiveTrigger = 'on_hit';
+        passiveEffects.push({ id: 'provoke', value: 0, duration: 1, chance: 25 });
+      } else if (r < 0.49) {
+        // 7: hp_threshold: shield + def_buff
+        passiveTrigger = 'hp_threshold';
+        passiveCondition = { hpBelow: 50 };
+        passiveEffects.push({ id: 'shield', value: randInt(15, 25, rng), duration: 2, chance: 100, target: 'self' });
+        passiveEffects.push({ id: 'def_buff', value: 0, duration: 2, chance: 100, target: 'self' });
+      } else if (r < 0.56) {
+        // 8: turn_start: recovery self
+        passiveTrigger = 'turn_start';
+        passiveEffects.push({ id: 'recovery', value: 0, duration: 1, chance: 100, target: 'self' });
+      } else if (r < 0.63) {
+        // 9: on_ally_death: def_buff + endure (multi)
+        passiveTrigger = 'on_ally_death';
+        passiveEffects.push({ id: 'def_buff', value: 0, duration: 2, chance: 100, target: 'self' });
+        passiveEffects.push({ id: 'endure', value: 0, duration: 1, chance: 100, target: 'self' });
+      } else if (r < 0.70) {
+        // 10: always: res_buff self
+        passiveTrigger = 'always';
+        passiveEffects.push({ id: 'res_buff', value: 0, duration: 999, chance: 100, target: 'self' });
+      } else if (r < 0.77) {
+        // 11: on_hit: nullify self
+        passiveTrigger = 'on_hit';
+        passiveEffects.push({ id: 'nullify', value: 0, duration: 2, chance: pCh(), target: 'self' });
+      } else if (r < 0.84) {
+        // 12: battle_start: soul_protect all_allies
+        passiveTrigger = 'battle_start';
+        passiveTarget = 'all_allies';
+        passiveEffects.push({ id: 'soul_protect', value: 0, duration: 999, chance: 100, target: 'all_allies' });
+      } else if (r < 0.90) {
+        // 13: hp_threshold: invincibility + recovery
+        passiveTrigger = 'hp_threshold';
+        passiveCondition = { hpBelow: 25 };
+        passiveEffects.push({ id: 'invincibility', value: 0, duration: 1, chance: 100, target: 'self' });
+        passiveEffects.push({ id: 'recovery', value: 0, duration: 2, chance: 100, target: 'self' });
+      } else if (r < 0.95) {
+        // 14: on_hit: atb_reduce attacker
+        passiveTrigger = 'on_hit';
+        passiveEffects.push({ id: 'atb_reduce', value: 15, duration: 0, chance: pCh() });
+      } else {
+        // 15: turn_start: shield all_allies
+        passiveTrigger = 'turn_start';
+        passiveTarget = 'all_allies';
+        passiveEffects.push({ id: 'shield', value: randInt(5, 10, rng), duration: 1, chance: 100, target: 'all_allies' });
       }
       break;
     }
     case 'support': {
       const r = rng();
-      if (r < 0.35) {
-        // turn_start: heal all allies
+      if (r < 0.07) {
+        // 1: turn_start: heal all_allies
         passiveTrigger = 'turn_start';
         passiveTarget = 'all_allies';
         passiveEffects.push({ id: 'heal', value: 5, duration: 0, chance: 100, target: 'all_allies' });
-      } else if (r < 0.65) {
-        // battle_start: spd_buff all_allies
+      } else if (r < 0.14) {
+        // 2: battle_start: spd_buff all_allies
         passiveTrigger = 'battle_start';
         passiveTarget = 'all_allies';
         passiveEffects.push({ id: 'spd_buff', value: 0, duration: 2, chance: 100, target: 'all_allies' });
-      } else {
-        // on_ally_death: heal self
+      } else if (r < 0.21) {
+        // 3: on_ally_death: heal self
         passiveTrigger = 'on_ally_death';
         passiveEffects.push({ id: 'heal', value: 15, duration: 0, chance: 100, target: 'self' });
+      } else if (r < 0.28) {
+        // 4: turn_start: cleanse 1 from all_allies
+        passiveTrigger = 'turn_start';
+        passiveTarget = 'all_allies';
+        passiveEffects.push({ id: 'cleanse', value: 1, duration: 0, chance: 100, target: 'all_allies' });
+      } else if (r < 0.35) {
+        // 5: battle_start: immunity all_allies
+        passiveTrigger = 'battle_start';
+        passiveTarget = 'all_allies';
+        passiveEffects.push({ id: 'immunity', value: 0, duration: 1, chance: 100, target: 'all_allies' });
+      } else if (r < 0.42) {
+        // 6: on_ally_death: revive ally
+        passiveTrigger = 'on_ally_death';
+        passiveTarget = 'all_allies';
+        passiveEffects.push({ id: 'revive', value: 20, duration: 0, chance: 100, target: 'all_allies' });
+      } else if (r < 0.49) {
+        // 7: hp_threshold: soul_protect self
+        passiveTrigger = 'hp_threshold';
+        passiveCondition = { hpBelow: 40 };
+        passiveEffects.push({ id: 'soul_protect', value: 0, duration: 999, chance: 100, target: 'self' });
+      } else if (r < 0.56) {
+        // 8: turn_start: res_buff all_allies
+        passiveTrigger = 'turn_start';
+        passiveTarget = 'all_allies';
+        passiveEffects.push({ id: 'res_buff', value: 0, duration: 1, chance: 100, target: 'all_allies' });
+      } else if (r < 0.63) {
+        // 9: battle_start: recovery all_allies
+        passiveTrigger = 'battle_start';
+        passiveTarget = 'all_allies';
+        passiveEffects.push({ id: 'recovery', value: 0, duration: 2, chance: 100, target: 'all_allies' });
+      } else if (r < 0.70) {
+        // 10: on_hit: heal all_allies
+        passiveTrigger = 'on_hit';
+        passiveTarget = 'all_allies';
+        passiveEffects.push({ id: 'heal', value: 3, duration: 0, chance: 100, target: 'all_allies' });
+      } else if (r < 0.77) {
+        // 11: turn_start: extend_buffs all_allies
+        passiveTrigger = 'turn_start';
+        passiveTarget = 'all_allies';
+        passiveEffects.push({ id: 'extend_buffs', value: 1, duration: 0, chance: 100, target: 'all_allies' });
+      } else if (r < 0.84) {
+        // 12: on_ally_death: atb_boost all_allies
+        passiveTrigger = 'on_ally_death';
+        passiveTarget = 'all_allies';
+        passiveEffects.push({ id: 'atb_boost', value: 15, duration: 0, chance: 100, target: 'all_allies' });
+      } else if (r < 0.90) {
+        // 13: battle_start: nullify all_allies
+        passiveTrigger = 'battle_start';
+        passiveTarget = 'all_allies';
+        passiveEffects.push({ id: 'nullify', value: 0, duration: 999, chance: 100, target: 'all_allies' });
+      } else if (r < 0.95) {
+        // 14: turn_start: shorten_debuffs all_allies
+        passiveTrigger = 'turn_start';
+        passiveTarget = 'all_allies';
+        passiveEffects.push({ id: 'shorten_debuffs', value: 1, duration: 0, chance: 100, target: 'all_allies' });
+      } else {
+        // 15: on_hit: balance_hp all_allies
+        passiveTrigger = 'on_hit';
+        passiveTarget = 'all_allies';
+        passiveEffects.push({ id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' });
       }
       break;
     }
     case 'debuffer': {
       const r = rng();
-      if (r < 0.5) {
-        // on_attack: extra debuff from type pool
+      if (r < 0.07) {
+        // 1: on_attack: type debuff from pool
         passiveTrigger = 'on_attack';
-        const debuff = pick(pool.filter(e => isOffensiveDebuff(e)) || [pool[0]], rng) || pool[0];
-        const ch = randInt(15, 25, rng);
-        const dur = INSTANT_EFFECTS.has(debuff) ? 0 : randInt(1, 2, rng);
+        const debuff = pickDebuff(pool);
+        const dur = INSTANT_EFFECTS.has(debuff) ? 0 : pDur();
         const val = INSTANT_EFFECTS.has(debuff) ? instantValue(debuff, rng) : 0;
-        passiveEffects.push({ id: debuff, value: val, duration: dur, chance: ch });
-      } else {
-        // battle_start: atk_break all enemies
+        passiveEffects.push({ id: debuff, value: val, duration: dur, chance: pCh() });
+      } else if (r < 0.14) {
+        // 2: battle_start: atk_break all enemies
         passiveTrigger = 'battle_start';
         passiveTarget = 'all_enemies';
         passiveEffects.push({ id: 'atk_break', value: 0, duration: 2, chance: 100, target: 'all_enemies' });
+      } else if (r < 0.21) {
+        // 3: on_attack: acc_break target
+        passiveTrigger = 'on_attack';
+        passiveEffects.push({ id: 'acc_break', value: 0, duration: 2, chance: pCh() });
+      } else if (r < 0.28) {
+        // 4: on_attack: res_break target
+        passiveTrigger = 'on_attack';
+        passiveEffects.push({ id: 'res_break', value: 0, duration: 2, chance: pCh() });
+      } else if (r < 0.35) {
+        // 5: battle_start: bomb all enemies
+        passiveTrigger = 'battle_start';
+        passiveTarget = 'all_enemies';
+        passiveEffects.push({ id: 'bomb', value: 0, duration: 3, chance: 100, target: 'all_enemies' });
+      } else if (r < 0.42) {
+        // 6: on_attack: seal target
+        passiveTrigger = 'on_attack';
+        passiveEffects.push({ id: 'seal', value: 0, duration: 2, chance: 20 });
+      } else if (r < 0.49) {
+        // 7: turn_start: strip 1 from random enemy
+        passiveTrigger = 'turn_start';
+        passiveTarget = 'all_enemies';
+        passiveEffects.push({ id: 'strip', value: 1, duration: 0, chance: 100, target: 'all_enemies' });
+      } else if (r < 0.56) {
+        // 8: on_crit: cd_increase target
+        passiveTrigger = 'on_crit';
+        passiveEffects.push({ id: 'cd_increase', value: 1, duration: 0, chance: 100 });
+      } else if (r < 0.63) {
+        // 9: on_attack: detonate target
+        passiveTrigger = 'on_attack';
+        passiveEffects.push({ id: 'detonate', value: 0, duration: 0, chance: 15 });
+      } else if (r < 0.70) {
+        // 10: on_hit: glancing on attacker
+        passiveTrigger = 'on_hit';
+        passiveEffects.push({ id: 'glancing', value: 0, duration: 2, chance: 30 });
+      } else if (r < 0.77) {
+        // 11: on_attack: bleed target
+        passiveTrigger = 'on_attack';
+        passiveEffects.push({ id: 'bleed', value: 0, duration: 2, chance: pCh() });
+      } else if (r < 0.84) {
+        // 12: on_attack: mark target
+        passiveTrigger = 'on_attack';
+        passiveEffects.push({ id: 'mark', value: 0, duration: 2, chance: pCh() });
+      } else if (r < 0.90) {
+        // 13: battle_start: expose all enemies
+        passiveTrigger = 'battle_start';
+        passiveTarget = 'all_enemies';
+        passiveEffects.push({ id: 'expose', value: 0, duration: 2, chance: 100, target: 'all_enemies' });
+      } else if (r < 0.95) {
+        // 14: on_attack: transfer_debuff
+        passiveTrigger = 'on_attack';
+        passiveEffects.push({ id: 'transfer_debuff', value: 0, duration: 0, chance: 25 });
+      } else {
+        // 15: on_attack: anti_heal target
+        passiveTrigger = 'on_attack';
+        passiveEffects.push({ id: 'anti_heal', value: 0, duration: 2, chance: pCh() });
       }
       break;
     }
     case 'speedster': {
       const r = rng();
-      if (r < 0.5) {
-        // battle_start: atb_boost self
+      if (r < 0.07) {
+        // 1: battle_start: atb_boost self
         passiveTrigger = 'battle_start';
         passiveEffects.push({ id: 'atb_boost', value: 20, duration: 0, chance: 100, target: 'self' });
-      } else {
-        // on_attack: atb_boost self
+      } else if (r < 0.14) {
+        // 2: on_attack: atb_boost self
         passiveTrigger = 'on_attack';
-        passiveEffects.push({ id: 'atb_boost', value: 15, duration: 0, chance: randInt(10, 20, rng), target: 'self' });
+        passiveEffects.push({ id: 'atb_boost', value: 15, duration: 0, chance: pCh(), target: 'self' });
+      } else if (r < 0.21) {
+        // 3: on_kill: atb_boost self 50%
+        passiveTrigger = 'on_kill';
+        passiveEffects.push({ id: 'atb_boost', value: 50, duration: 0, chance: 100, target: 'self' });
+      } else if (r < 0.28) {
+        // 4: on_attack: absorb_atb
+        passiveTrigger = 'on_attack';
+        passiveEffects.push({ id: 'absorb_atb', value: 15, duration: 0, chance: pCh() });
+      } else if (r < 0.35) {
+        // 5: turn_start: spd_buff self
+        passiveTrigger = 'turn_start';
+        passiveEffects.push({ id: 'spd_buff', value: 0, duration: 1, chance: 100, target: 'self' });
+      } else if (r < 0.42) {
+        // 6: battle_start: spd_buff all_allies
+        passiveTrigger = 'battle_start';
+        passiveTarget = 'all_allies';
+        passiveEffects.push({ id: 'spd_buff', value: 0, duration: 2, chance: 100, target: 'all_allies' });
+      } else if (r < 0.49) {
+        // 7: on_crit: atb_boost + spd_buff (multi)
+        passiveTrigger = 'on_crit';
+        passiveEffects.push({ id: 'atb_boost', value: 25, duration: 0, chance: 100, target: 'self' });
+        passiveEffects.push({ id: 'spd_buff', value: 0, duration: 1, chance: 100, target: 'self' });
+      } else if (r < 0.56) {
+        // 8: on_attack: atb_reduce target
+        passiveTrigger = 'on_attack';
+        passiveEffects.push({ id: 'atb_reduce', value: 10, duration: 0, chance: pCh() });
+      } else if (r < 0.63) {
+        // 9: always: acc_buff self
+        passiveTrigger = 'always';
+        passiveEffects.push({ id: 'acc_buff', value: 0, duration: 999, chance: 100, target: 'self' });
+      } else if (r < 0.70) {
+        // 10: hp_threshold: atb_boost + spd_buff
+        passiveTrigger = 'hp_threshold';
+        passiveCondition = { hpBelow: 50 };
+        passiveEffects.push({ id: 'atb_boost', value: 30, duration: 0, chance: 100, target: 'self' });
+        passiveEffects.push({ id: 'spd_buff', value: 0, duration: 2, chance: 100, target: 'self' });
+      } else if (r < 0.77) {
+        // 11: on_attack: steal_buff
+        passiveTrigger = 'on_attack';
+        passiveEffects.push({ id: 'steal_buff', value: 1, duration: 0, chance: 15 });
+      } else if (r < 0.84) {
+        // 12: on_kill: skill_refresh self
+        passiveTrigger = 'on_kill';
+        passiveEffects.push({ id: 'skill_refresh', value: 0, duration: 2, chance: 100, target: 'self' });
+      } else if (r < 0.90) {
+        // 13: battle_start: evasion self
+        passiveTrigger = 'battle_start';
+        passiveEffects.push({ id: 'evasion', value: 0, duration: 2, chance: 100, target: 'self' });
+      } else if (r < 0.95) {
+        // 14: on_crit: cd_reduce self
+        passiveTrigger = 'on_crit';
+        passiveEffects.push({ id: 'cd_reduce', value: 1, duration: 0, chance: 25, target: 'self' });
+      } else {
+        // 15: turn_start: atb_boost random ally
+        passiveTrigger = 'turn_start';
+        passiveTarget = 'all_allies';
+        passiveEffects.push({ id: 'atb_boost', value: 10, duration: 0, chance: 100, target: 'all_allies' });
       }
       break;
     }

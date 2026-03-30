@@ -63,7 +63,16 @@ export type BuffEffectId =
   | 'reflect'          // Returns 30% damage to attacker
   | 'counter'          // Auto basic-attack when hit
   | 'recovery'         // Heals 15% max HP per turn
-  | 'vampire';         // Heals 20% of damage dealt
+  | 'vampire'          // Heals 20% of damage dealt
+  | 'soul_protect'     // Revive with 30% HP on death (consumed)
+  | 'acc_buff'         // +50% Accuracy
+  | 'res_buff'         // +50% Resistance
+  | 'crit_dmg_buff'    // +30% Crit Damage
+  | 'threat'           // Enemies prioritize targeting this mon
+  | 'evasion'          // 50% chance to dodge attacks
+  | 'amplify'          // Next attack +50% damage (consumed)
+  | 'nullify'          // Blocks next debuff (consumed)
+  | 'skill_refresh';   // Next skill has no cooldown (consumed)
 
 // SW Debuffs
 export type DebuffEffectId =
@@ -76,7 +85,16 @@ export type DebuffEffectId =
   | 'silence'          // Active skills locked, basic only
   | 'oblivion'         // Passive skills disabled
   | 'buff_block'       // Cannot receive buffs
-  | 'provoke';         // Must attack provoker with basic
+  | 'provoke'          // Must attack provoker with basic
+  | 'bomb'             // Detonates after N turns for 25% max HP (stackable)
+  | 'acc_break'        // -50% Accuracy
+  | 'res_break'        // -50% Resistance
+  | 'seal'             // Basic attack cannot apply effects
+  | 'bleed'            // 4% max HP DoT per stack (stackable)
+  | 'expose'           // +15% crit rate when attacked
+  | 'anti_heal'        // Healing received reduced by 50%
+  | 'mark'             // All attackers deal +15% damage
+  | 'petrify';         // Cannot act (stun) + DEF +100%
 
 // Pokemon Status Effects (all debuffs)
 export type StatusEffectId =
@@ -96,7 +114,15 @@ export type InstantEffectId =
   | 'cd_reduce'        // Reduce cooldowns by value turns
   | 'cd_increase'      // Increase enemy cooldowns by value turns
   | 'strip'            // Remove value buffs from target
-  | 'cleanse';         // Remove value debuffs from ally
+  | 'cleanse'          // Remove value debuffs from ally
+  | 'revive'           // Revive dead ally with value% HP
+  | 'steal_buff'       // Remove 1 buff from enemy, give to self
+  | 'absorb_atb'       // Steal value% ATB from target
+  | 'detonate'         // Trigger all DoT on target instantly
+  | 'transfer_debuff'  // Move own debuffs to target
+  | 'extend_buffs'     // Extend buff durations by 1 turn
+  | 'shorten_debuffs'  // Reduce debuff durations by 1 turn
+  | 'balance_hp';      // Average HP% across all allies
 
 export type EffectId = BuffEffectId | DebuffEffectId | StatusEffectId | InstantEffectId;
 
