@@ -30,7 +30,7 @@ export function AutoBattleFloatingIcon() {
   const location = useLocation();
 
   if (status === 'idle' || !config) return null;
-  if (location.pathname.startsWith('/battle/')) return null;
+  if (location.pathname !== '/') return null;
 
   const totalRuns = config.totalRuns;
   const isRunning = status === 'running';

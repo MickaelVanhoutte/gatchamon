@@ -111,3 +111,20 @@
   padding: 0 3px;
   line-height: 1;
 }
+
+.toolbar-repeat-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #f59e0b;
+  border: 2px solid #0f766e;
+  animation: repeat-dot-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes repeat-dot-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

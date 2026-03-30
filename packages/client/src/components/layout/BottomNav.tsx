@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useGameStore } from '../../stores/gameStore';
 import { useTutorialStore } from '../../stores/tutorialStore';
+import { useRepeatBattleStore } from '../../stores/repeatBattleStore';
 import { GameIcon } from '../icons';
 import './BottomNav.css';
 
@@ -26,6 +27,8 @@ export function BottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
   const unclaimedRewardCount = useGameStore(s => s.unclaimedRewardCount);
+  const repeatStatus = useRepeatBattleStore(s => s.status);
+  const repeatDone = repeatStatus !== 'idle' && repeatStatus !== 'running';
   const tutorialStep = useTutorialStore(s => s.step);
   const advanceStep = useTutorialStore(s => s.advanceStep);
   const tutorialActive = tutorialStep > 0 && tutorialStep < 18;
@@ -63,6 +66,7 @@ export function BottomNav() {
         }}
       >
         <GameIcon id="collection" size={20} />
+        {repeatDone && <span className="toolbar-repeat-dot" />}
       </button>
     );
   }
@@ -97,6 +101,9 @@ export function BottomNav() {
             <span className="toolbar-icon"><GameIcon id={tab.icon} size={20} /></span>
             {tab.badge && unclaimedRewardCount > 0 && (
               <span className="toolbar-badge">{unclaimedRewardCount}</span>
+            )}
+            {tab.path === '/' && repeatDone && (
+              <span className="toolbar-repeat-dot" />
             )}
           </button>
         );
