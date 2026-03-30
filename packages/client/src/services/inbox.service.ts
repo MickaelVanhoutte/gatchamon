@@ -177,6 +177,32 @@ function createBeginnerItemSet(ownerId: string): HeldItemInstance[] {
 }
 
 /**
+ * Grant 3×100 energy to new players (account < 3 months old).
+ * Safe to call on every app load — skips if already granted or not eligible.
+ */
+export function grantNewPlayerEnergyBonus(): void {
+  const player = loadPlayer();
+  if (!player) return;
+
+  // Only for accounts less than 3 months old
+  if (!player.createdAt) return;
+  const threeMonthsAgo = new Date();
+  threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+  if (new Date(player.createdAt) < threeMonthsAgo) return;
+
+  const items = loadInbox();
+  if (items.some(i => i.title.startsWith('New Player Bonus: 100 Energy'))) return;
+
+  for (let i = 1; i <= 3; i++) {
+    sendInboxItem({
+      title: `New Player Bonus: 100 Energy (${i}/3)`,
+      message: 'Welcome, new trainer! Here\'s some energy to help you on your journey.',
+      reward: { energy: 100 },
+    });
+  }
+}
+
+/**
  * Grant beginner item set (4x King's Rock + 2x Quick Claw).
  * Safe to call on every app load — skips if already granted or not eligible.
  * Grants to any player within 30 days, or any player missing createdAt (legacy accounts

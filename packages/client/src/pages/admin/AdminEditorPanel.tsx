@@ -1,7 +1,9 @@
+import { useCallback, useRef, useState } from 'react';
 import type { PokemonTemplate, BaseStats } from '@gatchamon/shared';
 import { SKILLS } from '@gatchamon/shared';
 import { assetUrl } from '../../utils/asset-url';
 import { useAdminStore } from './useAdminStore';
+import { SkillTooltip } from './SkillTooltip';
 
 const STAT_LABELS: Record<keyof BaseStats, string> = {
   hp: 'HP', atk: 'ATK', def: 'DEF', spd: 'SPD',
@@ -23,6 +25,18 @@ export function AdminEditorPanel({ template }: { template: PokemonTemplate }) {
   const diff = diffs.get(template.id);
   const eff = getEffective(template);
   const hasDiff = !!diff;
+
+  const [hoveredSlot, setHoveredSlot] = useState<number | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleTouchStart = useCallback((slot: number) => {
+    longPressTimer.current = setTimeout(() => setHoveredSlot(slot), 400);
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    if (longPressTimer.current) clearTimeout(longPressTimer.current);
+    setHoveredSlot(null);
+  }, []);
 
   return (
     <>
@@ -137,7 +151,15 @@ export function AdminEditorPanel({ template }: { template: PokemonTemplate }) {
             const origSkillId = template.skillIds[i];
             const modified = diff?.skillIds !== undefined && diff.skillIds[i] !== origSkillId;
             return (
-              <div key={i} className={`admin-skill-slot${modified ? ' admin-skill-slot--modified' : ''}`}>
+              <div
+                key={i}
+                className={`admin-skill-slot${modified ? ' admin-skill-slot--modified' : ''}`}
+                onMouseEnter={() => setHoveredSlot(i)}
+                onMouseLeave={() => setHoveredSlot(null)}
+                onTouchStart={() => handleTouchStart(i)}
+                onTouchEnd={handleTouchEnd}
+                onTouchCancel={handleTouchEnd}
+              >
                 <span className="admin-skill-index">S{i + 1}</span>
                 <div className="admin-skill-info">
                   <div className="admin-skill-name">
@@ -166,6 +188,9 @@ export function AdminEditorPanel({ template }: { template: PokemonTemplate }) {
                 >
                   Change
                 </button>
+                {hoveredSlot === i && skill && (
+                  <SkillTooltip skill={skill} className="admin-skill-tooltip--floating" />
+                )}
               </div>
             );
           })}

@@ -13,10 +13,12 @@ interface UseBattleAnimationReturn {
 
 export function useBattleAnimation(
 	arenaElement: HTMLDivElement | null,
-	monRefs: React.RefObject<Map<string, HTMLElement>>
+	monRefs: React.RefObject<Map<string, HTMLElement>>,
+	options?: { muted?: boolean },
 ): UseBattleAnimationReturn {
 	const engineRef = useRef<AnimationEngine | null>(null);
 	const audioRef = useRef<AudioManager | null>(null);
+	const muted = options?.muted ?? false;
 
 	useEffect(() => {
 		if (!arenaElement) return;
@@ -26,7 +28,7 @@ export function useBattleAnimation(
 		registerAllMoves(engine);
 		engineRef.current = engine;
 
-		const audio = new AudioManager(4, 0.5);
+		const audio = muted ? null : new AudioManager(4, 0.5);
 		audioRef.current = audio;
 
 		// Preload common effects
@@ -38,11 +40,11 @@ export function useBattleAnimation(
 
 		return () => {
 			engine.cancelAll();
-			audio.stopAll();
+			audio?.stopAll();
 			engineRef.current = null;
 			audioRef.current = null;
 		};
-	}, [arenaElement]);
+	}, [arenaElement, muted]);
 
 	const playLogEntry = useCallback(async (entry: BattleLogEntry) => {
 		const engine = engineRef.current;

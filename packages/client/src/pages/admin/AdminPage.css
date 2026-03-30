@@ -454,6 +454,7 @@
 /* Skills */
 
 .admin-skill-slot {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -643,6 +644,19 @@
 
 .admin-skill-tooltip-effect strong {
   color: var(--accent);
+}
+
+/* Floating tooltip for editor panel skill slots */
+.admin-skill-tooltip--floating {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 6px);
+  z-index: 20;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
 }
 
 /* ─── Import Modal ─── */

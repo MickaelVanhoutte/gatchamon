@@ -33,7 +33,7 @@ import {
   MAX_DEBUFFS,
 } from '../constants/effects.js';
 import { getTemplate as getTemplateShared } from '../data/pokedex/index.js';
-import { getSkillsForPokemon } from '../data/skills/index.js';
+import { getSkillsForPokemon, SKILLS } from '../data/skills/index.js';
 import { getSkillMultiplierBonus } from '../constants/formulas.js';
 
 // ---------------------------------------------------------------------------
@@ -739,6 +739,8 @@ function applyInstantEffect(
         return `${targetTemplate.name} resisted CD increase!`;
       }
       for (const skId of Object.keys(target.skillCooldowns)) {
+        const skillDef = SKILLS[skId];
+        if (skillDef && skillDef.cooldown === 0) continue; // Never put basic attacks on cooldown
         target.skillCooldowns[skId] += effect.value;
       }
       return `${targetTemplate.name}'s cooldowns increased by ${effect.value}`;
@@ -1402,8 +1404,10 @@ export function autoResolveEnemyTurns(state: BattleState): BattleLogEntry[] {
     }
 
     if (cc.type === 'cd_increase') {
-      // Paralysis: increase all CDs by 1
+      // Paralysis: increase all CDs by 1 (skip basic attacks — cooldown:0 skills)
       for (const skId of Object.keys(actor.skillCooldowns)) {
+        const skillDef = SKILLS[skId];
+        if (skillDef && skillDef.cooldown === 0) continue;
         actor.skillCooldowns[skId]++;
       }
       logs.push({

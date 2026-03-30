@@ -1,5 +1,5 @@
 import { getTemplate as getTemplateShared, computeStats, computeStatsWithItems, getActiveSetEffects, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel, BEGINNER_BONUS, isBeginnerBonusActive, getTowerFloor } from '@gatchamon/shared';
-import { getSkillsForPokemon } from '@gatchamon/shared';
+import { getSkillsForPokemon, SKILLS } from '@gatchamon/shared';
 import { TOTAL_REGIONS, getFloorCount } from '@gatchamon/shared';
 import {
   applyPassives,
@@ -833,6 +833,8 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
 
   if (cc.type === 'cd_increase') {
     for (const skId of Object.keys(actor.skillCooldowns)) {
+      const skillDef = SKILLS[skId];
+      if (skillDef && skillDef.cooldown === 0) continue; // Never put basic attacks on cooldown
       actor.skillCooldowns[skId]++;
     }
     logs.push({

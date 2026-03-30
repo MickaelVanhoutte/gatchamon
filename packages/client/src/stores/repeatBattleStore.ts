@@ -71,7 +71,7 @@ export const useRepeatBattleStore = create<RepeatBattleState>((set, get) => ({
     currentRun: 0,
     completedRuns: 0,
     rewards: { ...EMPTY_REWARDS, essences: {}, itemDrops: [], monsterLoots: [] },
-    isOpen: true,
+    isOpen: false,
     _shouldStop: false,
   }),
 

@@ -101,7 +101,17 @@ export function pickBestAction(actor: BattleMon, state: BattleState): AutoAction
     .map(id => SKILLS[id])
     .filter(s => s && s.category !== 'passive' && (actor.skillCooldowns[s.id] ?? 0) === 0);
 
-  if (availableSkills.length === 0) return null;
+  if (availableSkills.length === 0) {
+    // All skills on cooldown — fallback to first non-passive skill
+    const fallbackSkill = template.skillIds
+      .map(id => SKILLS[id])
+      .find(s => s && s.category !== 'passive');
+    const firstEnemy = state.enemyTeam.find(e => e.isAlive);
+    if (fallbackSkill && firstEnemy) {
+      return { skillId: fallbackSkill.id, targetId: firstEnemy.instanceId };
+    }
+    return null;
+  }
 
   let bestScore = -Infinity;
   let bestAction: AutoAction | null = null;

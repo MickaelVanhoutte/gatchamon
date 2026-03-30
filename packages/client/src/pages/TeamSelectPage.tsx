@@ -12,7 +12,6 @@ import { GameIcon, StarRating } from '../components/icons';
 import { assetUrl } from '../utils/asset-url';
 import { useTutorialStore } from '../stores/tutorialStore';
 import { useRepeatBattleStore } from '../stores/repeatBattleStore';
-import { runRepeatBattles } from '../services/repeatBattle.service';
 import './TeamSelectPage.css';
 
 const STAR_COLORS: Record<number, string> = {
@@ -159,7 +158,7 @@ export function TeamSelectPage() {
   const handleStart = () => {
     if (!player || selected.length === 0) return;
 
-    // Repeat battle mode
+    // Repeat battle mode — start first battle visually, BattlePage chains the rest
     if (isDungeonMode && repeatCount > 1) {
       const repeatStore = useRepeatBattleStore.getState();
       if (repeatStore.status === 'running') {
@@ -178,9 +177,7 @@ export function TeamSelectPage() {
         floorLabel: `B${dungeonFloor + 1}`,
       };
       repeatStore.startRepeat(config);
-      runRepeatBattles(config);
-      const tab = mode === 'item-dungeon' ? 'items' : 'essence';
-      navigate(`/dungeons?tab=${tab}&dungeonId=${dungeonId}&floor=${dungeonFloor}`);
+      navigate('/');
       return;
     }
 
@@ -395,21 +392,26 @@ export function TeamSelectPage() {
               </div>
             </div>
           )}
-          {energyCost > 0 && (
-            <div className="ts-energy-cost">
-              <GameIcon id="energy" size={14} />
-              <span>
-                {repeatCount > 1
-                  ? `${energyCost} x ${repeatCount} = ${energyCost * repeatCount}`
-                  : energyCost}
-              </span>
-            </div>
-          )}
+          {energyCost > 0 && (() => {
+            const totalCost = energyCost * repeatCount;
+            const notEnough = !!player && player.energy < totalCost;
+            return (
+              <div className={`ts-energy-cost ${notEnough ? 'ts-energy-short' : ''}`}>
+                <GameIcon id="energy" size={14} />
+                <span>
+                  {repeatCount > 1
+                    ? `${energyCost} x ${repeatCount} = ${totalCost}`
+                    : energyCost}
+                  {notEnough && ` (need ${totalCost - player!.energy} more)`}
+                </span>
+              </div>
+            );
+          })()}
           <button
             className={`ts-go-btn ${tutorialStep === 10 ? 'tutorial-target' : ''}`}
             data-tutorial-id="team-select-go"
             onClick={handleStart}
-            disabled={selected.length === 0 || isStarting}
+            disabled={selected.length === 0 || isStarting || (energyCost > 0 && !!player && player.energy < energyCost)}
           >
             {isStarting ? '...' : repeatCount > 1 ? `Repeat x${repeatCount}` : 'GO'}
           </button>

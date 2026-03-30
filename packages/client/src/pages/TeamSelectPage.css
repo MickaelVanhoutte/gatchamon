@@ -272,6 +272,10 @@
   font-weight: 600;
 }
 
+.ts-energy-short {
+  color: #ef4444;
+}
+
 .ts-go-btn {
   min-width: 64px;
   min-height: 48px;

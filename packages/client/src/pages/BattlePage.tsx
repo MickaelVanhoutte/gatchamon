@@ -12,7 +12,7 @@ import { BattleLoadingScreen } from '../components/BattleLoadingScreen';
 import { GymLeaderDialogue } from '../components/GymLeaderDialogue';
 import { useTutorialStore } from '../stores/tutorialStore';
 import gsap from 'gsap';
-import { loadBattleSettings, saveBattleSettings } from '../services/storage';
+import { loadBattleSettings, saveBattleSettings, loadPlayer } from '../services/storage';
 import './BattlePage.css';
 
 type Phase = 'player_turn' | 'animating' | 'victory' | 'defeat';
@@ -266,8 +266,6 @@ export function BattlePage() {
     setState(battleState);
     setLogEntries(battleState.log);
     if (battleState.status === 'victory' || battleState.status === 'defeat') {
-      // Battle resolved during init (e.g. reflect/counter killed enemies).
-      // Show the battlefield briefly before transitioning to the result screen.
       setPhase('animating');
       const storedRewards = getStoredRewards(battleId);
       setTimeout(() => {

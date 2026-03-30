@@ -1,24 +1,3 @@
-let settled = false;
-
-function awaitActivation(sw: ServiceWorker, onNoUpdate: () => void): void {
-  if (sw.state === 'activated') {
-    sessionStorage.setItem('sw-just-updated', '1');
-    window.location.reload();
-    return;
-  }
-  sw.addEventListener('statechange', () => {
-    if (settled) return;
-    if (sw.state === 'activated') {
-      settled = true;
-      sessionStorage.setItem('sw-just-updated', '1');
-      window.location.reload();
-    }
-    if (sw.state === 'redundant') {
-      onNoUpdate();
-    }
-  });
-}
-
 function registerSW(): Promise<void> {
   return new Promise<void>((resolve) => {
     if (!('serviceWorker' in navigator)) {
@@ -26,48 +5,58 @@ function registerSW(): Promise<void> {
       return;
     }
 
-    const timeoutId = setTimeout(() => {
-      settled = true;
-      resolve();
-    }, 10_000);
-
+    let resolved = false;
     const resolveOnce = () => {
-      if (settled) return;
-      settled = true;
-      clearTimeout(timeoutId);
+      if (resolved) return;
+      resolved = true;
       resolve();
     };
+
+    // Reliably reload when a new SW takes control — independent of promise timing
+    let refreshing = false;
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        sessionStorage.setItem('sw-just-updated', '1');
+        window.location.reload();
+      });
+    }
+
+    const failsafe = setTimeout(resolveOnce, 10_000);
 
     navigator.serviceWorker
       .register('./sw.js', { updateViaCache: 'none' })
       .then((reg) => {
         // First install — page was loaded from network, assets are fresh
         if (!navigator.serviceWorker.controller) {
+          clearTimeout(failsafe);
           resolveOnce();
           return;
         }
 
-        // Update already in flight (race: updatefound fired before listener)
-        const pendingSW = reg.installing || reg.waiting;
-        if (pendingSW) {
-          awaitActivation(pendingSW, resolveOnce);
+        // Update already in flight — let the loading screen show briefly,
+        // controllerchange will reload when the new SW activates
+        if (reg.installing || reg.waiting) {
+          setTimeout(resolveOnce, 5_000);
           return;
         }
 
         // No pending update — listen for one, with a fast-path timeout
-        const noUpdateTimeout = setTimeout(resolveOnce, 1500);
+        const noUpdateTimeout = setTimeout(() => {
+          clearTimeout(failsafe);
+          resolveOnce();
+        }, 1500);
 
         reg.addEventListener('updatefound', () => {
           clearTimeout(noUpdateTimeout);
-          const newSW = reg.installing;
-          if (!newSW) {
-            resolveOnce();
-            return;
-          }
-          awaitActivation(newSW, resolveOnce);
+          // Update detected — give it time to activate,
+          // controllerchange will reload the page
+          setTimeout(resolveOnce, 5_000);
         });
       })
       .catch(() => {
+        clearTimeout(failsafe);
         resolveOnce();
       });
   });

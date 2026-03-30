@@ -34,7 +34,6 @@ export function useAutoBattle(
     if (!best) return;
 
     const spd = battleSpeedRef?.current ?? 1;
-    // Add extra delay on the very first action so the player can see the battlefield
     const firstDelay = isFirstAction.current ? 1000 : 0;
     const timer = setTimeout(() => {
       isFirstAction.current = false;

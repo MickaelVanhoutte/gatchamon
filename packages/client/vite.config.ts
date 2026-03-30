@@ -31,8 +31,13 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   if (!event.request.url.startsWith('http')) return;
 
+  // Bypass HTTP cache for navigation (index.html) so users always get the latest
+  const req = event.request.mode === 'navigate'
+    ? new Request(event.request, { cache: 'no-cache' })
+    : event.request;
+
   event.respondWith(
-    fetch(event.request)
+    fetch(req)
       .then((response) => {
         if (!response || response.status !== 200 || response.type === 'opaque') {
           return response;

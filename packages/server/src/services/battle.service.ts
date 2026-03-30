@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { getTemplate as getTemplateShared, computeStats, xpToNextLevel } from '@gatchamon/shared';
-import { getSkillsForPokemon } from '@gatchamon/shared';
+import { getSkillsForPokemon, SKILLS } from '@gatchamon/shared';
 import { REGIONS, TOTAL_REGIONS, getFloorCount, getGymLeaderTeam, getLeagueChampion } from '@gatchamon/shared';
 import {
   applyPassives,
@@ -495,6 +495,8 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
   // Paralysis CD increase: increase all cooldowns by 1 but still act
   if (cc.type === 'cd_increase') {
     for (const skId of Object.keys(actor.skillCooldowns)) {
+      const skillDef = SKILLS[skId];
+      if (skillDef && skillDef.cooldown === 0) continue; // Never put basic attacks on cooldown
       actor.skillCooldowns[skId]++;
     }
     turnEffects.push(`${template.name} is paralyzed! Cooldowns increased!`);

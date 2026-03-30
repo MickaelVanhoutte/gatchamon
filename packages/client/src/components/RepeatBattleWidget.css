@@ -1,4 +1,117 @@
-/* ── Overlay backdrop ── */
+/* ── Floating Auto-Battle Icon ── */
+.rb-fab {
+  position: fixed;
+  bottom: 70px;
+  right: 16px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  cursor: pointer;
+  z-index: 200;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s;
+}
+
+.rb-fab:active {
+  transform: scale(0.92);
+}
+
+.rb-fab-running {
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+  animation: rb-fab-pulse 1.5s ease-in-out infinite;
+}
+
+.rb-fab-done {
+  background: linear-gradient(135deg, #15803d, #22c55e);
+}
+
+.rb-fab-stopped {
+  background: linear-gradient(135deg, #b91c1c, #ef4444);
+}
+
+.rb-fab-progress {
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: white;
+  line-height: 1;
+}
+
+.rb-fab-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: #f59e0b;
+  animation: rb-ring-spin 2s linear infinite;
+  pointer-events: none;
+}
+
+.rb-fab-check {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #22c55e;
+  color: white;
+  font-size: 0.55rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}
+
+.rb-fab-alert {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ef4444;
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}
+
+@keyframes rb-fab-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25); }
+  50% { transform: scale(1.08); box-shadow: 0 4px 24px rgba(245, 158, 11, 0.4); }
+}
+
+@keyframes rb-ring-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ── Always-mounted container ── */
+.rb-container-hidden {
+  position: fixed;
+  inset: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.rb-container-open {
+  position: relative;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* ── Modal Overlay ── */
 .rb-overlay {
   position: fixed;
   inset: 0;
@@ -21,10 +134,10 @@
   border-radius: 16px;
   border: 1px solid var(--card-border, #d0e4ea);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  width: 320px;
-  max-width: 90vw;
-  max-height: 80vh;
-  overflow-y: auto;
+  width: 680px;
+  max-width: 96vw;
+  max-height: 85vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   animation: rb-slide-up 0.2s ease-out;
@@ -40,7 +153,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px 10px;
+  padding: 12px 16px 8px;
   border-bottom: 1px solid var(--card-border, #e5e7eb);
 }
 
@@ -76,38 +189,172 @@
   background: rgba(0, 0, 0, 0.05);
 }
 
-/* ── Progress ── */
-.rb-progress-section {
-  padding: 12px 16px;
+/* ── Body: battle on top, info row below ── */
+.rb-modal-body {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Top — Battle viewport (full width) ── */
+.rb-battle-col {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid var(--card-border, #e5e7eb);
+  overflow: hidden;
+}
+
+.rb-battle-viewport {
+  height: 210px;
+  overflow: hidden;
+  position: relative;
+  background: #1a1a2e;
+  border-radius: 0;
+}
+
+/* Scale down the battle arena to fit the viewport */
+.bg-battle-arena {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.bg-battle-arena-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+}
+
+/* Override battle-mon sizes inside the mini arena */
+.rb-battle-viewport .battle-field {
+  gap: 12px;
+  padding: 6px 8px;
+}
+
+.rb-battle-viewport .battle-mon {
+  width: 85px !important;
+}
+
+.rb-battle-viewport .battle-mon.boss-mon {
+  width: 120px !important;
+}
+
+.rb-battle-viewport .battle-sprite {
+  width: 64px !important;
+  height: 64px !important;
+}
+
+.rb-battle-viewport .battle-mon.boss-mon .battle-sprite {
+  width: 90px !important;
+  height: 90px !important;
+}
+
+.rb-battle-viewport .sprite-container {
+  min-height: 64px;
+}
+
+.rb-battle-viewport .mon-name {
+  font-size: 0.5rem;
+}
+
+.rb-battle-viewport .mon-hp-text {
+  font-size: 0.45rem;
+}
+
+.rb-battle-viewport .mon-hp-bar-bg {
+  height: 3px;
+}
+
+.rb-battle-viewport .mon-atb-bar-bg {
+  height: 2px;
+}
+
+.rb-battle-viewport .effect-icons-row {
+  display: none;
+}
+
+.rb-battle-viewport .floating-number {
+  font-size: 0.6rem;
+}
+
+.rb-battle-viewport .status-overlay {
+  display: none;
+}
+
+.bg-battle-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #94a3b8;
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+/* ── Bottom info row — Progress left, Rewards right ── */
+.rb-info-row {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.rb-rewards-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 16px;
+  overflow-y: auto;
+}
+
+/* ── Progress (left side of info row) ── */
+.rb-progress-section {
+  flex: 0 0 45%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-right: 1px solid var(--card-border, #e5e7eb);
+  justify-content: center;
 }
 
 .rb-progress-text {
   display: flex;
   justify-content: space-between;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-primary, #334155);
   font-weight: 600;
 }
 
 .rb-status {
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
 }
 
 .rb-progress-bar {
-  height: 8px;
+  height: 6px;
   background: var(--bg-secondary, #e2e8f0);
-  border-radius: 4px;
+  border-radius: 3px;
   overflow: hidden;
 }
 
 .rb-progress-fill {
   height: 100%;
   background: linear-gradient(90deg, #0d9488, #14b8a6);
-  border-radius: 4px;
+  border-radius: 3px;
   transition: width 0.3s ease;
 }
 
@@ -123,18 +370,44 @@
 }
 
 .rb-completed {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--text-secondary, #64748b);
 }
 
-/* ── Rewards ── */
-.rb-rewards {
-  padding: 0 16px 12px;
+/* ── Actions ── */
+.rb-actions {
+  margin-top: auto;
+  padding: 10px 0 4px;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  justify-content: center;
+  gap: 10px;
 }
 
+.rb-btn {
+  padding: 7px 24px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.1s;
+}
+
+.rb-btn:active {
+  transform: scale(0.96);
+}
+
+.rb-btn-stop {
+  background: #ef4444;
+  color: white;
+}
+
+.rb-btn-ok {
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  color: white;
+}
+
+/* ── Rewards ── */
 .rb-rewards-title {
   font-size: 0.75rem;
   font-weight: 700;
@@ -181,63 +454,46 @@
   color: var(--text-secondary, #5a6a7a);
 }
 
-/* ── Actions ── */
-.rb-actions {
-  padding: 10px 16px 14px;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
+.rb-loot-item {
+  color: #16a34a;
+  font-weight: 600;
 }
 
-.rb-btn {
-  padding: 8px 28px;
-  border-radius: 10px;
-  border: none;
-  font-weight: 700;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: transform 0.1s, opacity 0.1s;
+.rb-loot-sprite {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
 }
 
-.rb-btn:active {
-  transform: scale(0.96);
+.rb-no-rewards {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #94a3b8);
+  font-style: italic;
+  margin: 0;
 }
 
-.rb-btn-stop {
-  background: #ef4444;
-  color: white;
-}
+/* ── Responsive: stack info row on small screens ── */
+@media (max-width: 480px) {
+  .rb-panel {
+    width: 96vw;
+    max-height: 90vh;
+  }
 
-.rb-btn-ok {
-  background: linear-gradient(135deg, #0f766e, #14b8a6);
-  color: white;
-}
+  .rb-battle-viewport {
+    height: 150px;
+  }
 
-/* ── Notification dot on BottomNav ── */
-.rb-dot {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: 2px solid rgba(15, 118, 110, 0.9);
-}
+  .rb-info-row {
+    flex-direction: column;
+  }
 
-.rb-dot-running {
-  background: #f59e0b;
-  animation: rb-dot-pulse 1.2s ease-in-out infinite;
-}
+  .rb-progress-section {
+    flex: none;
+    border-right: none;
+    border-bottom: 1px solid var(--card-border, #e5e7eb);
+  }
 
-.rb-dot-completed {
-  background: #22c55e;
-}
-
-.rb-dot-stopped {
-  background: #ef4444;
-}
-
-@keyframes rb-dot-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.7); }
+  .rb-rewards-col {
+    max-height: 25vh;
+  }
 }

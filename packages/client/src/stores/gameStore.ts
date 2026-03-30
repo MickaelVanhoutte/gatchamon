@@ -11,7 +11,7 @@ import * as typeChangeService from '../services/type-change.service';
 import * as heldItemService from '../services/held-item.service';
 import { regenerateEnergy } from '../services/energy.service';
 import { getUnclaimedMissionCount, getUnclaimedTrophyCount } from '../services/reward.service';
-import { getUnreadInboxCount, grantBeginnerBonusRetries, grantBeginnerItemSet } from '../services/inbox.service';
+import { getUnreadInboxCount, grantBeginnerBonusRetries, grantBeginnerItemSet, grantNewPlayerEnergyBonus } from '../services/inbox.service';
 import { useTutorialStore } from './tutorialStore';
 
 export interface OwnedPokemon {
@@ -78,6 +78,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       set({ player });
       grantBeginnerBonusRetries();
       grantBeginnerItemSet();
+      grantNewPlayerEnergyBonus();
       get().refreshRewards();
 
       // Clear any previous energy regen interval before creating a new one
