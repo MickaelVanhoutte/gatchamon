@@ -2,6 +2,7 @@
   height: var(--top-hud-height);
   flex-shrink: 0;
   padding: 0 16px;
+  padding-top: env(safe-area-inset-top);
   background: linear-gradient(135deg, #115e59, #0f766e);
   display: flex;
   justify-content: space-between;

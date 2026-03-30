@@ -311,7 +311,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
 
       set({ diffs: newDiffs });
     } catch {
-      alert('Invalid JSON');
+      console.error('[admin] Invalid JSON in diff paste');
     }
   },
 }));

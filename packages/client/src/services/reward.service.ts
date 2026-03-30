@@ -28,7 +28,7 @@ import {
   addToCollection,
   addHeldItem,
 } from './storage';
-import { generateItem } from './rune.service';
+import { generateItem } from './held-item.service';
 import { grantTrainerXp } from './player.service';
 import type { FloorEnemy } from './floor.service';
 import { DIFFICULTY_REWARD_MULT } from './floor.service';

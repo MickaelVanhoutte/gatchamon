@@ -8,7 +8,7 @@ import * as mergeService from '../services/merge.service';
 import * as altarService from '../services/altar.service';
 import * as evolutionService from '../services/evolution.service';
 import * as typeChangeService from '../services/type-change.service';
-import * as runeService from '../services/rune.service';
+import * as heldItemService from '../services/held-item.service';
 import { regenerateEnergy } from '../services/energy.service';
 import { getUnclaimedMissionCount, getUnclaimedTrophyCount } from '../services/reward.service';
 import { getUnreadInboxCount, grantBeginnerBonusRetries, grantBeginnerItemSet } from '../services/inbox.service';
@@ -41,7 +41,7 @@ interface GameState {
   loadHeldItems: () => void;
   equipItem: (itemId: string, pokemonInstanceId: string) => void;
   unequipItem: (itemId: string) => void;
-  upgradeItem: (itemId: string) => runeService.UpgradeResult;
+  upgradeItem: (itemId: string) => heldItemService.UpgradeResult;
   sellItem: (itemId: string) => number;
   sellItems: (itemIds: string[]) => number;
   updateInstance: (instanceId: string, updates: Partial<PokemonInstance>) => void;
@@ -64,6 +64,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   loadPlayer: () => {
+    storage.checkAndResetTower();
     let player = storage.loadPlayer();
     if (player) {
       // Regenerate energy based on elapsed time
@@ -208,32 +209,32 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   equipItem: (itemId: string, pokemonInstanceId: string) => {
-    runeService.equipItem(itemId, pokemonInstanceId);
+    heldItemService.equipItem(itemId, pokemonInstanceId);
     set({ heldItems: storage.loadHeldItems() });
   },
 
   unequipItem: (itemId: string) => {
-    runeService.unequipItem(itemId);
+    heldItemService.unequipItem(itemId);
     const updatedPlayer = storage.loadPlayer();
     set({ player: updatedPlayer, heldItems: storage.loadHeldItems() });
   },
 
   upgradeItem: (itemId: string) => {
-    const result = runeService.upgradeItem(itemId);
+    const result = heldItemService.upgradeItem(itemId);
     const updatedPlayer = storage.loadPlayer();
     set({ player: updatedPlayer, heldItems: storage.loadHeldItems() });
     return result;
   },
 
   sellItem: (itemId: string) => {
-    const value = runeService.sellItem(itemId);
+    const value = heldItemService.sellItem(itemId);
     const updatedPlayer = storage.loadPlayer();
     set({ player: updatedPlayer, heldItems: storage.loadHeldItems() });
     return value;
   },
 
   sellItems: (itemIds: string[]) => {
-    const total = runeService.sellItems(itemIds);
+    const total = heldItemService.sellItems(itemIds);
     const updatedPlayer = storage.loadPlayer();
     set({ player: updatedPlayer, heldItems: storage.loadHeldItems() });
     return total;

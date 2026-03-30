@@ -182,8 +182,8 @@
   z-index: 205 !important;
 }
 
-/* Rune slot tutorial target */
-[data-tutorial-id="rune-slot-1"].tutorial-target {
+/* Held item slot tutorial target */
+[data-tutorial-id="held-item-slot-1"].tutorial-target {
   position: relative;
   z-index: 205 !important;
 }

@@ -34,6 +34,7 @@ export function createPlayer(name: string): Player {
     trainerSkills: defaultTrainerSkills(),
     legendaryPokeballs: 0,
     towerProgress: 0,
+    premiumPityCounter: 0,
   };
   savePlayer(player);
   return player;

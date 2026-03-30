@@ -22,22 +22,23 @@
 
 .reveal-skip-btn {
   position: absolute;
-  top: 12px;
+  bottom: 16px;
   right: 16px;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: var(--text-secondary);
-  padding: 4px 14px;
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: #fff;
+  padding: 8px 20px;
   border-radius: 8px;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
-  z-index: 20;
+  z-index: 120;
   transition: all 0.2s;
 }
 
-.reveal-skip-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  color: var(--text-primary);
+.reveal-skip-btn:active {
+  background: rgba(255, 255, 255, 0.5);
+  color: #fff;
 }
 
 /* Tap to continue overlay for special pulls */
@@ -48,14 +49,14 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding-bottom: 15%;
+  padding-bottom: 6%;
   cursor: pointer;
 }
 
 .tap-to-continue-text {
-  font-size: 1.1rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.8);
   text-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
   letter-spacing: 1px;
   animation: tap-pulse 1.2s ease-in-out infinite;

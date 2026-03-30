@@ -172,10 +172,16 @@ function createBeginnerItemSet(ownerId: string): HeldItemInstance[] {
 /**
  * Grant beginner item set (4x King's Rock + 2x Quick Claw).
  * Safe to call on every app load — skips if already granted or not eligible.
+ * Grants to any player within 30 days, or any player missing createdAt (legacy accounts
+ * that were created before the field existed — they still deserve the starter set).
  */
 export function grantBeginnerItemSet(): void {
   const player = loadPlayer();
-  if (!player || !isBeginnerBonusActive(player.createdAt)) return;
+  if (!player) return;
+
+  // Grant if beginner bonus is active, OR if createdAt is missing (legacy account)
+  const eligible = !player.createdAt || isBeginnerBonusActive(player.createdAt);
+  if (!eligible) return;
 
   const items = loadInbox();
   if (items.some(i => i.specialItem === 'beginner-item-set')) return;

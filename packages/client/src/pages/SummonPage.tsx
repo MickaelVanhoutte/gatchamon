@@ -115,13 +115,6 @@ export function SummonPage() {
                   <span>Legendary</span>
                 </button>
               </div>
-              <div className="pokeball-type-info">
-                {selectedBall === 'regular'
-                  ? 'Summons 1-3★ monsters'
-                  : selectedBall === 'premium'
-                  ? 'Summons 3-5★ monsters'
-                  : 'Guarantees a 5★ monster'}
-              </div>
               <div className="summon-rates">
                 {selectedBall === 'regular' && (
                   <>
@@ -142,6 +135,17 @@ export function SummonPage() {
                 )}
                 <span className="rate-item rate-shiny"><GameIcon id="shiny" size={12} /> 0.1%</span>
               </div>
+              {selectedBall === 'premium' && (
+                <div className="summon-pity">
+                  <div className="summon-pity-bar">
+                    <div
+                      className="summon-pity-fill"
+                      style={{ width: `${Math.min(100, ((player.premiumPityCounter ?? 0) / 200) * 100)}%` }}
+                    />
+                  </div>
+                  <span className="summon-pity-label">{player.premiumPityCounter ?? 0}/200 — 5★ guaranteed</span>
+                </div>
+              )}
             </div>
           )}
 

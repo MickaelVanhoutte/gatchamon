@@ -60,8 +60,8 @@ const STEP_HIGHLIGHT: Record<number, string> = {
   12: 'nav-collection',
   13: 'collection-first-mon',
   14: 'collection-tab-items',
-  15: 'rune-slot-1',
-  16: 'rune-slot-1',
+  15: 'held-item-slot-1',
+  16: 'held-item-slot-1',
 };
 
 export function useTutorial() {

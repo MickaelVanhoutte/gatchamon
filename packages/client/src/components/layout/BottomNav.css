@@ -4,6 +4,7 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
+  padding-bottom: env(safe-area-inset-bottom);
   background: linear-gradient(135deg, #0f766e, #0d9488);
   border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
@@ -11,8 +12,8 @@
 /* Expandable variant: floating bar over content */
 .bottom-toolbar-expandable {
   position: fixed;
-  bottom: 8px;
-  right: 8px;
+  bottom: calc(8px + env(safe-area-inset-bottom));
+  right: calc(8px + env(safe-area-inset-right));
   left: auto;
   width: auto;
   height: auto;
@@ -40,8 +41,8 @@
 /* Collapsed pill button */
 .bottom-toolbar-collapsed {
   position: fixed;
-  bottom: 12px;
-  right: 12px;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  right: calc(12px + env(safe-area-inset-right));
   width: 44px;
   height: 44px;
   border-radius: 50%;

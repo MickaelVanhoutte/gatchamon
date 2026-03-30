@@ -1,4 +1,4 @@
-.rune-equip-panel {
+.held-item-equip-panel {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -6,23 +6,23 @@
 }
 
 /* 6-slot grid: 3 rows x 2 columns */
-.rune-slots-grid {
+.held-item-slots-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 6px;
 }
 
-.rune-slot {
+.held-item-slot {
   cursor: pointer;
   border-radius: 8px;
   transition: background 0.15s;
 }
 
-.rune-slot:hover {
+.held-item-slot:hover {
   background: rgba(255, 255, 255, 0.06);
 }
 
-.rune-slot-empty {
+.held-item-slot-empty {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -32,20 +32,20 @@
   color: var(--text-secondary);
 }
 
-.rune-slot-num {
+.held-item-slot-num {
   font-size: 1rem;
   font-weight: 700;
   opacity: 0.4;
 }
 
 /* Set bonuses */
-.rune-set-bonuses {
+.held-item-set-bonuses {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.rune-set-bonus {
+.held-item-set-bonus {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -56,59 +56,59 @@
   font-size: 0.7rem;
 }
 
-.rune-set-icon {
+.held-item-set-icon {
   font-size: 0.8rem;
 }
 
-.rune-set-name {
+.held-item-set-name {
   font-weight: 600;
   color: var(--text-primary);
 }
 
-.rune-set-desc {
+.held-item-set-desc {
   color: #4ade80;
   margin-left: auto;
 }
 
-.rune-set-bonus--inactive {
+.held-item-set-bonus--inactive {
   opacity: 0.5;
 }
 
-.rune-set-desc--hidden {
+.held-item-set-desc--hidden {
   color: var(--text-secondary);
   font-style: italic;
 }
 
 /* Stats table */
-.rune-stats {
+.held-item-stats {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.rune-stat-row {
+.held-item-stat-row {
   display: flex;
   justify-content: space-between;
   font-size: 0.75rem;
   padding: 2px 0;
 }
 
-.rune-stat-label {
+.held-item-stat-label {
   color: var(--text-secondary);
 }
 
-.rune-stat-value {
+.held-item-stat-value {
   color: var(--text-primary);
   font-weight: 600;
 }
 
-.rune-stat-bonus {
+.held-item-stat-bonus {
   color: #4ade80;
   font-weight: 500;
 }
 
 /* Manage button */
-.rune-equip-btn {
+.held-item-equip-btn {
   background: rgba(96, 165, 250, 0.2);
   border: 1px solid rgba(96, 165, 250, 0.4);
   color: #60a5fa;
@@ -120,6 +120,6 @@
   transition: background 0.15s;
 }
 
-.rune-equip-btn:hover {
+.held-item-equip-btn:hover {
   background: rgba(96, 165, 250, 0.3);
 }

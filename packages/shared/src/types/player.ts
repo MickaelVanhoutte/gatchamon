@@ -32,6 +32,7 @@ export interface Player {
   trainerExp: number;
   trainerSkillPoints: number;
   trainerSkills: TrainerSkills;
+  premiumPityCounter: number;   // pulls since last 5★ from premium summon
 }
 
 /**

@@ -8,6 +8,15 @@ import './DungeonPage.css';
 
 type DungeonTab = 'essence' | 'items' | 'tower';
 
+function useEnergyError() {
+  const [error, setError] = useState<string | null>(null);
+  const show = (msg: string) => {
+    setError(msg);
+    setTimeout(() => setError(null), 2000);
+  };
+  return { error, show };
+}
+
 function resolveInitialState(searchParams: URLSearchParams) {
   const tab = (searchParams.get('tab') as DungeonTab) || 'essence';
   const dungeonId = Number(searchParams.get('dungeonId') || 0);
@@ -39,6 +48,7 @@ export function DungeonPage() {
   const [tab, setTab] = useState<DungeonTab>(initial.tab);
   const [selectedDungeon, setSelectedDungeon] = useState<DungeonDef | ItemDungeonDef>(initial.dungeon);
   const [selectedFloor, setSelectedFloor] = useState(initial.floor);
+  const energyError = useEnergyError();
 
   const isItemDungeon = tab === 'items';
   const dungeonList = isItemDungeon ? ITEM_DUNGEONS : DUNGEONS;
@@ -47,7 +57,7 @@ export function DungeonPage() {
     if (!player) return;
     const cost = selectedDungeon.energyCost;
     if (player.energy < cost) {
-      alert('Not enough energy!');
+      energyError.show('Not enough energy!');
       return;
     }
     if (isItemDungeon) {
@@ -76,6 +86,7 @@ export function DungeonPage() {
 
   return (
     <div className="page dungeon-page">
+      {energyError.error && <div className="dungeon-energy-error">{energyError.error}</div>}
       {/* Tab toggle */}
       <div className="dungeon-tab-toggle">
         <button
@@ -216,6 +227,7 @@ function TowerPanel({ player, navigate }: { player: any; navigate: any }) {
   const isCompleted = towerProgress >= 100;
   const resetTimer = useMemo(() => formatTimeUntilReset(), []);
   const currentRef = useRef<HTMLDivElement>(null);
+  const energyError = useEnergyError();
 
   useEffect(() => {
     currentRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
@@ -224,7 +236,7 @@ function TowerPanel({ player, navigate }: { player: any; navigate: any }) {
   const handleEnterTower = () => {
     if (!player || isCompleted) return;
     if (player.energy < nextFloorDef.energyCost) {
-      alert('Not enough energy!');
+      energyError.show('Not enough energy!');
       return;
     }
     navigate(`/battle/team-select?mode=tower&floor=${nextFloor}`);
@@ -238,6 +250,7 @@ function TowerPanel({ player, navigate }: { player: any; navigate: any }) {
 
   return (
     <div className="tower-layout">
+      {energyError.error && <div className="dungeon-energy-error">{energyError.error}</div>}
       <div className="tower-status-bar">
         <span className="tower-status-progress">
           <GameIcon id="tower" size={14} /> Floor {towerProgress} / 100

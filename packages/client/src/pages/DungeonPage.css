@@ -5,6 +5,28 @@
   padding: 0 !important;
   height: 100%;
   overflow: hidden;
+  position: relative;
+}
+
+.dungeon-energy-error {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ff4444cc;
+  color: #fff;
+  padding: 6px 18px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 20;
+  animation: dungeon-error-fade 2s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes dungeon-error-fade {
+  0%, 70% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 .dungeon-tab-toggle {

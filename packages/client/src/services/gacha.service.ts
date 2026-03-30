@@ -11,6 +11,7 @@ const PREMIUM_MULTI_COST = 10;
 const MULTI_COUNT = 10;
 const DEBUG_MODE = import.meta.env.VITE_DEBUG_MODE === 'true';
 const SHINY_RATE = DEBUG_MODE ? 0.5 : 0.001;
+const PREMIUM_PITY_THRESHOLD = 200;
 
 function rollRegularStarRating(guaranteeMinTwo = false): 1 | 2 | 3 {
   if (guaranteeMinTwo) return 2;
@@ -122,11 +123,25 @@ export function summonSinglePremium(forcedTemplateId?: number): SummonResult {
   if (!player) throw new Error('Player not found');
   if (player.premiumPokeballs < PREMIUM_SINGLE_COST) throw new Error('Not enough premium pokeballs');
 
-  savePlayer({ ...player, premiumPokeballs: player.premiumPokeballs - PREMIUM_SINGLE_COST });
+  const pity = (player.premiumPityCounter ?? 0) + 1;
+  const isPityGuarantee = pity >= PREMIUM_PITY_THRESHOLD;
 
-  const template = forcedTemplateId != null
-    ? POKEDEX.find(p => p.id === forcedTemplateId)!
-    : pickFromPool(rollPremiumStarRating());
+  let template: PokemonTemplate;
+  if (forcedTemplateId != null) {
+    template = POKEDEX.find(p => p.id === forcedTemplateId)!;
+  } else if (isPityGuarantee) {
+    template = pickFromPool(5);
+  } else {
+    template = pickFromPool(rollPremiumStarRating());
+  }
+
+  const isFiveStar = template.naturalStars === 5;
+  savePlayer({
+    ...player,
+    premiumPokeballs: player.premiumPokeballs - PREMIUM_SINGLE_COST,
+    premiumPityCounter: isFiveStar ? 0 : pity,
+  });
+
   const pokemon = createInstance(template, player.id);
   addToCollection([pokemon]);
   trackSummons(1);
@@ -139,18 +154,27 @@ export function summonMultiPremium(): SummonResult[] {
   if (!player) throw new Error('Player not found');
   if (player.premiumPokeballs < PREMIUM_MULTI_COST) throw new Error('Not enough premium pokeballs');
 
-  savePlayer({ ...player, premiumPokeballs: player.premiumPokeballs - PREMIUM_MULTI_COST });
+  let pity = player.premiumPityCounter ?? 0;
 
   const results: SummonResult[] = [];
   const instances: PokemonInstance[] = [];
 
   for (let i = 0; i < MULTI_COUNT; i++) {
-    const stars = rollPremiumStarRating();
+    pity++;
+    const isPityGuarantee = pity >= PREMIUM_PITY_THRESHOLD;
+    const stars = isPityGuarantee ? 5 : rollPremiumStarRating();
     const template = pickFromPool(stars);
+    if (template.naturalStars === 5) pity = 0;
     const pokemon = createInstance(template, player.id);
     instances.push(pokemon);
     results.push({ pokemon, template });
   }
+
+  savePlayer({
+    ...player,
+    premiumPokeballs: player.premiumPokeballs - PREMIUM_MULTI_COST,
+    premiumPityCounter: pity,
+  });
 
   addToCollection(instances);
   trackSummons(MULTI_COUNT);

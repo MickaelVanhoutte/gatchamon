@@ -5,9 +5,9 @@ import { POKEDEX } from '@gatchamon/shared';
 import type { OwnedPokemon } from '../stores/gameStore';
 import { useGameStore } from '../stores/gameStore';
 import { useTutorialStore } from '../stores/tutorialStore';
-import { RuneCard } from '../components/rune/RuneCard';
+import { HeldItemCard } from '../components/held-item/HeldItemCard';
 import { GameIcon } from '../components/icons';
-import './RuneSelectModal.css';
+import './HeldItemSelectModal.css';
 
 const STAT_LABELS: Record<keyof BaseStats, string> = {
   hp: 'HP', atk: 'ATK', def: 'DEF', spd: 'SPD',
@@ -18,7 +18,7 @@ const PCT_STATS: Array<keyof BaseStats> = ['critRate', 'critDmg', 'acc', 'res'];
 
 type SortOption = 'stars' | 'level' | 'grade' | 'mainValue';
 
-interface RuneSelectModalProps {
+interface HeldItemSelectModalProps {
   pokemon: OwnedPokemon;
   slot: HeldItemSlot;
   heldItems: HeldItemInstance[];
@@ -27,7 +27,7 @@ interface RuneSelectModalProps {
   onClose: () => void;
 }
 
-export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playerStardust, onClose }: RuneSelectModalProps) {
+export function HeldItemSelectModal({ pokemon, slot, heldItems, equippedItems, playerStardust, onClose }: HeldItemSelectModalProps) {
   const { equipItem, unequipItem, sellItems: storeSellItems, refreshPlayer } = useGameStore();
   const [setFilter, setSetFilter] = useState<string>('');
   const [sortBy, setSortBy] = useState<SortOption>('stars');
@@ -101,11 +101,11 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
   }, [slotItems]);
 
   return (
-    <div className="rune-select-overlay" onClick={onClose}>
-      <div className="rune-select-modal" onClick={e => e.stopPropagation()}>
-        <div className="rune-select-header">
+    <div className="held-item-select-overlay" onClick={onClose}>
+      <div className="held-item-select-modal" onClick={e => e.stopPropagation()}>
+        <div className="held-item-select-header">
           <h3>Select Item for Slot {slot}</h3>
-          <div className="rune-select-header-actions">
+          <div className="held-item-select-header-actions">
             <select value={sortBy} onChange={e => setSortBy(e.target.value as SortOption)}>
               <option value="stars">Stars</option>
               <option value="level">Level</option>
@@ -113,41 +113,41 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
               <option value="mainValue">Main Stat</option>
             </select>
             <button
-              className={`rune-sell-mode-btn ${sellMode ? 'active' : ''}`}
+              className={`held-item-sell-mode-btn ${sellMode ? 'active' : ''}`}
               onClick={() => { setSellMode(!sellMode); setSellSelection(new Set()); setConfirmBulkSell(false); }}
             >
               {sellMode ? 'Cancel' : 'Sell'}
             </button>
-            <button className="rune-select-close" onClick={onClose}><GameIcon id="close" size={18} /></button>
+            <button className="held-item-select-close" onClick={onClose}><GameIcon id="close" size={18} /></button>
           </div>
         </div>
 
-        <div className="rune-select-body">
+        <div className="held-item-select-body">
           {/* Set sidebar */}
-          <div className="rune-select-sidebar">
+          <div className="held-item-select-sidebar">
             <button
-              className={`rune-select-sidebar-item ${setFilter === '' ? 'rune-select-sidebar-item--active' : ''}`}
+              className={`held-item-select-sidebar-item ${setFilter === '' ? 'held-item-select-sidebar-item--active' : ''}`}
               onClick={() => setSetFilter('')}
             >
-              <span className="rune-select-sidebar-name">All</span>
-              <span className="rune-select-sidebar-count">{slotItems.length}</span>
+              <span className="held-item-select-sidebar-name">All</span>
+              <span className="held-item-select-sidebar-count">{slotItems.length}</span>
             </button>
             {ITEM_SETS.map(set => (
               <button
                 key={set.id}
-                className={`rune-select-sidebar-item ${setFilter === set.id ? 'rune-select-sidebar-item--active' : ''}`}
+                className={`held-item-select-sidebar-item ${setFilter === set.id ? 'held-item-select-sidebar-item--active' : ''}`}
                 style={setFilter === set.id ? { borderColor: set.color } : undefined}
                 onClick={() => setSetFilter(set.id)}
               >
                 <GameIcon id={set.icon} size={14} />
-                <span className="rune-select-sidebar-name">{set.name}</span>
-                <span className="rune-select-sidebar-count">{setCounts[set.id] ?? 0}</span>
+                <span className="held-item-select-sidebar-name">{set.name}</span>
+                <span className="held-item-select-sidebar-count">{setCounts[set.id] ?? 0}</span>
               </button>
             ))}
           </div>
 
           {/* Item list column */}
-          <div className="rune-select-main">
+          <div className="held-item-select-main">
             {/* Set effect banner */}
             {setFilter && (() => {
               const activeDef = ITEM_SETS.find(s => s.id === setFilter);
@@ -156,25 +156,25 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
                 ? `${activeDef.bonusStat?.toUpperCase()} +${activeDef.bonusValue}${activeDef.bonusType === 'percent' ? '%' : ''}`
                 : activeDef.procDescription;
               return (
-                <div className="rune-select-set-effect" style={{ borderColor: activeDef.color }}>
+                <div className="held-item-select-set-effect" style={{ borderColor: activeDef.color }}>
                   <GameIcon id={activeDef.icon} size={16} />
-                  <span className="rune-select-set-effect-name">{activeDef.name}</span>
-                  <span className="rune-select-set-effect-pieces">{activeDef.pieces}-Set</span>
-                  <span className="rune-select-set-effect-desc">{effectDesc}</span>
+                  <span className="held-item-select-set-effect-name">{activeDef.name}</span>
+                  <span className="held-item-select-set-effect-pieces">{activeDef.pieces}-Set</span>
+                  <span className="held-item-select-set-effect-desc">{effectDesc}</span>
                 </div>
               );
             })()}
 
-            <div className="rune-select-list">
+            <div className="held-item-select-list">
             {availableItems.length === 0 && (
-              <div className="rune-select-empty">No items for slot {slot}</div>
+              <div className="held-item-select-empty">No items for slot {slot}</div>
             )}
             {availableItems.map((item, idx) => {
               const isEquipped = item.equippedTo !== null;
               const isSellSelected = sellSelection.has(item.itemId);
               const tutorialHighlightItem = isTutorial && idx === 0 && !selectedItemId;
               return (
-                <RuneCard
+                <HeldItemCard
                   key={item.itemId}
                   item={item}
                   selected={sellMode ? isSellSelected : item.itemId === selectedItemId}
@@ -199,20 +199,20 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
           </div>
 
           {/* Stat preview – full (desktop) */}
-          <div className="rune-select-preview rune-preview-full">
+          <div className="held-item-select-preview held-item-preview-full">
             <h4>Stat Preview</h4>
-            <div className="rune-preview-stats">
+            <div className="held-item-preview-stats">
               {(Object.keys(STAT_LABELS) as Array<keyof BaseStats>).map(key => {
                 const current = currentStats[key];
                 const preview = previewStats[key];
                 const diff = preview - current;
                 const isPct = PCT_STATS.includes(key);
                 return (
-                  <div key={key} className="rune-preview-row">
-                    <span className="rune-preview-label">{STAT_LABELS[key]}</span>
-                    <span className="rune-preview-current">{current}{isPct ? '%' : ''}</span>
-                    <span className="rune-preview-arrow">&rarr;</span>
-                    <span className={`rune-preview-new ${diff > 0 ? 'stat-up' : diff < 0 ? 'stat-down' : ''}`}>
+                  <div key={key} className="held-item-preview-row">
+                    <span className="held-item-preview-label">{STAT_LABELS[key]}</span>
+                    <span className="held-item-preview-current">{current}{isPct ? '%' : ''}</span>
+                    <span className="held-item-preview-arrow">&rarr;</span>
+                    <span className={`held-item-preview-new ${diff > 0 ? 'stat-up' : diff < 0 ? 'stat-down' : ''}`}>
                       {preview}{isPct ? '%' : ''}
                     </span>
                     {diff !== 0 && (
@@ -226,13 +226,13 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
             </div>
           </div>
           {/* Stat preview – compact (mobile): only changed stats, single row */}
-          <div className="rune-preview-compact">
+          <div className="held-item-preview-compact">
             {(Object.keys(STAT_LABELS) as Array<keyof BaseStats>).map(key => {
               const diff = previewStats[key] - currentStats[key];
               if (diff === 0) return null;
               const isPct = PCT_STATS.includes(key);
               return (
-                <span key={key} className={`rune-preview-chip ${diff > 0 ? 'stat-up' : 'stat-down'}`}>
+                <span key={key} className={`held-item-preview-chip ${diff > 0 ? 'stat-up' : 'stat-down'}`}>
                   {STAT_LABELS[key]} {diff > 0 ? '+' : ''}{diff}{isPct ? '%' : ''}
                 </span>
               );
@@ -241,7 +241,7 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
         </div>
 
         {/* Actions */}
-        <div className="rune-select-actions">
+        <div className="held-item-select-actions">
           {sellMode ? (
             <>
               {(() => {
@@ -250,20 +250,20 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
                   return sum + (itm ? getItemSellValue(itm) : 0);
                 }, 0);
                 return confirmBulkSell ? (
-                  <div className="rune-sell-confirm" style={{ flex: 1 }}>
+                  <div className="held-item-sell-confirm" style={{ flex: 1 }}>
                     <span>Sell {sellSelection.size} items for {totalValue.toLocaleString()} <GameIcon id="stardust" size={12} />?</span>
-                    <button className="rune-sell-yes" onClick={() => {
+                    <button className="held-item-sell-yes" onClick={() => {
                       storeSellItems(Array.from(sellSelection));
                       setSellMode(false);
                       setSellSelection(new Set());
                       setConfirmBulkSell(false);
                       refreshPlayer();
                     }}>Yes</button>
-                    <button className="rune-sell-no" onClick={() => setConfirmBulkSell(false)}>No</button>
+                    <button className="held-item-sell-no" onClick={() => setConfirmBulkSell(false)}>No</button>
                   </div>
                 ) : (
                   <button
-                    className="rune-sell-bulk-btn"
+                    className="held-item-sell-bulk-btn"
                     disabled={sellSelection.size === 0}
                     onClick={() => setConfirmBulkSell(true)}
                   >
@@ -276,7 +276,7 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
             <>
               {currentEquipped && (
                 <button
-                  className="rune-remove-btn"
+                  className="held-item-remove-btn"
                   onClick={handleRemove}
                   disabled={playerStardust < ITEM_REMOVAL_COST}
                 >
@@ -284,7 +284,7 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
                 </button>
               )}
               <button
-                className={`rune-equip-action-btn ${isTutorial && selectedItem ? 'tutorial-highlight' : ''}`}
+                className={`held-item-equip-action-btn ${isTutorial && selectedItem ? 'tutorial-highlight' : ''}`}
                 onClick={handleEquip}
                 disabled={!selectedItem}
               >

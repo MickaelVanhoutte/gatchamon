@@ -1,4 +1,4 @@
-.rune-upgrade-overlay {
+.held-item-upgrade-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
@@ -9,7 +9,7 @@
   padding: 16px;
 }
 
-.rune-upgrade-modal {
+.held-item-upgrade-modal {
   background: var(--bg-card);
   border: 1px solid var(--card-border);
   border-radius: 12px;
@@ -21,7 +21,7 @@
   box-shadow: var(--card-shadow);
 }
 
-.rune-upgrade-header {
+.held-item-upgrade-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -29,13 +29,13 @@
   border-bottom: 1px solid var(--card-border);
 }
 
-.rune-upgrade-header h3 {
+.held-item-upgrade-header h3 {
   margin: 0;
   font-size: 1rem;
   color: var(--text-primary);
 }
 
-.rune-upgrade-close {
+.held-item-upgrade-close {
   background: none;
   border: none;
   color: var(--text-secondary);
@@ -43,7 +43,7 @@
   cursor: pointer;
 }
 
-.rune-upgrade-content {
+.held-item-upgrade-content {
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -51,7 +51,7 @@
 }
 
 /* Card */
-.rune-upgrade-card {
+.held-item-upgrade-card {
   border: 2px solid;
   border-radius: 10px;
   padding: 12px;
@@ -59,45 +59,45 @@
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.rune-upgrading {
-  animation: rune-shake 0.3s ease-in-out;
+.held-item-upgrading {
+  animation: held-item-shake 0.3s ease-in-out;
 }
 
-.rune-upgrade-success {
-  animation: rune-glow 0.5s ease-out;
+.held-item-upgrade-success {
+  animation: held-item-glow 0.5s ease-out;
 }
 
-@keyframes rune-shake {
+@keyframes held-item-shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-4px); }
   75% { transform: translateX(4px); }
 }
 
-@keyframes rune-glow {
+@keyframes held-item-glow {
   0% { box-shadow: 0 0 0 rgba(74, 222, 128, 0); }
   50% { box-shadow: 0 0 20px rgba(74, 222, 128, 0.4); }
   100% { box-shadow: 0 0 0 rgba(74, 222, 128, 0); }
 }
 
-.rune-upgrade-card-top {
+.held-item-upgrade-card-top {
   display: flex;
   align-items: center;
   gap: 6px;
   margin-bottom: 4px;
 }
 
-.rune-upgrade-icon {
+.held-item-upgrade-icon {
   font-size: 1.2rem;
 }
 
-.rune-upgrade-set {
+.held-item-upgrade-set {
   font-weight: 600;
   font-size: 0.85rem;
   color: var(--text-primary);
   flex: 1;
 }
 
-.rune-upgrade-slot {
+.held-item-upgrade-slot {
   font-size: 0.7rem;
   color: var(--text-secondary);
   background: var(--bg-primary);
@@ -105,19 +105,19 @@
   border-radius: 4px;
 }
 
-.rune-upgrade-stars {
+.held-item-upgrade-stars {
   font-size: 0.7rem;
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.rune-upgrade-grade {
+.held-item-upgrade-grade {
   text-transform: capitalize;
   font-size: 0.7rem;
 }
 
-.rune-upgrade-level {
+.held-item-upgrade-level {
   font-size: 1.2rem;
   font-weight: 800;
   color: #4ade80;
@@ -125,7 +125,7 @@
   margin: 6px 0;
 }
 
-.rune-upgrade-main {
+.held-item-upgrade-main {
   display: flex;
   justify-content: space-between;
   font-size: 0.85rem;
@@ -135,16 +135,16 @@
   border-top: 1px solid var(--card-border);
 }
 
-.rune-upgrade-main-val {
+.held-item-upgrade-main-val {
   color: #4ade80;
 }
 
-.rune-upgrade-subs {
+.held-item-upgrade-subs {
   padding-top: 6px;
   border-top: 1px solid var(--card-border);
 }
 
-.rune-upgrade-sub {
+.held-item-upgrade-sub {
   display: flex;
   justify-content: space-between;
   font-size: 0.75rem;
@@ -153,7 +153,7 @@
 }
 
 /* Result message */
-.rune-upgrade-result {
+.held-item-upgrade-result {
   text-align: center;
   padding: 8px;
   border-radius: 6px;
@@ -172,33 +172,33 @@
 }
 
 /* Upgrade info */
-.rune-upgrade-info {
+.held-item-upgrade-info {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.rune-upgrade-info-row {
+.held-item-upgrade-info-row {
   display: flex;
   justify-content: space-between;
   font-size: 0.8rem;
   color: var(--text-secondary);
 }
 
-.rune-upgrade-milestone {
+.held-item-upgrade-milestone {
   color: #fbbf24;
   font-weight: 600;
 }
 
 /* Actions */
-.rune-upgrade-actions {
+.held-item-upgrade-actions {
   display: flex;
   gap: 8px;
   padding: 12px 16px;
   border-top: 1px solid var(--card-border);
 }
 
-.rune-upgrade-swap-btn {
+.held-item-upgrade-swap-btn {
   flex: 1;
   background: var(--bg-secondary);
   border: 1px solid var(--card-border);
@@ -210,11 +210,11 @@
   cursor: pointer;
 }
 
-.rune-upgrade-swap-btn:hover {
+.held-item-upgrade-swap-btn:hover {
   background: var(--bg-primary);
 }
 
-.rune-upgrade-btn {
+.held-item-upgrade-btn {
   flex: 2;
   background: rgba(74, 222, 128, 0.2);
   border: 1px solid rgba(74, 222, 128, 0.4);
@@ -227,16 +227,16 @@
   transition: background 0.15s;
 }
 
-.rune-upgrade-btn:hover:not(:disabled) {
+.held-item-upgrade-btn:hover:not(:disabled) {
   background: rgba(74, 222, 128, 0.3);
 }
 
-.rune-upgrade-btn:disabled {
+.held-item-upgrade-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.rune-upgrade-maxed {
+.held-item-upgrade-maxed {
   flex: 2;
   text-align: center;
   padding: 10px;
@@ -248,11 +248,11 @@
 }
 
 /* Sell */
-.rune-sell-section {
+.held-item-sell-section {
   padding: 8px 16px 12px;
 }
 
-.rune-sell-btn {
+.held-item-sell-btn {
   width: 100%;
   background: rgba(255, 107, 107, 0.12);
   border: 1px solid rgba(255, 107, 107, 0.3);
@@ -264,12 +264,12 @@
   cursor: pointer;
 }
 
-.rune-sell-btn:disabled {
+.held-item-sell-btn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }
 
-.rune-sell-confirm {
+.held-item-sell-confirm {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -277,11 +277,11 @@
   color: #ff6b6b;
 }
 
-.rune-sell-confirm span {
+.held-item-sell-confirm span {
   flex: 1;
 }
 
-.rune-sell-yes {
+.held-item-sell-yes {
   background: #ff6b6b;
   color: #fff;
   border: none;
@@ -291,7 +291,7 @@
   cursor: pointer;
 }
 
-.rune-sell-no {
+.held-item-sell-no {
   background: var(--bg-secondary);
   color: var(--text-secondary);
   border: 1px solid var(--card-border);
@@ -301,7 +301,7 @@
 }
 
 /* Tutorial highlight pulse */
-.rune-upgrade-btn.tutorial-highlight {
+.held-item-upgrade-btn.tutorial-highlight {
   animation: upgrade-tutorial-pulse 1.5s ease-in-out infinite;
   box-shadow: 0 0 12px 2px rgba(74, 222, 128, 0.7), inset 0 0 4px rgba(74, 222, 128, 0.2);
   border-color: rgba(74, 222, 128, 0.8) !important;

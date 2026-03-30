@@ -73,11 +73,9 @@ export function loadPlayer(): Player | null {
   if ((player as any).towerProgress === undefined) {
     player.towerProgress = 0;
   }
-  // Tower reset: resets on the 1st and 15th of each month
-  if (shouldResetTower(player.towerResetDate)) {
-    player.towerProgress = 0;
-    player.towerResetDate = getCurrentTowerResetDate();
-    savePlayer(player);
+  // Migration: add premiumPityCounter for existing players
+  if ((player as any).premiumPityCounter === undefined) {
+    player.premiumPityCounter = 0;
   }
   return player;
 }
@@ -273,6 +271,16 @@ export function saveBattleSettings(settings: Partial<BattleSettings>): void {
 
 // ── Reset ──────────────────────────────────────────────────────────────
 
+export function checkAndResetTower(): void {
+  const player = loadPlayer();
+  if (!player) return;
+  if (shouldResetTower(player.towerResetDate)) {
+    player.towerProgress = 0;
+    player.towerResetDate = getCurrentTowerResetDate();
+    savePlayer(player);
+  }
+}
+
 export function clearAll(): void {
   localStorage.removeItem(PLAYER_KEY);
   localStorage.removeItem(COLLECTION_KEY);
@@ -283,4 +291,5 @@ export function clearAll(): void {
   localStorage.removeItem(RETRY_SUMMON_KEY);
   localStorage.removeItem(LOGIN_CALENDAR_KEY);
   localStorage.removeItem(BATTLE_SETTINGS_KEY);
+  localStorage.removeItem(LAST_TEAM_KEY);
 }

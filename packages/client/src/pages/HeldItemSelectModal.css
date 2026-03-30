@@ -1,4 +1,4 @@
-.rune-select-overlay {
+.held-item-select-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
@@ -9,20 +9,20 @@
   padding: 16px;
 }
 
-.rune-select-modal {
+.held-item-select-modal {
   background: var(--bg-card);
   border: 1px solid var(--card-border);
   border-radius: 12px;
   width: 100%;
   max-width: 900px;
-  max-height: 85vh;
+  height: 85vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   box-shadow: var(--card-shadow);
 }
 
-.rune-select-header {
+.held-item-select-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -30,19 +30,19 @@
   border-bottom: 1px solid var(--card-border);
 }
 
-.rune-select-header h3 {
+.held-item-select-header h3 {
   margin: 0;
   font-size: 1rem;
   color: var(--text-primary);
 }
 
-.rune-select-header-actions {
+.held-item-select-header-actions {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.rune-select-header-actions select {
+.held-item-select-header-actions select {
   background: var(--bg-secondary);
   border: 1px solid var(--card-border);
   border-radius: 6px;
@@ -51,7 +51,7 @@
   font-size: 0.7rem;
 }
 
-.rune-select-close {
+.held-item-select-close {
   background: none;
   border: none;
   color: var(--text-secondary);
@@ -59,7 +59,7 @@
   cursor: pointer;
 }
 
-.rune-select-body {
+.held-item-select-body {
   display: flex;
   flex: 1;
   min-height: 0;
@@ -67,7 +67,7 @@
 }
 
 /* Set sidebar */
-.rune-select-sidebar {
+.held-item-select-sidebar {
   width: 150px;
   flex-shrink: 0;
   display: flex;
@@ -79,7 +79,7 @@
   overflow-y: auto;
 }
 
-.rune-select-sidebar-item {
+.held-item-select-sidebar-item {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -94,24 +94,24 @@
   transition: all 0.15s;
 }
 
-.rune-select-sidebar-item:hover {
+.held-item-select-sidebar-item:hover {
   background: var(--bg-primary);
 }
 
-.rune-select-sidebar-item--active {
+.held-item-select-sidebar-item--active {
   background: rgba(13, 148, 136, 0.1);
   border-color: var(--accent);
   color: var(--accent);
 }
 
-.rune-select-sidebar-name {
+.held-item-select-sidebar-name {
   flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.rune-select-sidebar-count {
+.held-item-select-sidebar-count {
   font-size: 0.6rem;
   font-weight: 700;
   color: var(--text-secondary);
@@ -122,13 +122,13 @@
   text-align: center;
 }
 
-.rune-select-sidebar-item--active .rune-select-sidebar-count {
+.held-item-select-sidebar-item--active .held-item-select-sidebar-count {
   color: var(--accent);
   background: rgba(13, 148, 136, 0.15);
 }
 
 /* Main column (set effect + item grid) */
-.rune-select-main {
+.held-item-select-main {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -137,7 +137,7 @@
 }
 
 /* Set effect banner */
-.rune-select-set-effect {
+.held-item-select-set-effect {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -147,13 +147,13 @@
   flex-shrink: 0;
 }
 
-.rune-select-set-effect-name {
+.held-item-select-set-effect-name {
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
-.rune-select-set-effect-pieces {
+.held-item-select-set-effect-pieces {
   font-size: 0.6rem;
   font-weight: 700;
   color: var(--text-secondary);
@@ -162,7 +162,7 @@
   border-radius: 4px;
 }
 
-.rune-select-set-effect-desc {
+.held-item-select-set-effect-desc {
   font-size: 0.65rem;
   color: var(--accent);
   font-weight: 600;
@@ -170,7 +170,7 @@
   text-align: right;
 }
 
-.rune-select-list {
+.held-item-select-list {
   flex: 1;
   overflow-y: auto;
   padding: 8px;
@@ -180,7 +180,7 @@
   align-content: start;
 }
 
-.rune-select-empty {
+.held-item-select-empty {
   text-align: center;
   color: var(--text-secondary);
   padding: 24px;
@@ -188,26 +188,26 @@
   grid-column: 1 / -1;
 }
 
-.rune-select-preview {
+.held-item-select-preview {
   width: 180px;
   border-left: 1px solid var(--card-border);
   padding: 8px 12px;
   overflow-y: auto;
 }
 
-.rune-select-preview h4 {
+.held-item-select-preview h4 {
   margin: 0 0 8px 0;
   font-size: 0.75rem;
   color: var(--text-secondary);
 }
 
-.rune-preview-stats {
+.held-item-preview-stats {
   display: flex;
   flex-direction: column;
   gap: 3px;
 }
 
-.rune-preview-row {
+.held-item-preview-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -215,22 +215,22 @@
   font-size: 0.65rem;
 }
 
-.rune-preview-label {
+.held-item-preview-label {
   width: 100%;
   color: var(--text-secondary);
   font-size: 0.6rem;
 }
 
-.rune-preview-current {
+.held-item-preview-current {
   color: var(--text-primary);
 }
 
-.rune-preview-arrow {
+.held-item-preview-arrow {
   color: var(--text-secondary);
   font-size: 0.6rem;
 }
 
-.rune-preview-new {
+.held-item-preview-new {
   color: var(--text-primary);
   font-weight: 600;
 }
@@ -244,11 +244,11 @@
 }
 
 /* Compact stat preview (mobile only) */
-.rune-preview-compact {
+.held-item-preview-compact {
   display: none;
 }
 
-.rune-preview-chip {
+.held-item-preview-chip {
   font-size: 0.65rem;
   font-weight: 600;
   padding: 2px 6px;
@@ -256,22 +256,22 @@
   white-space: nowrap;
 }
 
-.rune-preview-chip.stat-up {
+.held-item-preview-chip.stat-up {
   background: rgba(74, 222, 128, 0.12);
 }
 
-.rune-preview-chip.stat-down {
+.held-item-preview-chip.stat-down {
   background: rgba(255, 107, 107, 0.12);
 }
 
-.rune-select-actions {
+.held-item-select-actions {
   display: flex;
   gap: 8px;
   padding: 12px 16px;
   border-top: 1px solid var(--card-border);
 }
 
-.rune-remove-btn {
+.held-item-remove-btn {
   flex: 1;
   background: rgba(255, 107, 107, 0.15);
   border: 1px solid rgba(255, 107, 107, 0.3);
@@ -283,12 +283,12 @@
   cursor: pointer;
 }
 
-.rune-remove-btn:disabled {
+.held-item-remove-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.rune-equip-action-btn {
+.held-item-equip-action-btn {
   flex: 1;
   background: rgba(13, 148, 136, 0.12);
   border: 1px solid rgba(13, 148, 136, 0.3);
@@ -300,17 +300,17 @@
   cursor: pointer;
 }
 
-.rune-equip-action-btn:disabled {
+.held-item-equip-action-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.rune-equip-action-btn:not(:disabled):hover {
+.held-item-equip-action-btn:not(:disabled):hover {
   background: rgba(13, 148, 136, 0.2);
 }
 
 /* Sell mode */
-.rune-sell-mode-btn {
+.held-item-sell-mode-btn {
   background: rgba(255, 107, 107, 0.12);
   border: 1px solid rgba(255, 107, 107, 0.3);
   color: #ff6b6b;
@@ -321,11 +321,11 @@
   cursor: pointer;
 }
 
-.rune-sell-mode-btn.active {
+.held-item-sell-mode-btn.active {
   background: rgba(255, 107, 107, 0.3);
 }
 
-.rune-sell-bulk-btn {
+.held-item-sell-bulk-btn {
   flex: 1;
   background: rgba(255, 107, 107, 0.15);
   border: 1px solid rgba(255, 107, 107, 0.3);
@@ -337,12 +337,12 @@
   cursor: pointer;
 }
 
-.rune-sell-bulk-btn:disabled {
+.held-item-sell-bulk-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.rune-sell-confirm {
+.held-item-sell-confirm {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -350,11 +350,11 @@
   color: #ff6b6b;
 }
 
-.rune-sell-confirm span {
+.held-item-sell-confirm span {
   flex: 1;
 }
 
-.rune-sell-yes {
+.held-item-sell-yes {
   background: #ff6b6b;
   color: #fff;
   border: none;
@@ -364,7 +364,7 @@
   cursor: pointer;
 }
 
-.rune-sell-no {
+.held-item-sell-no {
   background: var(--bg-secondary);
   color: var(--text-secondary);
   border: 1px solid var(--card-border);
@@ -375,12 +375,12 @@
 
 /* ── Mobile responsive ───────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .rune-select-overlay {
+  .held-item-select-overlay {
     padding: 4px;
     align-items: stretch;
   }
 
-  .rune-select-modal {
+  .held-item-select-modal {
     max-height: 100vh;
     max-height: 100dvh;
     height: 100vh;
@@ -388,45 +388,51 @@
     border-radius: 8px;
   }
 
-  .rune-select-body {
+  .held-item-select-body {
     flex-direction: column;
     overflow: hidden;
     min-height: 0;
   }
 
-  .rune-select-sidebar {
+  .held-item-select-sidebar {
     width: 100%;
     flex-direction: row;
     flex-wrap: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
     border-right: none;
     border-bottom: 1px solid var(--card-border);
     padding: 4px;
     flex-shrink: 0;
+    scrollbar-width: none;
   }
 
-  .rune-select-sidebar-item {
+  .held-item-select-sidebar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .held-item-select-sidebar-item {
     white-space: nowrap;
     flex-shrink: 0;
   }
 
-  .rune-select-main {
+  .held-item-select-main {
     flex: 1 1 0%;
     min-height: 0;
     overflow: hidden;
   }
 
-  .rune-select-list {
+  .held-item-select-list {
     min-height: 0;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }
 
-  .rune-preview-full {
+  .held-item-preview-full {
     display: none;
   }
 
-  .rune-preview-compact {
+  .held-item-preview-compact {
     display: flex;
     flex-wrap: wrap;
     gap: 4px;

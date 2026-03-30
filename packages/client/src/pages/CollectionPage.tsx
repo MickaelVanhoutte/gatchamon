@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { GameIcon, StarRating } from '../components/icons';
@@ -8,8 +8,9 @@ import { canEvolveInstance } from '../services/evolution.service';
 import { canChangeType } from '../services/type-change.service';
 import type { PokemonType, BaseStats } from '@gatchamon/shared';
 import { assetUrl } from '../utils/asset-url';
-import { RuneEquipPanel } from './RuneEquipPanel';
+import { HeldItemEquipPanel } from './HeldItemEquipPanel';
 import { SkillCard } from '../components/monster/SkillCard';
+import { Spinner } from '../components/Spinner';
 import { useTutorialStore } from '../stores/tutorialStore';
 import './CollectionPage.css';
 
@@ -50,11 +51,12 @@ const STAT_LABELS: Record<keyof BaseStats, string> = {
 
 export function CollectionPage() {
   const navigate = useNavigate();
-  const { collection, loadCollection, evolvePokemon, changeType, player, heldItems, loadHeldItems, updateInstance } = useGameStore();
+  const { collection, loadCollection, evolvePokemon, changeType, player, heldItems, loadHeldItems, updateInstance, isLoading } = useGameStore();
   const [typeFilter, setTypeFilter] = useState<PokemonType | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>('stars');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<DetailTab>('info');
+  const lastSelectedRef = useRef<string | null>(null);
 
   const tutorialStep = useTutorialStore(s => s.step);
   const advanceTutorial = useTutorialStore(s => s.advanceStep);
@@ -65,12 +67,18 @@ export function CollectionPage() {
   }, [loadCollection, loadHeldItems]);
 
   useEffect(() => {
-    if (!selectedId && collection.length > 0) {
-      setSelectedId(collection[0].instance.instanceId);
-      // Auto-select advances tutorial from step 13 → 14
-      if (tutorialStep === 13) advanceTutorial();
+    if (collection.length > 0) {
+      // Restore previous selection if it still exists in collection
+      const prevId = lastSelectedRef.current ?? selectedId;
+      const stillExists = prevId && collection.some(m => m.instance.instanceId === prevId);
+      if (stillExists) {
+        setSelectedId(prevId);
+      } else if (!selectedId) {
+        setSelectedId(collection[0].instance.instanceId);
+        if (tutorialStep === 13) advanceTutorial();
+      }
     }
-  }, [collection, selectedId]);
+  }, [collection]);
 
   const selected: OwnedPokemon | undefined = collection.find(
     m => m.instance.instanceId === selectedId,
@@ -148,6 +156,7 @@ export function CollectionPage() {
       <div className="box-layout">
         {/* Left: Compact grid */}
         <div className="box-grid-panel">
+          {isLoading && <div className="box-grid-loading"><Spinner label="Loading..." /></div>}
           <div className="box-grid">
             {filtered.map((mon, idx) => {
               const starColor = STAR_COLORS[mon.instance.stars] ?? STAR_COLORS[1];
@@ -160,6 +169,7 @@ export function CollectionPage() {
                   data-tutorial-id={idx === 0 ? 'collection-first-mon' : undefined}
                   onClick={() => {
                     setSelectedId(mon.instance.instanceId);
+                    lastSelectedRef.current = mon.instance.instanceId;
                     if (tutorialStep === 13) advanceTutorial(); // step 13 → 14
                   }}
                 >
@@ -252,7 +262,7 @@ export function CollectionPage() {
                   </div>
                 </div>
               ) : activeTab === 'items' ? (
-                <RuneEquipPanel
+                <HeldItemEquipPanel
                   pokemon={selected}
                   heldItems={heldItems}
                   player={{ stardust: player?.stardust ?? 0 }}
@@ -447,6 +457,7 @@ export function CollectionPage() {
                       skill={skill}
                       index={i + 1}
                       skillLevel={selected.instance.skillLevels?.[i] ?? 1}
+                      isAbility={i === 2 && skill.category === 'passive'}
                     />
                   ))}
                 </div>

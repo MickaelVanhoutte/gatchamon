@@ -20,7 +20,7 @@ const COMBAT_SKILLS: SkillDef[] = [
   { key: 'globalAtkBonus', name: 'ATK Boost', desc: 'All monsters gain ATK', unit: '+2% / lv' },
   { key: 'globalDefBonus', name: 'DEF Boost', desc: 'All monsters gain DEF', unit: '+2% / lv' },
   { key: 'globalHpBonus', name: 'HP Boost', desc: 'All monsters gain HP', unit: '+2% / lv' },
-  { key: 'globalSpdBonus', name: 'SPD Boost', desc: 'All monsters gain SPD', unit: '+1% / lv' },
+  { key: 'globalSpdBonus', name: 'SPD Boost', desc: 'All monsters gain SPD', unit: '+2% / lv' },
 ];
 
 const ECONOMY_SKILLS: SkillDef[] = [

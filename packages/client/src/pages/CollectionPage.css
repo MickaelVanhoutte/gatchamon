@@ -1,3 +1,10 @@
+.box-grid-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
 /* ========== Collection Page - Summoners War Layout ========== */
 .collection-page {
   display: flex;
@@ -791,6 +798,29 @@
 }
 
 /* ========== Responsive ========== */
+@media (max-width: 768px) {
+  .box-detail-panel {
+    width: 280px;
+  }
+
+  .box-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .box-cell {
+    height: 64px;
+  }
+
+  .box-tabs {
+    width: 44px;
+  }
+
+  .box-tab {
+    padding: 8px 4px;
+    font-size: 0.65rem;
+  }
+}
+
 @media (max-width: 600px) {
   .box-grid {
     grid-template-columns: repeat(5, 1fr);
@@ -798,6 +828,45 @@
 
   .box-detail-panel {
     width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .box-detail-panel {
+    width: 220px;
+  }
+
+  .box-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .box-cell {
+    height: 58px;
+  }
+
+  .box-tabs {
+    width: 38px;
+  }
+
+  .box-tab {
+    padding: 6px 3px;
+    font-size: 0.6rem;
+  }
+
+  .box-detail-name {
+    font-size: 0.8rem;
+  }
+
+  .skill-card {
+    padding: 6px;
+  }
+
+  .skill-card-name {
+    font-size: 0.7rem;
+  }
+
+  .skill-card-desc {
+    font-size: 0.6rem;
   }
 }
 

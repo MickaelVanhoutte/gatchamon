@@ -456,3 +456,129 @@
   background: var(--card-border, #d0e4ea);
   border-radius: 2px;
 }
+
+/* ========== Responsive ========== */
+@media (max-width: 768px) {
+  .floor-panel {
+    width: 280px;
+  }
+
+  .zone-pin {
+    width: 38px;
+    height: 38px;
+  }
+
+  .zone-pulse {
+    width: 38px;
+    height: 38px;
+  }
+
+  .zone-name {
+    font-size: 0.7rem;
+  }
+
+  .zone-icon {
+    font-size: 1rem;
+  }
+
+  .difficulty-tab {
+    padding: 4px 10px;
+    font-size: 0.7rem;
+  }
+
+  .floor-go-btn {
+    width: 48px;
+    height: 48px;
+  }
+
+  .go-text {
+    font-size: 0.75rem;
+  }
+
+  .floor-enemy-portrait {
+    width: 30px;
+    height: 30px;
+  }
+
+  .floor-enemy-portrait img {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .floor-panel {
+    width: 240px;
+  }
+
+  .floor-panel-header {
+    padding: 8px 12px;
+  }
+
+  .floor-panel-header h3 {
+    font-size: 0.85rem;
+  }
+
+  .floor-entry {
+    padding: 8px 10px;
+  }
+
+  .floor-entry-number {
+    font-size: 0.75rem;
+  }
+
+  .zone-pin {
+    width: 34px;
+    height: 34px;
+  }
+
+  .zone-pulse {
+    width: 34px;
+    height: 34px;
+  }
+
+  .zone-name {
+    font-size: 0.65rem;
+  }
+
+  .zone-icon {
+    font-size: 0.9rem;
+  }
+
+  .difficulty-tabs {
+    padding: 3px;
+    gap: 2px;
+  }
+
+  .difficulty-tab {
+    padding: 3px 8px;
+    font-size: 0.65rem;
+  }
+
+  .floor-go-btn {
+    width: 42px;
+    height: 42px;
+  }
+
+  .go-text {
+    font-size: 0.7rem;
+  }
+
+  .go-energy {
+    font-size: 0.55rem;
+  }
+
+  .floor-enemy-portrait {
+    width: 28px;
+    height: 28px;
+  }
+
+  .floor-enemy-portrait img {
+    width: 22px;
+    height: 22px;
+  }
+
+  .reward-tag {
+    font-size: 0.55rem;
+  }
+}

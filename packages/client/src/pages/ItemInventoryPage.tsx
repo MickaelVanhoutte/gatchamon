@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import type { HeldItemInstance, HeldItemSlot } from '@gatchamon/shared';
 import { ITEM_SETS, MAX_HELD_ITEMS, GRADE_COLORS, getItemSellValue } from '@gatchamon/shared';
 import { useGameStore } from '../stores/gameStore';
-import { RuneCard } from '../components/rune/RuneCard';
-import { RuneUpgradeModal } from './RuneUpgradeModal';
+import { HeldItemCard } from '../components/held-item/HeldItemCard';
+import { HeldItemUpgradeModal } from './HeldItemUpgradeModal';
 import { GameIcon } from '../components/icons';
 import './ItemInventoryPage.css';
 
@@ -145,7 +145,7 @@ export function ItemInventoryPage() {
             <option value="mainValue">Main Stat</option>
           </select>
           <button
-            className={`rune-sell-mode-btn ${sellMode ? 'active' : ''}`}
+            className={`held-item-sell-mode-btn ${sellMode ? 'active' : ''}`}
             onClick={() => { setSellMode(!sellMode); setSellSelection(new Set()); setConfirmBulkSell(false); }}
           >
             {sellMode ? 'Cancel' : 'Sell'}
@@ -220,7 +220,7 @@ export function ItemInventoryPage() {
                   </div>
                   <div className="inventory-grid">
                     {slotItems.map(item => (
-                      <RuneCard
+                      <HeldItemCard
                         key={item.itemId}
                         item={item}
                         selected={sellMode ? sellSelection.has(item.itemId) : false}
@@ -236,7 +236,7 @@ export function ItemInventoryPage() {
             // Flat grid (specific slot selected)
             <div className="inventory-grid">
               {filteredItems.map(item => (
-                <RuneCard
+                <HeldItemCard
                   key={item.itemId}
                   item={item}
                   selected={sellMode ? sellSelection.has(item.itemId) : false}
@@ -253,14 +253,14 @@ export function ItemInventoryPage() {
       {sellMode && (
         <div className="inventory-sell-bar">
           {confirmBulkSell ? (
-            <div className="rune-sell-confirm" style={{ flex: 1 }}>
+            <div className="held-item-sell-confirm" style={{ flex: 1 }}>
               <span>Sell {sellSelection.size} items for {totalSellValue.toLocaleString()} <GameIcon id="stardust" size={12} />?</span>
-              <button className="rune-sell-yes" onClick={handleBulkSell}>Yes</button>
-              <button className="rune-sell-no" onClick={() => setConfirmBulkSell(false)}>No</button>
+              <button className="held-item-sell-yes" onClick={handleBulkSell}>Yes</button>
+              <button className="held-item-sell-no" onClick={() => setConfirmBulkSell(false)}>No</button>
             </div>
           ) : (
             <button
-              className="rune-sell-bulk-btn"
+              className="held-item-sell-bulk-btn"
               disabled={sellSelection.size === 0}
               onClick={() => setConfirmBulkSell(true)}
             >
@@ -272,7 +272,7 @@ export function ItemInventoryPage() {
 
       {/* Upgrade modal */}
       {upgradeItem && (
-        <RuneUpgradeModal
+        <HeldItemUpgradeModal
           item={upgradeItem}
           playerStardust={player?.stardust ?? 0}
           onClose={() => setUpgradeItemId(null)}

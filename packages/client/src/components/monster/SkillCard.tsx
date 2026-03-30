@@ -33,7 +33,7 @@ const TARGET_LABELS: Record<string, string> = {
   all_allies: 'All Allies',
 };
 
-export function SkillCard({ skill, index, skillLevel = 1 }: { skill: SkillDefinition; index: number; skillLevel?: number }) {
+export function SkillCard({ skill, index, skillLevel = 1, isAbility = false }: { skill: SkillDefinition; index: number; skillLevel?: number; isAbility?: boolean }) {
   const bonus = getSkillMultiplierBonus(skillLevel);
   const effectiveMultiplier = skill.multiplier > 0
     ? Math.round(skill.multiplier * bonus * 100) / 100
@@ -43,7 +43,7 @@ export function SkillCard({ skill, index, skillLevel = 1 }: { skill: SkillDefini
   return (
     <div className="skill-card">
       <div className="skill-card-header">
-        <span className="skill-card-index">S{index}</span>
+        <span className="skill-card-index">{isAbility ? 'A' : `S${index}`}</span>
         <span className="skill-card-name">{skill.name}</span>
         <span className="skill-card-level">
           Lv.{skillLevel}/{MAX_SKILL_LEVEL}
@@ -58,7 +58,7 @@ export function SkillCard({ skill, index, skillLevel = 1 }: { skill: SkillDefini
       <div className="skill-card-stats">
         <div className="skill-meta-row">
           <span className="skill-meta-label">Category</span>
-          <span className="skill-meta-value">{CATEGORY_LABELS[skill.category]}</span>
+          <span className="skill-meta-value">{isAbility ? 'Ability' : CATEGORY_LABELS[skill.category]}</span>
         </div>
         <div className="skill-meta-row">
           <span className="skill-meta-label">Multiplier</span>

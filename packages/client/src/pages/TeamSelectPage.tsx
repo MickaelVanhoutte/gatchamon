@@ -37,6 +37,7 @@ export function TeamSelectPage() {
   const [searchParams] = useSearchParams();
   const [selected, setSelected] = useState<string[]>([]);
   const [isStarting, setIsStarting] = useState(false);
+  const [startError, setStartError] = useState<string | null>(null);
   const [teamRestored, setTeamRestored] = useState(false);
   const [detailMon, setDetailMon] = useState<OwnedPokemon | null>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -172,7 +173,7 @@ export function TeamSelectPage() {
         navigate(`/battle/${result.state.battleId}`);
       }
     } catch (err: any) {
-      alert(err.message);
+      setStartError(err.message);
       setIsStarting(false);
     }
   };
@@ -223,6 +224,7 @@ export function TeamSelectPage() {
 
   return (
     <div className="page team-select-page">
+      {startError && <div className="ts-error-banner" onClick={() => setStartError(null)}>{startError}</div>}
       {/* Header */}
       <div className="ts-header">
         <span className="ts-stage-name">{headerText}</span>

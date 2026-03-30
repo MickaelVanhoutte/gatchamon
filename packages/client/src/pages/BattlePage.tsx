@@ -62,7 +62,7 @@ function SkillDetailModal({ skill, onClose }: { skill: SkillDefinition; onClose:
           <span className="skill-detail-name">{skill.name}</span>
           <span className="skill-detail-type" style={{ background: `var(--type-${skill.type})` }}>{skill.type}</span>
         </div>
-        <span className="skill-detail-cat">{skill.category}{skill.passiveTrigger ? ` \u2014 ${PASSIVE_TRIGGER_LABELS[skill.passiveTrigger] ?? skill.passiveTrigger}` : ''}</span>
+        <span className="skill-detail-cat">{skill.category === 'passive' ? 'Ability' : skill.category}{skill.passiveTrigger ? ` \u2014 ${PASSIVE_TRIGGER_LABELS[skill.passiveTrigger] ?? skill.passiveTrigger}` : ''}</span>
         <p className="skill-detail-desc">{skill.description}</p>
         <div className="skill-detail-stats">
           {skill.multiplier > 0 && <span>Multiplier: {skill.multiplier}x</span>}
@@ -160,7 +160,7 @@ function SkillPanel({ actor, selectedSkill, onSkillSelect, onCancelSelect, onSki
           >
             <span className="skill-name">{skill.name}</span>
             {!isReady && !isPassive && <span className="cd-overlay">{cd}</span>}
-            {isPassive && <span className="passive-label">P</span>}
+            {isPassive && <span className="passive-label">Ability</span>}
           </button>
         );
       })}

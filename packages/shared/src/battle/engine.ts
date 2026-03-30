@@ -1045,6 +1045,12 @@ export function autoResolveEnemyTurns(state: BattleState): BattleLogEntry[] {
     // Enemy turn
     state.turnNumber++;
 
+    // Prevent infinite loops (heal/endure/reflect stalls)
+    if (state.turnNumber > 500) {
+      (state as any).status = 'defeat';
+      break;
+    }
+
     // Trigger turn_start passives
     const turnStartEffects = processPassiveTrigger('turn_start', actor, state);
     const turnEffects = processStartOfTurn(actor, state);

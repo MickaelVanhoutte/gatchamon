@@ -37,7 +37,7 @@ import {
   checkAndUpdateTrophies,
 } from './reward.service';
 import { grantTrainerXp } from './player.service';
-import { rollItemDrop, generateItem } from './rune.service';
+import { rollItemDrop, generateItem } from './held-item.service';
 import { addHeldItem } from './storage';
 import { useTutorialStore } from '../stores/tutorialStore';
 import { calculateTowerRewards as calculateTowerRewardsImported, getDungeonBattle } from './dungeon.service';
@@ -87,7 +87,7 @@ function makeBattleMon(
         atk: Math.floor(stats.atk * (1 + sk.globalAtkBonus * 0.02)),
         def: Math.floor(stats.def * (1 + sk.globalDefBonus * 0.02)),
         hp: Math.floor(stats.hp * (1 + sk.globalHpBonus * 0.02)),
-        spd: Math.floor(stats.spd * (1 + sk.globalSpdBonus * 0.01)),
+        spd: Math.floor(stats.spd * (1 + sk.globalSpdBonus * 0.02)),
       };
     }
   } else {
@@ -682,11 +682,30 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
 
   state.turnNumber++;
 
+  // Prevent infinite loops
+  if (state.turnNumber > 500) {
+    (state as any).status = 'defeat';
+    activeBattles.set(battleId, state);
+    return { state };
+  }
+
   // Trigger turn_start passives
   const turnStartEffects = processPassiveTrigger('turn_start', actor, state);
   const turnEffects = processStartOfTurn(actor, state);
   const allTurnEffects = [...turnStartEffects, ...turnEffects];
   const logs: BattleLogEntry[] = [];
+
+  // Proc heal_per_turn (Leftovers) at turn start
+  const actorTurnEffects = battleSetEffects.get(actor.instanceId);
+  if (actorTurnEffects && actor.isAlive) {
+    for (const eff of actorTurnEffects) {
+      if (eff.procEffect === 'heal_per_turn' && actor.currentHp < actor.maxHp) {
+        const healAmt = Math.floor(actor.maxHp * (eff.procValue ?? 15) / 100);
+        actor.currentHp = Math.min(actor.maxHp, actor.currentHp + healAmt);
+        allTurnEffects.push(`${template.name} recovered ${healAmt} HP from Leftovers!`);
+      }
+    }
+  }
 
   if (!actor.isAlive) {
     checkBattleEnd(state);

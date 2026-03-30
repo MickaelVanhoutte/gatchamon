@@ -179,3 +179,9 @@ img {
 }
 
 /* Pokeball icon is now an SVG component - CSS class removed */
+
+/* ── Safe-area insets for notched devices ─────────────────────────── */
+.app {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}

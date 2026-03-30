@@ -1235,3 +1235,146 @@
   align-items: center;
   gap: 3px;
 }
+
+/* ========== Responsive ========== */
+@media (max-width: 768px) {
+  .battle-field {
+    gap: 16px;
+    padding: 6px;
+  }
+
+  .battle-mon {
+    width: clamp(70px, 11vw, 120px);
+  }
+
+  .battle-sprite {
+    width: clamp(56px, 9vw, 100px);
+    height: clamp(56px, 9vw, 100px);
+  }
+
+  .skill-btn {
+    width: 56px;
+    height: 56px;
+  }
+
+  .skill-name {
+    font-size: 0.55rem;
+  }
+
+  .skill-panel {
+    bottom: 12px;
+    right: 12px;
+    gap: 6px;
+  }
+
+  .overlay-content {
+    padding: 16px;
+  }
+
+  .overlay-content h2 {
+    font-size: 2rem;
+  }
+
+  .return-btn {
+    padding: 10px 36px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .battle-field {
+    gap: 10px;
+    padding: 4px;
+  }
+
+  .battle-mon {
+    width: clamp(60px, 10vw, 100px);
+  }
+
+  .battle-sprite {
+    width: clamp(48px, 8vw, 80px);
+    height: clamp(48px, 8vw, 80px);
+  }
+
+  .skill-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+  }
+
+  .skill-name {
+    font-size: 0.5rem;
+  }
+
+  .skill-panel {
+    bottom: 8px;
+    right: 8px;
+    gap: 4px;
+  }
+
+  .cancel-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 0.75rem;
+  }
+
+  .turn-portrait {
+    width: 30px;
+    height: 30px;
+  }
+
+  .turn-bar {
+    padding: 4px 8px;
+    gap: 4px;
+  }
+
+  .speed-toggle,
+  .pause-toggle,
+  .auto-toggle {
+    padding: 3px 8px;
+    font-size: 0.6rem;
+  }
+
+  .mon-name {
+    font-size: 0.6rem;
+  }
+
+  .floating-number {
+    font-size: 0.9rem;
+  }
+
+  .float-crit {
+    font-size: 1.1rem;
+  }
+
+  .overlay-content h2 {
+    font-size: 1.6rem;
+  }
+
+  .overlay-columns {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .battle-recap {
+    padding-left: 0;
+    border-left: none;
+    border-top: 1px solid var(--card-border, #d0e4ea);
+    padding-top: 12px;
+  }
+
+  .return-btn {
+    padding: 10px 32px;
+    font-size: 0.9rem;
+  }
+
+  .effect-modal {
+    padding: 16px 18px;
+    width: 320px;
+  }
+
+  .skill-detail-modal {
+    padding: 16px 18px;
+    width: 320px;
+  }
+}

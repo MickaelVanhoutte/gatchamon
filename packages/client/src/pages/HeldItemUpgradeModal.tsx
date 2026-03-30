@@ -4,9 +4,9 @@ import { getUpgradeCost, getUpgradeSuccessRate, STAT_TYPE_LABELS, getItemSet, GR
 import { useGameStore } from '../stores/gameStore';
 import { useTutorialStore } from '../stores/tutorialStore';
 import { GameIcon, StarRating } from '../components/icons';
-import './RuneUpgradeModal.css';
+import './HeldItemUpgradeModal.css';
 
-interface RuneUpgradeModalProps {
+interface HeldItemUpgradeModalProps {
   item: HeldItemInstance;
   playerStardust: number;
   onClose: () => void;
@@ -14,7 +14,7 @@ interface RuneUpgradeModalProps {
   hideChangeItem?: boolean;
 }
 
-export function RuneUpgradeModal({ item: initialItem, playerStardust, onClose, onEquipSlot, hideChangeItem }: RuneUpgradeModalProps) {
+export function HeldItemUpgradeModal({ item: initialItem, playerStardust, onClose, onEquipSlot, hideChangeItem }: HeldItemUpgradeModalProps) {
   const { upgradeItem: storeUpgrade, sellItem: storeSell, heldItems } = useGameStore();
   const tutorialStep = useTutorialStore(s => s.step);
   const isTutorial = tutorialStep === 16;
@@ -64,37 +64,37 @@ export function RuneUpgradeModal({ item: initialItem, playerStardust, onClose, o
     type.includes('pct') || ['critRate', 'critDmg', 'acc', 'res'].includes(type) ? '%' : '';
 
   return (
-    <div className="rune-upgrade-overlay" onClick={onClose}>
-      <div className="rune-upgrade-modal" onClick={e => e.stopPropagation()}>
-        <div className="rune-upgrade-header">
+    <div className="held-item-upgrade-overlay" onClick={onClose}>
+      <div className="held-item-upgrade-modal" onClick={e => e.stopPropagation()}>
+        <div className="held-item-upgrade-header">
           <h3>Upgrade Item</h3>
-          <button className="rune-upgrade-close" onClick={onClose}><GameIcon id="close" size={18} /></button>
+          <button className="held-item-upgrade-close" onClick={onClose}><GameIcon id="close" size={18} /></button>
         </div>
 
-        <div className="rune-upgrade-content">
+        <div className="held-item-upgrade-content">
           {/* Item display */}
-          <div className={`rune-upgrade-card ${animating ? 'rune-upgrading' : ''} ${lastResult?.success ? 'rune-upgrade-success' : ''}`}
+          <div className={`held-item-upgrade-card ${animating ? 'held-item-upgrading' : ''} ${lastResult?.success ? 'held-item-upgrade-success' : ''}`}
                style={{ borderColor: gradeColor }}>
-            <div className="rune-upgrade-card-top">
-              <span className="rune-upgrade-icon"><GameIcon id={setDef?.icon} size={14} /></span>
-              <span className="rune-upgrade-set">{setDef?.name}</span>
-              <span className="rune-upgrade-slot">S{item.slot}</span>
+            <div className="held-item-upgrade-card-top">
+              <span className="held-item-upgrade-icon"><GameIcon id={setDef?.icon} size={14} /></span>
+              <span className="held-item-upgrade-set">{setDef?.name}</span>
+              <span className="held-item-upgrade-slot">S{item.slot}</span>
             </div>
-            <div className="rune-upgrade-stars" style={{ color: gradeColor }}>
+            <div className="held-item-upgrade-stars" style={{ color: gradeColor }}>
               <StarRating count={item.stars} size={10} />
-              <span className="rune-upgrade-grade">{item.grade}</span>
+              <span className="held-item-upgrade-grade">{item.grade}</span>
             </div>
-            <div className="rune-upgrade-level">+{item.level}{isMaxLevel ? ' MAX' : ''}</div>
+            <div className="held-item-upgrade-level">+{item.level}{isMaxLevel ? ' MAX' : ''}</div>
 
-            <div className="rune-upgrade-main">
+            <div className="held-item-upgrade-main">
               <span>{STAT_TYPE_LABELS[item.mainStat]}</span>
-              <span className="rune-upgrade-main-val">+{item.mainStatValue}{pctDisplay(item.mainStat)}</span>
+              <span className="held-item-upgrade-main-val">+{item.mainStatValue}{pctDisplay(item.mainStat)}</span>
             </div>
 
             {item.subStats.length > 0 && (
-              <div className="rune-upgrade-subs">
+              <div className="held-item-upgrade-subs">
                 {item.subStats.map((sub, i) => (
-                  <div key={i} className="rune-upgrade-sub">
+                  <div key={i} className="held-item-upgrade-sub">
                     <span>{STAT_TYPE_LABELS[sub.type]}</span>
                     <span>+{sub.value}{pctDisplay(sub.type)}</span>
                   </div>
@@ -105,24 +105,24 @@ export function RuneUpgradeModal({ item: initialItem, playerStardust, onClose, o
 
           {/* Result message */}
           {lastResult && (
-            <div className={`rune-upgrade-result ${lastResult.success ? 'result-success' : 'result-fail'}`}>
+            <div className={`held-item-upgrade-result ${lastResult.success ? 'result-success' : 'result-fail'}`}>
               {lastResult.message}
             </div>
           )}
 
           {/* Upgrade info */}
           {!isMaxLevel && (
-            <div className="rune-upgrade-info">
-              <div className="rune-upgrade-info-row">
+            <div className="held-item-upgrade-info">
+              <div className="held-item-upgrade-info-row">
                 <span>Cost</span>
                 <span><GameIcon id="stardust" size={12} /> {cost.toLocaleString()}</span>
               </div>
-              <div className="rune-upgrade-info-row">
+              <div className="held-item-upgrade-info-row">
                 <span>Success Rate</span>
                 <span>{Math.round(successRate * 100)}%</span>
               </div>
               {(item.level + 1) % 3 === 0 && (item.level + 1) <= 12 && (
-                <div className="rune-upgrade-info-row rune-upgrade-milestone">
+                <div className="held-item-upgrade-info-row held-item-upgrade-milestone">
                   <span>+{item.level + 1}</span>
                   <span>{item.subStats.length < 4 ? 'New sub stat!' : 'Sub stat upgrade!'}</span>
                 </div>
@@ -132,30 +132,30 @@ export function RuneUpgradeModal({ item: initialItem, playerStardust, onClose, o
         </div>
 
         {/* Actions */}
-        <div className="rune-upgrade-actions">
+        <div className="held-item-upgrade-actions">
           {!hideChangeItem && onEquipSlot && (
-            <button className="rune-upgrade-swap-btn" onClick={() => onEquipSlot(item.slot)}>
+            <button className="held-item-upgrade-swap-btn" onClick={() => onEquipSlot(item.slot)}>
               Change Item
             </button>
           )}
           {!isMaxLevel ? (
             <button
-              className={`rune-upgrade-btn ${isTutorial ? 'tutorial-highlight' : ''}`}
+              className={`held-item-upgrade-btn ${isTutorial ? 'tutorial-highlight' : ''}`}
               onClick={handleUpgrade}
               disabled={!canAfford || animating}
             >
               {animating ? 'Upgrading...' : <>Upgrade ({cost.toLocaleString()} <GameIcon id="stardust" size={12} />)</>}
             </button>
           ) : (
-            <div className="rune-upgrade-maxed">MAX LEVEL</div>
+            <div className="held-item-upgrade-maxed">MAX LEVEL</div>
           )}
         </div>
 
         {/* Sell */}
-        <div className="rune-sell-section">
+        <div className="held-item-sell-section">
           {!confirmSell ? (
             <button
-              className="rune-sell-btn"
+              className="held-item-sell-btn"
               onClick={() => setConfirmSell(true)}
               disabled={item.equippedTo !== null}
               title={item.equippedTo !== null ? 'Unequip item first' : undefined}
@@ -163,10 +163,10 @@ export function RuneUpgradeModal({ item: initialItem, playerStardust, onClose, o
               Sell ({getItemSellValue(item).toLocaleString()} <GameIcon id="stardust" size={12} />)
             </button>
           ) : (
-            <div className="rune-sell-confirm">
+            <div className="held-item-sell-confirm">
               <span>Sell for {getItemSellValue(item).toLocaleString()} <GameIcon id="stardust" size={12} />?</span>
-              <button className="rune-sell-yes" onClick={() => { storeSell(item.itemId); onClose(); }}>Yes</button>
-              <button className="rune-sell-no" onClick={() => setConfirmSell(false)}>No</button>
+              <button className="held-item-sell-yes" onClick={() => { storeSell(item.itemId); onClose(); }}>Yes</button>
+              <button className="held-item-sell-no" onClick={() => setConfirmSell(false)}>No</button>
             </div>
           )}
         </div>

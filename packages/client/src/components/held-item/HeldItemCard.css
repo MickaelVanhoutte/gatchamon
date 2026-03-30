@@ -1,4 +1,4 @@
-.rune-card {
+.held-item-card {
   background: var(--bg-card, #ffffff);
   border: 2px solid var(--card-border, #d0e4ea);
   border-radius: 8px;
@@ -8,19 +8,19 @@
   box-shadow: var(--card-shadow, 0 2px 8px rgba(0, 0, 0, 0.08));
 }
 
-.rune-card:hover {
+.held-item-card:hover {
   border-color: var(--accent, #0d9488);
   box-shadow: 0 4px 12px rgba(13, 148, 136, 0.12);
 }
 
-.rune-card--selected {
+.held-item-card--selected {
   background: rgba(13, 148, 136, 0.06);
   border-color: var(--accent, #0d9488);
   box-shadow: 0 0 0 2px var(--accent, #0d9488), 0 2px 8px rgba(13, 148, 136, 0.15);
 }
 
 /* Compact mode for slot grid */
-.rune-card--compact {
+.held-item-card--compact {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -30,39 +30,39 @@
   min-height: 60px;
 }
 
-.rune-card--compact .rune-card-icon {
+.held-item-card--compact .held-item-card-icon {
   font-size: 1.2rem;
 }
 
-.rune-card--compact .rune-card-stars {
+.held-item-card--compact .held-item-card-stars {
   font-size: 0.5rem;
 }
 
-.rune-card--compact .rune-card-level {
+.held-item-card--compact .held-item-card-level {
   font-size: 0.65rem;
   color: var(--text-secondary, #5a6a7a);
 }
 
 /* Full card */
-.rune-card-header {
+.held-item-card-header {
   display: flex;
   align-items: center;
   gap: 6px;
   margin-bottom: 4px;
 }
 
-.rune-card-icon {
+.held-item-card-icon {
   font-size: 1rem;
 }
 
-.rune-card-set-name {
+.held-item-card-set-name {
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-primary, #1a2332);
   flex: 1;
 }
 
-.rune-card-slot {
+.held-item-card-slot {
   font-size: 0.65rem;
   color: var(--text-secondary, #5a6a7a);
   background: var(--bg-secondary, #d1ecf1);
@@ -71,32 +71,32 @@
   border: 1px solid var(--card-border, #d0e4ea);
 }
 
-.rune-card-stars-row {
+.held-item-card-stars-row {
   display: flex;
   align-items: center;
   gap: 6px;
   margin-bottom: 6px;
 }
 
-.rune-card-stars {
+.held-item-card-stars {
   font-size: 0.6rem;
 }
 
-.rune-card-grade {
+.held-item-card-grade {
   font-size: 0.65rem;
   font-weight: 500;
   text-transform: capitalize;
   color: var(--text-secondary, #5a6a7a);
 }
 
-.rune-card-level {
+.held-item-card-level {
   font-size: 0.7rem;
   font-weight: 700;
   color: var(--accent, #0d9488);
   margin-left: auto;
 }
 
-.rune-card-main-stat {
+.held-item-card-main-stat {
   display: flex;
   justify-content: space-between;
   font-size: 0.8rem;
@@ -106,16 +106,16 @@
   border-top: 1px solid var(--card-border, #d0e4ea);
 }
 
-.rune-card-main-value {
+.held-item-card-main-value {
   color: var(--accent, #0d9488);
 }
 
-.rune-card-subs {
+.held-item-card-subs {
   padding-top: 4px;
   border-top: 1px solid var(--card-border, #d0e4ea);
 }
 
-.rune-card-sub {
+.held-item-card-sub {
   display: flex;
   justify-content: space-between;
   font-size: 0.7rem;
@@ -123,7 +123,7 @@
   padding: 1px 0;
 }
 
-.rune-card-equipped {
+.held-item-card-equipped {
   font-size: 0.6rem;
   color: #d97706;
   margin-top: 4px;

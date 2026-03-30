@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import type { HeldItemInstance, HeldItemSlot, BaseStats } from '@gatchamon/shared';
 import { getItemSet, computeStatsWithItems, computeStats, getActiveSetEffects, ITEM_SETS } from '@gatchamon/shared';
 import type { OwnedPokemon } from '../stores/gameStore';
-import { RuneCard } from '../components/rune/RuneCard';
-import { RuneSelectModal } from './RuneSelectModal';
-import { RuneUpgradeModal } from './RuneUpgradeModal';
+import { HeldItemCard } from '../components/held-item/HeldItemCard';
+import { HeldItemSelectModal } from './HeldItemSelectModal';
+import { HeldItemUpgradeModal } from './HeldItemUpgradeModal';
 import { useTutorialStore } from '../stores/tutorialStore';
-import './RuneEquipPanel.css';
+import './HeldItemEquipPanel.css';
 
 const STAT_LABELS: Record<keyof BaseStats, string> = {
   hp: 'HP', atk: 'ATK', def: 'DEF', spd: 'SPD',
@@ -16,13 +16,13 @@ const STAT_LABELS: Record<keyof BaseStats, string> = {
 
 const PCT_STATS: Array<keyof BaseStats> = ['critRate', 'critDmg', 'acc', 'res'];
 
-interface RuneEquipPanelProps {
+interface HeldItemEquipPanelProps {
   pokemon: OwnedPokemon;
   heldItems: HeldItemInstance[];
   player: { stardust: number };
 }
 
-export function RuneEquipPanel({ pokemon, heldItems, player }: RuneEquipPanelProps) {
+export function HeldItemEquipPanel({ pokemon, heldItems, player }: HeldItemEquipPanelProps) {
   const navigate = useNavigate();
   const [selectSlot, setSelectSlot] = useState<HeldItemSlot | null>(null);
   const [upgradeItem, setUpgradeItem] = useState<HeldItemInstance | null>(null);
@@ -84,9 +84,9 @@ export function RuneEquipPanel({ pokemon, heldItems, player }: RuneEquipPanelPro
   }
 
   return (
-    <div className="rune-equip-panel">
+    <div className="held-item-equip-panel">
       {/* 6-slot grid */}
-      <div className="rune-slots-grid">
+      <div className="held-item-slots-grid">
         {([1, 2, 3, 4, 5, 6] as HeldItemSlot[]).map(slot => {
           const equipped = equippedBySlot[slot];
           const modalOpen = selectSlot !== null || upgradeItem !== null;
@@ -94,15 +94,15 @@ export function RuneEquipPanel({ pokemon, heldItems, player }: RuneEquipPanelPro
           return (
             <div
               key={slot}
-              className={`rune-slot ${isTutorialTarget ? 'tutorial-target' : ''}`}
-              data-tutorial-id={slot === 1 && !modalOpen ? 'rune-slot-1' : undefined}
+              className={`held-item-slot ${isTutorialTarget ? 'tutorial-target' : ''}`}
+              data-tutorial-id={slot === 1 && !modalOpen ? 'held-item-slot-1' : undefined}
               onClick={() => handleSlotClick(slot)}
             >
               {equipped ? (
-                <RuneCard item={equipped} compact />
+                <HeldItemCard item={equipped} compact />
               ) : (
-                <div className="rune-slot-empty">
-                  <span className="rune-slot-num">{slot}</span>
+                <div className="held-item-slot-empty">
+                  <span className="held-item-slot-num">{slot}</span>
                 </div>
               )}
             </div>
@@ -112,17 +112,17 @@ export function RuneEquipPanel({ pokemon, heldItems, player }: RuneEquipPanelPro
 
       {/* Set bonuses */}
       {Object.keys(setCounts).length > 0 && (
-        <div className="rune-set-bonuses">
+        <div className="held-item-set-bonuses">
           {Object.entries(setCounts).map(([setId, count]) => {
             const setDef = ITEM_SETS.find(s => s.id === setId);
             if (!setDef) return null;
             const isActive = activeSetIds.has(setId);
             const eff = activeEffects.find(e => e.setId === setId);
             return (
-              <div key={setId} className={`rune-set-bonus ${!isActive ? 'rune-set-bonus--inactive' : ''}`} style={{ borderColor: isActive ? setDef.color : undefined }}>
-                <span className="rune-set-icon">{setDef.icon}</span>
-                <span className="rune-set-name">{setDef.name} ({count}/{setDef.pieces})</span>
-                <span className={`rune-set-desc ${!isActive ? 'rune-set-desc--hidden' : ''}`}>
+              <div key={setId} className={`held-item-set-bonus ${!isActive ? 'held-item-set-bonus--inactive' : ''}`} style={{ borderColor: isActive ? setDef.color : undefined }}>
+                <span className="held-item-set-icon">{setDef.icon}</span>
+                <span className="held-item-set-name">{setDef.name} ({count}/{setDef.pieces})</span>
+                <span className={`held-item-set-desc ${!isActive ? 'held-item-set-desc--hidden' : ''}`}>
                   {isActive && eff
                     ? (eff.effectType === 'stat'
                       ? `${eff.bonusStat?.toUpperCase()} +${eff.bonusValue}${eff.bonusType === 'percent' ? '%' : ''}`
@@ -136,18 +136,18 @@ export function RuneEquipPanel({ pokemon, heldItems, player }: RuneEquipPanelPro
       )}
 
       {/* Stats with item bonuses */}
-      <div className="rune-stats">
+      <div className="held-item-stats">
         {(Object.keys(STAT_LABELS) as Array<keyof BaseStats>).map(key => {
           const base = baseStats[key];
           const total = totalStats[key];
           const diff = total - base;
           const isPct = PCT_STATS.includes(key);
           return (
-            <div key={key} className="rune-stat-row">
-              <span className="rune-stat-label">{STAT_LABELS[key]}</span>
-              <span className="rune-stat-value">
+            <div key={key} className="held-item-stat-row">
+              <span className="held-item-stat-label">{STAT_LABELS[key]}</span>
+              <span className="held-item-stat-value">
                 {total}{isPct ? '%' : ''}
-                {diff > 0 && <span className="rune-stat-bonus"> (+{diff})</span>}
+                {diff > 0 && <span className="held-item-stat-bonus"> (+{diff})</span>}
               </span>
             </div>
           );
@@ -156,17 +156,17 @@ export function RuneEquipPanel({ pokemon, heldItems, player }: RuneEquipPanelPro
 
       {/* Equip button for empty slots */}
       <div style={{ display: 'flex', gap: '6px' }}>
-        <button className="rune-equip-btn" onClick={() => setSelectSlot(1)} style={{ flex: 1 }}>
+        <button className="held-item-equip-btn" onClick={() => setSelectSlot(1)} style={{ flex: 1 }}>
           Manage Items
         </button>
-        <button className="rune-equip-btn" onClick={() => navigate('/inventory')} style={{ flex: 1 }}>
+        <button className="held-item-equip-btn" onClick={() => navigate('/inventory')} style={{ flex: 1 }}>
           View All
         </button>
       </div>
 
       {/* Modals */}
       {selectSlot !== null && (
-        <RuneSelectModal
+        <HeldItemSelectModal
           pokemon={pokemon}
           slot={selectSlot}
           heldItems={heldItems}
@@ -177,7 +177,7 @@ export function RuneEquipPanel({ pokemon, heldItems, player }: RuneEquipPanelPro
       )}
 
       {upgradeItem && (
-        <RuneUpgradeModal
+        <HeldItemUpgradeModal
           item={upgradeItem}
           playerStardust={player.stardust ?? 0}
           onClose={() => setUpgradeItem(null)}
