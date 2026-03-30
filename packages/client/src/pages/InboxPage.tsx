@@ -5,6 +5,7 @@ import {
   getInboxItems,
   claimInboxReward,
   markAsRead,
+  clearReadMessages,
 } from '../services/inbox.service';
 import type { InboxItem, MissionReward } from '@gatchamon/shared';
 import { GameIcon } from '../components/icons';
@@ -19,6 +20,15 @@ export function InboxPage() {
   const forceUpdate = useCallback(() => setTick(t => t + 1), []);
 
   const items = getInboxItems();
+  const readCount = items.filter(i => i.read).length;
+
+  const handleClearRead = () => {
+    const removed = clearReadMessages();
+    if (removed > 0) {
+      refreshPlayer();
+      forceUpdate();
+    }
+  };
 
   const handleClaim = (item: InboxItem) => {
     // Retry summon: navigate — the destination page handles claiming
@@ -53,6 +63,11 @@ export function InboxPage() {
     <div className="page inbox-page">
       <div className="inbox-header">
         <h2 className="inbox-title">Inbox</h2>
+        {readCount > 0 && (
+          <button className="inbox-clear-btn" onClick={handleClearRead}>
+            Clear read ({readCount})
+          </button>
+        )}
       </div>
 
       <div className="inbox-list">

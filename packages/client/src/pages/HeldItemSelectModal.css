@@ -269,6 +269,7 @@
   gap: 8px;
   padding: 12px 16px;
   border-top: 1px solid var(--card-border);
+  flex-shrink: 0;
 }
 
 .held-item-remove-btn {
@@ -381,10 +382,8 @@
   }
 
   .held-item-select-modal {
-    max-height: 100vh;
-    max-height: 100dvh;
-    height: 100vh;
-    height: 100dvh;
+    max-height: none;
+    height: auto;
     border-radius: 8px;
   }
 

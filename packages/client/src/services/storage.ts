@@ -216,6 +216,11 @@ export function updateInboxItem(id: string, updates: Partial<InboxItem>): void {
   saveInbox(items);
 }
 
+export function removeReadInboxItems(): void {
+  const items = loadInbox();
+  saveInbox(items.filter(i => !i.read));
+}
+
 // ── Retry Summon State ─────────────────────────────────────────────────
 
 export function loadRetrySummonState(): string | null {

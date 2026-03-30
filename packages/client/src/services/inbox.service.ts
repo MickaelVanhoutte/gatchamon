@@ -1,6 +1,6 @@
 import type { InboxItem, MissionReward, HeldItemInstance, HeldItemSlot, HeldItemMainStatType } from '@gatchamon/shared';
 import { isBeginnerBonusActive, computeMainStatValue } from '@gatchamon/shared';
-import { loadInbox, updateInboxItem, addInboxItem, loadPlayer, addHeldItem } from './storage';
+import { loadInbox, updateInboxItem, addInboxItem, removeReadInboxItems, loadPlayer, addHeldItem } from './storage';
 import { applyReward } from './reward.service';
 
 export function getInboxItems(): InboxItem[] {
@@ -15,6 +15,13 @@ export function getUnreadInboxCount(): number {
 
 export function markAsRead(id: string): void {
   updateInboxItem(id, { read: true });
+}
+
+export function clearReadMessages(): number {
+  const before = getInboxItems().length;
+  removeReadInboxItems();
+  const after = getInboxItems().length;
+  return before - after;
 }
 
 export function claimInboxReward(id: string): { reward?: MissionReward; specialItem?: string } | null {
