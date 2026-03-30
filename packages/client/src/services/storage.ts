@@ -292,6 +292,18 @@ export function setGrantedFlag(flag: string): void {
   localStorage.setItem(GRANTED_FLAGS_KEY, JSON.stringify(flags));
 }
 
+// ── Story Difficulty ──────────────────────────────────────────────────
+
+const STORY_DIFFICULTY_KEY = 'gatchamon_story_difficulty';
+
+export function loadStoryDifficulty(): string {
+  return localStorage.getItem(STORY_DIFFICULTY_KEY) ?? 'normal';
+}
+
+export function saveStoryDifficulty(diff: string): void {
+  localStorage.setItem(STORY_DIFFICULTY_KEY, diff);
+}
+
 // ── Reset ──────────────────────────────────────────────────────────────
 
 export function checkAndResetTower(): void {
@@ -316,4 +328,5 @@ export function clearAll(): void {
   localStorage.removeItem(BATTLE_SETTINGS_KEY);
   localStorage.removeItem(LAST_TEAM_KEY);
   localStorage.removeItem(GRANTED_FLAGS_KEY);
+  localStorage.removeItem(STORY_DIFFICULTY_KEY);
 }

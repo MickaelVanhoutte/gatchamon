@@ -7,6 +7,7 @@ import type { Difficulty } from '@gatchamon/shared';
 import { getFloorDefsForRegion } from '../services/floor.service';
 import { getFloorRewardPreview } from '../services/reward.service';
 import type { FloorRewardPreview } from '../services/reward.service';
+import { loadStoryDifficulty, saveStoryDifficulty } from '../services/storage';
 import { assetUrl } from '../utils/asset-url';
 import { useRotatedScroll } from '../hooks/useRotatedScroll';
 import { useRotatedHorizontalScroll } from '../hooks/useRotatedHorizontalScroll';
@@ -66,7 +67,11 @@ export function StoryModePage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [floors, setFloors] = useState<FloorInfo[]>([]);
   const [selectedRegionId, setSelectedRegionId] = useState<number | null>(null);
-  const [difficulty, setDifficulty] = useState<Difficulty>('normal');
+  const [difficulty, setDifficulty] = useState<Difficulty>(() => {
+    const saved = loadStoryDifficulty();
+    if (['normal', 'hard', 'hell'].includes(saved)) return saved as Difficulty;
+    return 'normal';
+  });
   const floorListRef = useRef<HTMLDivElement>(null);
   const worldMapRef = useRef<HTMLDivElement>(null);
   useRotatedScroll(floorListRef);
@@ -90,6 +95,7 @@ export function StoryModePage() {
     if (regionParam) {
       if (diffParam && ['normal', 'hard', 'hell'].includes(diffParam)) {
         setDifficulty(diffParam);
+        saveStoryDifficulty(diffParam);
       }
       setSelectedRegionId(Number(regionParam));
       // Clean up query params
@@ -128,6 +134,45 @@ export function StoryModePage() {
     }, 50);
   }, [floors, selectedRegionId]);
 
+  // Fall back to 'normal' if saved difficulty is not unlocked
+  useEffect(() => {
+    if (!player) return;
+    const rp = player.storyProgress[difficulty];
+    if (!rp || Object.keys(rp).length === 0) {
+      if (difficulty !== 'normal') {
+        setDifficulty('normal');
+        saveStoryDifficulty('normal');
+      }
+    }
+  }, [player]);
+
+  // Auto-scroll map to the furthest available (non-completed) region on mount
+  useEffect(() => {
+    if (!player || !worldMapRef.current) return;
+    const rp = player.storyProgress[difficulty] ?? {};
+    // Find the last region that is 'available' (not completed, not locked)
+    let targetRegion: typeof REGIONS[number] | null = null;
+    for (const region of REGIONS) {
+      const floor = rp[region.id];
+      if (floor === undefined) continue; // locked
+      if (floor <= getFloorCount(region.id)) {
+        targetRegion = region; // available — keep going to find the furthest one
+      }
+    }
+    // If all are completed, scroll to the last region
+    if (!targetRegion) {
+      for (let i = REGIONS.length - 1; i >= 0; i--) {
+        if (rp[REGIONS[i].id] !== undefined) { targetRegion = REGIONS[i]; break; }
+      }
+    }
+    if (!targetRegion) return;
+    const container = worldMapRef.current;
+    const scrollTarget = (targetRegion.mapPosition.x / MAP_W) * container.scrollWidth - container.clientWidth / 2;
+    setTimeout(() => {
+      container.scrollLeft = Math.max(0, scrollTarget);
+    }, 50);
+  }, [player, difficulty]);
+
   if (!player) return null;
 
   const progress = player.storyProgress;
@@ -159,6 +204,7 @@ export function StoryModePage() {
   function handleDifficultyChange(diff: Difficulty) {
     if (!isDifficultyUnlocked(diff)) return;
     setDifficulty(diff);
+    saveStoryDifficulty(diff);
     setSelectedRegionId(null);
     setFloors([]);
   }
