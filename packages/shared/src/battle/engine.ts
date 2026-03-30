@@ -929,7 +929,16 @@ function applyInstantEffect(
       if (alive.length <= 1) return null;
       const avgPct = alive.reduce((sum, m) => sum + (m.currentHp / m.maxHp), 0) / alive.length;
       for (const m of alive) {
-        m.currentHp = Math.max(1, Math.floor(m.maxHp * avgPct));
+        const targetHp = Math.floor(m.maxHp * avgPct);
+        if (targetHp > m.currentHp) {
+          // This is healing — check unrecoverable / anti_heal
+          if (hasDebuff(m, 'unrecoverable')) continue;
+          let healAmt = targetHp - m.currentHp;
+          if (hasDebuff(m, 'anti_heal')) healAmt = Math.floor(healAmt * 0.5);
+          m.currentHp = Math.max(1, m.currentHp + healAmt);
+        } else {
+          m.currentHp = Math.max(1, targetHp);
+        }
       }
       return `HP balanced across all allies to ${Math.round(avgPct * 100)}%!`;
     }

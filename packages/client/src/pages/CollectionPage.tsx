@@ -185,7 +185,11 @@ export function CollectionPage() {
                       ? assetUrl(`monsters/ani-shiny/${mon.template.name.toLowerCase()}.gif`)
                       : assetUrl(mon.template.spriteUrl)}
                     alt={mon.template.name}
-                    style={{ width: `${getSpriteScale(mon.template.height) * getSpriteBoost(mon.template.name) * 80}%` }}
+                    style={{
+                      width: `${getSpriteScale(mon.template.height) * 80}%`,
+                      transform: `scale(${getSpriteBoost(mon.template.name)})`,
+                      transformOrigin: 'center bottom',
+                    }}
                   />
                   {mon.instance.isShiny && <div className="box-cell-shiny-badge"><GameIcon id="shiny" size={10} /></div>}
                   <div className="box-cell-level">
