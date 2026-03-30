@@ -406,6 +406,11 @@
   color: white;
 }
 
+.rb-btn-again {
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+  color: white;
+}
+
 /* ── Rewards ── */
 .rb-rewards-title {
   font-size: 0.75rem;

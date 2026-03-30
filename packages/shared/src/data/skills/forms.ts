@@ -571,7 +571,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
   gyarados_mega_skill2: {
     id: 'gyarados_mega_skill2',
     name: 'Wicked Blow',
-    description: 'Attacks all allies. equalizes HP across all allies, extends buff durations by 1 turn, heals for 11% HP.',
+    description: 'Attacks all allies. equalizes HP across all allies, extends buff durations by 1 turn, heals for 8% HP.',
     type: 'dark',
     category: 'active',
     cooldown: 4,
@@ -579,7 +579,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
     effects: [
       { id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' },
       { id: 'extend_buffs', value: 1, duration: 0, chance: 100, target: 'all_allies' },
-      { id: 'heal', value: 11, duration: 0, chance: 100, target: 'all_allies' },
+      { id: 'heal', value: 8, duration: 0, chance: 100, target: 'all_allies' },
     ],
     target: 'all_allies',
   },
@@ -4660,7 +4660,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
   shaymin_sky_skill2: {
     id: 'shaymin_sky_skill2',
     name: 'Acrobatics',
-    description: 'Attacks all allies. equalizes HP across all allies, extends buff durations by 1 turn, heals for 11% HP.',
+    description: 'Attacks all allies. equalizes HP across all allies, extends buff durations by 1 turn, heals for 8% HP.',
     type: 'flying',
     category: 'active',
     cooldown: 4,
@@ -4668,7 +4668,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
     effects: [
       { id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' },
       { id: 'extend_buffs', value: 1, duration: 0, chance: 100, target: 'all_allies' },
-      { id: 'heal', value: 11, duration: 0, chance: 100, target: 'all_allies' },
+      { id: 'heal', value: 8, duration: 0, chance: 100, target: 'all_allies' },
     ],
     target: 'all_allies',
   },

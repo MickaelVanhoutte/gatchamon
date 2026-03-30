@@ -47,6 +47,7 @@ interface RepeatBattleState {
   _shouldStop: boolean;
 
   startRepeat: (config: RepeatBattleConfig) => void;
+  restartRepeat: () => void;
   stopRepeat: () => void;
   stopNow: () => void;
   addRunRewards: (rewards: BattleRewards) => void;
@@ -75,6 +76,14 @@ export const useRepeatBattleStore = create<RepeatBattleState>((set, get) => ({
     isOpen: false,
     _shouldStop: false,
   }),
+
+  restartRepeat: () => set((state) => ({
+    status: 'running',
+    currentRun: 0,
+    completedRuns: 0,
+    rewards: { ...EMPTY_REWARDS, essences: {}, itemDrops: [], monsterLoots: [] },
+    _shouldStop: false,
+  })),
 
   stopRepeat: () => set({ _shouldStop: true }),
 

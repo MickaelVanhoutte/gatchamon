@@ -1201,7 +1201,7 @@ export const GEN4_SKILLS: Record<string, SkillDefinition> = {
   buizel_skill2: {
     id: 'buizel_skill2',
     name: 'Scald',
-    description: 'Attacks all allies. equalizes HP across all allies, extends buff durations by 1 turn, heals for 11% HP.',
+    description: 'Attacks all allies. equalizes HP across all allies, extends buff durations by 1 turn, heals for 8% HP.',
     type: 'water',
     category: 'active',
     cooldown: 4,
@@ -1209,7 +1209,7 @@ export const GEN4_SKILLS: Record<string, SkillDefinition> = {
     effects: [
       { id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' },
       { id: 'extend_buffs', value: 1, duration: 0, chance: 100, target: 'all_allies' },
-      { id: 'heal', value: 11, duration: 0, chance: 100, target: 'all_allies' },
+      { id: 'heal', value: 8, duration: 0, chance: 100, target: 'all_allies' },
     ],
     target: 'all_allies',
   },
@@ -1241,7 +1241,7 @@ export const GEN4_SKILLS: Record<string, SkillDefinition> = {
   floatzel_skill2: {
     id: 'floatzel_skill2',
     name: 'Aqua Tail',
-    description: 'Attacks all allies. equalizes HP across all allies, extends buff durations by 1 turn, heals for 10% HP.',
+    description: 'Attacks all allies. equalizes HP across all allies, extends buff durations by 1 turn, heals for 7% HP.',
     type: 'water',
     category: 'active',
     cooldown: 3,
@@ -1249,7 +1249,7 @@ export const GEN4_SKILLS: Record<string, SkillDefinition> = {
     effects: [
       { id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' },
       { id: 'extend_buffs', value: 1, duration: 0, chance: 100, target: 'all_allies' },
-      { id: 'heal', value: 10, duration: 0, chance: 100, target: 'all_allies' },
+      { id: 'heal', value: 7, duration: 0, chance: 100, target: 'all_allies' },
     ],
     target: 'all_allies',
   },
@@ -1321,7 +1321,7 @@ export const GEN4_SKILLS: Record<string, SkillDefinition> = {
   cherrim_skill2: {
     id: 'cherrim_skill2',
     name: 'Petal Blizzard',
-    description: 'Attacks all allies. equalizes HP across all allies, extends buff durations by 1 turn, heals for 10% HP.',
+    description: 'Attacks all allies. equalizes HP across all allies, extends buff durations by 1 turn, heals for 7% HP.',
     type: 'grass',
     category: 'active',
     cooldown: 4,
@@ -1329,7 +1329,7 @@ export const GEN4_SKILLS: Record<string, SkillDefinition> = {
     effects: [
       { id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' },
       { id: 'extend_buffs', value: 1, duration: 0, chance: 100, target: 'all_allies' },
-      { id: 'heal', value: 10, duration: 0, chance: 100, target: 'all_allies' },
+      { id: 'heal', value: 7, duration: 0, chance: 100, target: 'all_allies' },
     ],
     target: 'all_allies',
   },
@@ -1472,7 +1472,7 @@ export const GEN4_SKILLS: Record<string, SkillDefinition> = {
   drifloon_skill2: {
     id: 'drifloon_skill2',
     name: 'Air Slash',
-    description: 'Attacks all allies. equalizes HP across all allies, extends buff durations by 1 turn, heals for 11% HP.',
+    description: 'Attacks all allies. equalizes HP across all allies, extends buff durations by 1 turn, heals for 8% HP.',
     type: 'flying',
     category: 'active',
     cooldown: 3,
@@ -1480,7 +1480,7 @@ export const GEN4_SKILLS: Record<string, SkillDefinition> = {
     effects: [
       { id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' },
       { id: 'extend_buffs', value: 1, duration: 0, chance: 100, target: 'all_allies' },
-      { id: 'heal', value: 11, duration: 0, chance: 100, target: 'all_allies' },
+      { id: 'heal', value: 8, duration: 0, chance: 100, target: 'all_allies' },
     ],
     target: 'all_allies',
   },
@@ -1787,7 +1787,7 @@ export const GEN4_SKILLS: Record<string, SkillDefinition> = {
   chingling_skill2: {
     id: 'chingling_skill2',
     name: 'Mist Ball',
-    description: 'Attacks all allies. equalizes HP across all allies, extends buff durations by 1 turn, heals for 14% HP.',
+    description: 'Attacks all allies. equalizes HP across all allies, extends buff durations by 1 turn, heals for 11% HP.',
     type: 'psychic',
     category: 'active',
     cooldown: 4,
@@ -1795,7 +1795,7 @@ export const GEN4_SKILLS: Record<string, SkillDefinition> = {
     effects: [
       { id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' },
       { id: 'extend_buffs', value: 1, duration: 0, chance: 100, target: 'all_allies' },
-      { id: 'heal', value: 14, duration: 0, chance: 100, target: 'all_allies' },
+      { id: 'heal', value: 11, duration: 0, chance: 100, target: 'all_allies' },
     ],
     target: 'all_allies',
   },

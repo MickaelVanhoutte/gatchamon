@@ -1609,7 +1609,7 @@ export const GEN7_SKILLS: Record<string, SkillDefinition> = {
   comfey_skill2: {
     id: 'comfey_skill2',
     name: 'Dazzling Gleam',
-    description: 'Attacks all allies. equalizes HP across all allies, extends buff durations by 1 turn, heals for 13% HP.',
+    description: 'Attacks all allies. equalizes HP across all allies, extends buff durations by 1 turn, heals for 10% HP.',
     type: 'fairy',
     category: 'active',
     cooldown: 3,
@@ -1617,7 +1617,7 @@ export const GEN7_SKILLS: Record<string, SkillDefinition> = {
     effects: [
       { id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' },
       { id: 'extend_buffs', value: 1, duration: 0, chance: 100, target: 'all_allies' },
-      { id: 'heal', value: 13, duration: 0, chance: 100, target: 'all_allies' },
+      { id: 'heal', value: 10, duration: 0, chance: 100, target: 'all_allies' },
     ],
     target: 'all_allies',
   },

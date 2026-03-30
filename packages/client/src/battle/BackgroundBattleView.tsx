@@ -163,6 +163,19 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
     startNextBattle();
   }, [startNextBattle]);
 
+  // ── Restart when "Again" is pressed ──
+  useEffect(() => {
+    return useRepeatBattleStore.subscribe((curr, prev) => {
+      if (prev.status !== 'running' && curr.status === 'running') {
+        setPhase('loading');
+        setState(null);
+        setBattleId(null);
+        isActingRef.current = false;
+        setTimeout(() => startNextBattle(), 100);
+      }
+    });
+  }, [startNextBattle]);
+
   // ── Handle action (resolve + animate) ──
   const handleAction = useCallback(async (skillId: string, targetId: string) => {
     const bid = battleIdRef.current;

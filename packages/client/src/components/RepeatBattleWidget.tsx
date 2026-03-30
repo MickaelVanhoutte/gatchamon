@@ -61,6 +61,7 @@ export function RepeatBattleModal() {
   const closePanel = useRepeatBattleStore(s => s.closePanel);
   const stopRepeat = useRepeatBattleStore(s => s.stopRepeat);
   const stopNow = useRepeatBattleStore(s => s.stopNow);
+  const restartRepeat = useRepeatBattleStore(s => s.restartRepeat);
   const reset = useRepeatBattleStore(s => s.reset);
 
   // Don't render at all when idle
@@ -193,7 +194,10 @@ export function RepeatBattleModal() {
                     <button className="rb-btn rb-btn-stop" onClick={stopNow}>Stop Now</button>
                   </>
                 ) : (
-                  <button className="rb-btn rb-btn-ok" onClick={reset}>Collect</button>
+                  <>
+                    <button className="rb-btn rb-btn-ok" onClick={reset}>Collect</button>
+                    <button className="rb-btn rb-btn-again" onClick={restartRepeat}>Again</button>
+                  </>
                 )}
               </div>
             </div>

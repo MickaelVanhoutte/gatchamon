@@ -764,6 +764,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'fairy_low', quantity: [2, 5], chance: 0.95 },
           { essenceId: 'normal_low', quantity: [1, 3], chance: 0.7 },
           { essenceId: 'fairy_mid', quantity: [0, 1], chance: 0.2 },
+          { essenceId: 'grass_low', quantity: [1, 2], chance: 0.5 },
         ],
       },
       {
@@ -774,6 +775,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'fairy_low', quantity: [2, 6], chance: 1.0 },
           { essenceId: 'fairy_mid', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'normal_mid', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'grass_mid', quantity: [0, 1], chance: 0.3 },
         ],
       },
       {
@@ -784,6 +786,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'fairy_mid', quantity: [1, 4], chance: 0.75 },
           { essenceId: 'normal_mid', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'fairy_high', quantity: [0, 1], chance: 0.1 },
+          { essenceId: 'grass_mid', quantity: [0, 2], chance: 0.4 },
         ],
       },
       {
@@ -795,6 +798,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'fairy_mid', quantity: [2, 5], chance: 0.85 },
           { essenceId: 'normal_mid', quantity: [1, 3], chance: 0.6 },
           { essenceId: 'fairy_high', quantity: [0, 1], chance: 0.2 },
+          { essenceId: 'grass_mid', quantity: [1, 2], chance: 0.5 },
         ],
       },
       {
@@ -806,6 +810,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'fairy_mid', quantity: [3, 6], chance: 0.95 },
           { essenceId: 'fairy_high', quantity: [0, 2], chance: 0.3 },
           { essenceId: 'normal_mid', quantity: [2, 3], chance: 0.7 },
+          { essenceId: 'grass_mid', quantity: [1, 3], chance: 0.6 },
         ],
       },
       {
@@ -817,6 +822,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'fairy_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'fairy_high', quantity: [1, 2], chance: 0.4 },
           { essenceId: 'normal_high', quantity: [0, 1], chance: 0.25 },
+          { essenceId: 'grass_mid', quantity: [1, 3], chance: 0.7 },
         ],
       },
       {
@@ -828,6 +834,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'fairy_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'fairy_high', quantity: [1, 4], chance: 0.55 },
           { essenceId: 'normal_high', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'grass_high', quantity: [0, 1], chance: 0.3 },
         ],
       },
       {
@@ -839,6 +846,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'fairy_high', quantity: [1, 4], chance: 0.75 },
           { essenceId: 'normal_high', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'fairy_mid', quantity: [3, 6], chance: 1.0 },
+          { essenceId: 'grass_high', quantity: [1, 2], chance: 0.5 },
         ],
       },
       {
@@ -850,6 +858,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'fairy_high', quantity: [2, 5], chance: 0.95 },
           { essenceId: 'normal_high', quantity: [1, 3], chance: 0.6 },
           { essenceId: 'fairy_mid', quantity: [4, 7], chance: 1.0 },
+          { essenceId: 'grass_high', quantity: [1, 2], chance: 0.5 },
         ],
       },
     ],
@@ -878,6 +887,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'dark_low', quantity: [2, 5], chance: 0.95 },
           { essenceId: 'ghost_low', quantity: [1, 3], chance: 0.7 },
           { essenceId: 'dark_mid', quantity: [0, 1], chance: 0.2 },
+          { essenceId: 'psychic_low', quantity: [1, 2], chance: 0.5 },
         ],
       },
       {
@@ -888,6 +898,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'dark_low', quantity: [2, 6], chance: 1.0 },
           { essenceId: 'dark_mid', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'ghost_mid', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'psychic_mid', quantity: [0, 1], chance: 0.3 },
         ],
       },
       {
@@ -898,6 +909,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'dark_mid', quantity: [1, 4], chance: 0.75 },
           { essenceId: 'ghost_mid', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'dark_high', quantity: [0, 1], chance: 0.1 },
+          { essenceId: 'psychic_mid', quantity: [0, 2], chance: 0.4 },
         ],
       },
       {
@@ -909,6 +921,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'dark_mid', quantity: [2, 5], chance: 0.85 },
           { essenceId: 'ghost_mid', quantity: [1, 3], chance: 0.6 },
           { essenceId: 'dark_high', quantity: [0, 1], chance: 0.2 },
+          { essenceId: 'psychic_mid', quantity: [1, 2], chance: 0.5 },
         ],
       },
       {
@@ -920,6 +933,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'dark_mid', quantity: [3, 6], chance: 0.95 },
           { essenceId: 'dark_high', quantity: [0, 2], chance: 0.3 },
           { essenceId: 'ghost_mid', quantity: [2, 3], chance: 0.7 },
+          { essenceId: 'psychic_mid', quantity: [1, 3], chance: 0.6 },
         ],
       },
       {
@@ -931,6 +945,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'dark_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'dark_high', quantity: [1, 2], chance: 0.4 },
           { essenceId: 'ghost_high', quantity: [0, 1], chance: 0.25 },
+          { essenceId: 'psychic_mid', quantity: [1, 3], chance: 0.7 },
         ],
       },
       {
@@ -942,6 +957,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'dark_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'dark_high', quantity: [1, 4], chance: 0.55 },
           { essenceId: 'ghost_high', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'psychic_high', quantity: [0, 1], chance: 0.3 },
         ],
       },
       {
@@ -953,6 +969,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'dark_high', quantity: [1, 4], chance: 0.75 },
           { essenceId: 'ghost_high', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'dark_mid', quantity: [3, 6], chance: 1.0 },
+          { essenceId: 'psychic_high', quantity: [1, 2], chance: 0.5 },
         ],
       },
       {
@@ -964,6 +981,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'dark_high', quantity: [2, 5], chance: 0.95 },
           { essenceId: 'ghost_high', quantity: [1, 3], chance: 0.6 },
           { essenceId: 'dark_mid', quantity: [4, 7], chance: 1.0 },
+          { essenceId: 'psychic_high', quantity: [1, 2], chance: 0.5 },
         ],
       },
     ],
@@ -992,6 +1010,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'steel_low', quantity: [2, 5], chance: 0.95 },
           { essenceId: 'rock_low', quantity: [1, 3], chance: 0.7 },
           { essenceId: 'steel_mid', quantity: [0, 1], chance: 0.2 },
+          { essenceId: 'electric_low', quantity: [1, 2], chance: 0.5 },
         ],
       },
       {
@@ -1002,6 +1021,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'steel_low', quantity: [2, 6], chance: 1.0 },
           { essenceId: 'steel_mid', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'rock_mid', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'electric_mid', quantity: [0, 1], chance: 0.3 },
         ],
       },
       {
@@ -1012,6 +1032,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'steel_mid', quantity: [1, 4], chance: 0.75 },
           { essenceId: 'rock_mid', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'steel_high', quantity: [0, 1], chance: 0.1 },
+          { essenceId: 'electric_mid', quantity: [0, 2], chance: 0.4 },
         ],
       },
       {
@@ -1023,6 +1044,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'steel_mid', quantity: [2, 5], chance: 0.85 },
           { essenceId: 'rock_mid', quantity: [1, 3], chance: 0.6 },
           { essenceId: 'steel_high', quantity: [0, 1], chance: 0.2 },
+          { essenceId: 'electric_mid', quantity: [1, 2], chance: 0.5 },
         ],
       },
       {
@@ -1034,6 +1056,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'steel_mid', quantity: [3, 6], chance: 0.95 },
           { essenceId: 'steel_high', quantity: [0, 2], chance: 0.3 },
           { essenceId: 'rock_mid', quantity: [2, 3], chance: 0.7 },
+          { essenceId: 'electric_mid', quantity: [1, 3], chance: 0.6 },
         ],
       },
       {
@@ -1044,7 +1067,7 @@ export const DUNGEONS: DungeonDef[] = [
         drops: [
           { essenceId: 'steel_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'steel_high', quantity: [1, 2], chance: 0.4 },
-          { essenceId: 'electric_high', quantity: [0, 1], chance: 0.25 },
+          { essenceId: 'electric_mid', quantity: [1, 3], chance: 0.7 },
         ],
       },
       {
@@ -1055,7 +1078,7 @@ export const DUNGEONS: DungeonDef[] = [
         drops: [
           { essenceId: 'steel_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'steel_high', quantity: [1, 4], chance: 0.55 },
-          { essenceId: 'electric_high', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'electric_high', quantity: [0, 1], chance: 0.3 },
         ],
       },
       {
@@ -1067,6 +1090,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'steel_high', quantity: [1, 4], chance: 0.75 },
           { essenceId: 'rock_high', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'steel_mid', quantity: [3, 6], chance: 1.0 },
+          { essenceId: 'electric_high', quantity: [1, 2], chance: 0.5 },
         ],
       },
       {
@@ -1078,6 +1102,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'steel_high', quantity: [2, 5], chance: 0.95 },
           { essenceId: 'rock_high', quantity: [1, 3], chance: 0.6 },
           { essenceId: 'steel_mid', quantity: [4, 7], chance: 1.0 },
+          { essenceId: 'electric_high', quantity: [1, 2], chance: 0.5 },
         ],
       },
     ],
