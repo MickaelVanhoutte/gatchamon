@@ -8,6 +8,7 @@ import { canEvolveInstance } from '../services/evolution.service';
 import { canChangeType } from '../services/type-change.service';
 import type { PokemonType, BaseStats } from '@gatchamon/shared';
 import { assetUrl } from '../utils/asset-url';
+import { getSpriteBoost } from '../utils/sprite-scale';
 import { HeldItemEquipPanel } from './HeldItemEquipPanel';
 import { SkillCard } from '../components/monster/SkillCard';
 import { Spinner } from '../components/Spinner';
@@ -184,7 +185,7 @@ export function CollectionPage() {
                       ? assetUrl(`monsters/ani-shiny/${mon.template.name.toLowerCase()}.gif`)
                       : assetUrl(mon.template.spriteUrl)}
                     alt={mon.template.name}
-                    style={{ width: `${getSpriteScale(mon.template.height) * 80}%` }}
+                    style={{ width: `${getSpriteScale(mon.template.height) * getSpriteBoost(mon.template.name) * 80}%` }}
                   />
                   {mon.instance.isShiny && <div className="box-cell-shiny-badge"><GameIcon id="shiny" size={10} /></div>}
                   <div className="box-cell-level">

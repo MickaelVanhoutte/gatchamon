@@ -35,6 +35,7 @@ import {
   trackStat,
   incrementMission,
   checkAndUpdateTrophies,
+  refreshRegionStats,
 } from './reward.service';
 import { grantTrainerXp } from './player.service';
 import { rollItemDrop, generateItem } from './held-item.service';
@@ -378,6 +379,7 @@ function calculateRewards(state: BattleState): BattleRewards {
   const storyProgress = updatedPlayer.storyProgress;
   advanceStoryProgress(storyProgress, regionId, floorNum, difficulty);
   savePlayer({ ...updatedPlayer, storyProgress });
+  refreshRegionStats();
 
   const floorDef = buildFloorEnemies(regionId, floorNum, difficulty);
   const monsterLoot = rollMonsterLoot(floorDef.enemies, difficulty);

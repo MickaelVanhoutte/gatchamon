@@ -1,0 +1,91 @@
+/**
+ * Sprite scale overrides for Pokemon whose GIF sprites have a lot of
+ * transparent whitespace (mostly birds / winged mons whose wings push
+ * the visible body into a small portion of the canvas).
+ *
+ * Values are multipliers applied on top of the normal height-based scale.
+ */
+const SPRITE_SCALE_BOOST: Record<string, number> = {
+  // Large / iconic winged Pokemon — most noticeable when too small
+  charizard:          1.35,
+  'charizard-megax':  1.35,
+  'charizard-megay':  1.35,
+  articuno:           1.35,
+  'articuno-galar':   1.30,
+  zapdos:             1.35,
+  'zapdos-galar':     1.25,
+  moltres:            1.35,
+  'moltres-galar':    1.30,
+  lugia:              1.30,
+  hooh:               1.30,
+  dragonite:          1.30,
+  'dragonite-mega':   1.30,
+  rayquaza:           1.25,
+  'rayquaza-mega':    1.25,
+  salamence:          1.30,
+  'salamence-mega':   1.30,
+  aerodactyl:         1.30,
+  'aerodactyl-mega':  1.30,
+  pidgeot:            1.30,
+  'pidgeot-mega':     1.30,
+  fearow:             1.30,
+  noivern:            1.30,
+  yveltal:            1.30,
+  togekiss:           1.30,
+  honchkrow:          1.30,
+  staraptor:          1.30,
+  braviary:           1.30,
+  'braviary-hisui':   1.30,
+  corviknight:        1.30,
+  talonflame:         1.25,
+  unfezant:           1.25,
+  mandibuzz:          1.25,
+  archeops:           1.25,
+  decidueye:          1.25,
+  'decidueye-hisui':  1.25,
+  altaria:            1.25,
+  'altaria-mega':     1.25,
+  skarmory:           1.30,
+  'skarmory-mega':    1.30,
+  tropius:            1.25,
+  flygon:             1.25,
+  toucannon:          1.20,
+  hawlucha:           1.20,
+  tornadus:           1.25,
+  'tornadus-therian': 1.25,
+  thundurus:          1.25,
+  'thundurus-therian':1.25,
+  landorus:           1.25,
+  'landorus-therian': 1.25,
+  butterfree:         1.25,
+  crobat:             1.20,
+  noctowl:            1.20,
+  xatu:               1.20,
+  swanna:             1.20,
+  pelipper:           1.20,
+  cramorant:          1.20,
+
+  // Mid-stage / smaller birds — slight boost
+  pidgeotto:          1.15,
+  golbat:             1.15,
+  swellow:            1.20,
+  staravia:           1.15,
+  fletchinder:        1.15,
+  tranquill:          1.15,
+  corvisquire:        1.15,
+  dartrix:            1.15,
+  trumbeak:           1.15,
+  archen:             1.15,
+  rufflet:            1.15,
+  vullaby:            1.15,
+  murkrow:            1.15,
+  oricorio:           1.20,
+  'oricorio-pau':     1.20,
+  'oricorio-sensu':   1.20,
+  flapple:            1.20,
+};
+
+/** Return the sprite scale boost multiplier for a given Pokemon name. */
+export function getSpriteBoost(pokemonName: string): number {
+  return SPRITE_SCALE_BOOST[pokemonName.toLowerCase()] ?? 1;
+}

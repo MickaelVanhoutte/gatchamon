@@ -206,6 +206,28 @@ export function getUnclaimedMissionCount(): number {
 }
 
 // ---------------------------------------------------------------------------
+// Region Stats Refresh
+// ---------------------------------------------------------------------------
+
+export function refreshRegionStats(): void {
+  const player = loadPlayer();
+  if (!player) return;
+  const state = loadOrInitRewardState();
+  const sp = player.storyProgress;
+  for (const diff of ['normal', 'hard', 'hell'] as const) {
+    const progress = sp[diff] ?? {};
+    let completed = 0;
+    for (let r = 1; r <= TOTAL_REGIONS; r++) {
+      if (progress[r] === getFloorCount(r) + 1) completed++;
+    }
+    if (diff === 'normal') state.stats.highestRegionNormal = completed;
+    else if (diff === 'hard') state.stats.highestRegionHard = completed;
+    else state.stats.highestRegionHell = completed;
+  }
+  saveRewardState(state);
+}
+
+// ---------------------------------------------------------------------------
 // Trophies
 // ---------------------------------------------------------------------------
 

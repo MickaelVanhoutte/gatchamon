@@ -48,6 +48,7 @@ interface RepeatBattleState {
 
   startRepeat: (config: RepeatBattleConfig) => void;
   stopRepeat: () => void;
+  stopNow: () => void;
   addRunRewards: (rewards: BattleRewards) => void;
   incrementRun: () => void;
   setStatus: (status: RepeatStatus) => void;
@@ -76,6 +77,8 @@ export const useRepeatBattleStore = create<RepeatBattleState>((set, get) => ({
   }),
 
   stopRepeat: () => set({ _shouldStop: true }),
+
+  stopNow: () => set({ _shouldStop: true, status: 'stopped_user' }),
 
   addRunRewards: (rewards) => set((state) => {
     const acc = state.rewards;

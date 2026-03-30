@@ -395,6 +395,12 @@
   color: white;
 }
 
+.rb-btn-stop-soft {
+  background: transparent;
+  color: #ef4444;
+  border: 1.5px solid #ef4444;
+}
+
 .rb-btn-ok {
   background: linear-gradient(135deg, #0f766e, #14b8a6);
   color: white;

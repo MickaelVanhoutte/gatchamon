@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import type { OwnedPokemon } from '../../stores/gameStore';
 import { StarRating } from '../icons';
 import { assetUrl } from '../../utils/asset-url';
+import { getSpriteBoost } from '../../utils/sprite-scale';
 import './IslandMonster.css';
 
 // Pixel positions within the 1200x800 meadow world
@@ -35,7 +36,7 @@ export function IslandMonster({ owned, positionIndex }: IslandMonsterProps) {
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const pos = MEADOW_POSITIONS[positionIndex] ?? MEADOW_POSITIONS[0];
-  const size = spriteSize(owned.template.height);
+  const size = spriteSize(owned.template.height) * getSpriteBoost(owned.template.name);
 
   const handleTap = useCallback(() => {
     setShowLabel(true);

@@ -375,7 +375,9 @@ function generateDescription(category: SkillCategory, typeName: PokemonType, eff
   }
   // passive
   const effDescs = effects.map(describeEffect);
-  return `Passive: ${effDescs.join(', ')}.`;
+  const hasRevive = effects.some(e => e.id === 'revive');
+  const cdSuffix = hasRevive ? ' (6 turn CD)' : '';
+  return `Passive: ${effDescs.join(', ')}.${cdSuffix}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -1309,7 +1311,7 @@ function generateSkillsForPokemon(
     description: '',
     type: primaryType,
     category: 'passive',
-    cooldown: 0,
+    cooldown: passiveEffects.some(e => e.id === 'revive') ? 6 : 0,
     multiplier: 0,
     effects: passiveEffects,
     target: passiveTarget,

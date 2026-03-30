@@ -167,6 +167,7 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
   const handleAction = useCallback(async (skillId: string, targetId: string) => {
     const bid = battleIdRef.current;
     if (!bid || !state || isActingRef.current) return;
+    if (useRepeatBattleStore.getState().status !== 'running') return;
     isActingRef.current = true;
     setPhase('animating');
 
@@ -230,6 +231,9 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
 
         setState({ ...result.state });
         await new Promise(r => setTimeout(r, 400 / spd));
+
+        // Bail out mid-animation if stopNow was called
+        if (useRepeatBattleStore.getState().status !== 'running') break;
       }
 
       for (const mon of allMons) {
@@ -243,7 +247,10 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
         await new Promise(r => setTimeout(r, 800));
       }
 
-      if (result.state.status === 'victory') {
+      // Don't continue if stopped
+      if (useRepeatBattleStore.getState().status !== 'running') {
+        // noop — battle already cleaned up by subscribe effect
+      } else if (result.state.status === 'victory') {
         setLastRewards(result.rewards ?? null);
         setPhase('victory');
       } else if (result.state.status === 'defeat') {
@@ -315,6 +322,18 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
 
     return () => clearTimeout(chainTimer);
   }, [phase, lastRewards]);
+
+  // ── Immediate stop: clean up battle when stopNow is called ──
+  useEffect(() => {
+    return useRepeatBattleStore.subscribe((curr, prev) => {
+      if (prev.status === 'running' && curr.status === 'stopped_user') {
+        const bid = battleIdRef.current;
+        if (bid) deleteBattle(bid);
+        battleIdRef.current = null;
+        setBattleId(null);
+      }
+    });
+  }, []);
 
   // ── Cleanup on unmount ──
   useEffect(() => {

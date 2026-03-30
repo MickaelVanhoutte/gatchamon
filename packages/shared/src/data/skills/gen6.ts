@@ -2318,10 +2318,10 @@ export const GEN6_SKILLS: Record<string, SkillDefinition> = {
   avalugg_skill3: {
     id: 'avalugg_skill3',
     name: 'Ice Body',
-    description: 'Passive: revives a fallen ally with 20% HP.',
+    description: 'Passive: revives a fallen ally with 20% HP (6 turn CD).',
     type: 'ice',
     category: 'passive',
-    cooldown: 0,
+    cooldown: 6,
     multiplier: 0,
     effects: [{ id: 'revive', value: 20, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',

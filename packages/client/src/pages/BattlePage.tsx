@@ -7,6 +7,7 @@ import { useAutoBattle } from '../battle/useAutoBattle';
 import { getTemplate, SKILLS, getTypeEffectiveness, ESSENCES, ITEM_SETS, getBossDialogue, EFFECT_REGISTRY } from '@gatchamon/shared';
 import type { BattleState, BattleMon, BattleLogEntry, BattleResult, PokemonType, EffectId, ActiveEffect, SkillDefinition } from '@gatchamon/shared';
 import { assetUrl } from '../utils/asset-url';
+import { getSpriteBoost } from '../utils/sprite-scale';
 import { GameIcon, StarRating } from '../components/icons';
 import { BattleLoadingScreen } from '../components/BattleLoadingScreen';
 import { GymLeaderDialogue } from '../components/GymLeaderDialogue';
@@ -923,7 +924,7 @@ function BattleMonSprite({
     : null;
 
   // Scale sprite based on species height: small Pokemon ~0.8x, large ~1.5x
-  const sizeScale = Math.min(1.5, Math.max(0.8, 0.5 + (tmpl.height ?? 1) * 0.45));
+  const sizeScale = Math.min(1.5, Math.max(0.8, 0.5 + (tmpl.height ?? 1) * 0.45)) * getSpriteBoost(tmpl.name);
 
   return (
     <div

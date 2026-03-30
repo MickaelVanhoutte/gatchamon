@@ -516,6 +516,9 @@ export function processPassiveTrigger(
     if (skill.category !== 'passive') continue;
     if (!skill.passiveTrigger || skill.passiveTrigger !== trigger) continue;
 
+    // Check passive cooldown (e.g. revive passives have a 6-turn cooldown)
+    if (skill.cooldown > 0 && (mon.skillCooldowns[skill.id] ?? 0) > 0) continue;
+
     // Check conditions
     if (skill.passiveCondition?.hpBelow) {
       const hpPct = (mon.currentHp / mon.maxHp) * 100;
@@ -555,6 +558,10 @@ export function processPassiveTrigger(
         const result = applySingleEffect(effect, mon, target, state);
         if (result) {
           effects.push(`[${skill.name}] ${result}`);
+          // Set passive cooldown after successful trigger
+          if (skill.cooldown > 0) {
+            mon.skillCooldowns[skill.id] = skill.cooldown;
+          }
         }
       }
     }
