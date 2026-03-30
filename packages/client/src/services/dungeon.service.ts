@@ -1,70 +1,10 @@
-import { getTemplate as getTemplateShared, computeStats, getDungeon, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel, getTowerFloor, DITTO_TEMPLATE_ID, getCurrentTowerResetDate, BEGINNER_BONUS, isBeginnerBonusActive } from '@gatchamon/shared';
-import { getSkillsForPokemon } from '@gatchamon/shared';
-import type { BattleState, BattleMon, BattleAction, BattleResult, BattleRewards } from '@gatchamon/shared';
+import { getTemplate as getTemplateShared, getDungeon, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel, getTowerFloor, DITTO_TEMPLATE_ID, getCurrentTowerResetDate, BEGINNER_BONUS, isBeginnerBonusActive } from '@gatchamon/shared';
+import type { BattleState, BattleRewards } from '@gatchamon/shared';
 import type { DungeonRewards, DungeonDef } from '@gatchamon/shared';
-import type { PokemonTemplate, PokemonInstance } from '@gatchamon/shared';
+import type { PokemonInstance } from '@gatchamon/shared';
 import { loadPlayer, savePlayer, loadCollection, updateInstance, addToCollection } from './storage';
 import { trackStat, incrementMission, checkAndUpdateTrophies } from './reward.service';
 import { grantTrainerXp } from './player.service';
-import { applyPassives, advanceToNextActor, autoResolveEnemyTurns } from '@gatchamon/shared';
-
-const activeBattles = new Map<string, BattleState>();
-
-function getTemplate(templateId: number): PokemonTemplate {
-  const t = getTemplateShared(templateId);
-  if (!t) throw new Error(`Unknown templateId ${templateId}`);
-  return t;
-}
-
-function makeBattleMon(
-  instanceId: string,
-  templateId: number,
-  level: number,
-  stars: number,
-  isPlayerOwned: boolean,
-): BattleMon {
-  const template = getTemplate(templateId);
-  const stats = computeStats(template, level, stars);
-  const skills = getSkillsForPokemon(template.skillIds);
-  const cooldowns: Record<string, number> = {};
-  for (const sk of skills) cooldowns[sk.id] = 0;
-
-  return {
-    instanceId, templateId, isPlayerOwned,
-    currentHp: stats.hp, maxHp: stats.hp, stats,
-    skillCooldowns: cooldowns,
-    buffs: [], debuffs: [],
-    isAlive: true, actionGauge: 0,
-  };
-}
-
-function generateDungeonEnemies(dungeonDef: DungeonDef, floorIndex: number): BattleMon[] {
-  const floor = dungeonDef.floors[floorIndex];
-  if (!floor) throw new Error(`Invalid floor ${floorIndex}`);
-
-  const isLastFloor = floorIndex === dungeonDef.floors.length - 1;
-  const bossIndex = Math.floor(floor.enemies.length / 2);
-
-  const enemies: BattleMon[] = [];
-  for (let i = 0; i < floor.enemies.length; i++) {
-    const templateId = floor.enemies[i];
-    const template = getTemplate(templateId);
-    const id = `dungeon_enemy_${crypto.randomUUID()}`;
-    const stars = floor.enemyStars ?? template.naturalStars;
-    const mon = makeBattleMon(id, templateId, floor.enemyLevel, stars, false);
-    if (floor.statBoost) {
-      mon.stats.hp = Math.floor(mon.stats.hp * floor.statBoost);
-      mon.stats.atk = Math.floor(mon.stats.atk * floor.statBoost);
-      mon.stats.def = Math.floor(mon.stats.def * floor.statBoost);
-      mon.stats.spd = Math.floor(mon.stats.spd * floor.statBoost);
-      mon.maxHp = mon.stats.hp;
-      mon.currentHp = mon.stats.hp;
-    }
-    if (isLastFloor && i === bossIndex) mon.isBoss = true;
-    enemies.push(mon);
-  }
-  return enemies;
-}
 
 function rollDungeonDrops(dungeonDef: DungeonDef, floorIndex: number): Record<string, number> {
   const floor = dungeonDef.floors[floorIndex];
@@ -80,71 +20,6 @@ function rollDungeonDrops(dungeonDef: DungeonDef, floorIndex: number): Record<st
   }
 
   return drops;
-}
-
-export function startDungeonBattle(
-  teamInstanceIds: string[],
-  dungeonId: number,
-  floorIndex: number,
-): BattleResult {
-  const player = loadPlayer();
-  if (!player) throw new Error('Player not found');
-
-  const dungeonDef = getDungeon(dungeonId);
-  if (!dungeonDef) throw new Error('Dungeon not found');
-
-  // Check energy
-  if (player.energy < dungeonDef.energyCost) {
-    throw new Error('Not enough energy');
-  }
-
-  // Deduct energy
-  savePlayer({ ...player, energy: player.energy - dungeonDef.energyCost });
-
-  const collection = loadCollection();
-  const playerTeam: BattleMon[] = [];
-  for (const instId of teamInstanceIds) {
-    const inst = collection.find(p => p.instanceId === instId && p.ownerId === player.id);
-    if (!inst) throw new Error(`Pokemon instance ${instId} not found`);
-    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true));
-  }
-
-  if (playerTeam.length === 0) throw new Error('Team cannot be empty');
-
-  const enemyTeam = generateDungeonEnemies(dungeonDef, floorIndex);
-
-  const battleId = crypto.randomUUID();
-  const state: BattleState = {
-    battleId,
-    playerId: player.id,
-    playerTeam,
-    enemyTeam,
-    currentActorId: null,
-    turnNumber: 0,
-    status: 'active',
-    log: [],
-    floor: { region: 0, floor: floorIndex + 1, difficulty: 'normal' },
-    mode: 'dungeon',
-    dungeonId,
-  };
-
-  applyPassives(state);
-
-  const firstActorId = advanceToNextActor(state);
-  const allMons = [...state.playerTeam, ...state.enemyTeam];
-  const firstActor = allMons.find(m => m.instanceId === firstActorId);
-
-  if (firstActor && !firstActor.isPlayerOwned) {
-    state.currentActorId = firstActorId;
-    const enemyLogs = autoResolveEnemyTurns(state);
-    state.log.push(...enemyLogs);
-  } else {
-    state.currentActorId = firstActorId;
-  }
-
-  activeBattles.set(battleId, state);
-
-  return { state };
 }
 
 export function calculateDungeonRewards(state: BattleState): DungeonRewards & BattleRewards {
@@ -206,94 +81,9 @@ export function calculateDungeonRewards(state: BattleState): DungeonRewards & Ba
   return { essences, xpPerMon, regularPokeballs: 0, premiumPokeballs: 0, levelUps };
 }
 
-export function getDungeonBattle(battleId: string): BattleState | null {
-  return activeBattles.get(battleId) ?? null;
-}
-
-export function removeDungeonBattle(battleId: string): void {
-  activeBattles.delete(battleId);
-}
-
 // ---------------------------------------------------------------------------
-// Battle Tower
+// Battle Tower Rewards
 // ---------------------------------------------------------------------------
-
-export function startTowerBattle(
-  teamInstanceIds: string[],
-  towerFloor: number,
-): BattleResult {
-  const player = loadPlayer();
-  if (!player) throw new Error('Player not found');
-
-  const currentProgress = player.towerProgress ?? 0;
-  if (towerFloor !== currentProgress + 1) {
-    throw new Error('Must clear floors in order');
-  }
-
-  const floorDef = getTowerFloor(towerFloor);
-  if (!floorDef) throw new Error('Invalid tower floor');
-
-  if (player.energy < floorDef.energyCost) {
-    throw new Error('Not enough energy');
-  }
-
-  savePlayer({ ...player, energy: player.energy - floorDef.energyCost });
-
-  const collection = loadCollection();
-  const playerTeam: BattleMon[] = [];
-  for (const instId of teamInstanceIds) {
-    const inst = collection.find(p => p.instanceId === instId && p.ownerId === player.id);
-    if (!inst) throw new Error(`Pokemon instance ${instId} not found`);
-    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true));
-  }
-
-  if (playerTeam.length === 0) throw new Error('Team cannot be empty');
-
-  // Build enemy team from tower floor def
-  const enemyTeam: BattleMon[] = [];
-  for (let i = 0; i < floorDef.enemyCount; i++) {
-    const templateId = floorDef.enemyPool[i % floorDef.enemyPool.length];
-    const id = `tower_enemy_${crypto.randomUUID()}`;
-    const mon = makeBattleMon(id, templateId, floorDef.enemyLevel, floorDef.enemyStars, false);
-    if (towerFloor % 10 === 0 && i === Math.floor(floorDef.enemyCount / 2)) {
-      mon.isBoss = true;
-    }
-    enemyTeam.push(mon);
-  }
-
-  const battleId = crypto.randomUUID();
-  const state: BattleState = {
-    battleId,
-    playerId: player.id,
-    playerTeam,
-    enemyTeam,
-    currentActorId: null,
-    turnNumber: 0,
-    status: 'active',
-    log: [],
-    floor: { region: 0, floor: towerFloor, difficulty: 'normal' },
-    mode: 'tower',
-  };
-
-  applyPassives(state);
-
-  // Determine first actor
-  const firstActorId = advanceToNextActor(state);
-  const allMons = [...state.playerTeam, ...state.enemyTeam];
-  const firstActor = allMons.find(m => m.instanceId === firstActorId);
-
-  if (firstActor && !firstActor.isPlayerOwned) {
-    state.currentActorId = firstActorId;
-    const enemyLogs = autoResolveEnemyTurns(state);
-    state.log.push(...enemyLogs);
-  } else {
-    state.currentActorId = firstActorId;
-  }
-
-  activeBattles.set(battleId, state);
-
-  return { state };
-}
 
 export function calculateTowerRewards(state: BattleState): BattleRewards {
   const towerFloor = state.floor.floor;

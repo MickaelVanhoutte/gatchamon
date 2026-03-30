@@ -9,6 +9,11 @@ interface LoadingScreenProps {
 
 export function LoadingScreen({ onStart, swReady = true }: LoadingScreenProps) {
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
+  const [justUpdated] = useState(() => {
+    const flag = sessionStorage.getItem('sw-just-updated');
+    if (flag) sessionStorage.removeItem('sw-just-updated');
+    return !!flag;
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => setMinTimeElapsed(true), 1500);
@@ -61,6 +66,7 @@ export function LoadingScreen({ onStart, swReady = true }: LoadingScreenProps) {
 
       {/* Bottom */}
       <div className="ls-bottom">
+        {justUpdated && <p className="ls-updated-text">Updated!</p>}
         {canStart ? (
           <p className="ls-tap-text">Touch to Start</p>
         ) : minTimeElapsed ? (

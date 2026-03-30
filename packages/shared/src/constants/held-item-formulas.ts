@@ -58,8 +58,8 @@ export function getActiveSetEffects(items: HeldItemInstance[]): ActiveSetEffect[
       bonusValue: setDef.bonusValue != null ? setDef.bonusValue * activations : undefined,
       bonusType: setDef.bonusType,
       procEffect: setDef.procEffect,
-      procChance: setDef.procChance,
-      procValue: setDef.procValue,
+      procChance: setDef.procChance != null ? Math.min(1, 1 - Math.pow(1 - setDef.procChance, activations)) : undefined,
+      procValue: setDef.procValue != null ? setDef.procValue * activations : undefined,
       activations,
     });
   }

@@ -180,6 +180,7 @@ export function useAutoBattle(
   const [isAutoOn, setIsAutoOn] = useState(initialAuto ?? false);
   const handleActionRef = useRef(handleAction);
   handleActionRef.current = handleAction;
+  const isFirstAction = useRef(true);
 
   const toggleAuto = useCallback(() => setIsAutoOn(prev => {
     const next = !prev;
@@ -197,9 +198,12 @@ export function useAutoBattle(
     if (!best) return;
 
     const spd = battleSpeedRef?.current ?? 1;
+    // Add extra delay on the very first action so the player can see the battlefield
+    const firstDelay = isFirstAction.current ? 1000 : 0;
     const timer = setTimeout(() => {
+      isFirstAction.current = false;
       handleActionRef.current(best.skillId, best.targetId);
-    }, 300 / spd);
+    }, firstDelay + 300 / spd);
 
     return () => clearTimeout(timer);
   }, [isAutoOn, phase, state, isPaused]);

@@ -2,6 +2,7 @@ let settled = false;
 
 function awaitActivation(sw: ServiceWorker, onNoUpdate: () => void): void {
   if (sw.state === 'activated') {
+    sessionStorage.setItem('sw-just-updated', '1');
     window.location.reload();
     return;
   }
@@ -9,6 +10,7 @@ function awaitActivation(sw: ServiceWorker, onNoUpdate: () => void): void {
     if (settled) return;
     if (sw.state === 'activated') {
       settled = true;
+      sessionStorage.setItem('sw-just-updated', '1');
       window.location.reload();
     }
     if (sw.state === 'redundant') {

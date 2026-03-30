@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getBattleState as fetchBattleState, resolvePlayerAction, deleteBattle } from '../services/battle.service';
-import { removeDungeonBattle } from '../services/dungeon.service';
+import { getBattleState as fetchBattleState, resolvePlayerAction, deleteBattle, getStoredRewards } from '../services/battle.service';
 import { useGameStore } from '../stores/gameStore';
 import { useBattleAnimation } from '../battle/useBattleAnimation';
 import { useAutoBattle } from '../battle/useAutoBattle';
@@ -266,9 +265,18 @@ export function BattlePage() {
     if (!battleState) return;
     setState(battleState);
     setLogEntries(battleState.log);
-    if (battleState.status === 'victory') setPhase('victory');
-    else if (battleState.status === 'defeat') setPhase('defeat');
-    else setPhase('player_turn');
+    if (battleState.status === 'victory' || battleState.status === 'defeat') {
+      // Battle resolved during init (e.g. reflect/counter killed enemies).
+      // Show the battlefield briefly before transitioning to the result screen.
+      setPhase('animating');
+      const storedRewards = getStoredRewards(battleId);
+      setTimeout(() => {
+        if (storedRewards) setRewards(storedRewards);
+        setPhase(battleState.status === 'victory' ? 'victory' : 'defeat');
+      }, 1500);
+    } else {
+      setPhase('player_turn');
+    }
   }, [battleId]);
 
   useEffect(() => {
@@ -357,6 +365,11 @@ export function BattlePage() {
       setState({ ...result.state });
       setLogEntries([...result.state.log]);
 
+      // Let the player see the final blow land before showing victory/defeat
+      if (result.state.status === 'victory' || result.state.status === 'defeat') {
+        await new Promise(r => setTimeout(r, 800));
+      }
+
       if (result.state.status === 'victory') {
         setRewards(result.rewards);
         setPhase('victory');
@@ -412,7 +425,6 @@ export function BattlePage() {
   const handleQuit = useCallback(() => {
     if (battleId) {
       deleteBattle(battleId);
-      removeDungeonBattle(battleId);
     }
     navigateAway();
   }, [battleId, navigateAway]);

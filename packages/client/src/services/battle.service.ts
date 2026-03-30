@@ -1,4 +1,4 @@
-import { getTemplate as getTemplateShared, computeStats, computeStatsWithItems, getActiveSetEffects, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel, BEGINNER_BONUS, isBeginnerBonusActive } from '@gatchamon/shared';
+import { getTemplate as getTemplateShared, computeStats, computeStatsWithItems, getActiveSetEffects, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel, BEGINNER_BONUS, isBeginnerBonusActive, getTowerFloor } from '@gatchamon/shared';
 import { getSkillsForPokemon } from '@gatchamon/shared';
 import { TOTAL_REGIONS, getFloorCount } from '@gatchamon/shared';
 import {
@@ -40,7 +40,7 @@ import { grantTrainerXp } from './player.service';
 import { rollItemDrop, generateItem } from './held-item.service';
 import { addHeldItem } from './storage';
 import { useTutorialStore } from '../stores/tutorialStore';
-import { calculateTowerRewards as calculateTowerRewardsImported, getDungeonBattle } from './dungeon.service';
+import { calculateTowerRewards as calculateTowerRewardsImported } from './dungeon.service';
 
 // Map instanceId → active set effects for proc handling in battle
 const battleSetEffects = new Map<string, ActiveSetEffect[]>();
@@ -49,6 +49,7 @@ const battleSetEffects = new Map<string, ActiveSetEffect[]>();
 // In-memory battle store
 // ---------------------------------------------------------------------------
 const activeBattles = new Map<string, BattleState>();
+const precomputedRewards = new Map<string, BattleRewards>();
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -506,6 +507,7 @@ function initBattle(
   const result: BattleResult = { state };
   if (state.status === 'victory') {
     result.rewards = calculateRewards(state);
+    precomputedRewards.set(battleId, result.rewards);
   }
 
   return result;
@@ -657,6 +659,54 @@ export function startItemDungeonBattle(
   }
 
   return initBattle(playerTeam, enemyTeam, { region: 0, floor: floorIndex + 1, difficulty: 'normal' }, 'item-dungeon', player.id, dungeonId);
+}
+
+export function startTowerBattle(
+  teamInstanceIds: string[],
+  towerFloor: number,
+): BattleResult {
+  const player = loadPlayer();
+  if (!player) throw new Error('Player not found');
+
+  const currentProgress = player.towerProgress ?? 0;
+  if (towerFloor !== currentProgress + 1) {
+    throw new Error('Must clear floors in order');
+  }
+
+  const floorDef = getTowerFloor(towerFloor);
+  if (!floorDef) throw new Error('Invalid tower floor');
+
+  if (player.energy < floorDef.energyCost) {
+    throw new Error('Not enough energy');
+  }
+
+  savePlayer({ ...player, energy: player.energy - floorDef.energyCost });
+  trackStat('totalEnergySpent', floorDef.energyCost);
+  incrementMission('spend_energy', floorDef.energyCost);
+
+  const collection = loadCollection();
+  const playerTeam: BattleMon[] = [];
+  for (const instId of teamInstanceIds) {
+    const inst = collection.find(p => p.instanceId === instId && p.ownerId === player.id);
+    if (!inst) throw new Error(`Pokemon instance ${instId} not found`);
+    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true, inst.skillLevels));
+  }
+
+  if (playerTeam.length === 0) throw new Error('Team cannot be empty');
+
+  // Build enemy team from tower floor def
+  const enemyTeam: BattleMon[] = [];
+  for (let i = 0; i < floorDef.enemyCount; i++) {
+    const templateId = floorDef.enemyPool[i % floorDef.enemyPool.length];
+    const id = `tower_enemy_${crypto.randomUUID()}`;
+    const mon = makeBattleMon(id, templateId, floorDef.enemyLevel, floorDef.enemyStars, false);
+    if (towerFloor % 10 === 0 && i === Math.floor(floorDef.enemyCount / 2)) {
+      mon.isBoss = true;
+    }
+    enemyTeam.push(mon);
+  }
+
+  return initBattle(playerTeam, enemyTeam, { region: 0, floor: towerFloor, difficulty: 'normal' }, 'tower', player.id);
 }
 
 export function resolvePlayerAction(battleId: string, action: BattleAction): BattleResult {
@@ -921,11 +971,16 @@ function getStatus(state: BattleState): BattleState['status'] {
 }
 
 export function getBattleState(battleId: string): BattleState | null {
-  return activeBattles.get(battleId) ?? getDungeonBattle(battleId);
+  return activeBattles.get(battleId) ?? null;
+}
+
+export function getStoredRewards(battleId: string): BattleRewards | undefined {
+  return precomputedRewards.get(battleId);
 }
 
 export function deleteBattle(battleId: string): void {
   activeBattles.delete(battleId);
+  precomputedRewards.delete(battleId);
 }
 
 // Re-export shared engine functions that the UI needs
