@@ -6,7 +6,7 @@ export interface InboxItem {
   message: string;
   reward?: MissionReward;
   /** Special item type for non-standard rewards (e.g. retry summon ticket) */
-  specialItem?: 'retry-summon-100';
+  specialItem?: 'retry-summon-100' | 'beginner-item-set';
   read: boolean;
   claimed: boolean;
   createdAt: string;

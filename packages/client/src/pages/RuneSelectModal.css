@@ -374,20 +374,24 @@
 }
 
 /* ── Mobile responsive ───────────────────────────────────────────────── */
-@media (max-width: 640px) {
-  .rune-select-modal {
-    max-height: 95vh;
-    max-height: 95dvh;
-    border-radius: 8px;
+@media (max-width: 768px) {
+  .rune-select-overlay {
+    padding: 4px;
+    align-items: stretch;
   }
 
-  .rune-select-overlay {
-    padding: 8px;
+  .rune-select-modal {
+    max-height: 100vh;
+    max-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
+    border-radius: 8px;
   }
 
   .rune-select-body {
     flex-direction: column;
     overflow: hidden;
+    min-height: 0;
   }
 
   .rune-select-sidebar {
@@ -400,7 +404,6 @@
     border-bottom: 1px solid var(--card-border);
     padding: 4px;
     flex-shrink: 0;
-    max-height: none;
   }
 
   .rune-select-sidebar-item {
@@ -409,12 +412,13 @@
   }
 
   .rune-select-main {
-    flex: 1;
+    flex: 1 1 0%;
     min-height: 0;
     overflow: hidden;
   }
 
   .rune-select-list {
+    min-height: 0;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }
 

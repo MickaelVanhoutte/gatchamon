@@ -14,13 +14,14 @@ export function InboxPage() {
   const navigate = useNavigate();
   const { refreshPlayer } = useGameStore();
   const [claimedReward, setClaimedReward] = useState<MissionReward | null>(null);
+  const [claimedSpecial, setClaimedSpecial] = useState<string | null>(null);
   const [, setTick] = useState(0);
   const forceUpdate = useCallback(() => setTick(t => t + 1), []);
 
   const items = getInboxItems();
 
   const handleClaim = (item: InboxItem) => {
-    // Special items: navigate without claiming — the destination page handles claiming
+    // Retry summon: navigate — the destination page handles claiming
     if (item.specialItem === 'retry-summon-100') {
       navigate('/retry-summon');
       return;
@@ -29,10 +30,14 @@ export function InboxPage() {
     const result = claimInboxReward(item.id);
     if (!result) return;
 
-    if (result.reward) {
+    refreshPlayer();
+    forceUpdate();
+
+    if (result.specialItem === 'beginner-item-set') {
+      setClaimedSpecial('Starter Item Set received! Check your held items.');
+      setTimeout(() => setClaimedSpecial(null), 3000);
+    } else if (result.reward) {
       setClaimedReward(result.reward);
-      refreshPlayer();
-      forceUpdate();
       setTimeout(() => setClaimedReward(null), 2000);
     }
   };
@@ -61,7 +66,7 @@ export function InboxPage() {
             onClick={() => handleRead(item)}
           >
             <div className="inbox-card-icon">
-              <GameIcon id={item.specialItem ? 'summon' : 'gift'} size={20} />
+              <GameIcon id={item.specialItem === 'beginner-item-set' ? 'crown' : item.specialItem ? 'summon' : 'gift'} size={20} />
             </div>
             <div className="inbox-card-info">
               <div className="inbox-card-title">
@@ -85,6 +90,11 @@ export function InboxPage() {
               {item.specialItem === 'retry-summon-100' && !item.claimed && (
                 <div className="inbox-card-special">
                   <GameIcon id="premiumPokeball" size={12} /> 100x Retry Premium Summon
+                </div>
+              )}
+              {item.specialItem === 'beginner-item-set' && !item.claimed && (
+                <div className="inbox-card-special">
+                  <GameIcon id="crown" size={12} /> 4x King's Rock + 2x Quick Claw (6★ Lv.15)
                 </div>
               )}
             </div>
@@ -111,6 +121,9 @@ export function InboxPage() {
           {claimedReward.premiumPokeballs && <span> +{claimedReward.premiumPokeballs} <GameIcon id="premiumPokeball" size={14} /></span>}
           {claimedReward.energy && <span> +{claimedReward.energy} <GameIcon id="energy" size={14} /></span>}
         </div>
+      )}
+      {claimedSpecial && (
+        <div className="claim-toast">{claimedSpecial}</div>
       )}
     </div>
   );
