@@ -86,15 +86,15 @@ export function RepeatBattleModal() {
           </div>
 
           <div className="rb-modal-body">
-            {/* Top — Battle viewport (full width) */}
+            {/* Left — Battle viewport */}
             <div className="rb-battle-col">
               <div className="rb-battle-viewport">
                 <BackgroundBattleView config={config} />
               </div>
             </div>
 
-            {/* Bottom — Progress left, Rewards right */}
-            <div className="rb-info-row">
+            {/* Right — Progress + Rewards */}
+            <div className="rb-rewards-col">
               <div className="rb-progress-section">
                 <div className="rb-progress-text">
                   <span>Run {displayRun} / {totalRuns}</span>
@@ -109,17 +109,9 @@ export function RepeatBattleModal() {
                   />
                 </div>
                 <span className="rb-completed">{completedRuns} victories</span>
-                <div className="rb-actions">
-                  {isRunning ? (
-                    <button className="rb-btn rb-btn-stop" onClick={stopRepeat}>Stop</button>
-                  ) : (
-                    <button className="rb-btn rb-btn-ok" onClick={reset}>Collect</button>
-                  )}
-                </div>
               </div>
 
-              <div className="rb-rewards-col">
-              <p className="rb-rewards-title">Accumulated Rewards</p>
+              <p className="rb-rewards-title">Rewards</p>
               {hasRewards ? (
                 <>
                   <div className="rb-rewards-grid">
@@ -192,7 +184,14 @@ export function RepeatBattleModal() {
               ) : (
                 <p className="rb-no-rewards">No rewards yet...</p>
               )}
-            </div>
+
+              <div className="rb-actions">
+                {isRunning ? (
+                  <button className="rb-btn rb-btn-stop" onClick={stopRepeat}>Stop</button>
+                ) : (
+                  <button className="rb-btn rb-btn-ok" onClick={reset}>Collect</button>
+                )}
+              </div>
             </div>
           </div>
         </div>

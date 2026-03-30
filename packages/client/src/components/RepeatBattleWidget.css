@@ -134,9 +134,8 @@
   border-radius: 16px;
   border: 1px solid var(--card-border, #d0e4ea);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  width: 680px;
-  max-width: 96vw;
-  max-height: 85vh;
+  width: 94vw;
+  max-height: 90vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -189,25 +188,27 @@
   background: rgba(0, 0, 0, 0.05);
 }
 
-/* ── Body: battle on top, info row below ── */
+/* ── Body: battle left, info right ── */
 .rb-modal-body {
   display: flex;
-  flex-direction: column;
   min-height: 0;
   flex: 1;
   overflow: hidden;
 }
 
-/* ── Top — Battle viewport (full width) ── */
+/* ── Left — Battle viewport ── */
 .rb-battle-col {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid var(--card-border, #e5e7eb);
+  border-right: 1px solid var(--card-border, #e5e7eb);
   overflow: hidden;
+  min-width: 0;
 }
 
 .rb-battle-viewport {
-  height: 210px;
+  flex: 1;
+  min-height: 200px;
   overflow: hidden;
   position: relative;
   background: #1a1a2e;
@@ -303,32 +304,23 @@
   font-style: italic;
 }
 
-/* ── Bottom info row — Progress left, Rewards right ── */
-.rb-info-row {
-  display: flex;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-}
-
+/* ── Right column — Progress + Rewards ── */
 .rb-rewards-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px 16px;
-  overflow-y: auto;
-}
-
-/* ── Progress (left side of info row) ── */
-.rb-progress-section {
   flex: 0 0 45%;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   padding: 10px 12px;
-  border-right: 1px solid var(--card-border, #e5e7eb);
-  justify-content: center;
+  overflow-y: auto;
+}
+
+/* ── Progress section ── */
+.rb-progress-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--card-border, #e5e7eb);
 }
 
 .rb-progress-text {
@@ -472,28 +464,30 @@
   margin: 0;
 }
 
-/* ── Responsive: stack info row on small screens ── */
-@media (max-width: 480px) {
-  .rb-panel {
-    width: 96vw;
-    max-height: 90vh;
-  }
-
+/* ── Landscape: shorter viewport ── */
+@media (max-height: 500px) {
   .rb-battle-viewport {
-    height: 150px;
+    min-height: 150px;
   }
 
-  .rb-info-row {
-    flex-direction: column;
+  .rb-header {
+    padding: 6px 12px 4px;
   }
+}
 
-  .rb-progress-section {
-    flex: none;
-    border-right: none;
-    border-bottom: 1px solid var(--card-border, #e5e7eb);
-  }
-
+/* ── Narrow screens ── */
+@media (max-width: 480px) {
   .rb-rewards-col {
-    max-height: 25vh;
+    flex: 0 0 40%;
+    padding: 8px;
+    gap: 4px;
+  }
+
+  .rb-progress-text {
+    font-size: 0.7rem;
+  }
+
+  .rb-rewards-title {
+    font-size: 0.65rem;
   }
 }
