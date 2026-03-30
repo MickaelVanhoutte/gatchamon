@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { GameIcon, StarRating } from '../components/icons';
 import type { OwnedPokemon } from '../stores/gameStore';
-import { isMaxLevel, canStarEvolve, calculateFodderXp, MAX_LEVEL_BY_STARS, xpToNextLevel } from '@gatchamon/shared';
+import { isMaxLevel, canStarEvolve, calculateFodderXp, MAX_LEVEL_BY_STARS, xpToNextLevel, isActivePokemon } from '@gatchamon/shared';
 import { previewAltarFeed } from '../services/altar.service';
 import { assetUrl } from '../utils/asset-url';
 import './AltarPage.css';
@@ -63,11 +63,11 @@ export function AltarPage() {
     );
   }, [base, fodder]);
 
-  // Grid: sort by stars desc, level desc
+  // Grid: filter to active Pokemon, sort by stars desc, level desc
   const sortedCollection = useMemo(
-    () => [...collection].sort((a, b) =>
-      b.instance.stars - a.instance.stars || b.instance.level - a.instance.level
-    ),
+    () => collection
+      .filter(m => isActivePokemon(m.instance.templateId))
+      .sort((a, b) => b.instance.stars - a.instance.stars || b.instance.level - a.instance.level),
     [collection],
   );
 
