@@ -1,0 +1,97 @@
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { useGameStore } from '../../stores/gameStore';
+import { getMaxEnergy } from '@gatchamon/shared';
+import { updatePlayer, earnStardust } from '../../services/player.service';
+import './CheatBubble.css';
+
+interface Feedback {
+  message: string;
+  success: boolean;
+}
+
+function executeCheat(command: string): Feedback {
+  const player = useGameStore.getState().player;
+  if (!player) return { message: 'No player', success: false };
+
+  switch (command.trim().toLowerCase()) {
+    case '/energy': {
+      const maxEnergy = getMaxEnergy(player.trainerSkills);
+      updatePlayer({ energy: maxEnergy, lastEnergyUpdate: new Date().toISOString() });
+      return { message: `Energy restored to ${maxEnergy}!`, success: true };
+    }
+    case '/stardust': {
+      earnStardust(200_000);
+      return { message: '+200,000 Stardust!', success: true };
+    }
+    case '/valousuce': {
+      updatePlayer({ premiumPokeballs: player.premiumPokeballs + 10 });
+      return { message: '+10 Premium Pokeballs!', success: true };
+    }
+    default:
+      return { message: 'Unknown code', success: false };
+  }
+}
+
+export function CheatBubble() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [input, setInput] = useState('');
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const refreshPlayer = useGameStore(s => s.refreshPlayer);
+
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  const handleSubmit = useCallback((e: React.KeyboardEvent) => {
+    if (e.key !== 'Enter' || !input.trim()) return;
+
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+    const result = executeCheat(input);
+    refreshPlayer();
+    setFeedback(result);
+    setInput('');
+
+    timeoutRef.current = setTimeout(() => {
+      setFeedback(null);
+      if (result.success) setIsOpen(false);
+    }, 1500);
+  }, [input, refreshPlayer]);
+
+  if (!isOpen) {
+    return (
+      <button className="cheat-bubble-btn" onClick={() => setIsOpen(true)}>
+        {'>_'}
+      </button>
+    );
+  }
+
+  return (
+    <div className="cheat-panel">
+      <input
+        ref={inputRef}
+        type="text"
+        className="cheat-panel-input"
+        value={input}
+        onChange={e => setInput(e.target.value)}
+        onKeyDown={handleSubmit}
+        placeholder="Type a code..."
+      />
+      {feedback && (
+        <div className={`cheat-feedback ${feedback.success ? 'cheat-feedback--success' : 'cheat-feedback--error'}`}>
+          {feedback.message}
+        </div>
+      )}
+    </div>
+  );
+}

@@ -5,6 +5,7 @@ import { useTutorialStore } from '../stores/tutorialStore';
 import { IslandScene } from '../components/island/IslandScene';
 import { LoginCalendarModal } from '../components/LoginCalendarModal';
 import { canClaimToday } from '../services/login-calendar.service';
+import { CheatBubble } from '../components/cheat/CheatBubble';
 import './HomePage.css';
 
 export function HomePage() {
@@ -43,6 +44,7 @@ export function HomePage() {
         onNavigate={navigate}
       />
       {showCalendar && <LoginCalendarModal onClose={() => setShowCalendar(false)} />}
+      <CheatBubble />
     </div>
   );
 }
