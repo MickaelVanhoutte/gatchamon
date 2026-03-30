@@ -136,6 +136,7 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   width: 94vw;
   max-height: 90vh;
+  max-width: none;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -462,6 +463,31 @@
   color: var(--text-secondary, #94a3b8);
   font-style: italic;
   margin: 0;
+}
+
+/* ── Portrait device (app is rotated to landscape) — swap vw/vh ── */
+@media (orientation: portrait) {
+  .rb-panel {
+    width: 94vh;
+    max-height: 90vw;
+  }
+
+  .rb-battle-viewport {
+    min-height: 140px;
+  }
+
+  .rb-header {
+    padding: 6px 12px 4px;
+  }
+
+  .rb-rewards-col {
+    padding: 6px 8px;
+    gap: 3px;
+  }
+
+  .rb-actions {
+    padding: 4px 0 2px;
+  }
 }
 
 /* ── Landscape: shorter viewport ── */
