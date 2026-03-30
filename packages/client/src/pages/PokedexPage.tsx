@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { GameIcon, StarRating } from '../components/icons';
 import {
-  POKEDEX,
+  ACTIVE_POKEDEX,
   computeStats,
   getSkillsForPokemon,
   getTemplate,
   getEvolutionLineage,
-  getEvolutionsFrom,
+  getActiveEvolutionsFrom,
 } from '@gatchamon/shared';
 import type { PokemonType, PokemonTemplate, BaseStats } from '@gatchamon/shared';
 import { assetUrl } from '../utils/asset-url';
@@ -66,7 +66,7 @@ export function PokedexPage() {
   );
 
   const filtered = useMemo(() => {
-    return POKEDEX
+    return ACTIVE_POKEDEX
       .filter(t => {
         if (!showForms && t.id >= 15000) return false;
         if (searchQuery && !t.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
@@ -95,16 +95,16 @@ export function PokedexPage() {
     : [];
 
   const evolutions = selected
-    ? getEvolutionsFrom(selected.id)
+    ? getActiveEvolutionsFrom(selected.id)
     : [];
 
   const ownedCount = useMemo(
-    () => POKEDEX.filter(t => (showForms || t.id < 15000) && ownedTemplateIds.has(t.id)).length,
+    () => ACTIVE_POKEDEX.filter(t => (showForms || t.id < 15000) && ownedTemplateIds.has(t.id)).length,
     [ownedTemplateIds, showForms],
   );
 
   const totalCount = useMemo(
-    () => POKEDEX.filter(t => showForms || t.id < 15000).length,
+    () => ACTIVE_POKEDEX.filter(t => showForms || t.id < 15000).length,
     [showForms],
   );
 

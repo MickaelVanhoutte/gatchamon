@@ -1,7 +1,7 @@
 .cheat-bubble-btn {
-  position: fixed;
-  bottom: calc(70px + env(safe-area-inset-bottom));
-  right: calc(12px + env(safe-area-inset-right));
+  position: absolute;
+  bottom: 16px;
+  right: 68px;
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -26,9 +26,9 @@
 }
 
 .cheat-panel {
-  position: fixed;
-  bottom: calc(70px + env(safe-area-inset-bottom));
-  right: calc(12px + env(safe-area-inset-right));
+  position: absolute;
+  bottom: 16px;
+  right: 68px;
   width: 220px;
   background: rgba(26, 35, 50, 0.92);
   backdrop-filter: blur(8px);

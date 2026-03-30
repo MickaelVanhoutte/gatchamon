@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { GameIcon, StarRating } from '../components/icons';
 import type { OwnedPokemon } from '../stores/gameStore';
-import { computeStats, getSkillsForPokemon, MAX_LEVEL_BY_STARS, isMaxLevel, getTemplate, ESSENCES, getEvolutionsFrom, getTypeChangeDef, getAvailableTypeChanges } from '@gatchamon/shared';
+import { computeStats, getSkillsForPokemon, MAX_LEVEL_BY_STARS, isMaxLevel, getTemplate, ESSENCES, getActiveEvolutionsFrom, getTypeChangeDef, getAvailableTypeChanges, isActivePokemon } from '@gatchamon/shared';
 import { canEvolveInstance } from '../services/evolution.service';
 import { canChangeType } from '../services/type-change.service';
 import type { PokemonType, BaseStats } from '@gatchamon/shared';
@@ -66,25 +66,27 @@ export function CollectionPage() {
     loadHeldItems();
   }, [loadCollection, loadHeldItems]);
 
+  const visibleCollection = collection.filter(mon => isActivePokemon(mon.instance.templateId));
+
   useEffect(() => {
-    if (collection.length > 0) {
+    if (visibleCollection.length > 0) {
       // Restore previous selection if it still exists in collection
       const prevId = lastSelectedRef.current ?? selectedId;
-      const stillExists = prevId && collection.some(m => m.instance.instanceId === prevId);
+      const stillExists = prevId && visibleCollection.some(m => m.instance.instanceId === prevId);
       if (stillExists) {
         setSelectedId(prevId);
       } else if (!selectedId) {
-        setSelectedId(collection[0].instance.instanceId);
+        setSelectedId(visibleCollection[0].instance.instanceId);
         if (tutorialStep === 13) advanceTutorial();
       }
     }
-  }, [collection]);
+  }, [visibleCollection]);
 
   const selected: OwnedPokemon | undefined = collection.find(
     m => m.instance.instanceId === selectedId,
   );
 
-  const filtered = collection
+  const filtered = visibleCollection
     .filter(mon => {
       return !typeFilter || mon.template.types.includes(typeFilter);
     })
@@ -106,7 +108,7 @@ export function CollectionPage() {
   const atMaxLevel = selected ? isMaxLevel(selected.instance.level, selected.instance.stars) : false;
 
   // Evolution data
-  const evolutionOptions = selected ? getEvolutionsFrom(selected.instance.templateId) : [];
+  const evolutionOptions = selected ? getActiveEvolutionsFrom(selected.instance.templateId) : [];
   const hasEvolutions = evolutionOptions.length > 0;
 
   // Type change data
@@ -121,7 +123,7 @@ export function CollectionPage() {
       {/* Header */}
       <div className="box-header">
         <span className="box-title">
-          {`Monster ${collection.length}/120`}
+          {`Monster ${visibleCollection.length}/120`}
         </span>
         <div className="box-header-actions">
           <select

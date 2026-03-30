@@ -115,11 +115,11 @@ export const useGameStore = create<GameState>((set, get) => ({
 
     let results: gachaService.SummonResult[];
     if (tutorialStep === 4 && type === 'regular' && count === 1) {
-      // Tutorial step 4: always summon Sizzlipede (fire/bug 2★)
-      results = [gachaService.summonSingleRegular(850)];
+      // Tutorial step 4: always summon Growlithe (fire 2★)
+      results = [gachaService.summonSingleRegular(58)];
     } else if (tutorialStep === 5 && type === 'premium' && count === 1) {
-      // Tutorial step 5: always summon Rufflet (normal/flying 3★)
-      results = [gachaService.summonSinglePremium(627)];
+      // Tutorial step 5: always summon Eevee (normal 3★)
+      results = [gachaService.summonSinglePremium(133)];
     } else if (type === 'legendary') {
       results = [gachaService.summonSingleLegendary()];
     } else if (type === 'premium') {

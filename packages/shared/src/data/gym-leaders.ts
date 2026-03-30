@@ -31,114 +31,104 @@ const DIFFICULTY_INDEX: Record<Difficulty, 0 | 1 | 2> = {
 };
 
 export const GYM_LEADERS: GymLeaderDef[] = [
+  // ── Gen 1 story: Kanto Gym Leaders ──
   {
     regionId: 1,
-    name: 'Bugsy',
-    icon: '🪲',
-    team: [
-      [10, 11, 12],    // Caterpie → Metapod → Butterfree
-      [13, 14, 15],    // Weedle → Kakuna → Beedrill
-      [123, 212, 212], // Scyther → Scizor → Scizor
-    ],
-    bossIndex: 2,
-    dialogue: "My bug Pokemon are tough as nails! Bring it on!",
-  },
-  {
-    regionId: 2,
-    name: 'Whitney',
-    icon: '🐄',
-    team: [
-      [19, 20, 20],    // Rattata → Raticate → Raticate
-      [39, 35, 36],    // Jigglypuff → Clefairy → Clefable
-      [241, 241, 241], // Miltank → Miltank → Miltank
-    ],
-    bossIndex: 2,
-    dialogue: "Don't you dare underestimate my Pokemon!",
-  },
-  {
-    regionId: 3,
-    name: 'Janine',
-    icon: '🥷',
-    team: [
-      [41, 42, 169],   // Zubat → Golbat → Crobat
-      [49, 49, 49],    // Venomoth → Venomoth → Venomoth
-      [89, 89, 89],    // Muk → Muk → Muk
-    ],
-    bossIndex: 2,
-    dialogue: "I shall demonstrate the art of poison!",
-  },
-  {
-    regionId: 4,
     name: 'Brock',
     icon: '🪨',
     team: [
-      [74, 75, 76],      // Geodude → Graveler → Golem
-      [95, 208, 208],    // Onix → Steelix → Steelix
-      [142, 142, 142],   // Aerodactyl → Aerodactyl → Aerodactyl
+      [74, 75, 76],     // Geodude → Graveler → Golem
+      [95, 95, 95],     // Onix
+      [111, 111, 112],  // Rhyhorn → Rhyhorn → Rhydon
     ],
     bossIndex: 2,
     dialogue: "My rock-solid willpower is evident in my Pokemon!",
   },
   {
-    regionId: 5,
+    regionId: 2,
     name: 'Misty',
     icon: '💧',
     team: [
+      [120, 120, 121],  // Staryu → Staryu → Starmie
       [60, 61, 62],     // Poliwag → Poliwhirl → Poliwrath
-      [120, 121, 121],  // Staryu → Starmie → Starmie
-      [131, 131, 131],  // Lapras → Lapras → Lapras
+      [121, 121, 121],  // Starmie
     ],
     bossIndex: 2,
     dialogue: "My water-type Pokemon will wash you away!",
   },
   {
-    regionId: 6,
+    regionId: 3,
     name: 'Lt. Surge',
     icon: '⚡',
     team: [
-      [25, 26, 26],     // Pikachu → Raichu → Raichu
-      [100, 101, 101],  // Voltorb → Electrode → Electrode
-      [106, 106, 106],  // Hitmonlee → Hitmonlee → Hitmonlee
+      [100, 100, 101],  // Voltorb → Voltorb → Electrode
+      [25, 25, 26],     // Pikachu → Pikachu → Raichu
+      [26, 26, 26],     // Raichu
     ],
     bossIndex: 2,
     dialogue: "Hey kid! You won't live long in combat! Not with your Pokemon!",
+  },
+  {
+    regionId: 4,
+    name: 'Erika',
+    icon: '🌿',
+    team: [
+      [114, 114, 114],  // Tangela
+      [69, 70, 71],     // Bellsprout → Weepinbell → Victreebel
+      [43, 44, 45],     // Oddish → Gloom → Vileplume
+    ],
+    bossIndex: 2,
+    dialogue: "I am a student of the art of flower arranging. My Pokemon are of the Grass-type.",
+  },
+  {
+    regionId: 5,
+    name: 'Koga',
+    icon: '🥷',
+    team: [
+      [109, 109, 110],  // Koffing → Koffing → Weezing
+      [48, 48, 49],     // Venonat → Venonat → Venomoth
+      [89, 89, 89],     // Muk
+    ],
+    bossIndex: 2,
+    dialogue: "Fwahahahaha! A mere child like you dares to challenge me? Very well, I shall show you true terror!",
+  },
+  {
+    regionId: 6,
+    name: 'Sabrina',
+    icon: '🔮',
+    team: [
+      [122, 122, 122],  // Mr. Mime
+      [63, 64, 65],     // Abra → Kadabra → Alakazam
+      [65, 65, 65],     // Alakazam
+    ],
+    bossIndex: 2,
+    dialogue: "I had a vision of your arrival. I have been training my psychic powers. I won't lose.",
   },
   {
     regionId: 7,
     name: 'Blaine',
     icon: '🔥',
     team: [
-      [4, 5, 6],        // Charmander → Charmeleon → Charizard
-      [77, 78, 78],     // Ponyta → Rapidash → Rapidash
-      [58, 59, 59],     // Growlithe → Arcanine → Arcanine
+      [77, 77, 78],     // Ponyta → Ponyta → Rapidash
+      [58, 58, 59],     // Growlithe → Growlithe → Arcanine
+      [59, 59, 59],     // Arcanine
     ],
     bossIndex: 2,
     dialogue: "Hah! My fiery Pokemon will incinerate all challengers!",
   },
   {
     regionId: 8,
-    name: 'Morty',
-    icon: '👻',
+    name: 'Giovanni',
+    icon: '🏴',
     team: [
-      [92, 93, 94],         // Gastly → Haunter → Gengar
-      [679, 680, 681],      // Honedge → Doublade → Aegislash
-      [302, 302, 10302],    // Sableye → Sableye → Sableye-Mega
+      [50, 51, 51],     // Diglett → Dugtrio → Dugtrio
+      [104, 105, 105],  // Cubone → Marowak → Marowak
+      [111, 111, 112],  // Rhyhorn → Rhyhorn → Rhydon
     ],
     bossIndex: 2,
-    dialogue: "I see everything with my mind's eye... including your defeat!",
+    dialogue: "I am the leader of Team Rocket! I shall make you feel a world of pain!",
   },
-  {
-    regionId: 9,
-    name: 'Pryce',
-    icon: '❄️',
-    team: [
-      [220, 221, 473],  // Swinub → Piloswine → Mamoswine
-      [215, 461, 461],  // Sneasel → Weavile → Weavile
-      [996, 997, 998],  // Frigibax → Arctibax → Baxcalibur
-    ],
-    bossIndex: 2,
-    dialogue: "Pokemon have many experiences in their pokemon lifetimes. I, too, have seen and suffered a lot. Since I am your elder, let me show you what I mean.",
-  },
+  // Region 9 (Victory Road) has no gym leader — uses fallback boss system
 ];
 
 // ---------------------------------------------------------------------------
@@ -146,50 +136,51 @@ export const GYM_LEADERS: GymLeaderDef[] = [
 // ---------------------------------------------------------------------------
 
 export const LEAGUE_CHAMPIONS: LeagueChampionDef[] = [
+  // ── Gen 1 story: Kanto Elite Four + Champion ──
   {
     floor: 1,
-    name: 'Will',
-    icon: '🔮',
-    team: [178, 124, 80, 103], // Xatu, Jynx, Slowbro, Exeggutor
+    name: 'Lorelei',
+    icon: '❄️',
+    team: [87, 91, 124, 131], // Dewgong, Cloyster, Jynx, Lapras
     bossIndex: 3,
-    dialogue: "I have trained all around the world, making my psychic Pokemon powerful. Allow me to demonstrate!",
-    floorName: 'Will - Psychic Master',
+    dialogue: "No one can best me when it comes to icy Pokemon! Freeze them!",
+    floorName: 'Lorelei - Ice Master',
   },
   {
     floor: 2,
-    name: 'Koga',
-    icon: '🥷',
-    team: [168, 205, 89, 169], // Ariados, Forretress, Muk, Crobat
-    bossIndex: 3,
-    dialogue: "Fwahahahaha! I am Koga, master of poison! Prepare to be defeated!",
-    floorName: 'Koga - Poison Master',
-  },
-  {
-    floor: 3,
     name: 'Bruno',
     icon: '💪',
-    team: [237, 106, 107, 68], // Hitmontop, Hitmonlee, Hitmonchan, Machamp
+    team: [95, 107, 106, 68], // Onix, Hitmonchan, Hitmonlee, Machamp
     bossIndex: 3,
-    dialogue: "I trained with my fighting Pokemon through mountains and storms! We are ready!",
+    dialogue: "Through rigorous training, people and Pokemon can become stronger without limit!",
     floorName: 'Bruno - Fighting Master',
   },
   {
-    floor: 4,
-    name: 'Karen',
-    icon: '🌙',
-    team: [197, 198, 229, 94], // Umbreon, Murkrow, Houndoom, Gengar
+    floor: 3,
+    name: 'Agatha',
+    icon: '👻',
+    team: [42, 93, 24, 94], // Golbat, Haunter, Arbok, Gengar
     bossIndex: 3,
-    dialogue: "Strong Pokemon. Weak Pokemon. That is only the selfish perception of people. Truly skilled trainers should try to win with their favorites.",
-    floorName: 'Karen - Dark Master',
+    dialogue: "I see you have no fear... The Gengar line has been my Pokemon of choice for decades!",
+    floorName: 'Agatha - Ghost Master',
+  },
+  {
+    floor: 4,
+    name: 'Lance',
+    icon: '🐉',
+    team: [148, 130, 142, 149], // Dragonair, Gyarados, Aerodactyl, Dragonite
+    bossIndex: 3,
+    dialogue: "I am the last of the Elite Four! I have been waiting for a truly powerful challenger!",
+    floorName: 'Lance - Dragon Master',
   },
   {
     floor: 5,
-    name: 'Cynthia',
+    name: 'Blue',
     icon: '👑',
-    team: [442, 407, 350, 448, 468, 445], // Spiritomb, Roserade, Milotic, Lucario, Togekiss, Garchomp
+    team: [18, 65, 112, 59, 103, 9], // Pidgeot, Alakazam, Rhydon, Arcanine, Exeggutor, Blastoise
     bossIndex: 5,
-    dialogue: "When one life meets another life, something will be born. I'm Pokemon League Champion Cynthia. I accept your challenge!",
-    floorName: 'Cynthia - Champion',
+    dialogue: "Hey! I heard you beat the Elite Four! Well, I'm the Champion! You'll need more than that to beat me!",
+    floorName: 'Blue - Champion',
   },
 ];
 

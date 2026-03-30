@@ -1,5 +1,5 @@
 import type { PokemonInstance, Player } from '@gatchamon/shared';
-import { getTemplate, getEvolutionsFrom } from '@gatchamon/shared';
+import { getTemplate, getActiveEvolutionsFrom, isActivePokemon } from '@gatchamon/shared';
 import type { EvolutionChain } from '@gatchamon/shared';
 import { loadPlayer, savePlayer, loadCollection, saveCollection } from './storage';
 import { trackStat, incrementMission, checkAndUpdateTrophies } from './reward.service';
@@ -10,7 +10,7 @@ export interface EvolutionValidation {
 }
 
 export function getEvolutionOptions(templateId: number): EvolutionChain[] {
-  return getEvolutionsFrom(templateId);
+  return getActiveEvolutionsFrom(templateId);
 }
 
 export function canEvolveInstance(
@@ -18,11 +18,15 @@ export function canEvolveInstance(
   player: Player,
   targetTemplateId: number,
 ): EvolutionValidation {
-  const chains = getEvolutionsFrom(instance.templateId);
+  const chains = getActiveEvolutionsFrom(instance.templateId);
   const chain = chains.find(c => c.to === targetTemplateId);
 
   if (!chain) {
     return { valid: false, reason: 'This evolution path does not exist' };
+  }
+
+  if (!isActivePokemon(targetTemplateId)) {
+    return { valid: false, reason: 'This evolution is not currently available' };
   }
 
   // Check level requirement
@@ -66,7 +70,7 @@ export function performEvolution(instanceId: string, targetTemplateId: number): 
   const validation = canEvolveInstance(instance, player, targetTemplateId);
   if (!validation.valid) throw new Error(validation.reason);
 
-  const chain = getEvolutionsFrom(instance.templateId).find(c => c.to === targetTemplateId)!;
+  const chain = getActiveEvolutionsFrom(instance.templateId).find(c => c.to === targetTemplateId)!;
 
   // Deduct materials
   const materials = { ...(player.materials ?? {}) };

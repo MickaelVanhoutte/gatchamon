@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { isActivePokemon } from '@gatchamon/shared';
 import { useGameStore } from '../stores/gameStore';
 import { useTutorialStore } from '../stores/tutorialStore';
 import { IslandScene } from '../components/island/IslandScene';
@@ -25,8 +26,9 @@ export function HomePage() {
   }, [tutorialStep]);
 
   const topMonsters = useMemo(() => {
-    const homeMonsters = collection.filter(m => m.instance.showOnHome);
-    const source = homeMonsters.length > 0 ? homeMonsters : collection;
+    const visible = collection.filter(m => isActivePokemon(m.instance.templateId));
+    const homeMonsters = visible.filter(m => m.instance.showOnHome);
+    const source = homeMonsters.length > 0 ? homeMonsters : visible;
     return [...source]
       .sort((a, b) => {
         if (b.instance.stars !== a.instance.stars) return b.instance.stars - a.instance.stars;

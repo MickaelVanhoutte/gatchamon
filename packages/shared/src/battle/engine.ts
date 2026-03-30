@@ -690,7 +690,7 @@ function applyInstantEffect(
       const oldHp = target.currentHp;
       target.currentHp = Math.min(target.maxHp, target.currentHp + healAmount);
       const healed = target.currentHp - oldHp;
-      trackHeal(state, target.instanceId, healed);
+      trackHeal(state, actor.instanceId, healed);
       return healed > 0 ? `${targetTemplate.name} healed ${healed} HP` : null;
     }
 

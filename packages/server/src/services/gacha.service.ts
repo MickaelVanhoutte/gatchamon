@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { POKEDEX, BEGINNER_BONUS, isBeginnerBonusActive } from '@gatchamon/shared';
+import { POKEDEX, ACTIVE_POKEDEX, BEGINNER_BONUS, isBeginnerBonusActive } from '@gatchamon/shared';
 import type { PokemonTemplate, PokemonInstance, PokeballType } from '@gatchamon/shared';
 import { getDb } from '../db/schema.js';
 import { DEBUG_MODE } from '../config.js';
@@ -38,7 +38,7 @@ function rollShiny(): boolean {
 }
 
 function pickFromPool(stars: 1 | 2 | 3 | 4 | 5): PokemonTemplate {
-  const pool = POKEDEX.filter(p => p.naturalStars === stars && p.summonable !== false);
+  const pool = ACTIVE_POKEDEX.filter(p => p.naturalStars === stars && p.summonable !== false);
   return pool[Math.floor(Math.random() * pool.length)];
 }
 

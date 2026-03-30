@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
-import { REGIONS, DUNGEONS, ITEM_DUNGEONS, getTemplate, getTowerFloor, getFloorCount, getGymLeader, getLeagueChampion } from '@gatchamon/shared';
+import { REGIONS, DUNGEONS, ITEM_DUNGEONS, getTemplate, getTowerFloor, getFloorCount, getGymLeader, getLeagueChampion, isActivePokemon } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
 import { startBattle, startDungeonBattle, startItemDungeonBattle, startTowerBattle } from '../services/battle.service';
 import { buildFloorEnemies } from '../services/floor.service';
@@ -63,24 +63,29 @@ export function TeamSelectPage() {
     loadCollection();
   }, [loadCollection]);
 
+  const visibleCollection = useMemo(
+    () => collection.filter(m => isActivePokemon(m.instance.templateId)),
+    [collection],
+  );
+
   // Restore last team once collection is loaded
   useEffect(() => {
-    if (teamRestored || collection.length === 0) return;
+    if (teamRestored || visibleCollection.length === 0) return;
     const tStep = useTutorialStore.getState().step;
     if (tStep === 10) {
       // Tutorial: auto-select all monsters
-      setSelected(collection.map(m => m.instance.instanceId).slice(0, 4));
+      setSelected(visibleCollection.map(m => m.instance.instanceId).slice(0, 4));
     } else {
       const saved = loadLastTeam();
       const validIds = saved
-        .filter(id => collection.some(m => m.instance.instanceId === id))
+        .filter(id => visibleCollection.some(m => m.instance.instanceId === id))
         .slice(0, 4);
       if (validIds.length > 0) {
         setSelected(validIds);
       }
     }
     setTeamRestored(true);
-  }, [collection, teamRestored]);
+  }, [visibleCollection, teamRestored]);
 
   // Build enemy preview
   const enemyPreviews = useMemo((): EnemyPreview[] => {
@@ -205,7 +210,7 @@ export function TeamSelectPage() {
     }
   };
 
-  const sorted = [...collection].sort(
+  const sorted = [...visibleCollection].sort(
     (a, b) => b.instance.stars - a.instance.stars || b.instance.level - a.instance.level,
   );
 

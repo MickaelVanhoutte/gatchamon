@@ -12,138 +12,167 @@ export interface RegionDef {
 }
 
 export const REGIONS: RegionDef[] = [
+  // ── Gen 1 story: Kanto regions ──
+  // Each region has a diverse commonPool with a slight bias toward the gym leader's type.
   {
     id: 1,
-    name: 'Verdant Woods',
-    icon: 'tree',
-    color: '#3a7a2a',
-    commonPool: [10, 13, 69, 43],       // Caterpie, Weedle, Bellsprout, Oddish
-    bossPool: [127],                      // Pinsir
-    bossCompanions: [10, 13],             // Caterpie, Weedle
+    name: 'Pewter Passage',
+    icon: 'rock',
+    color: '#8a7a5a',
+    // Early route Pokemon + a couple rock types
+    commonPool: [19, 16, 10, 13, 21, 29, 32, 39, 74, 27, 46, 41, 35, 56],
+    // Rattata, Pidgey, Caterpie, Weedle, Spearow, Nidoran-F, Nidoranm, Jigglypuff,
+    // Geodude, Sandshrew, Paras, Zubat, Clefairy, Mankey
+    bossPool: [95],                        // Onix
+    bossCompanions: [74, 27],              // Geodude, Sandshrew
     floorNames: [
-      'Mossy Path', 'Thicket', 'Fern Hollow', 'Vine Bridge',
-      'Mushroom Glade', 'Ancient Oak', 'Spider Den', 'Canopy Walk',
-      'Deep Brush', 'Heart of the Forest',
+      'Rocky Trail', 'Boulder Alley', 'Gravel Pit', 'Fossil Dig',
+      'Stone Corridor', 'Pebble Creek', 'Slate Ridge', 'Granite Hall',
+      'Bedrock Depths', 'Pewter Gym',
     ],
     mapPosition: { x: 100, y: 380 },
   },
   {
     id: 2,
-    name: 'Windswept Plains',
-    icon: 'wheat',
-    color: '#c4a74a',
-    commonPool: [16, 19, 21, 39],        // Pidgey, Rattata, Spearow, Jigglypuff
-    bossPool: [128],                      // Tauros
-    bossCompanions: [16, 19],             // Pidgey, Rattata
+    name: 'Cerulean Cove',
+    icon: 'wave',
+    color: '#4a8ab0',
+    // Diverse mix + a few water types
+    commonPool: [19, 16, 43, 69, 129, 60, 118, 54, 23, 63, 48, 52, 72, 90, 120],
+    // Rattata, Pidgey, Oddish, Bellsprout, Magikarp, Poliwag, Goldeen, Psyduck,
+    // Ekans, Abra, Venonat, Meowth, Tentacool, Shellder, Staryu
+    bossPool: [121],                       // Starmie
+    bossCompanions: [120, 60],             // Staryu, Poliwag
     floorNames: [
-      'Tall Grass', 'Open Field', 'Windy Hill', 'Stampede Trail',
-      'Dusty Road', 'Hawk Ridge', 'Grazing Meadow', 'Stone Fence',
-      'Cyclone Pass', 'The Great Expanse',
+      'Sandy Shore', 'Tide Pools', 'Coral Reef', 'Cerulean Cave',
+      'Cascade Falls', 'Sea Grotto', 'Whirlpool Bay', 'Kelp Forest',
+      'Abyssal Trench', 'Cerulean Gym',
     ],
     mapPosition: { x: 280, y: 220 },
   },
   {
     id: 3,
-    name: 'Toxic Marsh',
-    icon: 'poison',
-    color: '#8a4a8a',
-    commonPool: [41, 13, 43, 92],        // Zubat, Weedle, Oddish, Gastly
-    bossPool: [1],                        // Bulbasaur
-    bossCompanions: [41, 92],             // Zubat, Gastly
+    name: 'Vermilion Docks',
+    icon: 'electric',
+    color: '#f0c030',
+    // Diverse mix + a few electric types
+    commonPool: [20, 17, 81, 100, 25, 66, 96, 88, 50, 83, 98, 58, 74, 84],
+    // Raticate, Pidgeotto, Magnemite, Voltorb, Pikachu, Machop, Drowzee,
+    // Grimer, Diglett, Farfetchd, Krabby, Growlithe, Geodude, Doduo
+    bossPool: [26],                        // Raichu
+    bossCompanions: [100, 81],             // Voltorb, Magnemite
     floorNames: [
-      'Bog Entrance', 'Murky Shallows', 'Poison Pools', 'Rotten Log',
-      'Miasma Pit', 'Sludge Banks', 'Gas Vents', 'Fungus Cavern',
-      'Venom Falls', 'Swamp Heart',
+      'Harbor Gate', 'Cargo Bay', 'Generator Room', 'Charged Path',
+      'Spark Alley', 'Thunder Corridor', 'Power Grid', 'Volt Chamber',
+      'Lightning Field', 'Vermilion Gym',
     ],
     mapPosition: { x: 460, y: 420 },
   },
   {
     id: 4,
-    name: 'Crystal Caverns',
-    icon: 'rock',
-    color: '#8a7a5a',
-    commonPool: [74, 41, 19, 66],        // Geodude, Zubat, Rattata, Machop
-    bossPool: [142],                      // Aerodactyl
-    bossCompanions: [74, 66],             // Geodude, Machop
+    name: 'Celadon Gardens',
+    icon: 'tree',
+    color: '#3a7a2a',
+    // Diverse mix + a few grass types
+    commonPool: [43, 69, 114, 102, 17, 30, 33, 37, 133, 44, 70, 12, 15, 84, 48],
+    // Oddish, Bellsprout, Tangela, Exeggcute, Pidgeotto, Nidorina, Nidorino,
+    // Vulpix, Eevee, Gloom, Weepinbell, Butterfree, Beedrill, Doduo, Venonat
+    bossPool: [45],                        // Vileplume
+    bossCompanions: [44, 70],              // Gloom, Weepinbell
     floorNames: [
-      'Cave Mouth', 'Echo Chamber', 'Crystal Vein', 'Stalactite Hall',
-      'Underground River', 'Gem Deposit', 'Collapsed Tunnel', 'Lava Tube',
-      'Fossil Chamber', 'Ancient Sanctum',
+      'Flower Path', 'Herb Garden', 'Vine Maze', 'Pollen Grove',
+      'Mushroom Glade', 'Moss Bridge', 'Fern Hollow', 'Canopy Walk',
+      'Blossom Peak', 'Celadon Gym',
     ],
     mapPosition: { x: 650, y: 250 },
   },
   {
     id: 5,
-    name: 'Azure Coast',
-    icon: 'wave',
-    color: '#4a8ab0',
-    commonPool: [129, 60, 7],            // Magikarp, Poliwag, Squirtle
-    bossPool: [131],                      // Lapras
-    bossCompanions: [60, 7],              // Poliwag, Squirtle
+    name: 'Fuchsia Marsh',
+    icon: 'poison',
+    color: '#8a4a8a',
+    // Diverse mix + a few poison types
+    commonPool: [109, 41, 23, 48, 30, 33, 79, 54, 111, 77, 92, 84, 115, 108, 88],
+    // Koffing, Zubat, Ekans, Venonat, Nidorina, Nidorino, Slowpoke, Psyduck,
+    // Rhyhorn, Ponyta, Gastly, Doduo, Kangaskhan, Lickitung, Grimer
+    bossPool: [110],                       // Weezing
+    bossCompanions: [109, 42],             // Koffing, Golbat
     floorNames: [
-      'Sandy Shore', 'Tide Pools', 'Coral Reef', 'Sea Cave',
-      'Sunken Ship', 'Whirlpool Bay', 'Kelp Forest', 'Deep Trench',
-      'Storm Strait', 'Abyssal Throne',
+      'Bog Entrance', 'Murky Shallows', 'Poison Pools', 'Rotten Log',
+      'Miasma Pit', 'Sludge Banks', 'Gas Vents', 'Fungus Cavern',
+      'Venom Falls', 'Fuchsia Gym',
     ],
     mapPosition: { x: 840, y: 440 },
   },
   {
     id: 6,
-    name: 'Thunderpeak Ridge',
-    icon: 'electric',
-    color: '#f0c030',
-    commonPool: [25, 66, 74],            // Pikachu, Machop, Geodude
-    bossPool: [106],                      // Hitmonlee
-    bossCompanions: [25, 74],             // Pikachu, Geodude
+    name: 'Saffron Towers',
+    icon: 'psychic',
+    color: '#f85888',
+    // Diverse mix + a few psychic types
+    commonPool: [63, 96, 79, 92, 67, 57, 64, 102, 100, 22, 42, 137, 108, 122, 93],
+    // Abra, Drowzee, Slowpoke, Gastly, Machoke, Primeape, Kadabra, Exeggcute,
+    // Voltorb, Fearow, Golbat, Porygon, Lickitung, Mr. Mime, Haunter
+    bossPool: [65],                        // Alakazam
+    bossCompanions: [64, 97],              // Kadabra, Hypno
     floorNames: [
-      'Foothills', 'Charged Path', 'Lightning Rocks', 'Thunder Plateau',
-      'Static Field', 'Storm Lookout', 'Bolt Canyon', 'Powerline Ridge',
-      'Voltaic Peak', 'Arena of Storms',
+      'Lobby', 'Mirror Hall', 'Warp Tiles', 'Mind Maze',
+      'Teleport Chamber', 'Psychic Ward', 'Dream Corridor', 'Illusion Room',
+      'Spirit Sanctum', 'Saffron Gym',
     ],
     mapPosition: { x: 1020, y: 200 },
   },
   {
     id: 7,
-    name: 'Ember Highlands',
+    name: 'Cinnabar Volcano',
     icon: 'fire',
     color: '#d04040',
-    commonPool: [4, 58, 74],             // Charmander, Growlithe, Geodude
-    bossPool: [107],                      // Hitmonchan
-    bossCompanions: [4, 58],              // Charmander, Growlithe
+    // Diverse mix + a few fire types
+    commonPool: [58, 77, 37, 126, 4, 74, 111, 109, 104, 66, 75, 20, 24, 81, 138],
+    // Growlithe, Ponyta, Vulpix, Magmar, Charmander, Geodude, Rhyhorn, Koffing,
+    // Cubone, Machop, Graveler, Raticate, Arbok, Magnemite, Omanyte
+    bossPool: [59],                        // Arcanine
+    bossCompanions: [78, 126],             // Rapidash, Magmar
     floorNames: [
       'Ash Trail', 'Scorched Earth', 'Lava Fields', 'Cinder Ridge',
       'Magma Pools', 'Flame Geysers', 'Inferno Pass', 'Obsidian Cliff',
-      'Eruption Site', 'Volcanic Core',
+      'Eruption Site', 'Cinnabar Gym',
     ],
     mapPosition: { x: 1180, y: 380 },
   },
   {
     id: 8,
-    name: 'Phantom Ruins',
-    icon: 'ghost',
-    color: '#6a5acd',
-    commonPool: [92, 63, 41, 39],        // Gastly, Abra, Zubat, Jigglypuff
-    bossPool: [115],                      // Kangaskhan
-    bossCompanions: [92, 63],             // Gastly, Abra
+    name: 'Viridian Fortress',
+    icon: 'ground',
+    color: '#e0c068',
+    // Diverse mix + a few ground types
+    commonPool: [50, 27, 104, 111, 31, 34, 24, 53, 42, 57, 97, 67, 89, 128, 85],
+    // Diglett, Sandshrew, Cubone, Rhyhorn, Nidoqueen, Nidoking, Arbok, Persian,
+    // Golbat, Primeape, Hypno, Machoke, Muk, Tauros, Dodrio
+    bossPool: [112],                       // Rhydon
+    bossCompanions: [51, 105],             // Dugtrio, Marowak
     floorNames: [
-      'Crumbling Gate', 'Haunted Hall', 'Spirit Well', 'Cursed Library',
-      'Shadow Corridor', 'Phantom Gallery', 'Mind Maze', 'Wailing Chamber',
-      'Void Altar', 'Throne of Echoes',
+      'Forest Gate', 'Hidden Path', 'Underground Tunnel', 'Sand Pit',
+      'Earthquake Hall', 'Fossil Vault', 'Tremor Ridge', 'Crumbling Bridge',
+      'Bedrock Throne', 'Viridian Gym',
     ],
     mapPosition: { x: 1340, y: 180 },
   },
   {
     id: 9,
-    name: 'Frozen Tundra',
-    icon: 'ice',
-    color: '#88ccee',
-    commonPool: [60, 133, 147],          // Poliwag, Eevee, Dratini
-    bossPool: [131],                      // Lapras
-    bossCompanions: [133, 147],           // Eevee, Dratini
+    name: 'Victory Road',
+    icon: 'crown',
+    color: '#6a5acd',
+    // Tough mix of evolved Pokemon from many types
+    commonPool: [67, 75, 42, 95, 105, 57, 20, 22, 47, 49, 28, 76, 132, 123, 127],
+    // Machoke, Graveler, Golbat, Onix, Marowak, Primeape, Raticate, Fearow,
+    // Parasect, Venomoth, Sandslash, Golem, Ditto, Scyther, Pinsir
+    bossPool: [142],                       // Aerodactyl
+    bossCompanions: [95, 68],              // Onix, Machamp
     floorNames: [
-      'Frost Gate', 'Snowdrift Path', 'Ice Bridge', 'Blizzard Valley',
-      'Frozen Lake', 'Glacier Caves', 'Aurora Ridge', 'Permafrost Depths',
-      'Crystal Spire', 'Heart of Winter',
+      'Cave Entrance', 'Boulder Maze', 'Waterfall Chamber', 'Strength Puzzle',
+      'Dark Passage', 'Ledge Walk', 'Rock Climb', 'Final Ascent',
+      'Summit Gate', 'Victory Peak',
     ],
     mapPosition: { x: 1500, y: 350 },
   },
@@ -153,12 +182,12 @@ export const REGIONS: RegionDef[] = [
     icon: 'crown',
     color: '#7038f8',
     commonPool: [1, 4, 7, 25, 147, 133], // Bulbasaur, Charmander, Squirtle, Pikachu, Dratini, Eevee
-    bossPool: [142],                      // Aerodactyl
-    bossCompanions: [147, 133],           // Dratini, Eevee
+    bossPool: [142],                       // Aerodactyl
+    bossCompanions: [147, 133],            // Dratini, Eevee
     floorCount: 5,
     floorNames: [
-      'Will - Psychic Master', 'Koga - Poison Master', 'Bruno - Fighting Master',
-      'Karen - Dark Master', 'Cynthia - Champion',
+      'Lorelei - Ice Master', 'Bruno - Fighting Master', 'Agatha - Ghost Master',
+      'Lance - Dragon Master', 'Blue - Champion',
     ],
     mapPosition: { x: 1680, y: 260 },
   },

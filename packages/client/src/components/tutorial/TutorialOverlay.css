@@ -165,7 +165,12 @@
   z-index: 205 !important;
 }
 
-/* Team select GO button */
+/* Team select GO button — elevate the parent .ts-actions which creates a stacking context */
+.ts-actions:has(.tutorial-target) {
+  z-index: 205 !important;
+  position: relative;
+}
+
 [data-tutorial-id="team-select-go"].tutorial-target {
   position: relative;
   z-index: 205 !important;

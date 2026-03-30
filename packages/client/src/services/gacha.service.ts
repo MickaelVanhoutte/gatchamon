@@ -1,4 +1,4 @@
-import { POKEDEX } from '@gatchamon/shared';
+import { POKEDEX, ACTIVE_POKEDEX } from '@gatchamon/shared';
 import type { PokemonTemplate, PokemonInstance, PokeballType } from '@gatchamon/shared';
 import { loadPlayer, savePlayer, addToCollection, loadCollection } from './storage';
 import { trackStat, incrementMission, checkAndUpdateTrophies } from './reward.service';
@@ -32,7 +32,7 @@ function rollShiny(): boolean {
 }
 
 export function pickFromPool(stars: 1 | 2 | 3 | 4 | 5): PokemonTemplate {
-  const pool = POKEDEX.filter(p => p.naturalStars === stars && p.summonable !== false);
+  const pool = ACTIVE_POKEDEX.filter(p => p.naturalStars === stars && p.summonable !== false);
   return pool[Math.floor(Math.random() * pool.length)];
 }
 

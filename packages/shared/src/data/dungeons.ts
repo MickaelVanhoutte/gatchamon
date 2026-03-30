@@ -1,4 +1,5 @@
 import type { DungeonDef } from '../types/evolution.js';
+import { GEN_RESTRICTION_ENABLED, resolveActiveId } from './gen-filter.js';
 
 export const DUNGEONS: DungeonDef[] = [
   // ============================================================
@@ -1084,5 +1085,13 @@ export const DUNGEONS: DungeonDef[] = [
 ];
 
 export function getDungeon(id: number): DungeonDef | undefined {
-  return DUNGEONS.find(d => d.id === id);
+  const dungeon = DUNGEONS.find(d => d.id === id);
+  if (!dungeon || !GEN_RESTRICTION_ENABLED) return dungeon;
+  return {
+    ...dungeon,
+    floors: dungeon.floors.map(f => ({
+      ...f,
+      enemies: f.enemies.map(resolveActiveId),
+    })),
+  };
 }

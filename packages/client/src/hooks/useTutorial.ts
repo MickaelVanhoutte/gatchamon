@@ -16,7 +16,7 @@ const TUTORIAL_DIALOG: Record<number, string[]> = {
     'Outstanding, {name}! You\'ve summoned your first companions!',
     "Now it's time for adventure. Tap the Story icon to begin your journey!",
   ],
-  8: ['Time for your first adventure! Tap Verdant Woods!'],
+  8: ['Time for your first adventure! Tap Pewter Passage!'],
   9: ['Tap GO to enter your first battle!'],
   10: ["I've selected your monsters for you! Tap GO to fight!"],
   12: [

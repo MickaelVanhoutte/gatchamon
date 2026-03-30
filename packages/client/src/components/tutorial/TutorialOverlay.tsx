@@ -219,7 +219,8 @@ export function TutorialOverlay() {
 
       {/* Professor dialog — passthrough clicks when user must interact with the page */}
       {hasDialog && (() => {
-        const isInteractReady = INTERACT_STEPS.has(step) && (lineIndex >= dialogLines.length - 1 || autoCollapsed);
+        const hasReadAllLines = dialogLines.length > 1 && lineIndex >= dialogLines.length - 1;
+        const isInteractReady = INTERACT_STEPS.has(step) && (hasReadAllLines || autoCollapsed);
         // On interact steps once the user has read all dialog lines (or auto-collapsed),
         // collapse to just the professor head so buttons are accessible
         if (isInteractReady) {
