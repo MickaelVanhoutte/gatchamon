@@ -72,30 +72,6 @@ export function sendRetrySummonGift(): void {
     specialItem: 'retry-summon-100',
   });
   setGrantedFlag('retry-summon-welcome');
-
-  // Also grant the beginner bonus tickets right away
-  grantBeginnerBonusRetries();
-}
-
-/**
- * Grant 2 beginner-bonus x100 retry summon tickets.
- * Safe to call on every app load — skips if already granted or not eligible.
- */
-export function grantBeginnerBonusRetries(): void {
-  if (hasGrantedFlag('beginner-bonus-retries')) return;
-
-  const player = loadPlayer();
-  if (!player || !isBeginnerBonusActive(player.createdAt)) return;
-
-  for (let i = 1; i <= 2; i++) {
-    sendInboxItem({
-      title: `Beginner Bonus: 100x Retry Summon (${i}/2)`,
-      message:
-        'As a new trainer, enjoy this bonus 100x Retry Summon! Perform a x10 premium summon up to 100 times and keep the best result.',
-      specialItem: 'retry-summon-100',
-    });
-  }
-  setGrantedFlag('beginner-bonus-retries');
 }
 
 // ── Beginner Item Set ──────────────────────────────────────────────────
@@ -174,7 +150,7 @@ function createBeginnerItemSet(ownerId: string): HeldItemInstance[] {
 }
 
 /**
- * Grant 3×100 energy to new players (account < 3 months old).
+ * Grant 100 energy to new players (account < 3 months old).
  * Safe to call on every app load — skips if already granted or not eligible.
  */
 export function grantNewPlayerEnergyBonus(): void {
@@ -189,13 +165,11 @@ export function grantNewPlayerEnergyBonus(): void {
   threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
   if (new Date(player.createdAt) < threeMonthsAgo) return;
 
-  for (let i = 1; i <= 3; i++) {
-    sendInboxItem({
-      title: `New Player Bonus: 100 Energy (${i}/3)`,
-      message: 'Welcome, new trainer! Here\'s some energy to help you on your journey.',
-      reward: { energy: 100 },
-    });
-  }
+  sendInboxItem({
+    title: 'New Player Bonus: 100 Energy',
+    message: 'Welcome, new trainer! Here\'s some energy to help you on your journey.',
+    reward: { energy: 100 },
+  });
   setGrantedFlag('new-player-energy-bonus');
 }
 

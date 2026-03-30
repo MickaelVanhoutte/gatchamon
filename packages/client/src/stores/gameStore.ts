@@ -11,7 +11,7 @@ import * as typeChangeService from '../services/type-change.service';
 import * as heldItemService from '../services/held-item.service';
 import { regenerateEnergy } from '../services/energy.service';
 import { getUnclaimedMissionCount, getUnclaimedTrophyCount } from '../services/reward.service';
-import { getUnreadInboxCount, grantBeginnerBonusRetries, grantBeginnerItemSet, grantNewPlayerEnergyBonus } from '../services/inbox.service';
+import { getUnreadInboxCount, grantBeginnerItemSet, grantNewPlayerEnergyBonus } from '../services/inbox.service';
 import { useTutorialStore } from './tutorialStore';
 
 export interface OwnedPokemon {
@@ -76,7 +76,6 @@ export const useGameStore = create<GameState>((set, get) => ({
         player = updated;
       }
       set({ player });
-      grantBeginnerBonusRetries();
       grantBeginnerItemSet();
       grantNewPlayerEnergyBonus();
       get().refreshRewards();
