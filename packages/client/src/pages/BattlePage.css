@@ -526,15 +526,7 @@
   font-weight: 600;
 }
 
-/* Boss monster — larger container and sprite */
-.battle-mon.boss-mon {
-  width: clamp(140px, 22vw, 240px);
-}
-
-.boss-mon .battle-sprite {
-  width: clamp(110px, 18vw, 200px);
-  height: clamp(110px, 18vw, 200px);
-}
+/* Boss monster — keep same sprite size, just visual flair */
 
 .boss-mon .mon-name {
   font-size: 0.85rem;

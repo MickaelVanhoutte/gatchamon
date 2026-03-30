@@ -43,8 +43,6 @@ export function performMerge(baseInstanceId: string, fodderInstanceId: string): 
   collection[baseIdx] = {
     ...base,
     stars: newStars,
-    level: 1,
-    exp: 0,
   };
 
   // Remove the fodder

@@ -7,6 +7,7 @@ import {
   xpToNextLevel,
   MAX_LEVEL_BY_STARS,
   DITTO_TEMPLATE_ID,
+  getEvolutionLineage,
 } from '@gatchamon/shared';
 import { loadCollection, saveCollection } from './storage';
 import { trackStat, incrementMission, checkAndUpdateTrophies } from './reward.service';
@@ -56,8 +57,9 @@ export function previewAltarFeed(
   const willStarEvolve = canStarEvolve(base.level, base.stars, fodderStars);
   const newStars = willStarEvolve ? (base.stars + 1) as PokemonInstance['stars'] : base.stars;
 
-  // Count same-species fodder for skill-ups
-  const sameSpeciesCount = fodder.filter(f => f.templateId === base.templateId || f.templateId === DITTO_TEMPLATE_ID).length;
+  // Count same-family fodder for skill-ups (same species or pre/post-evolutions)
+  const baseLineage = new Set(getEvolutionLineage(base.templateId));
+  const sameSpeciesCount = fodder.filter(f => baseLineage.has(f.templateId) || f.templateId === DITTO_TEMPLATE_ID).length;
   const currentSkills = base.skillLevels ?? [1, 1, 1];
   const upgradableSlots = currentSkills.filter(l => l < MAX_SKILL_LEVEL).length;
   const skillUps = Math.min(sameSpeciesCount, upgradableSlots);
@@ -119,10 +121,11 @@ export function performAltarFeed(
     totalXpGain += calculateFodderXp(f.level, f.stars);
   }
 
-  // 2. Apply skill-ups (same species fodder)
+  // 2. Apply skill-ups (same family or ditto fodder)
+  const baseLineage = new Set(getEvolutionLineage(base.templateId));
   const skillLevels: [number, number, number] = [...(base.skillLevels ?? [1, 1, 1])] as [number, number, number];
   for (const f of fodder) {
-    if (f.templateId !== base.templateId && f.templateId !== DITTO_TEMPLATE_ID) continue;
+    if (!baseLineage.has(f.templateId) && f.templateId !== DITTO_TEMPLATE_ID) continue;
     const upgradable = skillLevels
       .map((lvl, idx) => ({ lvl, idx }))
       .filter(s => s.lvl < MAX_SKILL_LEVEL);
