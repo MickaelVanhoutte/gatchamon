@@ -273,7 +273,10 @@ export function BattlePage() {
         setPhase(battleState.status === 'victory' ? 'victory' : 'defeat');
       }, 1500);
     } else {
-      setPhase('player_turn');
+      // If there's a boss dialogue, stay in 'animating' until the player dismisses it
+      const hasDialogue = battleState.mode === 'story'
+        && getBossDialogue(battleState.floor.region, battleState.floor.floor);
+      setPhase(hasDialogue ? 'animating' : 'player_turn');
     }
   }, [battleId]);
 
@@ -493,7 +496,7 @@ export function BattlePage() {
           name={dialogueData.name}
           icon={dialogueData.icon}
           dialogue={dialogueData.dialogue}
-          onComplete={() => setDialogueComplete(true)}
+          onComplete={() => { setDialogueComplete(true); setPhase('player_turn'); }}
         />
       </div>
     );
@@ -920,7 +923,7 @@ function BattleMonSprite({
     : null;
 
   // Scale sprite based on species height: small Pokemon ~0.8x, large ~1.5x
-  const sizeScale = Math.min(1.5, Math.max(0.8, 0.5 + (tmpl.height ?? 1) * 0.45));
+  const sizeScale = Math.min(1.15, Math.max(0.8, 0.7 + (tmpl.height ?? 1) * 0.15));
 
   return (
     <div

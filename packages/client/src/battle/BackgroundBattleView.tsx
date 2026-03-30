@@ -384,7 +384,7 @@ function MiniMonSprite({
   const hpColor = hpPct > 50 ? '#4ade80' : hpPct > 20 ? '#fbbf24' : '#ef4444';
   const spriteDir = mon.isPlayerOwned ? 'ani-back' : 'ani';
   const animatedSpriteUrl = assetUrl(`monsters/${spriteDir}/${tmpl.name.toLowerCase()}.gif`);
-  const sizeScale = Math.min(1.5, Math.max(0.8, 0.5 + (tmpl.height ?? 1) * 0.45));
+  const sizeScale = Math.min(1.15, Math.max(0.8, 0.7 + (tmpl.height ?? 1) * 0.15));
 
   return (
     <div
