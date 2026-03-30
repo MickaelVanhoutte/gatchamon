@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useGameStore } from '../../stores/gameStore';
 import { useTutorialStore } from '../../stores/tutorialStore';
+import { useRepeatBattleStore } from '../../stores/repeatBattleStore';
 import { GameIcon } from '../icons';
+import '../RepeatBattleWidget.css';
 import './BottomNav.css';
 
 const TABS = [
@@ -30,6 +32,8 @@ export function BottomNav() {
   const advanceStep = useTutorialStore(s => s.advanceStep);
   const tutorialActive = tutorialStep > 0 && tutorialStep < 18;
   const [expanded, setExpanded] = useState(false);
+  const repeatStatus = useRepeatBattleStore(s => s.status);
+  const openRepeatPanel = useRepeatBattleStore(s => s.openPanel);
 
   // Force expand during tutorial steps 3, 7, and 12
   const forceExpanded = tutorialActive && (tutorialStep === 3 || tutorialStep === 7 || tutorialStep === 12);
@@ -58,11 +62,24 @@ export function BottomNav() {
         className={`bottom-toolbar-collapsed ${elevate ? 'tutorial-target' : ''}`}
         data-tutorial-id="nav-toggle"
         onClick={() => {
-          setExpanded(true);
-          if (tutorialStep === 2) advanceStep();
+          if (repeatStatus !== 'idle') {
+            openRepeatPanel();
+          } else {
+            setExpanded(true);
+            if (tutorialStep === 2) advanceStep();
+          }
         }}
       >
         <GameIcon id="collection" size={20} />
+        {repeatStatus !== 'idle' && (
+          <span
+            className={`rb-dot ${
+              repeatStatus === 'running' ? 'rb-dot-running' :
+              repeatStatus === 'completed' ? 'rb-dot-completed' :
+              'rb-dot-stopped'
+            }`}
+          />
+        )}
       </button>
     );
   }
@@ -97,6 +114,16 @@ export function BottomNav() {
             <span className="toolbar-icon"><GameIcon id={tab.icon} size={20} /></span>
             {tab.badge && unclaimedRewardCount > 0 && (
               <span className="toolbar-badge">{unclaimedRewardCount}</span>
+            )}
+            {tab.path === '/dungeons' && repeatStatus !== 'idle' && (
+              <span
+                className={`rb-dot ${
+                  repeatStatus === 'running' ? 'rb-dot-running' :
+                  repeatStatus === 'completed' ? 'rb-dot-completed' :
+                  'rb-dot-stopped'
+                }`}
+                onClick={(e) => { e.stopPropagation(); openRepeatPanel(); }}
+              />
             )}
           </button>
         );

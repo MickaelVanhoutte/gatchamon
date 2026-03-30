@@ -4,6 +4,7 @@ import { useGameStore } from '../stores/gameStore';
 import { DUNGEONS, ESSENCES, ITEM_DUNGEONS, getItemSet, BATTLE_TOWER, getCurrentTowerResetDate } from '@gatchamon/shared';
 import type { DungeonDef, ItemDungeonDef } from '@gatchamon/shared';
 import { GameIcon } from '../components/icons';
+import { useRepeatBattleStore } from '../stores/repeatBattleStore';
 import './DungeonPage.css';
 
 type DungeonTab = 'essence' | 'items' | 'tower';
@@ -53,8 +54,14 @@ export function DungeonPage() {
   const isItemDungeon = tab === 'items';
   const dungeonList = isItemDungeon ? ITEM_DUNGEONS : DUNGEONS;
 
+  const repeatStatus = useRepeatBattleStore(s => s.status);
+
   const handleEnter = () => {
     if (!player) return;
+    if (repeatStatus === 'running') {
+      energyError.show('Repeat battle in progress!');
+      return;
+    }
     const cost = selectedDungeon.energyCost;
     if (player.energy < cost) {
       energyError.show('Not enough energy!');

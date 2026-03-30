@@ -4,11 +4,11 @@ import { getTypeEffectiveness } from './type-chart.js';
 
 export const STAR_MULTIPLIERS: Record<number, number> = {
   1: 1.0,
-  2: 1.15,
-  3: 1.3,
-  4: 1.5,
-  5: 1.75,
-  6: 2.0,
+  2: 1.2,
+  3: 1.45,
+  4: 1.75,
+  5: 2.1,
+  6: 2.5,
 };
 
 export const MAX_LEVEL_BY_STARS: Record<number, number> = {
@@ -26,7 +26,7 @@ export function isMaxLevel(level: number, stars: number): boolean {
 
 export function computeStats(template: PokemonTemplate, level: number, stars: number): BaseStats {
   const starMult = STAR_MULTIPLIERS[stars] ?? 1.0;
-  const levelMult = 1 + (level - 1) * 0.05;
+  const levelMult = 1 + (level - 1) * 0.04 + Math.pow((level - 1) / 50, 2.5) * 3;
 
   return {
     hp: Math.floor(template.baseStats.hp * levelMult * starMult),

@@ -29,13 +29,13 @@ export interface EffectMeta {
 export const EFFECT_REGISTRY: Record<EffectId, EffectMeta> = {
   // ── SW Buffs ─────────────────────────────────────────────────────────
   atk_buff: {
-    category: 'buff', name: 'ATK Up', description: 'Attack increased by 50%',
-    unique: true, statMod: { stat: 'atk', percent: 50 },
+    category: 'buff', name: 'ATK Up', description: 'Attack increased by 35%',
+    unique: true, statMod: { stat: 'atk', percent: 35 },
     icon: 'atk-up', color: '#ef4444',
   },
   def_buff: {
-    category: 'buff', name: 'DEF Up', description: 'Defense increased by 70%',
-    unique: true, statMod: { stat: 'def', percent: 70 },
+    category: 'buff', name: 'DEF Up', description: 'Defense increased by 50%',
+    unique: true, statMod: { stat: 'def', percent: 50 },
     icon: 'def-up', color: '#3b82f6',
   },
   spd_buff: {
@@ -73,8 +73,8 @@ export const EFFECT_REGISTRY: Record<EffectId, EffectMeta> = {
     unique: true, icon: 'counter', color: '#fb923c',
   },
   recovery: {
-    category: 'buff', name: 'Recovery', description: 'Recovers 15% of max HP each turn',
-    unique: true, hot: { percentHp: 15 }, icon: 'recovery', color: '#4ade80',
+    category: 'buff', name: 'Recovery', description: 'Recovers 10% of max HP each turn',
+    unique: true, hot: { percentHp: 10 }, icon: 'recovery', color: '#4ade80',
   },
   vampire: {
     category: 'buff', name: 'Vampire', description: 'Recovers 20% of damage dealt as HP',
@@ -104,7 +104,7 @@ export const EFFECT_REGISTRY: Record<EffectId, EffectMeta> = {
     unique: true, icon: 'threat', color: '#ef4444',
   },
   evasion: {
-    category: 'buff', name: 'Evasion', description: '50% chance to completely dodge attacks',
+    category: 'buff', name: 'Evasion', description: '30% chance to completely dodge attacks',
     unique: true, icon: 'evasion', color: '#c4b5fd',
   },
   amplify: {
@@ -127,8 +127,8 @@ export const EFFECT_REGISTRY: Record<EffectId, EffectMeta> = {
     icon: 'atk-down', color: '#ef4444',
   },
   def_break: {
-    category: 'debuff', name: 'DEF Break', description: 'Defense decreased by 70%',
-    unique: true, statMod: { stat: 'def', percent: -70 },
+    category: 'debuff', name: 'DEF Break', description: 'Defense decreased by 50%',
+    unique: true, statMod: { stat: 'def', percent: -50 },
     icon: 'def-down', color: '#3b82f6',
   },
   spd_slow: {

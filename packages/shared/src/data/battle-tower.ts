@@ -3,11 +3,12 @@ import type { MissionReward } from '../types/rewards.js';
 export interface TowerFloorDef {
   floor: number;
   enemyLevel: number;
-  enemyStars: 1 | 2 | 3;
+  enemyStars: 1 | 2 | 3 | 4 | 5 | 6;
   enemyCount: number;
   enemyPool: number[];
   reward: MissionReward;
   energyCost: number;
+  statBoost?: number;
 }
 
 // Enemy pools sourced from region data, scaling with tower floor range
@@ -48,18 +49,31 @@ function getEnemyPool(floor: number): number[] {
 }
 
 function getEnemyLevel(floor: number): number {
-  if (floor <= 20) return 5 + floor;
-  if (floor <= 50) return 15 + floor;
-  if (floor <= 80) return 25 + floor;
-  if (floor <= 99) return 30 + floor;
-  return 60; // Floor 100
+  if (floor <= 10) return 5 + floor * 2;
+  if (floor <= 20) return 10 + floor * 2;
+  if (floor <= 40) return floor * 3;
+  if (floor <= 60) return floor * 4;
+  if (floor <= 80) return floor * 5;
+  if (floor <= 99) return floor * 6;
+  return 300; // Floor 100 boss
 }
 
-function getEnemyStars(floor: number): 1 | 2 | 3 {
-  if (floor <= 20) return 1;
-  if (floor <= 50) return 2;
-  if (floor <= 80) return 2;
-  return 3;
+function getEnemyStars(floor: number): 1 | 2 | 3 | 4 | 5 | 6 {
+  if (floor <= 10) return 1;
+  if (floor <= 25) return 2;
+  if (floor <= 40) return 3;
+  if (floor <= 60) return 4;
+  if (floor <= 80) return 5;
+  return 6;
+}
+
+function getStatBoost(floor: number): number | undefined {
+  if (floor <= 20) return undefined;
+  if (floor <= 40) return 1.2;
+  if (floor <= 60) return 1.5;
+  if (floor <= 80) return 1.8;
+  if (floor <= 99) return 2.2;
+  return 2.5; // Floor 100
 }
 
 function getEnemyCount(floor: number): number {
@@ -136,6 +150,7 @@ function getFloorReward(floor: number): MissionReward {
 function buildTowerFloors(): TowerFloorDef[] {
   const floors: TowerFloorDef[] = [];
   for (let floor = 1; floor <= 100; floor++) {
+    const statBoost = getStatBoost(floor);
     floors.push({
       floor,
       enemyLevel: getEnemyLevel(floor),
@@ -144,6 +159,7 @@ function buildTowerFloors(): TowerFloorDef[] {
       enemyPool: getEnemyPool(floor),
       reward: getFloorReward(floor),
       energyCost: floor <= 50 ? 3 : 4,
+      ...(statBoost != null ? { statBoost } : {}),
     });
   }
   return floors;

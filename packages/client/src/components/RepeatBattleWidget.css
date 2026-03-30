@@ -1,0 +1,243 @@
+/* ── Overlay backdrop ── */
+.rb-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  animation: rb-fade-in 0.15s ease-out;
+}
+
+@keyframes rb-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ── Panel ── */
+.rb-panel {
+  background: var(--bg-card, #ffffff);
+  border-radius: 16px;
+  border: 1px solid var(--card-border, #d0e4ea);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  width: 320px;
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  animation: rb-slide-up 0.2s ease-out;
+}
+
+@keyframes rb-slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Header ── */
+.rb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--card-border, #e5e7eb);
+}
+
+.rb-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rb-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-primary, #1e293b);
+}
+
+.rb-floor {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #64748b);
+}
+
+.rb-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary, #94a3b8);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.rb-close:active {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* ── Progress ── */
+.rb-progress-section {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rb-progress-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--text-primary, #334155);
+  font-weight: 600;
+}
+
+.rb-status {
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.rb-progress-bar {
+  height: 8px;
+  background: var(--bg-secondary, #e2e8f0);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.rb-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0d9488, #14b8a6);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.rb-progress-animated {
+  background: linear-gradient(90deg, #0d9488, #14b8a6, #0d9488);
+  background-size: 200% 100%;
+  animation: rb-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes rb-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.rb-completed {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #64748b);
+}
+
+/* ── Rewards ── */
+.rb-rewards {
+  padding: 0 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rb-rewards-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary, #64748b);
+  margin: 0;
+}
+
+.rb-rewards-grid {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.rb-reward-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.rb-reward-value {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+}
+
+.rb-reward-label {
+  font-size: 0.65rem;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.rb-essence-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.rb-essence-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--text-secondary, #5a6a7a);
+}
+
+/* ── Actions ── */
+.rb-actions {
+  padding: 10px 16px 14px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.rb-btn {
+  padding: 8px 28px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.1s;
+}
+
+.rb-btn:active {
+  transform: scale(0.96);
+}
+
+.rb-btn-stop {
+  background: #ef4444;
+  color: white;
+}
+
+.rb-btn-ok {
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  color: white;
+}
+
+/* ── Notification dot on BottomNav ── */
+.rb-dot {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid rgba(15, 118, 110, 0.9);
+}
+
+.rb-dot-running {
+  background: #f59e0b;
+  animation: rb-dot-pulse 1.2s ease-in-out infinite;
+}
+
+.rb-dot-completed {
+  background: #22c55e;
+}
+
+.rb-dot-stopped {
+  background: #ef4444;
+}
+
+@keyframes rb-dot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.7); }
+}

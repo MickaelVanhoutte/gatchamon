@@ -700,6 +700,14 @@ export function startTowerBattle(
     const templateId = floorDef.enemyPool[i % floorDef.enemyPool.length];
     const id = `tower_enemy_${crypto.randomUUID()}`;
     const mon = makeBattleMon(id, templateId, floorDef.enemyLevel, floorDef.enemyStars, false);
+    if (floorDef.statBoost) {
+      mon.stats.hp = Math.floor(mon.stats.hp * floorDef.statBoost);
+      mon.stats.atk = Math.floor(mon.stats.atk * floorDef.statBoost);
+      mon.stats.def = Math.floor(mon.stats.def * floorDef.statBoost);
+      mon.stats.spd = Math.floor(mon.stats.spd * floorDef.statBoost);
+      mon.maxHp = mon.stats.hp;
+      mon.currentHp = mon.stats.hp;
+    }
     if (towerFloor % 10 === 0 && i === Math.floor(floorDef.enemyCount / 2)) {
       mon.isBoss = true;
     }

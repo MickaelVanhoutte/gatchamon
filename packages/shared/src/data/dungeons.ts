@@ -10,7 +10,7 @@ export const DUNGEONS: DungeonDef[] = [
     energyCost: 3,
     floors: [
       {
-        enemyLevel: 8,
+        enemyLevel: 10,
         enemies: [10, 13, 43],  // Caterpie, Weedle, Oddish
         drops: [
           { essenceId: 'grass_low', quantity: [1, 3], chance: 0.8 },
@@ -20,52 +20,120 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 15,
+        enemyLevel: 18,
         enemies: [13, 43, 69],  // Weedle, Oddish, Bellsprout
         drops: [
           { essenceId: 'grass_low', quantity: [2, 4], chance: 0.9 },
           { essenceId: 'poison_low', quantity: [1, 3], chance: 0.7 },
           { essenceId: 'bug_low', quantity: [2, 4], chance: 0.9 },
-          { essenceId: 'grass_mid', quantity: [0, 1], chance: 0.3 },
+          { essenceId: 'grass_mid', quantity: [0, 1], chance: 0.2 },
           { essenceId: 'magic_low', quantity: [0, 2], chance: 0.5 },
         ],
       },
       {
-        enemyLevel: 22,
+        enemyLevel: 25,
         enemies: [43, 69, 10],  // Oddish, Bellsprout, Caterpie
+        enemyStars: 2,
         drops: [
           { essenceId: 'grass_low', quantity: [2, 5], chance: 1.0 },
           { essenceId: 'poison_low', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'bug_mid', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'grass_mid', quantity: [1, 2], chance: 0.5 },
-          { essenceId: 'poison_mid', quantity: [0, 1], chance: 0.3 },
           { essenceId: 'magic_low', quantity: [1, 2], chance: 0.6 },
         ],
       },
       {
-        enemyLevel: 30,
+        enemyLevel: 32,
+        enemies: [45, 49, 127],  // Vileplume, Venomoth, Pinsir
+        enemyStars: 2,
+        drops: [
+          { essenceId: 'grass_mid', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'poison_mid', quantity: [1, 2], chance: 0.6 },
+          { essenceId: 'bug_mid', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'grass_high', quantity: [0, 1], chance: 0.1 },
+          { essenceId: 'magic_low', quantity: [1, 2], chance: 0.6 },
+        ],
+      },
+      {
+        enemyLevel: 38,
         enemies: [127, 45, 49],  // Pinsir, Vileplume, Venomoth
-        enemyStars: 4,
+        enemyStars: 3,
+        statBoost: 1.1,
         drops: [
           { essenceId: 'grass_mid', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'poison_mid', quantity: [1, 3], chance: 0.7 },
           { essenceId: 'bug_mid', quantity: [2, 3], chance: 0.8 },
           { essenceId: 'grass_high', quantity: [0, 1], chance: 0.2 },
+          { essenceId: 'magic_mid', quantity: [0, 1], chance: 0.4 },
+        ],
+      },
+      {
+        enemyLevel: 45,
+        enemies: [127, 45, 212],  // Pinsir, Vileplume, Scizor
+        enemyStars: 3,
+        statBoost: 1.2,
+        drops: [
+          { essenceId: 'grass_mid', quantity: [2, 5], chance: 0.9 },
+          { essenceId: 'poison_mid', quantity: [2, 4], chance: 0.8 },
+          { essenceId: 'bug_mid', quantity: [2, 4], chance: 0.9 },
+          { essenceId: 'grass_high', quantity: [0, 1], chance: 0.3 },
           { essenceId: 'magic_mid', quantity: [0, 2], chance: 0.5 },
         ],
       },
       {
-        enemyLevel: 40,
-        enemies: [127, 45, 212],  // Pinsir, Vileplume, Scizor
-        enemyStars: 5,
-        statBoost: 1.2,
+        enemyLevel: 52,
+        enemies: [212, 127, 45],  // Scizor, Pinsir, Vileplume
+        enemyStars: 4,
+        statBoost: 1.3,
         drops: [
           { essenceId: 'grass_mid', quantity: [3, 5], chance: 1.0 },
           { essenceId: 'poison_mid', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'bug_mid', quantity: [2, 4], chance: 0.9 },
-          { essenceId: 'grass_high', quantity: [1, 2], chance: 0.4 },
-          { essenceId: 'poison_high', quantity: [0, 1], chance: 0.25 },
+          { essenceId: 'grass_high', quantity: [1, 2], chance: 0.35 },
+          { essenceId: 'poison_high', quantity: [0, 1], chance: 0.2 },
           { essenceId: 'magic_mid', quantity: [1, 2], chance: 0.6 },
+        ],
+      },
+      {
+        enemyLevel: 60,
+        enemies: [212, 127, 45],  // Scizor, Pinsir, Vileplume
+        enemyStars: 5,
+        statBoost: 1.5,
+        drops: [
+          { essenceId: 'grass_mid', quantity: [3, 6], chance: 1.0 },
+          { essenceId: 'poison_mid', quantity: [2, 5], chance: 0.9 },
+          { essenceId: 'bug_high', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'grass_high', quantity: [1, 3], chance: 0.5 },
+          { essenceId: 'poison_high', quantity: [0, 2], chance: 0.3 },
+          { essenceId: 'magic_mid', quantity: [1, 3], chance: 0.7 },
+        ],
+      },
+      {
+        enemyLevel: 70,
+        enemies: [212, 127, 45],  // Scizor, Pinsir, Vileplume
+        enemyStars: 5,
+        statBoost: 1.7,
+        drops: [
+          { essenceId: 'grass_high', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'poison_high', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'bug_high', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'grass_mid', quantity: [3, 6], chance: 1.0 },
+          { essenceId: 'magic_mid', quantity: [2, 3], chance: 0.8 },
+          { essenceId: 'magic_high', quantity: [0, 1], chance: 0.2 },
+        ],
+      },
+      {
+        enemyLevel: 80,
+        enemies: [212, 127, 45],  // Scizor, Pinsir, Vileplume
+        enemyStars: 6,
+        statBoost: 2.0,
+        drops: [
+          { essenceId: 'grass_high', quantity: [2, 4], chance: 0.9 },
+          { essenceId: 'poison_high', quantity: [1, 3], chance: 0.6 },
+          { essenceId: 'bug_high', quantity: [1, 3], chance: 0.6 },
+          { essenceId: 'grass_mid', quantity: [4, 7], chance: 1.0 },
+          { essenceId: 'magic_mid', quantity: [2, 4], chance: 0.9 },
+          { essenceId: 'magic_high', quantity: [0, 2], chance: 0.35 },
         ],
       },
     ],
@@ -79,7 +147,7 @@ export const DUNGEONS: DungeonDef[] = [
     energyCost: 3,
     floors: [
       {
-        enemyLevel: 8,
+        enemyLevel: 10,
         enemies: [4, 74, 58],  // Charmander, Geodude, Growlithe
         drops: [
           { essenceId: 'fire_low', quantity: [1, 3], chance: 0.8 },
@@ -89,19 +157,20 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 15,
+        enemyLevel: 18,
         enemies: [58, 4, 74],  // Growlithe, Charmander, Geodude
         drops: [
           { essenceId: 'fire_low', quantity: [2, 4], chance: 0.9 },
           { essenceId: 'rock_low', quantity: [1, 3], chance: 0.7 },
           { essenceId: 'ground_low', quantity: [1, 3], chance: 0.7 },
-          { essenceId: 'fire_mid', quantity: [0, 1], chance: 0.3 },
+          { essenceId: 'fire_mid', quantity: [0, 1], chance: 0.2 },
           { essenceId: 'magic_low', quantity: [0, 2], chance: 0.5 },
         ],
       },
       {
-        enemyLevel: 22,
+        enemyLevel: 25,
         enemies: [74, 107, 4],  // Geodude, Hitmonchan, Charmander
+        enemyStars: 2,
         drops: [
           { essenceId: 'fire_low', quantity: [2, 5], chance: 1.0 },
           { essenceId: 'rock_mid', quantity: [1, 2], chance: 0.5 },
@@ -111,29 +180,97 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 30,
+        enemyLevel: 32,
         enemies: [59, 76, 112],  // Arcanine, Golem, Rhydon
-        enemyStars: 4,
+        enemyStars: 2,
+        drops: [
+          { essenceId: 'fire_mid', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'rock_mid', quantity: [1, 2], chance: 0.6 },
+          { essenceId: 'ground_mid', quantity: [1, 2], chance: 0.6 },
+          { essenceId: 'fire_high', quantity: [0, 1], chance: 0.1 },
+          { essenceId: 'magic_low', quantity: [1, 2], chance: 0.6 },
+        ],
+      },
+      {
+        enemyLevel: 38,
+        enemies: [59, 76, 112],  // Arcanine, Golem, Rhydon
+        enemyStars: 3,
+        statBoost: 1.1,
         drops: [
           { essenceId: 'fire_mid', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'rock_mid', quantity: [1, 3], chance: 0.7 },
           { essenceId: 'ground_mid', quantity: [1, 3], chance: 0.7 },
           { essenceId: 'fire_high', quantity: [0, 1], chance: 0.2 },
+          { essenceId: 'magic_mid', quantity: [0, 1], chance: 0.4 },
+        ],
+      },
+      {
+        enemyLevel: 45,
+        enemies: [59, 76, 112],  // Arcanine, Golem, Rhydon
+        enemyStars: 3,
+        statBoost: 1.2,
+        drops: [
+          { essenceId: 'fire_mid', quantity: [2, 5], chance: 0.9 },
+          { essenceId: 'rock_mid', quantity: [2, 4], chance: 0.8 },
+          { essenceId: 'ground_mid', quantity: [2, 3], chance: 0.8 },
+          { essenceId: 'fire_high', quantity: [0, 1], chance: 0.3 },
           { essenceId: 'magic_mid', quantity: [0, 2], chance: 0.5 },
         ],
       },
       {
-        enemyLevel: 40,
+        enemyLevel: 52,
         enemies: [59, 76, 112],  // Arcanine, Golem, Rhydon
-        enemyStars: 5,
-        statBoost: 1.2,
+        enemyStars: 4,
+        statBoost: 1.3,
         drops: [
           { essenceId: 'fire_mid', quantity: [3, 5], chance: 1.0 },
           { essenceId: 'rock_mid', quantity: [2, 4], chance: 0.8 },
-          { essenceId: 'ground_mid', quantity: [2, 3], chance: 0.8 },
-          { essenceId: 'fire_high', quantity: [1, 2], chance: 0.4 },
-          { essenceId: 'rock_high', quantity: [0, 1], chance: 0.25 },
+          { essenceId: 'ground_mid', quantity: [2, 4], chance: 0.8 },
+          { essenceId: 'fire_high', quantity: [1, 2], chance: 0.35 },
+          { essenceId: 'rock_high', quantity: [0, 1], chance: 0.2 },
           { essenceId: 'magic_mid', quantity: [1, 2], chance: 0.6 },
+        ],
+      },
+      {
+        enemyLevel: 60,
+        enemies: [59, 76, 112],  // Arcanine, Golem, Rhydon
+        enemyStars: 5,
+        statBoost: 1.5,
+        drops: [
+          { essenceId: 'fire_mid', quantity: [3, 6], chance: 1.0 },
+          { essenceId: 'rock_mid', quantity: [2, 5], chance: 0.9 },
+          { essenceId: 'ground_high', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'fire_high', quantity: [1, 3], chance: 0.5 },
+          { essenceId: 'rock_high', quantity: [0, 2], chance: 0.3 },
+          { essenceId: 'magic_mid', quantity: [1, 3], chance: 0.7 },
+        ],
+      },
+      {
+        enemyLevel: 70,
+        enemies: [59, 76, 112],  // Arcanine, Golem, Rhydon
+        enemyStars: 5,
+        statBoost: 1.7,
+        drops: [
+          { essenceId: 'fire_high', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'rock_high', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'ground_high', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'fire_mid', quantity: [3, 6], chance: 1.0 },
+          { essenceId: 'magic_mid', quantity: [2, 3], chance: 0.8 },
+          { essenceId: 'magic_high', quantity: [0, 1], chance: 0.2 },
+        ],
+      },
+      {
+        enemyLevel: 80,
+        enemies: [59, 76, 112],  // Arcanine, Golem, Rhydon
+        enemyStars: 6,
+        statBoost: 2.0,
+        drops: [
+          { essenceId: 'fire_high', quantity: [2, 4], chance: 0.9 },
+          { essenceId: 'rock_high', quantity: [1, 3], chance: 0.6 },
+          { essenceId: 'ground_high', quantity: [1, 3], chance: 0.6 },
+          { essenceId: 'fire_mid', quantity: [4, 7], chance: 1.0 },
+          { essenceId: 'magic_mid', quantity: [2, 4], chance: 0.9 },
+          { essenceId: 'magic_high', quantity: [0, 2], chance: 0.35 },
         ],
       },
     ],
@@ -147,7 +284,7 @@ export const DUNGEONS: DungeonDef[] = [
     energyCost: 3,
     floors: [
       {
-        enemyLevel: 8,
+        enemyLevel: 10,
         enemies: [7, 60, 129],  // Squirtle, Poliwag, Magikarp
         drops: [
           { essenceId: 'water_low', quantity: [1, 3], chance: 0.8 },
@@ -157,19 +294,20 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 15,
+        enemyLevel: 18,
         enemies: [60, 7, 129],  // Poliwag, Squirtle, Magikarp
         drops: [
           { essenceId: 'water_low', quantity: [2, 4], chance: 0.9 },
           { essenceId: 'ice_low', quantity: [1, 3], chance: 0.6 },
           { essenceId: 'dragon_low', quantity: [1, 2], chance: 0.4 },
-          { essenceId: 'water_mid', quantity: [0, 1], chance: 0.3 },
+          { essenceId: 'water_mid', quantity: [0, 1], chance: 0.2 },
           { essenceId: 'magic_low', quantity: [0, 2], chance: 0.5 },
         ],
       },
       {
-        enemyLevel: 22,
+        enemyLevel: 25,
         enemies: [129, 131, 60],  // Magikarp, Lapras, Poliwag
+        enemyStars: 2,
         drops: [
           { essenceId: 'water_low', quantity: [2, 5], chance: 1.0 },
           { essenceId: 'ice_mid', quantity: [0, 2], chance: 0.4 },
@@ -179,29 +317,97 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 30,
+        enemyLevel: 32,
         enemies: [131, 148, 121],  // Lapras, Dragonair, Starmie
-        enemyStars: 4,
+        enemyStars: 2,
+        drops: [
+          { essenceId: 'water_mid', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'ice_mid', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'dragon_mid', quantity: [0, 1], chance: 0.4 },
+          { essenceId: 'water_high', quantity: [0, 1], chance: 0.1 },
+          { essenceId: 'magic_low', quantity: [1, 2], chance: 0.6 },
+        ],
+      },
+      {
+        enemyLevel: 38,
+        enemies: [131, 148, 121],  // Lapras, Dragonair, Starmie
+        enemyStars: 3,
+        statBoost: 1.1,
         drops: [
           { essenceId: 'water_mid', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'ice_mid', quantity: [1, 3], chance: 0.6 },
           { essenceId: 'dragon_mid', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'water_high', quantity: [0, 1], chance: 0.2 },
+          { essenceId: 'magic_mid', quantity: [0, 1], chance: 0.4 },
+        ],
+      },
+      {
+        enemyLevel: 45,
+        enemies: [148, 131, 130],  // Dragonair, Lapras, Gyarados
+        enemyStars: 3,
+        statBoost: 1.2,
+        drops: [
+          { essenceId: 'water_mid', quantity: [2, 5], chance: 0.9 },
+          { essenceId: 'ice_mid', quantity: [2, 3], chance: 0.7 },
+          { essenceId: 'dragon_mid', quantity: [1, 3], chance: 0.6 },
+          { essenceId: 'water_high', quantity: [0, 1], chance: 0.3 },
           { essenceId: 'magic_mid', quantity: [0, 2], chance: 0.5 },
         ],
       },
       {
-        enemyLevel: 40,
+        enemyLevel: 52,
         enemies: [148, 131, 130],  // Dragonair, Lapras, Gyarados
-        enemyStars: 5,
-        statBoost: 1.2,
+        enemyStars: 4,
+        statBoost: 1.3,
         drops: [
           { essenceId: 'water_mid', quantity: [3, 5], chance: 1.0 },
-          { essenceId: 'ice_mid', quantity: [2, 3], chance: 0.7 },
-          { essenceId: 'dragon_mid', quantity: [1, 3], chance: 0.6 },
+          { essenceId: 'ice_mid', quantity: [2, 4], chance: 0.8 },
+          { essenceId: 'dragon_mid', quantity: [1, 3], chance: 0.7 },
           { essenceId: 'water_high', quantity: [1, 2], chance: 0.4 },
           { essenceId: 'dragon_high', quantity: [0, 1], chance: 0.2 },
           { essenceId: 'magic_mid', quantity: [1, 2], chance: 0.6 },
+        ],
+      },
+      {
+        enemyLevel: 60,
+        enemies: [148, 131, 130],  // Dragonair, Lapras, Gyarados
+        enemyStars: 5,
+        statBoost: 1.5,
+        drops: [
+          { essenceId: 'water_mid', quantity: [3, 6], chance: 1.0 },
+          { essenceId: 'ice_high', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'dragon_mid', quantity: [2, 4], chance: 0.8 },
+          { essenceId: 'water_high', quantity: [1, 3], chance: 0.5 },
+          { essenceId: 'dragon_high', quantity: [0, 1], chance: 0.3 },
+          { essenceId: 'magic_mid', quantity: [1, 3], chance: 0.7 },
+        ],
+      },
+      {
+        enemyLevel: 70,
+        enemies: [148, 131, 130],  // Dragonair, Lapras, Gyarados
+        enemyStars: 5,
+        statBoost: 1.7,
+        drops: [
+          { essenceId: 'water_high', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'ice_high', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'dragon_high', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'water_mid', quantity: [3, 6], chance: 1.0 },
+          { essenceId: 'magic_mid', quantity: [2, 3], chance: 0.8 },
+          { essenceId: 'magic_high', quantity: [0, 1], chance: 0.2 },
+        ],
+      },
+      {
+        enemyLevel: 80,
+        enemies: [148, 131, 130],  // Dragonair, Lapras, Gyarados
+        enemyStars: 6,
+        statBoost: 2.0,
+        drops: [
+          { essenceId: 'water_high', quantity: [2, 4], chance: 0.9 },
+          { essenceId: 'ice_high', quantity: [1, 3], chance: 0.6 },
+          { essenceId: 'dragon_high', quantity: [1, 3], chance: 0.6 },
+          { essenceId: 'water_mid', quantity: [4, 7], chance: 1.0 },
+          { essenceId: 'magic_mid', quantity: [2, 4], chance: 0.9 },
+          { essenceId: 'magic_high', quantity: [0, 2], chance: 0.35 },
         ],
       },
     ],
@@ -215,7 +421,7 @@ export const DUNGEONS: DungeonDef[] = [
     energyCost: 3,
     floors: [
       {
-        enemyLevel: 8,
+        enemyLevel: 10,
         enemies: [16, 39, 25],  // Pidgey, Jigglypuff, Pikachu
         drops: [
           { essenceId: 'electric_low', quantity: [1, 3], chance: 0.7 },
@@ -226,7 +432,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 15,
+        enemyLevel: 18,
         enemies: [25, 16, 133],  // Pikachu, Pidgey, Eevee
         drops: [
           { essenceId: 'electric_low', quantity: [2, 4], chance: 0.8 },
@@ -237,8 +443,9 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 22,
+        enemyLevel: 25,
         enemies: [63, 39, 25],  // Abra, Jigglypuff, Pikachu
+        enemyStars: 2,
         drops: [
           { essenceId: 'electric_mid', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'flying_mid', quantity: [0, 2], chance: 0.4 },
@@ -249,29 +456,98 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 30,
+        enemyLevel: 32,
         enemies: [65, 125, 85],  // Alakazam, Electabuzz, Dodrio
-        enemyStars: 4,
+        enemyStars: 2,
+        drops: [
+          { essenceId: 'electric_mid', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'flying_mid', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'normal_mid', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'psychic_mid', quantity: [0, 2], chance: 0.4 },
+          { essenceId: 'magic_low', quantity: [1, 2], chance: 0.6 },
+        ],
+      },
+      {
+        enemyLevel: 38,
+        enemies: [65, 125, 85],  // Alakazam, Electabuzz, Dodrio
+        enemyStars: 3,
+        statBoost: 1.1,
         drops: [
           { essenceId: 'electric_mid', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'flying_mid', quantity: [1, 3], chance: 0.6 },
           { essenceId: 'normal_mid', quantity: [1, 3], chance: 0.6 },
           { essenceId: 'psychic_mid', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'magic_mid', quantity: [0, 1], chance: 0.4 },
+        ],
+      },
+      {
+        enemyLevel: 45,
+        enemies: [65, 125, 143],  // Alakazam, Electabuzz, Snorlax
+        enemyStars: 3,
+        statBoost: 1.2,
+        drops: [
+          { essenceId: 'electric_mid', quantity: [2, 5], chance: 0.9 },
+          { essenceId: 'flying_mid', quantity: [2, 4], chance: 0.7 },
+          { essenceId: 'normal_mid', quantity: [2, 3], chance: 0.7 },
+          { essenceId: 'psychic_mid', quantity: [1, 3], chance: 0.6 },
           { essenceId: 'magic_mid', quantity: [0, 2], chance: 0.5 },
         ],
       },
       {
-        enemyLevel: 40,
+        enemyLevel: 52,
         enemies: [65, 125, 143],  // Alakazam, Electabuzz, Snorlax
-        enemyStars: 5,
-        statBoost: 1.2,
+        enemyStars: 4,
+        statBoost: 1.3,
         drops: [
           { essenceId: 'electric_mid', quantity: [3, 5], chance: 1.0 },
-          { essenceId: 'flying_mid', quantity: [2, 4], chance: 0.7 },
-          { essenceId: 'normal_mid', quantity: [2, 3], chance: 0.7 },
-          { essenceId: 'psychic_mid', quantity: [1, 3], chance: 0.6 },
-          { essenceId: 'electric_high', quantity: [0, 1], chance: 0.3 },
+          { essenceId: 'flying_mid', quantity: [2, 4], chance: 0.8 },
+          { essenceId: 'normal_mid', quantity: [2, 4], chance: 0.8 },
+          { essenceId: 'psychic_mid', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'electric_high', quantity: [0, 1], chance: 0.25 },
           { essenceId: 'magic_mid', quantity: [1, 2], chance: 0.6 },
+        ],
+      },
+      {
+        enemyLevel: 60,
+        enemies: [65, 125, 143],  // Alakazam, Electabuzz, Snorlax
+        enemyStars: 5,
+        statBoost: 1.5,
+        drops: [
+          { essenceId: 'electric_mid', quantity: [3, 6], chance: 1.0 },
+          { essenceId: 'flying_high', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'normal_high', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'psychic_high', quantity: [0, 1], chance: 0.3 },
+          { essenceId: 'electric_high', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'magic_mid', quantity: [1, 3], chance: 0.7 },
+        ],
+      },
+      {
+        enemyLevel: 70,
+        enemies: [65, 125, 143],  // Alakazam, Electabuzz, Snorlax
+        enemyStars: 5,
+        statBoost: 1.7,
+        drops: [
+          { essenceId: 'electric_high', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'flying_high', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'psychic_high', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'electric_mid', quantity: [3, 6], chance: 1.0 },
+          { essenceId: 'magic_mid', quantity: [2, 3], chance: 0.8 },
+          { essenceId: 'magic_high', quantity: [0, 1], chance: 0.2 },
+        ],
+      },
+      {
+        enemyLevel: 80,
+        enemies: [65, 125, 143],  // Alakazam, Electabuzz, Snorlax
+        enemyStars: 6,
+        statBoost: 2.0,
+        drops: [
+          { essenceId: 'electric_high', quantity: [2, 4], chance: 0.9 },
+          { essenceId: 'flying_high', quantity: [1, 3], chance: 0.6 },
+          { essenceId: 'normal_high', quantity: [1, 3], chance: 0.6 },
+          { essenceId: 'psychic_high', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'electric_mid', quantity: [4, 7], chance: 1.0 },
+          { essenceId: 'magic_mid', quantity: [2, 4], chance: 0.9 },
+          { essenceId: 'magic_high', quantity: [0, 2], chance: 0.35 },
         ],
       },
     ],
@@ -305,32 +581,59 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 26,
+        enemyLevel: 25,
         enemies: [41, 106, 92],  // Zubat, Hitmonlee, Gastly
+        enemyStars: 2,
         drops: [
           { essenceId: 'ghost_mid', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'fighting_mid', quantity: [0, 2], chance: 0.4 },
           { essenceId: 'poison_mid', quantity: [0, 2], chance: 0.4 },
           { essenceId: 'ghost_low', quantity: [2, 4], chance: 0.9 },
-          { essenceId: 'magic_mid', quantity: [0, 2], chance: 0.5 },
+          { essenceId: 'magic_mid', quantity: [0, 1], chance: 0.4 },
         ],
       },
       {
-        enemyLevel: 35,
+        enemyLevel: 32,
         enemies: [94, 68, 97],  // Gengar, Machamp, Hypno
-        enemyStars: 4,
+        enemyStars: 2,
+        drops: [
+          { essenceId: 'ghost_mid', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'fighting_mid', quantity: [1, 2], chance: 0.6 },
+          { essenceId: 'poison_mid', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'magic_mid', quantity: [0, 2], chance: 0.5 },
+          { essenceId: 'ghost_high', quantity: [0, 1], chance: 0.1 },
+        ],
+      },
+      {
+        enemyLevel: 38,
+        enemies: [94, 68, 97],  // Gengar, Machamp, Hypno
+        enemyStars: 3,
+        statBoost: 1.1,
         drops: [
           { essenceId: 'ghost_mid', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'fighting_mid', quantity: [1, 3], chance: 0.7 },
           { essenceId: 'poison_mid', quantity: [1, 2], chance: 0.6 },
-          { essenceId: 'magic_mid', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'magic_mid', quantity: [1, 2], chance: 0.6 },
           { essenceId: 'ghost_high', quantity: [0, 1], chance: 0.2 },
         ],
       },
       {
         enemyLevel: 45,
         enemies: [94, 68, 97],  // Gengar, Machamp, Hypno
-        enemyStars: 5,
+        enemyStars: 3,
+        statBoost: 1.2,
+        drops: [
+          { essenceId: 'ghost_mid', quantity: [3, 5], chance: 0.9 },
+          { essenceId: 'fighting_mid', quantity: [2, 4], chance: 0.8 },
+          { essenceId: 'poison_mid', quantity: [2, 3], chance: 0.7 },
+          { essenceId: 'magic_mid', quantity: [2, 3], chance: 0.7 },
+          { essenceId: 'ghost_high', quantity: [0, 1], chance: 0.3 },
+        ],
+      },
+      {
+        enemyLevel: 52,
+        enemies: [94, 68, 97],  // Gengar, Machamp, Hypno
+        enemyStars: 4,
         statBoost: 1.3,
         drops: [
           { essenceId: 'ghost_mid', quantity: [3, 5], chance: 1.0 },
@@ -338,7 +641,46 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'poison_mid', quantity: [2, 3], chance: 0.7 },
           { essenceId: 'magic_mid', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'ghost_high', quantity: [1, 2], chance: 0.35 },
-          { essenceId: 'magic_high', quantity: [0, 1], chance: 0.25 },
+          { essenceId: 'magic_high', quantity: [0, 1], chance: 0.2 },
+        ],
+      },
+      {
+        enemyLevel: 60,
+        enemies: [94, 68, 97],  // Gengar, Machamp, Hypno
+        enemyStars: 5,
+        statBoost: 1.5,
+        drops: [
+          { essenceId: 'ghost_mid', quantity: [3, 6], chance: 1.0 },
+          { essenceId: 'fighting_mid', quantity: [2, 5], chance: 0.9 },
+          { essenceId: 'magic_mid', quantity: [2, 4], chance: 0.8 },
+          { essenceId: 'ghost_high', quantity: [1, 3], chance: 0.5 },
+          { essenceId: 'magic_high', quantity: [0, 1], chance: 0.3 },
+        ],
+      },
+      {
+        enemyLevel: 70,
+        enemies: [94, 68, 97],  // Gengar, Machamp, Hypno
+        enemyStars: 5,
+        statBoost: 1.7,
+        drops: [
+          { essenceId: 'ghost_high', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'fighting_high', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'ghost_mid', quantity: [3, 6], chance: 1.0 },
+          { essenceId: 'magic_mid', quantity: [2, 4], chance: 0.8 },
+          { essenceId: 'magic_high', quantity: [0, 2], chance: 0.3 },
+        ],
+      },
+      {
+        enemyLevel: 80,
+        enemies: [94, 68, 97],  // Gengar, Machamp, Hypno
+        enemyStars: 6,
+        statBoost: 2.0,
+        drops: [
+          { essenceId: 'ghost_high', quantity: [2, 4], chance: 0.9 },
+          { essenceId: 'fighting_high', quantity: [1, 3], chance: 0.6 },
+          { essenceId: 'ghost_mid', quantity: [4, 7], chance: 1.0 },
+          { essenceId: 'magic_mid', quantity: [3, 5], chance: 0.9 },
+          { essenceId: 'magic_high', quantity: [1, 2], chance: 0.4 },
         ],
       },
     ],
@@ -370,13 +712,14 @@ export const DUNGEONS: DungeonDef[] = [
         drops: [
           { essenceId: 'fairy_low', quantity: [2, 4], chance: 0.9 },
           { essenceId: 'normal_low', quantity: [1, 3], chance: 0.7 },
-          { essenceId: 'fairy_mid', quantity: [0, 1], chance: 0.3 },
+          { essenceId: 'fairy_mid', quantity: [0, 1], chance: 0.2 },
           { essenceId: 'magic_low', quantity: [0, 2], chance: 0.5 },
         ],
       },
       {
         enemyLevel: 25,
         enemies: [546, 684, 209],  // Cottonee, Swirlix, Snubbull
+        enemyStars: 2,
         drops: [
           { essenceId: 'fairy_low', quantity: [2, 5], chance: 1.0 },
           { essenceId: 'fairy_mid', quantity: [1, 2], chance: 0.5 },
@@ -385,26 +728,88 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 33,
+        enemyLevel: 32,
         enemies: [282, 122, 684],  // Gardevoir, Mr. Mime, Swirlix
-        enemyStars: 4,
+        enemyStars: 2,
+        drops: [
+          { essenceId: 'fairy_mid', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'normal_mid', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'fairy_high', quantity: [0, 1], chance: 0.1 },
+          { essenceId: 'magic_low', quantity: [1, 2], chance: 0.6 },
+        ],
+      },
+      {
+        enemyLevel: 38,
+        enemies: [282, 122, 210],  // Gardevoir, Mr. Mime, Granbull
+        enemyStars: 3,
+        statBoost: 1.1,
         drops: [
           { essenceId: 'fairy_mid', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'normal_mid', quantity: [1, 3], chance: 0.6 },
           { essenceId: 'fairy_high', quantity: [0, 1], chance: 0.2 },
+          { essenceId: 'magic_mid', quantity: [0, 1], chance: 0.4 },
+        ],
+      },
+      {
+        enemyLevel: 45,
+        enemies: [282, 122, 210],  // Gardevoir, Mr. Mime, Granbull
+        enemyStars: 3,
+        statBoost: 1.2,
+        drops: [
+          { essenceId: 'fairy_mid', quantity: [3, 5], chance: 0.9 },
+          { essenceId: 'fairy_high', quantity: [0, 2], chance: 0.3 },
+          { essenceId: 'normal_mid', quantity: [2, 3], chance: 0.7 },
           { essenceId: 'magic_mid', quantity: [0, 2], chance: 0.5 },
         ],
       },
       {
-        enemyLevel: 42,
+        enemyLevel: 52,
         enemies: [282, 122, 210],  // Gardevoir, Mr. Mime, Granbull
-        enemyStars: 5,
-        statBoost: 1.2,
+        enemyStars: 4,
+        statBoost: 1.3,
         drops: [
           { essenceId: 'fairy_mid', quantity: [3, 5], chance: 1.0 },
           { essenceId: 'fairy_high', quantity: [1, 2], chance: 0.4 },
           { essenceId: 'normal_high', quantity: [0, 1], chance: 0.25 },
           { essenceId: 'magic_mid', quantity: [1, 2], chance: 0.6 },
+        ],
+      },
+      {
+        enemyLevel: 60,
+        enemies: [282, 122, 210],  // Gardevoir, Mr. Mime, Granbull
+        enemyStars: 5,
+        statBoost: 1.5,
+        drops: [
+          { essenceId: 'fairy_mid', quantity: [3, 6], chance: 1.0 },
+          { essenceId: 'fairy_high', quantity: [1, 3], chance: 0.5 },
+          { essenceId: 'normal_high', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'magic_mid', quantity: [1, 3], chance: 0.7 },
+        ],
+      },
+      {
+        enemyLevel: 70,
+        enemies: [282, 122, 210],  // Gardevoir, Mr. Mime, Granbull
+        enemyStars: 5,
+        statBoost: 1.7,
+        drops: [
+          { essenceId: 'fairy_high', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'normal_high', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'fairy_mid', quantity: [3, 6], chance: 1.0 },
+          { essenceId: 'magic_mid', quantity: [2, 3], chance: 0.8 },
+          { essenceId: 'magic_high', quantity: [0, 1], chance: 0.2 },
+        ],
+      },
+      {
+        enemyLevel: 80,
+        enemies: [282, 122, 210],  // Gardevoir, Mr. Mime, Granbull
+        enemyStars: 6,
+        statBoost: 2.0,
+        drops: [
+          { essenceId: 'fairy_high', quantity: [2, 4], chance: 0.9 },
+          { essenceId: 'normal_high', quantity: [1, 3], chance: 0.6 },
+          { essenceId: 'fairy_mid', quantity: [4, 7], chance: 1.0 },
+          { essenceId: 'magic_mid', quantity: [2, 4], chance: 0.9 },
+          { essenceId: 'magic_high', quantity: [0, 2], chance: 0.35 },
         ],
       },
     ],
@@ -433,13 +838,14 @@ export const DUNGEONS: DungeonDef[] = [
         drops: [
           { essenceId: 'dark_low', quantity: [2, 4], chance: 0.9 },
           { essenceId: 'ghost_low', quantity: [1, 3], chance: 0.7 },
-          { essenceId: 'dark_mid', quantity: [0, 1], chance: 0.3 },
+          { essenceId: 'dark_mid', quantity: [0, 1], chance: 0.2 },
           { essenceId: 'magic_low', quantity: [0, 2], chance: 0.5 },
         ],
       },
       {
         enemyLevel: 25,
         enemies: [302, 215, 261],  // Sableye, Sneasel, Poochyena
+        enemyStars: 2,
         drops: [
           { essenceId: 'dark_low', quantity: [2, 5], chance: 1.0 },
           { essenceId: 'dark_mid', quantity: [1, 2], chance: 0.5 },
@@ -448,26 +854,88 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 33,
+        enemyLevel: 32,
         enemies: [359, 302, 215],  // Absol, Sableye, Sneasel
-        enemyStars: 4,
+        enemyStars: 2,
+        drops: [
+          { essenceId: 'dark_mid', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'ghost_mid', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'dark_high', quantity: [0, 1], chance: 0.1 },
+          { essenceId: 'magic_low', quantity: [1, 2], chance: 0.6 },
+        ],
+      },
+      {
+        enemyLevel: 38,
+        enemies: [359, 215, 302],  // Absol, Sneasel, Sableye
+        enemyStars: 3,
+        statBoost: 1.1,
         drops: [
           { essenceId: 'dark_mid', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'ghost_mid', quantity: [1, 3], chance: 0.6 },
           { essenceId: 'dark_high', quantity: [0, 1], chance: 0.2 },
+          { essenceId: 'magic_mid', quantity: [0, 1], chance: 0.4 },
+        ],
+      },
+      {
+        enemyLevel: 45,
+        enemies: [359, 215, 302],  // Absol, Sneasel, Sableye
+        enemyStars: 3,
+        statBoost: 1.2,
+        drops: [
+          { essenceId: 'dark_mid', quantity: [3, 5], chance: 0.9 },
+          { essenceId: 'dark_high', quantity: [0, 2], chance: 0.3 },
+          { essenceId: 'ghost_mid', quantity: [2, 3], chance: 0.7 },
           { essenceId: 'magic_mid', quantity: [0, 2], chance: 0.5 },
         ],
       },
       {
-        enemyLevel: 42,
+        enemyLevel: 52,
         enemies: [359, 215, 302],  // Absol, Sneasel, Sableye
-        enemyStars: 5,
-        statBoost: 1.2,
+        enemyStars: 4,
+        statBoost: 1.3,
         drops: [
           { essenceId: 'dark_mid', quantity: [3, 5], chance: 1.0 },
           { essenceId: 'dark_high', quantity: [1, 2], chance: 0.4 },
           { essenceId: 'ghost_high', quantity: [0, 1], chance: 0.25 },
           { essenceId: 'magic_mid', quantity: [1, 2], chance: 0.6 },
+        ],
+      },
+      {
+        enemyLevel: 60,
+        enemies: [359, 215, 302],  // Absol, Sneasel, Sableye
+        enemyStars: 5,
+        statBoost: 1.5,
+        drops: [
+          { essenceId: 'dark_mid', quantity: [3, 6], chance: 1.0 },
+          { essenceId: 'dark_high', quantity: [1, 3], chance: 0.5 },
+          { essenceId: 'ghost_high', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'magic_mid', quantity: [1, 3], chance: 0.7 },
+        ],
+      },
+      {
+        enemyLevel: 70,
+        enemies: [359, 215, 302],  // Absol, Sneasel, Sableye
+        enemyStars: 5,
+        statBoost: 1.7,
+        drops: [
+          { essenceId: 'dark_high', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'ghost_high', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'dark_mid', quantity: [3, 6], chance: 1.0 },
+          { essenceId: 'magic_mid', quantity: [2, 3], chance: 0.8 },
+          { essenceId: 'magic_high', quantity: [0, 1], chance: 0.2 },
+        ],
+      },
+      {
+        enemyLevel: 80,
+        enemies: [359, 215, 302],  // Absol, Sneasel, Sableye
+        enemyStars: 6,
+        statBoost: 2.0,
+        drops: [
+          { essenceId: 'dark_high', quantity: [2, 4], chance: 0.9 },
+          { essenceId: 'ghost_high', quantity: [1, 3], chance: 0.6 },
+          { essenceId: 'dark_mid', quantity: [4, 7], chance: 1.0 },
+          { essenceId: 'magic_mid', quantity: [2, 4], chance: 0.9 },
+          { essenceId: 'magic_high', quantity: [0, 2], chance: 0.35 },
         ],
       },
     ],
@@ -496,13 +964,14 @@ export const DUNGEONS: DungeonDef[] = [
         drops: [
           { essenceId: 'steel_low', quantity: [2, 4], chance: 0.9 },
           { essenceId: 'rock_low', quantity: [1, 3], chance: 0.7 },
-          { essenceId: 'steel_mid', quantity: [0, 1], chance: 0.3 },
+          { essenceId: 'steel_mid', quantity: [0, 1], chance: 0.2 },
           { essenceId: 'magic_low', quantity: [0, 2], chance: 0.5 },
         ],
       },
       {
         enemyLevel: 25,
         enemies: [436, 304, 374],  // Bronzor, Aron, Beldum
+        enemyStars: 2,
         drops: [
           { essenceId: 'steel_low', quantity: [2, 5], chance: 1.0 },
           { essenceId: 'steel_mid', quantity: [1, 2], chance: 0.5 },
@@ -511,26 +980,88 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 33,
+        enemyLevel: 32,
         enemies: [376, 306, 437],  // Metagross, Aggron, Bronzong
-        enemyStars: 4,
+        enemyStars: 2,
+        drops: [
+          { essenceId: 'steel_mid', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'rock_mid', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'steel_high', quantity: [0, 1], chance: 0.1 },
+          { essenceId: 'magic_low', quantity: [1, 2], chance: 0.6 },
+        ],
+      },
+      {
+        enemyLevel: 38,
+        enemies: [376, 306, 437],  // Metagross, Aggron, Bronzong
+        enemyStars: 3,
+        statBoost: 1.1,
         drops: [
           { essenceId: 'steel_mid', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'rock_mid', quantity: [1, 3], chance: 0.6 },
           { essenceId: 'steel_high', quantity: [0, 1], chance: 0.2 },
+          { essenceId: 'magic_mid', quantity: [0, 1], chance: 0.4 },
+        ],
+      },
+      {
+        enemyLevel: 45,
+        enemies: [376, 306, 437],  // Metagross, Aggron, Bronzong
+        enemyStars: 3,
+        statBoost: 1.2,
+        drops: [
+          { essenceId: 'steel_mid', quantity: [3, 5], chance: 0.9 },
+          { essenceId: 'steel_high', quantity: [0, 2], chance: 0.3 },
+          { essenceId: 'rock_mid', quantity: [2, 3], chance: 0.7 },
           { essenceId: 'magic_mid', quantity: [0, 2], chance: 0.5 },
         ],
       },
       {
-        enemyLevel: 42,
+        enemyLevel: 52,
         enemies: [376, 306, 437],  // Metagross, Aggron, Bronzong
-        enemyStars: 5,
-        statBoost: 1.2,
+        enemyStars: 4,
+        statBoost: 1.3,
         drops: [
           { essenceId: 'steel_mid', quantity: [3, 5], chance: 1.0 },
           { essenceId: 'steel_high', quantity: [1, 2], chance: 0.4 },
           { essenceId: 'electric_high', quantity: [0, 1], chance: 0.25 },
           { essenceId: 'magic_mid', quantity: [1, 2], chance: 0.6 },
+        ],
+      },
+      {
+        enemyLevel: 60,
+        enemies: [376, 306, 437],  // Metagross, Aggron, Bronzong
+        enemyStars: 5,
+        statBoost: 1.5,
+        drops: [
+          { essenceId: 'steel_mid', quantity: [3, 6], chance: 1.0 },
+          { essenceId: 'steel_high', quantity: [1, 3], chance: 0.5 },
+          { essenceId: 'electric_high', quantity: [1, 2], chance: 0.4 },
+          { essenceId: 'magic_mid', quantity: [1, 3], chance: 0.7 },
+        ],
+      },
+      {
+        enemyLevel: 70,
+        enemies: [376, 306, 437],  // Metagross, Aggron, Bronzong
+        enemyStars: 5,
+        statBoost: 1.7,
+        drops: [
+          { essenceId: 'steel_high', quantity: [1, 3], chance: 0.7 },
+          { essenceId: 'rock_high', quantity: [1, 2], chance: 0.5 },
+          { essenceId: 'steel_mid', quantity: [3, 6], chance: 1.0 },
+          { essenceId: 'magic_mid', quantity: [2, 3], chance: 0.8 },
+          { essenceId: 'magic_high', quantity: [0, 1], chance: 0.2 },
+        ],
+      },
+      {
+        enemyLevel: 80,
+        enemies: [376, 306, 437],  // Metagross, Aggron, Bronzong
+        enemyStars: 6,
+        statBoost: 2.0,
+        drops: [
+          { essenceId: 'steel_high', quantity: [2, 4], chance: 0.9 },
+          { essenceId: 'rock_high', quantity: [1, 3], chance: 0.6 },
+          { essenceId: 'steel_mid', quantity: [4, 7], chance: 1.0 },
+          { essenceId: 'magic_mid', quantity: [2, 4], chance: 0.9 },
+          { essenceId: 'magic_high', quantity: [0, 2], chance: 0.35 },
         ],
       },
     ],

@@ -11,6 +11,8 @@ import { MonsterDetailModal } from '../components/MonsterDetailModal';
 import { GameIcon, StarRating } from '../components/icons';
 import { assetUrl } from '../utils/asset-url';
 import { useTutorialStore } from '../stores/tutorialStore';
+import { useRepeatBattleStore } from '../stores/repeatBattleStore';
+import { runRepeatBattles } from '../services/repeatBattle.service';
 import './TeamSelectPage.css';
 
 const STAR_COLORS: Record<number, string> = {
@@ -44,12 +46,15 @@ export function TeamSelectPage() {
   const rosterRef = useRef<HTMLDivElement>(null);
   useRotatedHorizontalScroll(rosterRef);
 
+  const [repeatCount, setRepeatCount] = useState(1);
+
   const mode = searchParams.get('mode') ?? 'story';
   const region = Number(searchParams.get('region') ?? 1);
   const floor = Number(searchParams.get('floor') ?? 1);
   const difficulty = (searchParams.get('difficulty') as Difficulty) ?? 'normal';
   const dungeonId = Number(searchParams.get('dungeonId') ?? 0);
   const dungeonFloor = Number(searchParams.get('floor') ?? 0);
+  const isDungeonMode = mode === 'dungeon' || mode === 'item-dungeon';
 
   const regionDef = REGIONS.find(r => r.id === region);
   const dungeonDef = DUNGEONS.find(d => d.id === dungeonId);
@@ -153,6 +158,32 @@ export function TeamSelectPage() {
 
   const handleStart = () => {
     if (!player || selected.length === 0) return;
+
+    // Repeat battle mode
+    if (isDungeonMode && repeatCount > 1) {
+      const repeatStore = useRepeatBattleStore.getState();
+      if (repeatStore.status === 'running') {
+        setStartError('Repeat battle already in progress');
+        return;
+      }
+      saveLastTeam(selected);
+      const dDef = mode === 'item-dungeon' ? itemDungeonDef : dungeonDef;
+      const config = {
+        teamIds: [...selected],
+        dungeonId,
+        floorIndex: dungeonFloor,
+        mode: mode as 'dungeon' | 'item-dungeon',
+        totalRuns: repeatCount,
+        dungeonName: dDef?.name ?? 'Dungeon',
+        floorLabel: `B${dungeonFloor + 1}`,
+      };
+      repeatStore.startRepeat(config);
+      runRepeatBattles(config);
+      const tab = mode === 'item-dungeon' ? 'items' : 'essence';
+      navigate(`/dungeons?tab=${tab}&dungeonId=${dungeonId}&floor=${dungeonFloor}`);
+      return;
+    }
+
     setIsStarting(true);
     saveLastTeam(selected);
     try {
@@ -348,10 +379,30 @@ export function TeamSelectPage() {
         </div>
 
         <div className="ts-actions">
+          {isDungeonMode && (
+            <div className="ts-repeat-row">
+              <span className="ts-repeat-label">Repeat:</span>
+              <div className="ts-repeat-options">
+                {[1, 5, 10, 20, 30].map(n => (
+                  <button
+                    key={n}
+                    className={`ts-repeat-btn ${repeatCount === n ? 'active' : ''}`}
+                    onClick={() => setRepeatCount(n)}
+                  >
+                    {n === 1 ? '1x' : `${n}x`}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           {energyCost > 0 && (
             <div className="ts-energy-cost">
               <GameIcon id="energy" size={14} />
-              <span>{energyCost}</span>
+              <span>
+                {repeatCount > 1
+                  ? `${energyCost} x ${repeatCount} = ${energyCost * repeatCount}`
+                  : energyCost}
+              </span>
             </div>
           )}
           <button
@@ -360,7 +411,7 @@ export function TeamSelectPage() {
             onClick={handleStart}
             disabled={selected.length === 0 || isStarting}
           >
-            {isStarting ? '...' : 'GO'}
+            {isStarting ? '...' : repeatCount > 1 ? `Repeat x${repeatCount}` : 'GO'}
           </button>
           <button className="ts-cancel-btn" onClick={() => navigate(-1)}>
             Cancel

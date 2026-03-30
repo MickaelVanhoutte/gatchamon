@@ -24,6 +24,7 @@ import { LoadingScreen } from './components/LoadingScreen';
 import { useTutorialStore } from './stores/tutorialStore';
 import { useRotatedScroll } from './hooks/useRotatedScroll';
 import { AdminPage } from './pages/admin/AdminPage';
+import { RepeatBattleWidget } from './components/RepeatBattleWidget';
 
 export function App() {
   const location = useLocation();
@@ -112,6 +113,7 @@ export function App() {
       </div>
       <BottomNav />
       <TutorialOverlay />
+      <RepeatBattleWidget />
     </div>
   );
 }
