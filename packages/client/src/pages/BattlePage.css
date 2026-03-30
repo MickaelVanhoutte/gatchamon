@@ -1352,15 +1352,7 @@
   }
 
   .overlay-columns {
-    flex-direction: column;
     gap: 12px;
-  }
-
-  .battle-recap {
-    padding-left: 0;
-    border-left: none;
-    border-top: 1px solid var(--card-border, #d0e4ea);
-    padding-top: 12px;
   }
 
   .return-btn {

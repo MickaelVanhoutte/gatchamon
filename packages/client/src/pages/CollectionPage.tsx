@@ -327,17 +327,12 @@ export function CollectionPage() {
                   </div>
 
                   {/* Power Up — navigates to Altar page */}
-                  {selected.instance.stars < 6 && (
-                    <button
-                      className="box-powerup-btn"
-                      onClick={() => navigate(`/altar?baseId=${selected.instance.instanceId}`)}
-                    >
-                      <GameIcon id="arrow_up" size={14} /> Power Up
-                    </button>
-                  )}
-                  {selected.instance.stars >= 6 && (
-                    <div className="box-max-stars-badge"><GameIcon id="star" size={14} /> Max Stars</div>
-                  )}
+                  <button
+                    className="box-powerup-btn"
+                    onClick={() => navigate(`/altar?baseId=${selected.instance.instanceId}`)}
+                  >
+                    <GameIcon id="arrow_up" size={14} /> Power Up
+                  </button>
 
                   {/* Evolution section */}
                   {hasEvolutions && player && (
