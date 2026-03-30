@@ -4,19 +4,21 @@ import './LoadingScreen.css';
 
 interface LoadingScreenProps {
   onStart: () => void;
+  swReady?: boolean;
 }
 
-export function LoadingScreen({ onStart }: LoadingScreenProps) {
-  const [ready, setReady] = useState(false);
+export function LoadingScreen({ onStart, swReady = true }: LoadingScreenProps) {
+  const [minTimeElapsed, setMinTimeElapsed] = useState(false);
 
   useEffect(() => {
-    // Simulate minimum load time for the dramatic effect
-    const timer = setTimeout(() => setReady(true), 1500);
+    const timer = setTimeout(() => setMinTimeElapsed(true), 1500);
     return () => clearTimeout(timer);
   }, []);
 
+  const canStart = minTimeElapsed && swReady;
+
   return (
-    <div className="loading-screen" onClick={() => ready && onStart()}>
+    <div className="loading-screen" onClick={() => canStart && onStart()}>
       {/* Animated particles */}
       <div className="ls-particles">
         {Array.from({ length: 20 }).map((_, i) => (
@@ -59,8 +61,10 @@ export function LoadingScreen({ onStart }: LoadingScreenProps) {
 
       {/* Bottom */}
       <div className="ls-bottom">
-        {ready ? (
+        {canStart ? (
           <p className="ls-tap-text">Touch to Start</p>
+        ) : minTimeElapsed ? (
+          <p className="ls-updating-text">Updating...</p>
         ) : (
           <div className="ls-loading-bar">
             <div className="ls-loading-fill" />

@@ -88,6 +88,13 @@ export function allDead(team: BattleMon[]): boolean {
   return team.every(m => !m.isAlive);
 }
 
+function trackHeal(state: BattleState, monId: string, amount: number): void {
+  if (amount <= 0) return;
+  if (!state.recap) state.recap = {};
+  if (!state.recap[monId]) state.recap[monId] = { hpHealed: 0 };
+  state.recap[monId].hpHealed += amount;
+}
+
 // ---------------------------------------------------------------------------
 // Effect application
 // ---------------------------------------------------------------------------
@@ -309,6 +316,7 @@ export function processStartOfTurn(mon: BattleMon, state: BattleState): string[]
     const oldHp = mon.currentHp;
     mon.currentHp = Math.min(mon.maxHp, mon.currentHp + healAmt);
     const healed = mon.currentHp - oldHp;
+    trackHeal(state, mon.instanceId, healed);
     if (healed > 0) {
       effects.push(`${template.name} recovered ${healed} HP (Recovery)`);
     }
@@ -320,6 +328,7 @@ export function processStartOfTurn(mon: BattleMon, state: BattleState): string[]
     const oldHp = mon.currentHp;
     mon.currentHp = Math.min(mon.maxHp, mon.currentHp + healAmt);
     const healed = mon.currentHp - oldHp;
+    trackHeal(state, mon.instanceId, healed);
     if (healed > 0) {
       effects.push(`${template.name} recovered ${healed} HP while sleeping`);
     }
@@ -582,6 +591,7 @@ function applyInstantEffect(
       const oldHp = target.currentHp;
       target.currentHp = Math.min(target.maxHp, target.currentHp + healAmount);
       const healed = target.currentHp - oldHp;
+      trackHeal(state, target.instanceId, healed);
       return healed > 0 ? `${targetTemplate.name} healed ${healed} HP` : null;
     }
 
@@ -794,6 +804,7 @@ export function resolveSkill(
         if (!hasDebuff(actor, 'unrecoverable')) {
           vampireHealed = Math.floor((damage + shieldAbsorbed) * 0.2);
           actor.currentHp = Math.min(actor.maxHp, actor.currentHp + vampireHealed);
+          trackHeal(state, actor.instanceId, vampireHealed);
         }
       }
     }

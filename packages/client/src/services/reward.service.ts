@@ -159,6 +159,35 @@ export function claimAllDailiesBonus(): MissionReward | null {
   return ALL_DAILIES_BONUS;
 }
 
+export function claimAllMissions(): MissionReward | null {
+  const state = ensureDailyReset(loadOrInitRewardState());
+  const todayDefs = selectDailyMissions(state.dailyMissions.date);
+  const aggregated: MissionReward = {};
+  let claimed = false;
+
+  for (const mission of state.dailyMissions.missions) {
+    const def = todayDefs.find(d => d.id === mission.missionId);
+    if (def && !mission.claimed && mission.current >= def.target) {
+      mission.claimed = true;
+      mergeReward(aggregated, def.reward);
+      claimed = true;
+    }
+  }
+
+  // Also claim all-dailies bonus if all missions are now claimed
+  const allClaimed = state.dailyMissions.missions.every(m => m.claimed);
+  if (allClaimed && !state.dailyMissions.allClaimedBonus) {
+    state.dailyMissions.allClaimedBonus = true;
+    mergeReward(aggregated, ALL_DAILIES_BONUS);
+    claimed = true;
+  }
+
+  if (!claimed) return null;
+  saveRewardState(state);
+  applyReward(aggregated);
+  return aggregated;
+}
+
 export function getUnclaimedMissionCount(): number {
   const state = ensureDailyReset(loadOrInitRewardState());
   const todayDefs = selectDailyMissions(state.dailyMissions.date);
@@ -208,6 +237,30 @@ export function claimTrophyTier(trophyId: string, tierIndex: number): MissionRew
   saveRewardState(state);
   applyReward(tier.reward);
   return tier.reward;
+}
+
+export function claimAllTrophyTiers(): MissionReward | null {
+  const state = loadOrInitRewardState();
+  const aggregated: MissionReward = {};
+  let claimed = false;
+
+  for (const progress of state.trophyProgress) {
+    const def = TROPHIES.find(t => t.id === progress.trophyId);
+    if (!def) continue;
+
+    for (let i = 0; i < def.tiers.length; i++) {
+      if (!progress.claimedTiers.includes(i) && progress.current >= def.tiers[i].threshold) {
+        progress.claimedTiers.push(i);
+        mergeReward(aggregated, def.tiers[i].reward);
+        claimed = true;
+      }
+    }
+  }
+
+  if (!claimed) return null;
+  saveRewardState(state);
+  applyReward(aggregated);
+  return aggregated;
 }
 
 export function getUnclaimedTrophyCount(): number {
@@ -345,6 +398,20 @@ export function getFloorRewardPreview(
     isFirstClear: first,
     possibleMonsters,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Merge Reward Helper
+// ---------------------------------------------------------------------------
+
+function mergeReward(target: MissionReward, source: MissionReward): void {
+  if (source.regularPokeballs) target.regularPokeballs = (target.regularPokeballs ?? 0) + source.regularPokeballs;
+  if (source.premiumPokeballs) target.premiumPokeballs = (target.premiumPokeballs ?? 0) + source.premiumPokeballs;
+  if (source.energy) target.energy = (target.energy ?? 0) + source.energy;
+  if (source.trainerXp) target.trainerXp = (target.trainerXp ?? 0) + source.trainerXp;
+  if (source.dittos) target.dittos = (target.dittos ?? 0) + source.dittos;
+  if (source.legendaryPokeballs) target.legendaryPokeballs = (target.legendaryPokeballs ?? 0) + source.legendaryPokeballs;
+  if (source.stardust) target.stardust = (target.stardust ?? 0) + source.stardust;
 }
 
 // ---------------------------------------------------------------------------

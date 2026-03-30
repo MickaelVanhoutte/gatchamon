@@ -378,6 +378,7 @@ export function startBattle(
     log: [],
     floor,
     mode: 'story',
+    recap: {},
   };
 
   // Apply passive abilities at battle start

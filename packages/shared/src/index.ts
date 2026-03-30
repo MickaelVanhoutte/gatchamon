@@ -18,7 +18,7 @@ export { DUNGEONS, getDungeon } from './data/dungeons.js';
 export { BATTLE_TOWER, getTowerFloor } from './data/battle-tower.js';
 export type { TowerFloorDef } from './data/battle-tower.js';
 export * from './types/held-item.js';
-export { ITEM_SETS, getItemSet, SLOT_MAIN_STAT_POOL, ALL_SUB_STAT_TYPES, MAIN_STAT_SCALING, SUB_STAT_RANGES, GRADE_COLORS, GRADE_INITIAL_SUBSTATS, STAT_TYPE_LABELS, ITEM_REMOVAL_COST } from './data/held-items.js';
+export { ITEM_SETS, getItemSet, SLOT_MAIN_STAT_POOL, ALL_SUB_STAT_TYPES, MAIN_STAT_SCALING, SUB_STAT_RANGES, GRADE_COLORS, GRADE_INITIAL_SUBSTATS, STAT_TYPE_LABELS, ITEM_REMOVAL_COST, MAX_HELD_ITEMS } from './data/held-items.js';
 export { ITEM_DUNGEONS, getItemDungeon } from './data/item-dungeons.js';
 export { computeStatsWithItems, getActiveSetEffects, getUpgradeCost, getUpgradeSuccessRate, computeMainStatValue, getItemSellValue } from './constants/rune-formulas.js';
 export * from './types/rewards.js';

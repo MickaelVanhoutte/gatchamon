@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { useGameStore } from './stores/gameStore';
+import { swReady } from './services/sw-update';
 import { HomePage } from './pages/HomePage';
 import { SummonPage } from './pages/SummonPage';
 import { CollectionPage } from './pages/CollectionPage';
@@ -15,6 +16,7 @@ import { PokedexPage } from './pages/PokedexPage';
 import { AltarPage } from './pages/AltarPage';
 import { InboxPage } from './pages/InboxPage';
 import { RetrySummonPage } from './pages/RetrySummonPage';
+import { ItemInventoryPage } from './pages/ItemInventoryPage';
 import { BottomNav } from './components/layout/BottomNav';
 import { TopHUD } from './components/layout/TopHUD';
 import { TutorialOverlay } from './components/tutorial/TutorialOverlay';
@@ -28,6 +30,7 @@ export function App() {
   const { player, createPlayer, loadPlayer } = useGameStore();
   const [nameInput, setNameInput] = useState('');
   const [showLoading, setShowLoading] = useState(true);
+  const [swDone, setSwDone] = useState(false);
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -36,6 +39,7 @@ export function App() {
   useEffect(() => {
     loadPlayer();
     useTutorialStore.getState().loadTutorial();
+    swReady.then(() => setSwDone(true));
   }, [loadPlayer]);
 
   // Auto-focus name input
@@ -50,7 +54,7 @@ export function App() {
   }
 
   if (showLoading) {
-    return <LoadingScreen onStart={() => setShowLoading(false)} />;
+    return <LoadingScreen onStart={() => setShowLoading(false)} swReady={swDone} />;
   }
 
   if (!player) {
@@ -100,6 +104,7 @@ export function App() {
           <Route path="/trainer" element={<TrainerPage />} />
           <Route path="/altar" element={<AltarPage />} />
           <Route path="/inbox" element={<InboxPage />} />
+          <Route path="/inventory" element={<ItemInventoryPage />} />
           <Route path="/retry-summon" element={<RetrySummonPage />} />
           <Route path="/battle/team-select" element={<TeamSelectPage />} />
           <Route path="/battle/:battleId" element={<BattlePage />} />

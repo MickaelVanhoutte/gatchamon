@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { HashRouter } from 'react-router-dom';
 import { App } from './App';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import './services/sw-update';
 import './styles/global.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -14,24 +15,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </ErrorBoundary>
   </React.StrictMode>
 );
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('./sw.js', { updateViaCache: 'none' })
-      .then((reg) => {
-        reg.addEventListener('updatefound', () => {
-          const newSW = reg.installing;
-          if (!newSW) return;
-          newSW.addEventListener('statechange', () => {
-            if (newSW.state === 'activated' && navigator.serviceWorker.controller) {
-              window.location.reload();
-            }
-          });
-        });
-      });
-  });
-}
 
 const orientation = screen.orientation as any;
 if (orientation?.lock) {

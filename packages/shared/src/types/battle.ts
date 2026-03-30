@@ -37,6 +37,7 @@ export interface BattleState {
   floor: { region: number; floor: number; difficulty: Difficulty };
   mode: 'story' | 'dungeon' | 'item-dungeon' | 'tower';
   dungeonId?: number;
+  recap?: Record<string, { hpHealed: number }>;
 }
 
 export interface BattleLogEntry {

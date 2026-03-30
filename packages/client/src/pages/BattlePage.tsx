@@ -33,6 +33,26 @@ const PASSIVE_TRIGGER_LABELS: Record<string, string> = {
   always: 'Always Active',
 };
 
+function computeBattleRecap(state: BattleState) {
+  const damageMap = new Map<string, number>();
+  for (const entry of state.log) {
+    if (!state.playerTeam.some(m => m.instanceId === entry.actorId)) continue;
+    const current = damageMap.get(entry.actorId) ?? 0;
+    damageMap.set(entry.actorId, current + entry.damage + (entry.shieldAbsorbed ?? 0));
+  }
+  return state.playerTeam.map(mon => {
+    const tmpl = getTemplate(mon.templateId);
+    return {
+      instanceId: mon.instanceId,
+      templateId: mon.templateId,
+      name: tmpl?.name ?? 'Unknown',
+      spriteUrl: tmpl?.spriteUrl ?? `sprites/${mon.templateId}.png`,
+      damageDealt: damageMap.get(mon.instanceId) ?? 0,
+      hpHealed: state.recap?.[mon.instanceId]?.hpHealed ?? 0,
+    };
+  });
+}
+
 function SkillDetailModal({ skill, onClose }: { skill: SkillDefinition; onClose: () => void }) {
   return (
     <div className="effect-modal-backdrop" onClick={onClose}>
@@ -429,6 +449,11 @@ export function BattlePage() {
     return urls;
   }, [state?.battleId]);
 
+  const battleRecap = useMemo(() => {
+    if (!state || (phase !== 'victory' && phase !== 'defeat')) return null;
+    return computeBattleRecap(state);
+  }, [state, phase]);
+
   const handleAssetsReady = useCallback(() => setAssetsReady(true), []);
 
   if (!state) {
@@ -595,77 +620,106 @@ export function BattlePage() {
       {(phase === 'victory' || phase === 'defeat') && (
         <div className="battle-overlay">
           <div className="overlay-content">
-            <h2 className={phase}>{phase === 'victory' ? 'Victory!' : 'Defeat'}</h2>
-            {rewards && (
-              <div className="rewards">
-                {rewards.isFirstClear && (
-                  <p className="first-clear-banner"><GameIcon id="sparkles" size={14} /> First Clear Bonus!</p>
-                )}
-                {rewards.regularPokeballs > 0 && <p>+ {rewards.regularPokeballs} <GameIcon id="pokeball" size={14} /></p>}
-                {rewards.premiumPokeballs > 0 && <p>+ {rewards.premiumPokeballs} <GameIcon id="premiumPokeball" size={14} /></p>}
-                {rewards.legendaryPokeballs != null && rewards.legendaryPokeballs > 0 && (
-                  <p className="legendary-reward">+ {rewards.legendaryPokeballs} <GameIcon id="legendaryPokeball" size={14} /> Legendary Pokeball!</p>
-                )}
-                <p>+ {rewards.xpPerMon} XP per monster</p>
-                {rewards.levelUps.length > 0 && (
-                  <p className="level-ups">
-                    {rewards.levelUps.length} monster(s) leveled up!
-                  </p>
-                )}
-                {rewards.monsterLoot && (
-                  <div className="monster-loot-reward">
-                    <p className="loot-title"><GameIcon id="clover" size={14} /> Monster Captured!</p>
-                    <div className="loot-monster-display">
-                      <img
-                        src={assetUrl(getTemplate(rewards.monsterLoot.templateId)?.spriteUrl ?? `sprites/${rewards.monsterLoot.templateId}.png`)}
-                        alt={getTemplate(rewards.monsterLoot.templateId)?.name ?? ''}
-                        className="loot-sprite"
-                      />
-                      <span className="loot-name">{getTemplate(rewards.monsterLoot.templateId)?.name}</span>
-                      <span className="loot-stars"><StarRating count={rewards.monsterLoot.stars} size={10} /></span>
+            <div className="overlay-header">
+              <h2 className={phase}>{phase === 'victory' ? 'Victory!' : 'Defeat'}</h2>
+              <button className="return-btn" onClick={navigateAway}>Continue</button>
+            </div>
+            <div className="overlay-columns">
+              {rewards && (
+                <div className="rewards">
+                  {rewards.isFirstClear && (
+                    <p className="first-clear-banner"><GameIcon id="sparkles" size={14} /> First Clear Bonus!</p>
+                  )}
+                  {rewards.regularPokeballs > 0 && <p>+ {rewards.regularPokeballs} <GameIcon id="pokeball" size={14} /></p>}
+                  {rewards.premiumPokeballs > 0 && <p>+ {rewards.premiumPokeballs} <GameIcon id="premiumPokeball" size={14} /></p>}
+                  {rewards.legendaryPokeballs != null && rewards.legendaryPokeballs > 0 && (
+                    <p className="legendary-reward">+ {rewards.legendaryPokeballs} <GameIcon id="legendaryPokeball" size={14} /> Legendary Pokeball!</p>
+                  )}
+                  <p>+ {rewards.xpPerMon} XP per monster</p>
+                  {rewards.levelUps.length > 0 && (
+                    <p className="level-ups">
+                      {rewards.levelUps.length} monster(s) leveled up!
+                    </p>
+                  )}
+                  {rewards.monsterLoot && (
+                    <div className="monster-loot-reward">
+                      <p className="loot-title"><GameIcon id="clover" size={14} /> Monster Captured!</p>
+                      <div className="loot-monster-display">
+                        <img
+                          src={assetUrl(getTemplate(rewards.monsterLoot.templateId)?.spriteUrl ?? `sprites/${rewards.monsterLoot.templateId}.png`)}
+                          alt={getTemplate(rewards.monsterLoot.templateId)?.name ?? ''}
+                          className="loot-sprite"
+                        />
+                        <span className="loot-name">{getTemplate(rewards.monsterLoot.templateId)?.name}</span>
+                        <span className="loot-stars"><StarRating count={rewards.monsterLoot.stars} size={10} /></span>
+                      </div>
                     </div>
+                  )}
+                  {rewards.stardust != null && rewards.stardust > 0 && (
+                    <p>+ {rewards.stardust.toLocaleString()} <span style={{color:'#c084fc'}}><GameIcon id="stardust" size={12} /></span> Stardust</p>
+                  )}
+                  {rewards.essences && Object.keys(rewards.essences).length > 0 && (
+                    <div className="essence-drops">
+                      <p className="essence-title">Materials Obtained:</p>
+                      {Object.entries(rewards.essences).map(([essId, qty]) => {
+                        const ess = ESSENCES[essId];
+                        return (
+                          <p key={essId} className="essence-item">
+                            <GameIcon id={ess?.icon} size={14} /> {ess?.name ?? essId} x{qty}
+                          </p>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {rewards.itemDrops && rewards.itemDrops.length > 0 && (
+                    <div className="essence-drops">
+                      <p className="essence-title">Held Items Obtained:</p>
+                      {rewards.itemDrops.map((drop, i) => {
+                        const setDef = ITEM_SETS.find(s => s.id === drop.setId);
+                        return (
+                          <p key={i} className="essence-item">
+                            <GameIcon id={setDef?.icon} size={14} /> {setDef?.name ?? drop.setId} <StarRating count={drop.stars} size={10} /> ({drop.grade})
+                          </p>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {rewards.trainerXpGained != null && rewards.trainerXpGained > 0 && (
+                    <p>+ {rewards.trainerXpGained} Trainer XP</p>
+                  )}
+                  {rewards.trainerLeveledUp && (
+                    <p className="level-ups">Trainer leveled up to Lv.{rewards.trainerNewLevel}!</p>
+                  )}
+                </div>
+              )}
+              {battleRecap && (
+                <div className="battle-recap">
+                  <p className="recap-title">Battle Performance</p>
+                  <div className="recap-list">
+                    {battleRecap.map(mon => (
+                      <div key={mon.instanceId} className="recap-mon">
+                        <img
+                          src={assetUrl(mon.spriteUrl)}
+                          alt={mon.name}
+                          className="recap-sprite"
+                        />
+                        <span className="recap-name">{mon.name}</span>
+                        <div className="recap-stats">
+                          <span className="recap-damage">
+                            <GameIcon id="swords" size={12} /> {mon.damageDealt.toLocaleString()}
+                          </span>
+                          {mon.hpHealed > 0 && (
+                            <span className="recap-heal">
+                              + {mon.hpHealed.toLocaleString()} HP
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                )}
-                {rewards.stardust != null && rewards.stardust > 0 && (
-                  <p>+ {rewards.stardust.toLocaleString()} <span style={{color:'#c084fc'}}><GameIcon id="stardust" size={12} /></span> Stardust</p>
-                )}
-                {rewards.essences && Object.keys(rewards.essences).length > 0 && (
-                  <div className="essence-drops">
-                    <p className="essence-title">Materials Obtained:</p>
-                    {Object.entries(rewards.essences).map(([essId, qty]) => {
-                      const ess = ESSENCES[essId];
-                      return (
-                        <p key={essId} className="essence-item">
-                          <GameIcon id={ess?.icon} size={14} /> {ess?.name ?? essId} x{qty}
-                        </p>
-                      );
-                    })}
-                  </div>
-                )}
-                {rewards.itemDrops && rewards.itemDrops.length > 0 && (
-                  <div className="essence-drops">
-                    <p className="essence-title">Held Items Obtained:</p>
-                    {rewards.itemDrops.map((drop, i) => {
-                      const setDef = ITEM_SETS.find(s => s.id === drop.setId);
-                      return (
-                        <p key={i} className="essence-item">
-                          <GameIcon id={setDef?.icon} size={14} /> {setDef?.name ?? drop.setId} <StarRating count={drop.stars} size={10} /> ({drop.grade})
-                        </p>
-                      );
-                    })}
-                  </div>
-                )}
-                {rewards.trainerXpGained != null && rewards.trainerXpGained > 0 && (
-                  <p>+ {rewards.trainerXpGained} Trainer XP</p>
-                )}
-                {rewards.trainerLeveledUp && (
-                  <p className="level-ups">Trainer leveled up to Lv.{rewards.trainerNewLevel}!</p>
-                )}
-              </div>
-            )}
-            <button className="return-btn" onClick={navigateAway}>
-              Continue
-            </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

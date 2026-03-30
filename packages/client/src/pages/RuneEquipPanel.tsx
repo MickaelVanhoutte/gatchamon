@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { HeldItemInstance, HeldItemSlot, BaseStats } from '@gatchamon/shared';
 import { getItemSet, computeStatsWithItems, computeStats, getActiveSetEffects, ITEM_SETS } from '@gatchamon/shared';
 import type { OwnedPokemon } from '../stores/gameStore';
@@ -22,6 +23,7 @@ interface RuneEquipPanelProps {
 }
 
 export function RuneEquipPanel({ pokemon, heldItems, player }: RuneEquipPanelProps) {
+  const navigate = useNavigate();
   const [selectSlot, setSelectSlot] = useState<HeldItemSlot | null>(null);
   const [upgradeItem, setUpgradeItem] = useState<HeldItemInstance | null>(null);
 
@@ -153,9 +155,14 @@ export function RuneEquipPanel({ pokemon, heldItems, player }: RuneEquipPanelPro
       </div>
 
       {/* Equip button for empty slots */}
-      <button className="rune-equip-btn" onClick={() => setSelectSlot(1)}>
-        Manage Items
-      </button>
+      <div style={{ display: 'flex', gap: '6px' }}>
+        <button className="rune-equip-btn" onClick={() => setSelectSlot(1)} style={{ flex: 1 }}>
+          Manage Items
+        </button>
+        <button className="rune-equip-btn" onClick={() => navigate('/inventory')} style={{ flex: 1 }}>
+          View All
+        </button>
+      </div>
 
       {/* Modals */}
       {selectSlot !== null && (

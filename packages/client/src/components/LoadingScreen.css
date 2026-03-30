@@ -247,6 +247,19 @@
   50% { opacity: 0.3; }
 }
 
+.ls-updating-text {
+  font-size: 1rem;
+  color: #1a2332;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  animation: updating-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes updating-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 0.3; }
+}
+
 .ls-loading-bar {
   width: 200px;
   height: 6px;

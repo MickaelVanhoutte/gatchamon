@@ -10,10 +10,11 @@ interface RuneUpgradeModalProps {
   item: HeldItemInstance;
   playerStardust: number;
   onClose: () => void;
-  onEquipSlot: (slot: HeldItemSlot) => void;
+  onEquipSlot?: (slot: HeldItemSlot) => void;
+  hideChangeItem?: boolean;
 }
 
-export function RuneUpgradeModal({ item: initialItem, playerStardust, onClose, onEquipSlot }: RuneUpgradeModalProps) {
+export function RuneUpgradeModal({ item: initialItem, playerStardust, onClose, onEquipSlot, hideChangeItem }: RuneUpgradeModalProps) {
   const { upgradeItem: storeUpgrade, sellItem: storeSell, heldItems } = useGameStore();
   const tutorialStep = useTutorialStore(s => s.step);
   const isTutorial = tutorialStep === 16;
@@ -132,9 +133,11 @@ export function RuneUpgradeModal({ item: initialItem, playerStardust, onClose, o
 
         {/* Actions */}
         <div className="rune-upgrade-actions">
-          <button className="rune-upgrade-swap-btn" onClick={() => onEquipSlot(item.slot)}>
-            Change Item
-          </button>
+          {!hideChangeItem && onEquipSlot && (
+            <button className="rune-upgrade-swap-btn" onClick={() => onEquipSlot(item.slot)}>
+              Change Item
+            </button>
+          )}
           {!isMaxLevel ? (
             <button
               className={`rune-upgrade-btn ${isTutorial ? 'tutorial-highlight' : ''}`}

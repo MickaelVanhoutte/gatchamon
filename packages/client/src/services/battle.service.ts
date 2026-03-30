@@ -484,6 +484,7 @@ function initBattle(
     floor,
     mode,
     dungeonId,
+    recap: {},
   };
 
   applyPassives(state);

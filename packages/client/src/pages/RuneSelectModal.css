@@ -36,29 +36,27 @@
   color: var(--text-primary);
 }
 
+.rune-select-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rune-select-header-actions select {
+  background: var(--bg-secondary);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  padding: 4px 8px;
+  font-size: 0.7rem;
+}
+
 .rune-select-close {
   background: none;
   border: none;
   color: var(--text-secondary);
   font-size: 1.2rem;
   cursor: pointer;
-}
-
-.rune-select-filters {
-  display: flex;
-  gap: 8px;
-  padding: 8px 16px;
-  border-bottom: 1px solid var(--card-border);
-}
-
-.rune-select-filters select {
-  background: var(--bg-secondary);
-  border: 1px solid var(--card-border);
-  border-radius: 6px;
-  color: var(--text-primary);
-  padding: 4px 8px;
-  font-size: 0.75rem;
-  flex: 1;
 }
 
 .rune-select-body {
@@ -68,12 +66,116 @@
   overflow: hidden;
 }
 
+/* Set sidebar */
+.rune-select-sidebar {
+  width: 150px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--card-border);
+  overflow-y: auto;
+}
+
+.rune-select-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
+  border-radius: 5px;
+  color: var(--text-primary);
+  font-size: 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.rune-select-sidebar-item:hover {
+  background: var(--bg-primary);
+}
+
+.rune-select-sidebar-item--active {
+  background: rgba(13, 148, 136, 0.1);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.rune-select-sidebar-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rune-select-sidebar-count {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: var(--bg-primary);
+  padding: 1px 5px;
+  border-radius: 8px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.rune-select-sidebar-item--active .rune-select-sidebar-count {
+  color: var(--accent);
+  background: rgba(13, 148, 136, 0.15);
+}
+
+/* Main column (set effect + item grid) */
+.rune-select-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Set effect banner */
+.rune-select-set-effect {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--bg-secondary);
+  border-bottom: 2px solid var(--accent);
+  flex-shrink: 0;
+}
+
+.rune-select-set-effect-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.rune-select-set-effect-pieces {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: var(--bg-primary);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.rune-select-set-effect-desc {
+  font-size: 0.65rem;
+  color: var(--accent);
+  font-weight: 600;
+  flex: 1;
+  text-align: right;
+}
+
 .rune-select-list {
   flex: 1;
   overflow-y: auto;
   padding: 8px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 6px;
   align-content: start;
 }
@@ -83,6 +185,7 @@
   color: var(--text-secondary);
   padding: 24px;
   font-size: 0.8rem;
+  grid-column: 1 / -1;
 }
 
 .rune-select-preview {

@@ -195,3 +195,5 @@ export const STAT_TYPE_LABELS: Record<HeldItemMainStatType, string> = {
 };
 
 export const ITEM_REMOVAL_COST = 10000;
+
+export const MAX_HELD_ITEMS = 1600;

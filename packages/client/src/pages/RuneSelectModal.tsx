@@ -89,39 +89,83 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
     onClose();
   }
 
+  // Count items per set for this slot
+  const slotItems = useMemo(() => heldItems.filter(i => i.slot === slot), [heldItems, slot]);
+  const setCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const set of ITEM_SETS) counts[set.id] = 0;
+    for (const item of slotItems) {
+      counts[item.setId] = (counts[item.setId] ?? 0) + 1;
+    }
+    return counts;
+  }, [slotItems]);
+
   return (
     <div className="rune-select-overlay" onClick={onClose}>
       <div className="rune-select-modal" onClick={e => e.stopPropagation()}>
         <div className="rune-select-header">
           <h3>Select Item for Slot {slot}</h3>
-          <button className="rune-select-close" onClick={onClose}><GameIcon id="close" size={18} /></button>
-        </div>
-
-        {/* Filters */}
-        <div className="rune-select-filters">
-          <select value={setFilter} onChange={e => setSetFilter(e.target.value)}>
-            <option value="">All Sets</option>
-            {ITEM_SETS.map(s => (
-              <option key={s.id} value={s.id}>{s.icon} {s.name}</option>
-            ))}
-          </select>
-          <select value={sortBy} onChange={e => setSortBy(e.target.value as SortOption)}>
-            <option value="stars">Stars</option>
-            <option value="level">Level</option>
-            <option value="grade">Grade</option>
-            <option value="mainValue">Main Stat</option>
-          </select>
-          <button
-            className={`rune-sell-mode-btn ${sellMode ? 'active' : ''}`}
-            onClick={() => { setSellMode(!sellMode); setSellSelection(new Set()); setConfirmBulkSell(false); }}
-          >
-            {sellMode ? 'Cancel' : 'Sell'}
-          </button>
+          <div className="rune-select-header-actions">
+            <select value={sortBy} onChange={e => setSortBy(e.target.value as SortOption)}>
+              <option value="stars">Stars</option>
+              <option value="level">Level</option>
+              <option value="grade">Grade</option>
+              <option value="mainValue">Main Stat</option>
+            </select>
+            <button
+              className={`rune-sell-mode-btn ${sellMode ? 'active' : ''}`}
+              onClick={() => { setSellMode(!sellMode); setSellSelection(new Set()); setConfirmBulkSell(false); }}
+            >
+              {sellMode ? 'Cancel' : 'Sell'}
+            </button>
+            <button className="rune-select-close" onClick={onClose}><GameIcon id="close" size={18} /></button>
+          </div>
         </div>
 
         <div className="rune-select-body">
-          {/* Item list */}
-          <div className="rune-select-list">
+          {/* Set sidebar */}
+          <div className="rune-select-sidebar">
+            <button
+              className={`rune-select-sidebar-item ${setFilter === '' ? 'rune-select-sidebar-item--active' : ''}`}
+              onClick={() => setSetFilter('')}
+            >
+              <span className="rune-select-sidebar-name">All</span>
+              <span className="rune-select-sidebar-count">{slotItems.length}</span>
+            </button>
+            {ITEM_SETS.map(set => (
+              <button
+                key={set.id}
+                className={`rune-select-sidebar-item ${setFilter === set.id ? 'rune-select-sidebar-item--active' : ''}`}
+                style={setFilter === set.id ? { borderColor: set.color } : undefined}
+                onClick={() => setSetFilter(set.id)}
+              >
+                <GameIcon id={set.icon} size={14} />
+                <span className="rune-select-sidebar-name">{set.name}</span>
+                <span className="rune-select-sidebar-count">{setCounts[set.id] ?? 0}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Item list column */}
+          <div className="rune-select-main">
+            {/* Set effect banner */}
+            {setFilter && (() => {
+              const activeDef = ITEM_SETS.find(s => s.id === setFilter);
+              if (!activeDef) return null;
+              const effectDesc = activeDef.effectType === 'stat'
+                ? `${activeDef.bonusStat?.toUpperCase()} +${activeDef.bonusValue}${activeDef.bonusType === 'percent' ? '%' : ''}`
+                : activeDef.procDescription;
+              return (
+                <div className="rune-select-set-effect" style={{ borderColor: activeDef.color }}>
+                  <GameIcon id={activeDef.icon} size={16} />
+                  <span className="rune-select-set-effect-name">{activeDef.name}</span>
+                  <span className="rune-select-set-effect-pieces">{activeDef.pieces}-Set</span>
+                  <span className="rune-select-set-effect-desc">{effectDesc}</span>
+                </div>
+              );
+            })()}
+
+            <div className="rune-select-list">
             {availableItems.length === 0 && (
               <div className="rune-select-empty">No items for slot {slot}</div>
             )}
@@ -151,6 +195,7 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
                 />
               );
             })}
+            </div>
           </div>
 
           {/* Stat preview */}

@@ -4,6 +4,8 @@ import {
   getDailyMissions,
   claimMissionReward,
   claimAllDailiesBonus,
+  claimAllMissions,
+  claimAllTrophyTiers,
   getUnclaimedMissionCount,
   getUnclaimedTrophyCount,
   claimTrophyTier,
@@ -61,6 +63,26 @@ export function MissionsPage() {
     }
   };
 
+  const handleClaimAllMissions = () => {
+    const reward = claimAllMissions();
+    if (reward) {
+      setClaimedReward(reward);
+      refreshPlayer();
+      forceUpdate();
+      setTimeout(() => setClaimedReward(null), 2000);
+    }
+  };
+
+  const handleClaimAllTrophies = () => {
+    const reward = claimAllTrophyTiers();
+    if (reward) {
+      setClaimedReward(reward);
+      refreshPlayer();
+      forceUpdate();
+      setTimeout(() => setClaimedReward(null), 2000);
+    }
+  };
+
   const completedCount = dailyState.missions.filter(m => m.claimed).length;
 
   return (
@@ -91,6 +113,11 @@ export function MissionsPage() {
       <div className="missions-content">
         {tab === 'daily' && (
           <div className="daily-missions">
+            {getUnclaimedMissionCount() > 0 && (
+              <button className="claim-all-btn" onClick={handleClaimAllMissions}>
+                Claim All ({getUnclaimedMissionCount()})
+              </button>
+            )}
             {dailyState.missions.map(mission => {
               const def = dailyDefs.find(d => d.id === mission.missionId);
               if (!def) return null;
@@ -154,6 +181,11 @@ export function MissionsPage() {
 
         {tab === 'trophies' && (
           <div className="trophies-list">
+            {getUnclaimedTrophyCount() > 0 && (
+              <button className="claim-all-btn" onClick={handleClaimAllTrophies}>
+                Claim All ({getUnclaimedTrophyCount()})
+              </button>
+            )}
             {TROPHIES.map(trophy => {
               const progress = rewardState.trophyProgress.find(t => t.trophyId === trophy.id);
               if (!progress) return null;

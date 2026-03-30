@@ -138,6 +138,9 @@ export function CollectionPage() {
           <button className="pdex-nav-btn" onClick={() => navigate('/pokedex')}>
             Pokedex
           </button>
+          <button className="pdex-nav-btn" onClick={() => navigate('/inventory')}>
+            Items
+          </button>
           <button className="box-close" onClick={() => history.back()}><GameIcon id="close" size={18} /></button>
         </div>
       </div>

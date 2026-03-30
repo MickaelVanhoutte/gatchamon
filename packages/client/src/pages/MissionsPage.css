@@ -56,6 +56,26 @@
   padding: 8px;
 }
 
+/* ─── Claim All Button ─── */
+.claim-all-btn {
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+  color: white;
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+}
+
+.claim-all-btn:hover {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+}
+
 /* ─── Daily Missions ─── */
 .daily-missions {
   display: flex;
