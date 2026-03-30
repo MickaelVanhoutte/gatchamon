@@ -198,8 +198,8 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
             </div>
           </div>
 
-          {/* Stat preview */}
-          <div className="rune-select-preview">
+          {/* Stat preview – full (desktop) */}
+          <div className="rune-select-preview rune-preview-full">
             <h4>Stat Preview</h4>
             <div className="rune-preview-stats">
               {(Object.keys(STAT_LABELS) as Array<keyof BaseStats>).map(key => {
@@ -224,6 +224,19 @@ export function RuneSelectModal({ pokemon, slot, heldItems, equippedItems, playe
                 );
               })}
             </div>
+          </div>
+          {/* Stat preview – compact (mobile): only changed stats, single row */}
+          <div className="rune-preview-compact">
+            {(Object.keys(STAT_LABELS) as Array<keyof BaseStats>).map(key => {
+              const diff = previewStats[key] - currentStats[key];
+              if (diff === 0) return null;
+              const isPct = PCT_STATS.includes(key);
+              return (
+                <span key={key} className={`rune-preview-chip ${diff > 0 ? 'stat-up' : 'stat-down'}`}>
+                  {STAT_LABELS[key]} {diff > 0 ? '+' : ''}{diff}{isPct ? '%' : ''}
+                </span>
+              );
+            })}
           </div>
         </div>
 

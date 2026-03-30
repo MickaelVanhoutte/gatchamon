@@ -250,6 +250,27 @@ export function saveLoginCalendar(state: LoginCalendarData): void {
   localStorage.setItem(LOGIN_CALENDAR_KEY, JSON.stringify(state));
 }
 
+// ── Battle Settings ──────────────────────────────────────────────────
+
+const BATTLE_SETTINGS_KEY = 'gatchamon_battle_settings';
+
+export interface BattleSettings {
+  speed: 1 | 2;
+  auto: boolean;
+}
+
+const DEFAULT_BATTLE_SETTINGS: BattleSettings = { speed: 1, auto: false };
+
+export function loadBattleSettings(): BattleSettings {
+  const raw = localStorage.getItem(BATTLE_SETTINGS_KEY);
+  return safeParse<BattleSettings>(raw, DEFAULT_BATTLE_SETTINGS);
+}
+
+export function saveBattleSettings(settings: Partial<BattleSettings>): void {
+  const current = loadBattleSettings();
+  localStorage.setItem(BATTLE_SETTINGS_KEY, JSON.stringify({ ...current, ...settings }));
+}
+
 // ── Reset ──────────────────────────────────────────────────────────────
 
 export function clearAll(): void {
@@ -261,4 +282,5 @@ export function clearAll(): void {
   localStorage.removeItem(INBOX_KEY);
   localStorage.removeItem(RETRY_SUMMON_KEY);
   localStorage.removeItem(LOGIN_CALENDAR_KEY);
+  localStorage.removeItem(BATTLE_SETTINGS_KEY);
 }

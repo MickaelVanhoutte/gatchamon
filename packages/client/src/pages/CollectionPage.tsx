@@ -20,7 +20,7 @@ const ALL_TYPES: PokemonType[] = [
 ];
 
 type SortBy = 'stars' | 'level' | 'name';
-type DetailTab = 'info' | 'skill' | 'items';
+type DetailTab = 'info' | 'skill' | 'items' | 'misc';
 
 const STAR_COLORS: Record<number, string> = {
   1: '#aaa',
@@ -50,7 +50,7 @@ const STAT_LABELS: Record<keyof BaseStats, string> = {
 
 export function CollectionPage() {
   const navigate = useNavigate();
-  const { collection, loadCollection, evolvePokemon, changeType, player, heldItems, loadHeldItems } = useGameStore();
+  const { collection, loadCollection, evolvePokemon, changeType, player, heldItems, loadHeldItems, updateInstance } = useGameStore();
   const [typeFilter, setTypeFilter] = useState<PokemonType | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>('stars');
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -176,7 +176,7 @@ export function CollectionPage() {
                   />
                   {mon.instance.isShiny && <div className="box-cell-shiny-badge"><GameIcon id="shiny" size={10} /></div>}
                   <div className="box-cell-level">
-                    <span className="box-cell-lock"><GameIcon id="lock" size={14} /></span>
+                    {mon.instance.isLocked && <span className="box-cell-lock"><GameIcon id="lock" size={14} /></span>}
                     {mon.instance.level}
                   </div>
                 </div>
@@ -207,10 +207,51 @@ export function CollectionPage() {
                     if (tutorialStep === 14) advanceTutorial(); // step 14 → 15
                   }}
                 >Items</button>
+                <button
+                  className={`box-tab ${activeTab === 'misc' ? 'box-tab--active' : ''}`}
+                  onClick={() => setActiveTab('misc')}
+                >Misc</button>
               </div>
 
               <div className="box-detail-content">
-              {activeTab === 'items' ? (
+              {activeTab === 'misc' ? (
+                <div className="box-misc-tab">
+                  <div className="box-misc-row">
+                    <div className="box-misc-left">
+                      <div className="box-misc-label">
+                        <GameIcon id="lock" size={16} />
+                        <span>Lock</span>
+                      </div>
+                      <span className="box-misc-desc">Prevent sacrificing in Power-Up Circle</span>
+                    </div>
+                    <label className="box-switch">
+                      <input
+                        type="checkbox"
+                        checked={!!selected.instance.isLocked}
+                        onChange={e => updateInstance(selected.instance.instanceId, { isLocked: e.target.checked })}
+                      />
+                      <span className="box-switch-slider" />
+                    </label>
+                  </div>
+                  <div className="box-misc-row">
+                    <div className="box-misc-left">
+                      <div className="box-misc-label">
+                        <GameIcon id="home" size={16} />
+                        <span>Home</span>
+                      </div>
+                      <span className="box-misc-desc">Show on island home view</span>
+                    </div>
+                    <label className="box-switch">
+                      <input
+                        type="checkbox"
+                        checked={!!selected.instance.showOnHome}
+                        onChange={e => updateInstance(selected.instance.instanceId, { showOnHome: e.target.checked })}
+                      />
+                      <span className="box-switch-slider" />
+                    </label>
+                  </div>
+                </div>
+              ) : activeTab === 'items' ? (
                 <RuneEquipPanel
                   pokemon={selected}
                   heldItems={heldItems}

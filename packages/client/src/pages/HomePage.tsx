@@ -24,7 +24,9 @@ export function HomePage() {
   }, [tutorialStep]);
 
   const topMonsters = useMemo(() => {
-    return [...collection]
+    const homeMonsters = collection.filter(m => m.instance.showOnHome);
+    const source = homeMonsters.length > 0 ? homeMonsters : collection;
+    return [...source]
       .sort((a, b) => {
         if (b.instance.stars !== a.instance.stars) return b.instance.stars - a.instance.stars;
         return b.instance.level - a.instance.level;

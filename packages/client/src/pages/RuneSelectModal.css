@@ -243,6 +243,27 @@
   color: #ff6b6b;
 }
 
+/* Compact stat preview (mobile only) */
+.rune-preview-compact {
+  display: none;
+}
+
+.rune-preview-chip {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.rune-preview-chip.stat-up {
+  background: rgba(74, 222, 128, 0.12);
+}
+
+.rune-preview-chip.stat-down {
+  background: rgba(255, 107, 107, 0.12);
+}
+
 .rune-select-actions {
   display: flex;
   gap: 8px;
@@ -350,6 +371,65 @@
   padding: 6px 14px;
   border-radius: 6px;
   cursor: pointer;
+}
+
+/* ── Mobile responsive ───────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .rune-select-modal {
+    max-height: 95vh;
+    max-height: 95dvh;
+    border-radius: 8px;
+  }
+
+  .rune-select-overlay {
+    padding: 8px;
+  }
+
+  .rune-select-body {
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .rune-select-sidebar {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-right: none;
+    border-bottom: 1px solid var(--card-border);
+    padding: 4px;
+    flex-shrink: 0;
+    max-height: none;
+  }
+
+  .rune-select-sidebar-item {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .rune-select-main {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .rune-select-list {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+
+  .rune-preview-full {
+    display: none;
+  }
+
+  .rune-preview-compact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 6px 8px;
+    border-top: 1px solid var(--card-border);
+    flex-shrink: 0;
+  }
 }
 
 /* Tutorial highlight pulse */

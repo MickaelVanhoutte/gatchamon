@@ -82,6 +82,10 @@ export function AltarPage() {
     if (mon.instance.instanceId === baseId) {
       return;
     }
+    // Prevent locked monsters from being used as fodder
+    if (mon.instance.isLocked) {
+      return;
+    }
     // If already in fodder, remove it
     if (fodderIdSet.has(mon.instance.instanceId)) {
       setFodderIds(prev => prev.filter(id => id !== mon.instance.instanceId));
@@ -127,6 +131,7 @@ export function AltarPage() {
               const isBase = mon.instance.instanceId === baseId;
               const isFodder = fodderIdSet.has(mon.instance.instanceId);
               const isSameSpecies = base && mon.instance.templateId === base.instance.templateId && !isBase;
+              const isLockedFodder = !!mon.instance.isLocked && !!baseId && !isBase;
               const starColor = STAR_COLORS[mon.instance.stars] ?? STAR_COLORS[1];
 
               return (
@@ -136,6 +141,7 @@ export function AltarPage() {
                     'altar-cell',
                     isBase ? 'altar-cell--base' : '',
                     isFodder ? 'altar-cell--fodder' : '',
+                    isLockedFodder ? 'altar-cell--locked' : '',
                   ].join(' ')}
                   onClick={() => handleGridClick(mon)}
                 >
@@ -152,6 +158,9 @@ export function AltarPage() {
                   />
                   {isSameSpecies && !isFodder && (
                     <div className="altar-cell-skillup-badge">Skill</div>
+                  )}
+                  {isLockedFodder && (
+                    <div className="altar-cell-lock-badge"><GameIcon id="lock" size={12} /></div>
                   )}
                   <div className="altar-cell-level">Lv.{mon.instance.level}</div>
                 </div>

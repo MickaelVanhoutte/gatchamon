@@ -36,6 +36,8 @@ export interface PokemonInstance {
   exp: number;
   isShiny: boolean;
   skillLevels?: [number, number, number];
+  isLocked?: boolean;
+  showOnHome?: boolean;
 }
 
 export type SkillTarget =

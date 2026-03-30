@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { getTemplate, SKILLS, getTypeEffectiveness, getSkillMultiplierBonus, getEffectiveStats, EFFECT_REGISTRY } from '@gatchamon/shared';
 import type { BattleState, BattleMon, PokemonType, BaseStats, SkillEffect, EffectId } from '@gatchamon/shared';
+import { saveBattleSettings } from '../services/storage';
 
 type Phase = 'player_turn' | 'animating' | 'victory' | 'defeat';
 
@@ -174,12 +175,17 @@ export function useAutoBattle(
   handleAction: (skillId: string, targetId: string) => Promise<void>,
   isPaused: boolean,
   battleSpeedRef?: React.RefObject<number>,
+  initialAuto?: boolean,
 ): { isAutoOn: boolean; toggleAuto: () => void } {
-  const [isAutoOn, setIsAutoOn] = useState(false);
+  const [isAutoOn, setIsAutoOn] = useState(initialAuto ?? false);
   const handleActionRef = useRef(handleAction);
   handleActionRef.current = handleAction;
 
-  const toggleAuto = useCallback(() => setIsAutoOn(prev => !prev), []);
+  const toggleAuto = useCallback(() => setIsAutoOn(prev => {
+    const next = !prev;
+    saveBattleSettings({ auto: next });
+    return next;
+  }), []);
 
   useEffect(() => {
     if (!isAutoOn || phase !== 'player_turn' || !state || isPaused) return;

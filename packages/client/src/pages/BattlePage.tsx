@@ -13,6 +13,7 @@ import { BattleLoadingScreen } from '../components/BattleLoadingScreen';
 import { GymLeaderDialogue } from '../components/GymLeaderDialogue';
 import { useTutorialStore } from '../stores/tutorialStore';
 import gsap from 'gsap';
+import { loadBattleSettings, saveBattleSettings } from '../services/storage';
 import './BattlePage.css';
 
 type Phase = 'player_turn' | 'animating' | 'victory' | 'defeat';
@@ -182,8 +183,9 @@ export function BattlePage() {
   const [selectedEffect, setSelectedEffect] = useState<{ id: EffectId; stacks: number; turns: number } | null>(null);
   const [detailSkill, setDetailSkill] = useState<SkillDefinition | null>(null);
   const [arenaEl, setArenaEl] = useState<HTMLDivElement | null>(null);
-  const [battleSpeed, setBattleSpeed] = useState(1);
-  const battleSpeedRef = useRef(1);
+  const savedSettings = useRef(loadBattleSettings());
+  const [battleSpeed, setBattleSpeed] = useState(savedSettings.current.speed);
+  const battleSpeedRef = useRef(savedSettings.current.speed);
   const monRefs = useRef<Map<string, HTMLElement>>(new Map());
   const isActingRef = useRef(false);
 
@@ -191,9 +193,10 @@ export function BattlePage() {
 
   const toggleSpeed = useCallback(() => {
     setBattleSpeed(prev => {
-      const next = prev === 1 ? 2 : 1;
+      const next: 1 | 2 = prev === 1 ? 2 : 1;
       battleSpeedRef.current = next;
       gsap.globalTimeline.timeScale(next);
+      saveBattleSettings({ speed: next });
       return next;
     });
   }, []);
@@ -370,7 +373,7 @@ export function BattlePage() {
     }
   };
 
-  const { isAutoOn, toggleAuto } = useAutoBattle(state, phase, handleAction, isPaused, battleSpeedRef);
+  const { isAutoOn, toggleAuto } = useAutoBattle(state, phase, handleAction, isPaused, battleSpeedRef, savedSettings.current.auto);
 
   const navigateAway = useCallback(() => {
     refreshPlayer();

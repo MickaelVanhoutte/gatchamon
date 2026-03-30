@@ -84,6 +84,18 @@
   opacity: 0.7;
 }
 
+.altar-cell--locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.altar-cell-lock-badge {
+  position: absolute;
+  bottom: 1px;
+  right: 2px;
+  color: var(--text-secondary);
+}
+
 .altar-cell--base {
   border-color: #ffd700;
   box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);

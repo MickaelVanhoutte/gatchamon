@@ -44,6 +44,7 @@ interface GameState {
   upgradeItem: (itemId: string) => runeService.UpgradeResult;
   sellItem: (itemId: string) => number;
   sellItems: (itemIds: string[]) => number;
+  updateInstance: (instanceId: string, updates: Partial<PokemonInstance>) => void;
   allocateTrainerSkill: (skill: keyof TrainerSkills) => void;
 }
 
@@ -235,6 +236,11 @@ export const useGameStore = create<GameState>((set, get) => ({
     const updatedPlayer = storage.loadPlayer();
     set({ player: updatedPlayer, heldItems: storage.loadHeldItems() });
     return total;
+  },
+
+  updateInstance: (instanceId: string, updates: Partial<PokemonInstance>) => {
+    storage.updateInstance(instanceId, updates);
+    get().loadCollection();
   },
 
   allocateTrainerSkill: (skill: keyof TrainerSkills) => {
