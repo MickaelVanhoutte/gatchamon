@@ -378,7 +378,6 @@ export function TeamSelectPage() {
         <div className="ts-actions">
           {isDungeonMode && (
             <div className="ts-repeat-row">
-              <span className="ts-repeat-label">Repeat:</span>
               <div className="ts-repeat-options">
                 {[1, 5, 10, 20, 30].map(n => (
                   <button
@@ -392,28 +391,23 @@ export function TeamSelectPage() {
               </div>
             </div>
           )}
-          {energyCost > 0 && (() => {
-            const totalCost = energyCost * repeatCount;
-            const notEnough = !!player && player.energy < totalCost;
-            return (
-              <div className={`ts-energy-cost ${notEnough ? 'ts-energy-short' : ''}`}>
-                <GameIcon id="energy" size={14} />
-                <span>
-                  {repeatCount > 1
-                    ? `${energyCost} x ${repeatCount} = ${totalCost}`
-                    : energyCost}
-                  {notEnough && ` (need ${totalCost - player!.energy} more)`}
-                </span>
-              </div>
-            );
-          })()}
           <button
-            className={`ts-go-btn ${tutorialStep === 10 ? 'tutorial-target' : ''}`}
+            className={`ts-go-btn ${tutorialStep === 10 ? 'tutorial-target' : ''} ${energyCost > 0 && !!player && player.energy < energyCost ? 'ts-go-btn-disabled' : ''}`}
             data-tutorial-id="team-select-go"
             onClick={handleStart}
             disabled={selected.length === 0 || isStarting || (energyCost > 0 && !!player && player.energy < energyCost)}
           >
-            {isStarting ? '...' : repeatCount > 1 ? `Repeat x${repeatCount}` : 'GO'}
+            {isStarting ? '...' : (
+              <>
+                {repeatCount > 1 ? `Repeat x${repeatCount}` : 'GO'}
+                {energyCost > 0 && (
+                  <span className="ts-go-energy">
+                    <GameIcon id="energy" size={12} />
+                    {energyCost * repeatCount}
+                  </span>
+                )}
+              </>
+            )}
           </button>
           <button className="ts-cancel-btn" onClick={() => navigate(-1)}>
             Cancel
