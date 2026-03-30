@@ -1,3 +1,10 @@
+let updateCallback: (() => void) | null = null;
+
+/** Register a callback to be notified when a new version is available. */
+export function onUpdateAvailable(cb: () => void) {
+  updateCallback = cb;
+}
+
 function registerSW(): Promise<void> {
   return new Promise<void>((resolve) => {
     if (!('serviceWorker' in navigator)) {
@@ -12,14 +19,13 @@ function registerSW(): Promise<void> {
       resolve();
     };
 
-    // Reliably reload when a new SW takes control — independent of promise timing
-    let refreshing = false;
+    // Notify the UI when a new SW takes control instead of force-reloading
+    let notified = false;
     if (navigator.serviceWorker.controller) {
       navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (refreshing) return;
-        refreshing = true;
-        sessionStorage.setItem('sw-just-updated', '1');
-        window.location.reload();
+        if (notified) return;
+        notified = true;
+        updateCallback?.();
       });
     }
 

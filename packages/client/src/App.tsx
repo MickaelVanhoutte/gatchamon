@@ -25,6 +25,7 @@ import { useTutorialStore } from './stores/tutorialStore';
 import { useRotatedScroll } from './hooks/useRotatedScroll';
 import { AdminPage } from './pages/admin/AdminPage';
 import { AutoBattleFloatingIcon, RepeatBattleModal } from './components/RepeatBattleWidget';
+import { UpdateBanner } from './components/UpdateBanner';
 
 export function App() {
   const location = useLocation();
@@ -115,6 +116,7 @@ export function App() {
       <TutorialOverlay />
       <AutoBattleFloatingIcon />
       <RepeatBattleModal />
+      <UpdateBanner />
     </div>
   );
 }
