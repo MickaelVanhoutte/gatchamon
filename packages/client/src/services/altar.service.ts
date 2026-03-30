@@ -69,8 +69,8 @@ export function previewAltarFeed(
   }
 
   // Simulate level-ups
-  let level = willStarEvolve ? 1 : base.level;
-  let exp = willStarEvolve ? 0 : base.exp;
+  let level = base.level;
+  let exp = base.exp;
   const maxLevel = MAX_LEVEL_BY_STARS[newStars] ?? 99;
 
   exp += totalXpGain;
@@ -137,8 +137,8 @@ export function performAltarFeed(
   const newStars = willStarEvolve ? (base.stars + 1) as PokemonInstance['stars'] : base.stars;
 
   // 4. Apply XP
-  let level = willStarEvolve ? 1 : base.level;
-  let exp = willStarEvolve ? 0 : base.exp;
+  let level = base.level;
+  let exp = base.exp;
   const maxLevel = MAX_LEVEL_BY_STARS[newStars] ?? 99;
 
   exp += totalXpGain;
