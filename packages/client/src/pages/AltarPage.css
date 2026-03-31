@@ -32,6 +32,22 @@
   flex: 1;
 }
 
+.altar-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.altar-sort-select,
+.altar-type-select {
+  padding: 4px 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.65rem;
+}
+
 .altar-layout {
   display: flex;
   flex: 1;
@@ -99,6 +115,16 @@
 .altar-cell--base {
   border-color: #ffd700;
   box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+.altar-cell--skillup {
+  border-color: #4ade80;
+  box-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
+}
+
+.altar-cell--skillup:hover {
+  border-color: #4ade80;
+  box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
 }
 
 .altar-cell--disabled {

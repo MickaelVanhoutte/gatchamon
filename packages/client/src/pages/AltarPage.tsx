@@ -3,7 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { GameIcon, StarRating } from '../components/icons';
 import type { OwnedPokemon } from '../stores/gameStore';
-import { isMaxLevel, canStarEvolve, calculateFodderXp, MAX_LEVEL_BY_STARS, xpToNextLevel, isActivePokemon } from '@gatchamon/shared';
+import { isMaxLevel, canStarEvolve, calculateFodderXp, MAX_LEVEL_BY_STARS, xpToNextLevel, isActivePokemon, getEvolutionLineage, DITTO_TEMPLATE_ID } from '@gatchamon/shared';
+import type { PokemonType } from '@gatchamon/shared';
 import { previewAltarFeed } from '../services/altar.service';
 import { assetUrl } from '../utils/asset-url';
 
@@ -18,6 +19,14 @@ const STAR_COLORS: Record<number, string> = {
   6: '#ff6b6b',
 };
 
+const ALL_TYPES: PokemonType[] = [
+  'normal', 'fire', 'water', 'grass', 'electric', 'ice',
+  'fighting', 'poison', 'ground', 'flying', 'psychic',
+  'bug', 'rock', 'ghost', 'dragon',
+];
+
+type SortBy = 'stars' | 'level' | 'name';
+
 function getSpriteScale(heightMeters: number): number {
   const clamped = Math.min(2.5, Math.max(0.2, heightMeters));
   return 0.45 + ((clamped - 0.2) / (2.5 - 0.2)) * 0.55;
@@ -30,6 +39,8 @@ export function AltarPage() {
   const [baseId, setBaseId] = useState<string | null>(searchParams.get('baseId'));
   const [fodderIds, setFodderIds] = useState<string[]>([]);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [sortBy, setSortBy] = useState<SortBy>('stars');
+  const [typeFilter, setTypeFilter] = useState<PokemonType | null>(null);
 
   useEffect(() => {
     loadCollection();
@@ -46,6 +57,17 @@ export function AltarPage() {
     () => collection.find(m => m.instance.instanceId === baseId),
     [collection, baseId],
   );
+
+  const baseLineageSet = useMemo(() => {
+    if (!base) return null;
+    return new Set(getEvolutionLineage(base.instance.templateId));
+  }, [base]);
+
+  function isSkillUpEligible(mon: OwnedPokemon): boolean {
+    if (!base || !baseLineageSet) return false;
+    if (mon.instance.instanceId === baseId) return false;
+    return baseLineageSet.has(mon.instance.templateId) || mon.instance.templateId === DITTO_TEMPLATE_ID;
+  }
 
   const fodder = useMemo(
     () => fodderIds.map(id => collection.find(m => m.instance.instanceId === id)).filter(Boolean) as OwnedPokemon[],
@@ -64,13 +86,42 @@ export function AltarPage() {
     );
   }, [base, fodder]);
 
-  // Grid: filter to active Pokemon, sort by stars desc, level desc
-  const sortedCollection = useMemo(
-    () => collection
-      .filter(m => isActivePokemon(m.instance.templateId))
-      .sort((a, b) => b.instance.stars - a.instance.stars || b.instance.level - a.instance.level),
-    [collection],
-  );
+  // Grid: filter, partition skill-ups to top, then sort by user preference
+  const sortedCollection = useMemo(() => {
+    let filtered = collection.filter(m => isActivePokemon(m.instance.templateId));
+    if (typeFilter) {
+      filtered = filtered.filter(m => m.template.types.includes(typeFilter));
+    }
+
+    const comparator = (a: OwnedPokemon, b: OwnedPokemon) => {
+      if (sortBy === 'stars') return b.instance.stars - a.instance.stars || b.instance.level - a.instance.level;
+      if (sortBy === 'level') return b.instance.level - a.instance.level;
+      return a.template.name.localeCompare(b.template.name);
+    };
+
+    // Hide the base monster from the fodder grid
+    if (baseId) {
+      filtered = filtered.filter(m => m.instance.instanceId !== baseId);
+    }
+
+    if (base && baseLineageSet) {
+      const skillUp: OwnedPokemon[] = [];
+      const normal: OwnedPokemon[] = [];
+      for (const mon of filtered) {
+        if (baseLineageSet.has(mon.instance.templateId) || mon.instance.templateId === DITTO_TEMPLATE_ID) {
+          skillUp.push(mon);
+        } else {
+          normal.push(mon);
+        }
+      }
+      skillUp.sort(comparator);
+      normal.sort(comparator);
+      return [...skillUp, ...normal];
+    }
+
+    filtered.sort(comparator);
+    return filtered;
+  }, [collection, typeFilter, sortBy, base, baseId, baseLineageSet]);
 
   function handleGridClick(mon: OwnedPokemon) {
     // If no base selected, select as base
@@ -122,6 +173,27 @@ export function AltarPage() {
           <GameIcon id="close" size={18} />
         </button>
         <span className="altar-title">Power-Up Circle</span>
+        <div className="altar-header-controls">
+          <select
+            className="altar-sort-select"
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value as SortBy)}
+          >
+            <option value="stars">Grade</option>
+            <option value="level">Level</option>
+            <option value="name">Name</option>
+          </select>
+          <select
+            className="altar-type-select"
+            value={typeFilter ?? ''}
+            onChange={e => setTypeFilter((e.target.value || null) as PokemonType | null)}
+          >
+            <option value="">All Types</option>
+            {ALL_TYPES.map(t => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="altar-layout">
@@ -131,7 +203,7 @@ export function AltarPage() {
             {sortedCollection.map(mon => {
               const isBase = mon.instance.instanceId === baseId;
               const isFodder = fodderIdSet.has(mon.instance.instanceId);
-              const isSameSpecies = base && mon.instance.templateId === base.instance.templateId && !isBase;
+              const isSkillUp = isSkillUpEligible(mon);
               const isLockedFodder = !!mon.instance.isLocked && !!baseId && !isBase;
               const starColor = STAR_COLORS[mon.instance.stars] ?? STAR_COLORS[1];
 
@@ -143,6 +215,7 @@ export function AltarPage() {
                     isBase ? 'altar-cell--base' : '',
                     isFodder ? 'altar-cell--fodder' : '',
                     isLockedFodder ? 'altar-cell--locked' : '',
+                    isSkillUp && !isFodder ? 'altar-cell--skillup' : '',
                   ].join(' ')}
                   onClick={() => handleGridClick(mon)}
                 >
@@ -157,7 +230,7 @@ export function AltarPage() {
                     alt={mon.template.name}
                     style={{ width: `${getSpriteScale(mon.template.height) * 80}%` }}
                   />
-                  {isSameSpecies && !isFodder && (
+                  {isSkillUp && !isFodder && (
                     <div className="altar-cell-skillup-badge">Skill</div>
                   )}
                   {isLockedFodder && (
