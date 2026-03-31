@@ -341,6 +341,73 @@ export function advanceToNextActor(state: BattleState): string {
 }
 
 // ---------------------------------------------------------------------------
+// Timeline simulation — predicts the next N turns without mutating state
+// ---------------------------------------------------------------------------
+
+export interface TimelineEntry {
+  instanceId: string;
+  templateId: number;
+  isPlayerOwned: boolean;
+  /** Cumulative tick count at which this turn fires (0 = now). */
+  tick: number;
+}
+
+export function simulateTimeline(
+  playerTeam: BattleMon[],
+  enemyTeam: BattleMon[],
+  currentActorId: string | null,
+): TimelineEntry[] {
+  const alive = [...playerTeam, ...enemyTeam].filter(m => m.isAlive);
+  if (alive.length === 0) return [];
+
+  const result: TimelineEntry[] = [];
+  const placed = new Set<string>();
+
+  // Pin the current actor at position 0 — it's their turn right now
+  // (their gauge was already reset to 0 by advanceToNextActor)
+  if (currentActorId) {
+    const cur = alive.find(m => m.instanceId === currentActorId);
+    if (cur) {
+      result.push({ instanceId: cur.instanceId, templateId: cur.templateId, isPlayerOwned: cur.isPlayerOwned, tick: 0 });
+      placed.add(cur.instanceId);
+    }
+  }
+
+  // Clone gauge/speed snapshots for the remaining mons (do NOT mutate real state)
+  const snapshots = alive
+    .filter(m => !placed.has(m.instanceId))
+    .map(m => ({
+      instanceId: m.instanceId,
+      templateId: m.templateId,
+      isPlayerOwned: m.isPlayerOwned,
+      gauge: m.actionGauge,
+      speed: getEffectiveStats(m).spd,
+    }));
+
+  // Simulate ATB loop — each remaining mon appears exactly once
+  let elapsed = 0;
+  let remaining = snapshots.length;
+
+  while (remaining > 0) {
+    for (const s of snapshots) {
+      if (!placed.has(s.instanceId)) s.gauge += s.speed;
+    }
+    elapsed++;
+    const ready = snapshots
+      .filter(s => !placed.has(s.instanceId) && s.gauge >= 1000)
+      .sort((a, b) => b.gauge - a.gauge);
+    if (ready.length > 0) {
+      const winner = ready[0];
+      result.push({ instanceId: winner.instanceId, templateId: winner.templateId, isPlayerOwned: winner.isPlayerOwned, tick: elapsed });
+      placed.add(winner.instanceId);
+      remaining--;
+    }
+  }
+
+  return result;
+}
+
+// ---------------------------------------------------------------------------
 // Start of turn processing
 // ---------------------------------------------------------------------------
 

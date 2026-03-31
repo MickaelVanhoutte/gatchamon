@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { GameIcon, StarRating } from '../components/icons';
 import type { OwnedPokemon } from '../stores/gameStore';
-import { computeStats, getSkillsForPokemon, MAX_LEVEL_BY_STARS, isMaxLevel, getTemplate, ESSENCES, getActiveEvolutionsFrom, getTypeChangeDef, getAvailableTypeChanges, isActivePokemon } from '@gatchamon/shared';
+import { computeStats, computeStatsWithItems, getSkillsForPokemon, MAX_LEVEL_BY_STARS, isMaxLevel, getTemplate, ESSENCES, getActiveEvolutionsFrom, getTypeChangeDef, getAvailableTypeChanges, isActivePokemon } from '@gatchamon/shared';
 import { canEvolveInstance } from '../services/evolution.service';
 import { canChangeType } from '../services/type-change.service';
 import type { PokemonType, BaseStats } from '@gatchamon/shared';
@@ -99,6 +99,11 @@ export function CollectionPage() {
 
   const selectedStats = selected
     ? computeStats(selected.template, selected.instance.level, selected.instance.stars)
+    : null;
+
+  const equippedItems = selected ? heldItems.filter(i => i.equippedTo === selected.instance.instanceId) : [];
+  const totalStats = selected
+    ? computeStatsWithItems(selected.template, selected.instance.level, selected.instance.stars, equippedItems)
     : null;
 
   const selectedSkills = selected
@@ -308,16 +313,21 @@ export function CollectionPage() {
                       <span className="box-stat-label">Level</span>
                       <span className="box-stat-value">{selected.instance.level} / {maxLevel}</span>
                     </div>
-                    {(Object.keys(STAT_LABELS) as Array<keyof BaseStats>).map(key => (
-                      <div key={key} className="box-stat-row">
-                        <span className="box-stat-label">{STAT_LABELS[key]}</span>
-                        <span className="box-stat-value">
-                          {key === 'critRate' || key === 'critDmg' || key === 'acc' || key === 'res'
-                            ? `${selectedStats[key]}%`
-                            : selectedStats[key]}
-                        </span>
-                      </div>
-                    ))}
+                    {(Object.keys(STAT_LABELS) as Array<keyof BaseStats>).map(key => {
+                      const base = selectedStats![key];
+                      const total = totalStats ? totalStats[key] : base;
+                      const diff = total - base;
+                      const isPct = key === 'critRate' || key === 'critDmg' || key === 'acc' || key === 'res';
+                      return (
+                        <div key={key} className="box-stat-row">
+                          <span className="box-stat-label">{STAT_LABELS[key]}</span>
+                          <span className="box-stat-value">
+                            {total}{isPct ? '%' : ''}
+                            {diff > 0 && <span className="box-stat-bonus"> (+{diff})</span>}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
 
                   {/* Types */}

@@ -297,6 +297,11 @@
   color: var(--text-primary);
 }
 
+.box-stat-bonus {
+  color: #4ade80;
+  font-weight: 500;
+}
+
 /* Types */
 .box-detail-types {
   display: flex;

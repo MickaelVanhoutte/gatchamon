@@ -4,8 +4,8 @@ import { getBattleState as fetchBattleState, resolvePlayerAction, deleteBattle, 
 import { useGameStore } from '../stores/gameStore';
 import { useBattleAnimation } from '../battle/useBattleAnimation';
 import { useAutoBattle } from '../battle/useAutoBattle';
-import { getTemplate, SKILLS, getTypeEffectiveness, ESSENCES, ITEM_SETS, getBossDialogue, EFFECT_REGISTRY } from '@gatchamon/shared';
-import type { BattleState, BattleMon, BattleLogEntry, BattleResult, PokemonType, EffectId, ActiveEffect, SkillDefinition } from '@gatchamon/shared';
+import { getTemplate, SKILLS, getTypeEffectiveness, ESSENCES, ITEM_SETS, getBossDialogue, EFFECT_REGISTRY, simulateTimeline } from '@gatchamon/shared';
+import type { BattleState, BattleMon, BattleLogEntry, BattleResult, PokemonType, EffectId, ActiveEffect, SkillDefinition, TimelineEntry } from '@gatchamon/shared';
 import { assetUrl } from '../utils/asset-url';
 import { getSpriteBoost } from '../utils/sprite-scale';
 import { GameIcon, StarRating } from '../components/icons';
@@ -33,6 +33,7 @@ const PASSIVE_TRIGGER_LABELS: Record<string, string> = {
   hp_threshold: 'HP Threshold',
   always: 'Always Active',
 };
+
 
 function computeBattleRecap(state: BattleState) {
   const damageMap = new Map<string, number>();
@@ -188,6 +189,7 @@ export function BattlePage() {
   const battleSpeedRef = useRef(savedSettings.current.speed);
   const monRefs = useRef<Map<string, HTMLElement>>(new Map());
   const isActingRef = useRef(false);
+  const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
 
   const { playLogEntry, playMultiTargetEntries } = useBattleAnimation(arenaEl, monRefs);
 
@@ -285,6 +287,14 @@ export function BattlePage() {
     loadBattle();
   }, [loadBattle]);
 
+  // Recompute turn order only when phase transitions away from 'animating'.
+  // This prevents the timeline from jumping during enemy turn animations.
+  useEffect(() => {
+    if (phase !== 'animating' && state) {
+      setTimeline(simulateTimeline(state.playerTeam, state.enemyTeam, state.currentActorId));
+    }
+  }, [phase, state]);
+
   const handleAction = async (skillId: string, targetId: string) => {
     if (!battleId || !state || isActingRef.current || isPaused) return;
     isActingRef.current = true;
@@ -300,6 +310,10 @@ export function BattlePage() {
       for (const mon of allMons) {
         hpSnapshot.set(mon.instanceId, { currentHp: mon.currentHp, isAlive: mon.isAlive });
       }
+
+      // Compute timeline from pre-action gauges — this matches the engine's actual
+      // turn order because gauges haven't been mutated yet by resolvePlayerAction.
+      const preTimeline = simulateTimeline(state.playerTeam, state.enemyTeam, state.currentActorId);
 
       const result = resolvePlayerAction(battleId, {
         actorInstanceId: state.currentActorId!,
@@ -330,8 +344,25 @@ export function BattlePage() {
       }
 
       // Animate each group, applying HP changes after each animation
-      for (const group of groups) {
+      for (let gi = 0; gi < groups.length; gi++) {
+        const group = groups[gi];
         const spd = battleSpeedRef.current;
+        const groupActorId = group[0].actorId;
+        const groupActor = allMons.find(m => m.instanceId === groupActorId);
+
+        // Before enemy actions, show them as current actor and advance the timeline
+        if (groupActor && !groupActor.isPlayerOwned) {
+          setState(prev => prev ? { ...prev, currentActorId: groupActorId } : prev);
+          // Slice preTimeline so the current actor becomes position 0
+          const actorIdx = preTimeline.findIndex(e => e.instanceId === groupActorId);
+          if (actorIdx >= 0) {
+            const remaining = preTimeline.slice(actorIdx);
+            const baseTick = remaining[0].tick;
+            setTimeline(remaining.map(e => ({ ...e, tick: e.tick - baseTick })));
+          }
+          await new Promise(r => setTimeout(r, 600 / spd));
+        }
+
         if (group.length > 1) {
           // Multi-target: play animation once on all targets
           await Promise.race([
@@ -356,6 +387,20 @@ export function BattlePage() {
         }
 
         setState({ ...result.state });
+
+        // Advance timeline to show the next actor after this group
+        const nextActorId = gi < groups.length - 1
+          ? groups[gi + 1][0].actorId
+          : result.state.currentActorId;
+        if (nextActorId) {
+          const nextIdx = preTimeline.findIndex(e => e.instanceId === nextActorId);
+          if (nextIdx >= 0) {
+            const remaining = preTimeline.slice(nextIdx);
+            const baseTick = remaining[0].tick;
+            setTimeline(remaining.map(e => ({ ...e, tick: e.tick - baseTick })));
+          }
+        }
+
         await new Promise(r => setTimeout(r, 400 / spd));
       }
 
@@ -514,31 +559,35 @@ export function BattlePage() {
       className="battle-page"
       style={{ backgroundImage: `url(${backgroundUrl})` }}
     >
-      {/* Turn order bar */}
+      {/* Turn Order Timeline */}
       <div className="turn-bar">
-        {[...state.playerTeam, ...state.enemyTeam]
-          .filter(m => m.isAlive)
-          .sort((a, b) => {
-            const spdA = a.stats.spd * (1 + (a.buffs?.some(b => b.id === 'spd_buff') ? 0.3 : 0) + (a.debuffs?.some(d => d.id === 'spd_slow') ? -0.3 : 0));
-            const spdB = b.stats.spd * (1 + (b.buffs?.some(b => b.id === 'spd_buff') ? 0.3 : 0) + (b.debuffs?.some(d => d.id === 'spd_slow') ? -0.3 : 0));
-            return spdB - spdA;
-          })
-          .slice(0, 6)
-          .map(mon => {
-            const tmpl = getTemplate(mon.templateId);
-            return (
-              <div
-                key={mon.instanceId}
-                className={`turn-portrait ${mon.instanceId === state.currentActorId ? 'active' : ''} ${mon.isPlayerOwned ? 'player' : 'enemy'} ${!mon.isAlive ? 'dead' : ''}`}
-              >
-                <img src={tmpl ? assetUrl(tmpl.spriteUrl) : undefined} alt="" width={28} height={28} />
-              </div>
-            );
-          })}
+        <button className="pause-toggle" onClick={() => setIsPaused(true)}>| |</button>
+        <div className="turn-order-track">
+          <div className="turn-order-inner">
+            {(() => {
+              const maxTick = timeline.length > 0 ? timeline[timeline.length - 1].tick : 1;
+              return timeline.map((entry, idx) => {
+                const tmpl = getTemplate(entry.templateId);
+                const isCurrent = idx === 0;
+                // Position: first slot at 0%, last at 100%, rest proportional
+                const leftPercent = maxTick > 0 ? (entry.tick / maxTick) * 100 : (idx / Math.max(timeline.length - 1, 1)) * 100;
+                return (
+                  <div
+                    key={entry.instanceId}
+                    className={`turn-order-slot ${isCurrent ? 'turn-current' : ''} ${entry.isPlayerOwned ? 'turn-player' : 'turn-enemy'}`}
+                    style={{ left: `${leftPercent}%` }}
+                  >
+                    <span className="turn-order-number">{idx + 1}</span>
+                    <img src={tmpl ? assetUrl(tmpl.spriteUrl) : undefined} alt="" width={24} height={24} />
+                  </div>
+                );
+              });
+            })()}
+          </div>
+        </div>
         <button className={`speed-toggle ${battleSpeed === 2 ? 'active' : ''}`} onClick={toggleSpeed}>
           {battleSpeed === 2 ? '>>x2' : '>>x1'}
         </button>
-        <button className="pause-toggle" onClick={() => setIsPaused(true)}>| |</button>
         <button className={`auto-toggle ${isAutoOn ? 'active' : ''}`} onClick={toggleAuto}>
           Auto
         </button>

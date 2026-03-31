@@ -5,6 +5,7 @@ export {
   getEffectiveStats,
   getCCState,
   advanceToNextActor,
+  simulateTimeline,
   processStartOfTurn,
   processPassiveTrigger,
   applyPassives,
@@ -13,4 +14,4 @@ export {
   checkBattleEnd,
   autoResolveEnemyTurns,
 } from './engine.js';
-export type { CCResult } from './engine.js';
+export type { CCResult, TimelineEntry } from './engine.js';
