@@ -14,14 +14,14 @@ export const DUNGEONS: DungeonDef[] = [
     energyCost: 4,
     floors: [
       {
-        enemyLevel: 10,
+        enemyLevel: 12,
         enemies: [63, 177, 517],  // Abra, Natu, Munna
         drops: [
           { essenceId: 'magic_low', quantity: [2, 4], chance: 0.9 },
         ],
       },
       {
-        enemyLevel: 18,
+        enemyLevel: 20,
         enemies: [177, 856, 63],  // Natu, Hatenna, Abra
         drops: [
           { essenceId: 'magic_low', quantity: [3, 5], chance: 1.0 },
@@ -29,7 +29,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 25,
+        enemyLevel: 28,
         enemies: [856, 280, 517],  // Hatenna, Ralts, Munna
         enemyStars: 2,
         drops: [
@@ -38,7 +38,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 32,
+        enemyLevel: 36,
         enemies: [64, 178, 518],  // Kadabra, Xatu, Musharna
         enemyStars: 2,
         drops: [
@@ -48,7 +48,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 38,
+        enemyLevel: 43,
         enemies: [64, 576, 561],  // Kadabra, Gothitelle, Sigilyph
         enemyStars: 3,
         statBoost: 1.1,
@@ -59,7 +59,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 45,
+        enemyLevel: 50,
         enemies: [857, 281, 518],  // Hattrem, Kirlia, Musharna
         enemyStars: 3,
         statBoost: 1.2,
@@ -69,7 +69,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 52,
+        enemyLevel: 58,
         enemies: [65, 858, 579],  // Alakazam, Hatterene, Reuniclus
         enemyStars: 4,
         statBoost: 1.3,
@@ -79,7 +79,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 60,
+        enemyLevel: 68,
         enemies: [65, 858, 606],  // Alakazam, Hatterene, Beheeyem
         enemyStars: 5,
         statBoost: 1.5,
@@ -89,7 +89,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 70,
+        enemyLevel: 78,
         enemies: [282, 858, 579],  // Gardevoir, Hatterene, Reuniclus
         enemyStars: 5,
         statBoost: 1.7,
@@ -99,7 +99,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 80,
+        enemyLevel: 90,
         enemies: [282, 858, 65],  // Gardevoir, Hatterene, Alakazam
         enemyStars: 6,
         statBoost: 2.0,
@@ -119,7 +119,7 @@ export const DUNGEONS: DungeonDef[] = [
     energyCost: 3,
     floors: [
       {
-        enemyLevel: 10,
+        enemyLevel: 12,
         enemies: [10, 13, 43],  // Caterpie, Weedle, Oddish
         drops: [
           { essenceId: 'grass_low', quantity: [1, 4], chance: 0.85 },
@@ -128,7 +128,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 18,
+        enemyLevel: 20,
         enemies: [13, 43, 69],  // Weedle, Oddish, Bellsprout
         drops: [
           { essenceId: 'grass_low', quantity: [2, 5], chance: 0.95 },
@@ -138,7 +138,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 25,
+        enemyLevel: 28,
         enemies: [43, 69, 10],  // Oddish, Bellsprout, Caterpie
         enemyStars: 2,
         drops: [
@@ -149,7 +149,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 32,
+        enemyLevel: 36,
         enemies: [45, 49, 127],  // Vileplume, Venomoth, Pinsir
         enemyStars: 2,
         drops: [
@@ -160,7 +160,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 38,
+        enemyLevel: 43,
         enemies: [127, 45, 49],  // Pinsir, Vileplume, Venomoth
         enemyStars: 3,
         statBoost: 1.1,
@@ -172,7 +172,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 45,
+        enemyLevel: 50,
         enemies: [127, 45, 212],  // Pinsir, Vileplume, Scizor
         enemyStars: 3,
         statBoost: 1.2,
@@ -184,7 +184,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 52,
+        enemyLevel: 58,
         enemies: [212, 127, 45],  // Scizor, Pinsir, Vileplume
         enemyStars: 4,
         statBoost: 1.3,
@@ -197,7 +197,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 60,
+        enemyLevel: 68,
         enemies: [212, 127, 45],  // Scizor, Pinsir, Vileplume
         enemyStars: 5,
         statBoost: 1.5,
@@ -210,7 +210,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 70,
+        enemyLevel: 78,
         enemies: [212, 127, 45],  // Scizor, Pinsir, Vileplume
         enemyStars: 5,
         statBoost: 1.7,
@@ -222,7 +222,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 80,
+        enemyLevel: 90,
         enemies: [212, 127, 45],  // Scizor, Pinsir, Vileplume
         enemyStars: 6,
         statBoost: 2.0,
@@ -244,7 +244,7 @@ export const DUNGEONS: DungeonDef[] = [
     energyCost: 3,
     floors: [
       {
-        enemyLevel: 10,
+        enemyLevel: 12,
         enemies: [4, 74, 58],  // Charmander, Geodude, Growlithe
         drops: [
           { essenceId: 'fire_low', quantity: [1, 4], chance: 0.85 },
@@ -253,7 +253,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 18,
+        enemyLevel: 20,
         enemies: [58, 4, 74],  // Growlithe, Charmander, Geodude
         drops: [
           { essenceId: 'fire_low', quantity: [2, 5], chance: 0.95 },
@@ -263,7 +263,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 25,
+        enemyLevel: 28,
         enemies: [74, 107, 4],  // Geodude, Hitmonchan, Charmander
         enemyStars: 2,
         drops: [
@@ -274,7 +274,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 32,
+        enemyLevel: 36,
         enemies: [59, 76, 112],  // Arcanine, Golem, Rhydon
         enemyStars: 2,
         drops: [
@@ -285,7 +285,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 38,
+        enemyLevel: 43,
         enemies: [59, 76, 112],  // Arcanine, Golem, Rhydon
         enemyStars: 3,
         statBoost: 1.1,
@@ -297,7 +297,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 45,
+        enemyLevel: 50,
         enemies: [59, 76, 112],  // Arcanine, Golem, Rhydon
         enemyStars: 3,
         statBoost: 1.2,
@@ -309,7 +309,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 52,
+        enemyLevel: 58,
         enemies: [59, 76, 112],  // Arcanine, Golem, Rhydon
         enemyStars: 4,
         statBoost: 1.3,
@@ -322,7 +322,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 60,
+        enemyLevel: 68,
         enemies: [59, 76, 112],  // Arcanine, Golem, Rhydon
         enemyStars: 5,
         statBoost: 1.5,
@@ -335,7 +335,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 70,
+        enemyLevel: 78,
         enemies: [59, 76, 112],  // Arcanine, Golem, Rhydon
         enemyStars: 5,
         statBoost: 1.7,
@@ -347,7 +347,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 80,
+        enemyLevel: 90,
         enemies: [59, 76, 112],  // Arcanine, Golem, Rhydon
         enemyStars: 6,
         statBoost: 2.0,
@@ -369,7 +369,7 @@ export const DUNGEONS: DungeonDef[] = [
     energyCost: 3,
     floors: [
       {
-        enemyLevel: 10,
+        enemyLevel: 12,
         enemies: [7, 60, 129],  // Squirtle, Poliwag, Magikarp
         drops: [
           { essenceId: 'water_low', quantity: [1, 4], chance: 0.85 },
@@ -378,7 +378,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 18,
+        enemyLevel: 20,
         enemies: [60, 7, 129],  // Poliwag, Squirtle, Magikarp
         drops: [
           { essenceId: 'water_low', quantity: [2, 5], chance: 0.95 },
@@ -388,7 +388,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 25,
+        enemyLevel: 28,
         enemies: [129, 131, 60],  // Magikarp, Lapras, Poliwag
         enemyStars: 2,
         drops: [
@@ -399,7 +399,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 32,
+        enemyLevel: 36,
         enemies: [131, 148, 121],  // Lapras, Dragonair, Starmie
         enemyStars: 2,
         drops: [
@@ -410,7 +410,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 38,
+        enemyLevel: 43,
         enemies: [131, 148, 121],  // Lapras, Dragonair, Starmie
         enemyStars: 3,
         statBoost: 1.1,
@@ -422,7 +422,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 45,
+        enemyLevel: 50,
         enemies: [148, 131, 130],  // Dragonair, Lapras, Gyarados
         enemyStars: 3,
         statBoost: 1.2,
@@ -434,7 +434,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 52,
+        enemyLevel: 58,
         enemies: [148, 131, 130],  // Dragonair, Lapras, Gyarados
         enemyStars: 4,
         statBoost: 1.3,
@@ -447,7 +447,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 60,
+        enemyLevel: 68,
         enemies: [148, 131, 130],  // Dragonair, Lapras, Gyarados
         enemyStars: 5,
         statBoost: 1.5,
@@ -460,7 +460,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 70,
+        enemyLevel: 78,
         enemies: [148, 131, 130],  // Dragonair, Lapras, Gyarados
         enemyStars: 5,
         statBoost: 1.7,
@@ -472,7 +472,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 80,
+        enemyLevel: 90,
         enemies: [148, 131, 130],  // Dragonair, Lapras, Gyarados
         enemyStars: 6,
         statBoost: 2.0,
@@ -494,7 +494,7 @@ export const DUNGEONS: DungeonDef[] = [
     energyCost: 3,
     floors: [
       {
-        enemyLevel: 10,
+        enemyLevel: 12,
         enemies: [16, 39, 25],  // Pidgey, Jigglypuff, Pikachu
         drops: [
           { essenceId: 'electric_low', quantity: [1, 4], chance: 0.75 },
@@ -504,7 +504,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 18,
+        enemyLevel: 20,
         enemies: [25, 16, 133],  // Pikachu, Pidgey, Eevee
         drops: [
           { essenceId: 'electric_low', quantity: [2, 5], chance: 0.85 },
@@ -514,7 +514,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 25,
+        enemyLevel: 28,
         enemies: [63, 39, 25],  // Abra, Jigglypuff, Pikachu
         enemyStars: 2,
         drops: [
@@ -526,7 +526,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 32,
+        enemyLevel: 36,
         enemies: [65, 125, 85],  // Alakazam, Electabuzz, Dodrio
         enemyStars: 2,
         drops: [
@@ -537,7 +537,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 38,
+        enemyLevel: 43,
         enemies: [65, 125, 85],  // Alakazam, Electabuzz, Dodrio
         enemyStars: 3,
         statBoost: 1.1,
@@ -549,7 +549,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 45,
+        enemyLevel: 50,
         enemies: [65, 125, 143],  // Alakazam, Electabuzz, Snorlax
         enemyStars: 3,
         statBoost: 1.2,
@@ -561,7 +561,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 52,
+        enemyLevel: 58,
         enemies: [65, 125, 143],  // Alakazam, Electabuzz, Snorlax
         enemyStars: 4,
         statBoost: 1.3,
@@ -574,7 +574,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 60,
+        enemyLevel: 68,
         enemies: [65, 125, 143],  // Alakazam, Electabuzz, Snorlax
         enemyStars: 5,
         statBoost: 1.5,
@@ -587,7 +587,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 70,
+        enemyLevel: 78,
         enemies: [65, 125, 143],  // Alakazam, Electabuzz, Snorlax
         enemyStars: 5,
         statBoost: 1.7,
@@ -599,7 +599,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 80,
+        enemyLevel: 90,
         enemies: [65, 125, 143],  // Alakazam, Electabuzz, Snorlax
         enemyStars: 6,
         statBoost: 2.0,
@@ -622,7 +622,7 @@ export const DUNGEONS: DungeonDef[] = [
     energyCost: 4,
     floors: [
       {
-        enemyLevel: 10,
+        enemyLevel: 12,
         enemies: [92, 41, 66],  // Gastly, Zubat, Machop
         drops: [
           { essenceId: 'ghost_low', quantity: [1, 4], chance: 0.75 },
@@ -631,7 +631,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 18,
+        enemyLevel: 20,
         enemies: [66, 92, 41],  // Machop, Gastly, Zubat
         drops: [
           { essenceId: 'ghost_low', quantity: [2, 5], chance: 0.85 },
@@ -640,7 +640,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 25,
+        enemyLevel: 28,
         enemies: [41, 106, 92],  // Zubat, Hitmonlee, Gastly
         enemyStars: 2,
         drops: [
@@ -651,7 +651,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 32,
+        enemyLevel: 36,
         enemies: [94, 68, 97],  // Gengar, Machamp, Hypno
         enemyStars: 2,
         drops: [
@@ -663,7 +663,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 38,
+        enemyLevel: 43,
         enemies: [94, 68, 97],  // Gengar, Machamp, Hypno
         enemyStars: 3,
         statBoost: 1.1,
@@ -675,7 +675,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 45,
+        enemyLevel: 50,
         enemies: [94, 68, 97],  // Gengar, Machamp, Hypno
         enemyStars: 3,
         statBoost: 1.2,
@@ -687,7 +687,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 52,
+        enemyLevel: 58,
         enemies: [94, 68, 97],  // Gengar, Machamp, Hypno
         enemyStars: 4,
         statBoost: 1.3,
@@ -700,7 +700,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 60,
+        enemyLevel: 68,
         enemies: [94, 68, 97],  // Gengar, Machamp, Hypno
         enemyStars: 5,
         statBoost: 1.5,
@@ -712,7 +712,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 70,
+        enemyLevel: 78,
         enemies: [94, 68, 97],  // Gengar, Machamp, Hypno
         enemyStars: 5,
         statBoost: 1.7,
@@ -724,7 +724,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 80,
+        enemyLevel: 90,
         enemies: [94, 68, 97],  // Gengar, Machamp, Hypno
         enemyStars: 6,
         statBoost: 2.0,
@@ -749,7 +749,7 @@ export const DUNGEONS: DungeonDef[] = [
     energyCost: 3,
     floors: [
       {
-        enemyLevel: 10,
+        enemyLevel: 12,
         enemies: [174, 209, 39],  // Igglybuff, Snubbull, Jigglypuff
         drops: [
           { essenceId: 'fairy_low', quantity: [1, 4], chance: 0.85 },
@@ -758,7 +758,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 18,
+        enemyLevel: 20,
         enemies: [209, 546, 174],  // Snubbull, Cottonee, Igglybuff
         drops: [
           { essenceId: 'fairy_low', quantity: [2, 5], chance: 0.95 },
@@ -768,7 +768,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 25,
+        enemyLevel: 28,
         enemies: [546, 684, 209],  // Cottonee, Swirlix, Snubbull
         enemyStars: 2,
         drops: [
@@ -779,7 +779,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 32,
+        enemyLevel: 36,
         enemies: [282, 122, 684],  // Gardevoir, Mr. Mime, Swirlix
         enemyStars: 2,
         drops: [
@@ -790,7 +790,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 38,
+        enemyLevel: 43,
         enemies: [282, 122, 210],  // Gardevoir, Mr. Mime, Granbull
         enemyStars: 3,
         statBoost: 1.1,
@@ -802,7 +802,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 45,
+        enemyLevel: 50,
         enemies: [282, 122, 210],  // Gardevoir, Mr. Mime, Granbull
         enemyStars: 3,
         statBoost: 1.2,
@@ -814,7 +814,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 52,
+        enemyLevel: 58,
         enemies: [282, 122, 210],  // Gardevoir, Mr. Mime, Granbull
         enemyStars: 4,
         statBoost: 1.3,
@@ -826,7 +826,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 60,
+        enemyLevel: 68,
         enemies: [282, 122, 210],  // Gardevoir, Mr. Mime, Granbull
         enemyStars: 5,
         statBoost: 1.5,
@@ -838,7 +838,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 70,
+        enemyLevel: 78,
         enemies: [282, 122, 210],  // Gardevoir, Mr. Mime, Granbull
         enemyStars: 5,
         statBoost: 1.7,
@@ -850,7 +850,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 80,
+        enemyLevel: 90,
         enemies: [282, 122, 210],  // Gardevoir, Mr. Mime, Granbull
         enemyStars: 6,
         statBoost: 2.0,
@@ -872,7 +872,7 @@ export const DUNGEONS: DungeonDef[] = [
     energyCost: 3,
     floors: [
       {
-        enemyLevel: 10,
+        enemyLevel: 12,
         enemies: [198, 261, 215],  // Murkrow, Poochyena, Sneasel
         drops: [
           { essenceId: 'dark_low', quantity: [1, 4], chance: 0.85 },
@@ -881,7 +881,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 18,
+        enemyLevel: 20,
         enemies: [261, 302, 198],  // Poochyena, Sableye, Murkrow
         drops: [
           { essenceId: 'dark_low', quantity: [2, 5], chance: 0.95 },
@@ -891,7 +891,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 25,
+        enemyLevel: 28,
         enemies: [302, 215, 261],  // Sableye, Sneasel, Poochyena
         enemyStars: 2,
         drops: [
@@ -902,7 +902,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 32,
+        enemyLevel: 36,
         enemies: [359, 302, 215],  // Absol, Sableye, Sneasel
         enemyStars: 2,
         drops: [
@@ -913,7 +913,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 38,
+        enemyLevel: 43,
         enemies: [359, 215, 302],  // Absol, Sneasel, Sableye
         enemyStars: 3,
         statBoost: 1.1,
@@ -925,7 +925,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 45,
+        enemyLevel: 50,
         enemies: [359, 215, 302],  // Absol, Sneasel, Sableye
         enemyStars: 3,
         statBoost: 1.2,
@@ -937,7 +937,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 52,
+        enemyLevel: 58,
         enemies: [359, 215, 302],  // Absol, Sneasel, Sableye
         enemyStars: 4,
         statBoost: 1.3,
@@ -949,7 +949,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 60,
+        enemyLevel: 68,
         enemies: [359, 215, 302],  // Absol, Sneasel, Sableye
         enemyStars: 5,
         statBoost: 1.5,
@@ -961,7 +961,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 70,
+        enemyLevel: 78,
         enemies: [359, 215, 302],  // Absol, Sneasel, Sableye
         enemyStars: 5,
         statBoost: 1.7,
@@ -973,7 +973,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 80,
+        enemyLevel: 90,
         enemies: [359, 215, 302],  // Absol, Sneasel, Sableye
         enemyStars: 6,
         statBoost: 2.0,
@@ -995,7 +995,7 @@ export const DUNGEONS: DungeonDef[] = [
     energyCost: 3,
     floors: [
       {
-        enemyLevel: 10,
+        enemyLevel: 12,
         enemies: [81, 304, 436],  // Magnemite, Aron, Bronzor
         drops: [
           { essenceId: 'steel_low', quantity: [1, 4], chance: 0.85 },
@@ -1004,7 +1004,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 18,
+        enemyLevel: 20,
         enemies: [304, 436, 81],  // Aron, Bronzor, Magnemite
         drops: [
           { essenceId: 'steel_low', quantity: [2, 5], chance: 0.95 },
@@ -1014,7 +1014,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 25,
+        enemyLevel: 28,
         enemies: [436, 304, 374],  // Bronzor, Aron, Beldum
         enemyStars: 2,
         drops: [
@@ -1025,7 +1025,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 32,
+        enemyLevel: 36,
         enemies: [376, 306, 437],  // Metagross, Aggron, Bronzong
         enemyStars: 2,
         drops: [
@@ -1036,7 +1036,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 38,
+        enemyLevel: 43,
         enemies: [376, 306, 437],  // Metagross, Aggron, Bronzong
         enemyStars: 3,
         statBoost: 1.1,
@@ -1048,7 +1048,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 45,
+        enemyLevel: 50,
         enemies: [376, 306, 437],  // Metagross, Aggron, Bronzong
         enemyStars: 3,
         statBoost: 1.2,
@@ -1060,7 +1060,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 52,
+        enemyLevel: 58,
         enemies: [376, 306, 437],  // Metagross, Aggron, Bronzong
         enemyStars: 4,
         statBoost: 1.3,
@@ -1071,7 +1071,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 60,
+        enemyLevel: 68,
         enemies: [376, 306, 437],  // Metagross, Aggron, Bronzong
         enemyStars: 5,
         statBoost: 1.5,
@@ -1082,7 +1082,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 70,
+        enemyLevel: 78,
         enemies: [376, 306, 437],  // Metagross, Aggron, Bronzong
         enemyStars: 5,
         statBoost: 1.7,
@@ -1094,7 +1094,7 @@ export const DUNGEONS: DungeonDef[] = [
         ],
       },
       {
-        enemyLevel: 80,
+        enemyLevel: 90,
         enemies: [376, 306, 437],  // Metagross, Aggron, Bronzong
         enemyStars: 6,
         statBoost: 2.0,

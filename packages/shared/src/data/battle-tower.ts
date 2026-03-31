@@ -49,8 +49,8 @@ function getEnemyPool(floor: number): number[] {
 }
 
 function getEnemyLevel(floor: number): number {
-  // Smooth linear ramp: floor 1 → level 6, floor 100 → level 100
-  return Math.floor(5 + floor * 0.95);
+  // Smooth linear ramp: floor 1 → level 6, floor 100 → level 130
+  return Math.floor(5 + floor * 1.25);
 }
 
 function getEnemyStars(floor: number): 1 | 2 | 3 | 4 | 5 | 6 {
