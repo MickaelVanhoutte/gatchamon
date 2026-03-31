@@ -32,7 +32,7 @@ export function computeStats(template: PokemonTemplate, level: number, stars: nu
     hp: Math.floor(template.baseStats.hp * levelMult * starMult),
     atk: Math.floor(template.baseStats.atk * levelMult * starMult),
     def: Math.floor(template.baseStats.def * levelMult * starMult),
-    spd: Math.floor(template.baseStats.spd * levelMult * starMult),
+    spd: template.baseStats.spd,
     critRate: template.baseStats.critRate,
     critDmg: template.baseStats.critDmg,
     acc: template.baseStats.acc,

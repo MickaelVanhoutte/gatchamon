@@ -605,7 +605,6 @@ export function startDungeonBattle(
       mon.stats.hp = Math.floor(mon.stats.hp * floor.statBoost);
       mon.stats.atk = Math.floor(mon.stats.atk * floor.statBoost);
       mon.stats.def = Math.floor(mon.stats.def * floor.statBoost);
-      mon.stats.spd = Math.floor(mon.stats.spd * floor.statBoost);
       mon.maxHp = mon.stats.hp;
       mon.currentHp = mon.stats.hp;
     }
@@ -662,7 +661,6 @@ export function startItemDungeonBattle(
       mon.stats.hp = Math.floor(mon.stats.hp * floor.statBoost);
       mon.stats.atk = Math.floor(mon.stats.atk * floor.statBoost);
       mon.stats.def = Math.floor(mon.stats.def * floor.statBoost);
-      mon.stats.spd = Math.floor(mon.stats.spd * floor.statBoost);
       mon.maxHp = mon.stats.hp;
       mon.currentHp = mon.stats.hp;
     }
@@ -716,7 +714,6 @@ export function startTowerBattle(
       mon.stats.hp = Math.floor(mon.stats.hp * floorDef.statBoost);
       mon.stats.atk = Math.floor(mon.stats.atk * floorDef.statBoost);
       mon.stats.def = Math.floor(mon.stats.def * floorDef.statBoost);
-      mon.stats.spd = Math.floor(mon.stats.spd * floorDef.statBoost);
       mon.maxHp = mon.stats.hp;
       mon.currentHp = mon.stats.hp;
     }

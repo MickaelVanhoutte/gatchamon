@@ -12,7 +12,7 @@ const STAT_LABELS: Record<keyof BaseStats, string> = {
 };
 
 const STAT_MAX: Record<keyof BaseStats, number> = {
-  hp: 2000, atk: 300, def: 250, spd: 250,
+  hp: 2000, atk: 300, def: 250, spd: 150,
   critRate: 100, critDmg: 300, acc: 100, res: 100,
 };
 

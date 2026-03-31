@@ -79,6 +79,7 @@ interface PokemonData {
   height: number;      // meters
   isLegendary: boolean;
   isMythical: boolean;
+  gameSpeed: number;
   evolvesFrom: string | null;
   generation: number;
   formType: 'base' | 'mega' | 'megax' | 'megay' | 'alola' | 'galar' | 'hisui' | 'paldea' | 'other';
@@ -271,6 +272,7 @@ async function fetchPokemonData(gifName: string): Promise<PokemonData | null> {
   const types: PokemonType[] = pokemonData.types.map((t: any) => t.type.name as PokemonType);
   const stats = pokemonData.stats as { base_stat: number; stat: { name: string } }[];
   const bst = stats.reduce((sum: number, s: any) => sum + s.base_stat, 0);
+  const gameSpeed = stats.find((s: any) => s.stat.name === 'speed')?.base_stat ?? 80;
   const height = pokemonData.height / 10; // API uses decimeters
 
   const baseId = speciesData?.id ?? pokemonData.id;
@@ -285,6 +287,7 @@ async function fetchPokemonData(gifName: string): Promise<PokemonData | null> {
     types,
     bst,
     height,
+    gameSpeed,
     isLegendary: speciesData?.is_legendary ?? false,
     isMythical: speciesData?.is_mythical ?? false,
     evolvesFrom: (formType === 'base' && evolvesFromSpecies) ? evolvesFromSpecies : null,
@@ -297,16 +300,18 @@ async function fetchPokemonData(gifName: string): Promise<PokemonData | null> {
 // ---------------------------------------------------------------------------
 // Stat mapping & star rating
 // ---------------------------------------------------------------------------
-function mapStats(bst: number): {
+function mapStats(bst: number, gameSpeed: number): {
   hp: number; atk: number; def: number; spd: number;
   critRate: number; critDmg: number; acc: number; res: number;
 } {
   const scale = bst / 500;
+  // SPD: map actual game speed (5-200) to 80-130 range, cap scaling at 150
+  const clampedSpeed = Math.min(150, Math.max(5, gameSpeed));
   return {
     hp: Math.floor(350 + scale * 300),
     atk: Math.floor(30 + scale * 80),
     def: Math.floor(30 + scale * 70),
-    spd: Math.floor(75 + scale * 50),
+    spd: Math.min(130, Math.round(80 + (clampedSpeed - 5) / (150 - 5) * 50)),
     critRate: Math.floor(10 + scale * 12),
     critDmg: Math.floor(150 + scale * 20),
     acc: Math.floor(85 + scale * 18),
@@ -458,7 +463,7 @@ function generateSkills(pokemon: PokemonData): string {
 }
 
 function generatePokemonEntry(pokemon: PokemonData, allPokemon: PokemonData[]): string {
-  const stats = mapStats(pokemon.bst);
+  const stats = mapStats(pokemon.bst, pokemon.gameSpeed);
   const stars = naturalStarsMap.get(pokemon.id) ?? getNaturalStars(pokemon.bst, pokemon.isLegendary, pokemon.isMythical, pokemon.id, pseudoChainIds);
   const key = pokemon.name.replace(/[^a-z0-9]/g, '_');
 
