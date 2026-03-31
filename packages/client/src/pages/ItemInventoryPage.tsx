@@ -254,7 +254,7 @@ export function ItemInventoryPage() {
         <div className="inventory-sell-bar">
           {confirmBulkSell ? (
             <div className="held-item-sell-confirm" style={{ flex: 1 }}>
-              <span>Sell {sellSelection.size} items for {totalSellValue.toLocaleString()} <GameIcon id="stardust" size={12} />?</span>
+              <span>Sell {sellSelection.size} items for {totalSellValue.toLocaleString()} <GameIcon id="pokedollar" size={12} />?</span>
               <button className="held-item-sell-yes" onClick={handleBulkSell}>Yes</button>
               <button className="held-item-sell-no" onClick={() => setConfirmBulkSell(false)}>No</button>
             </div>
@@ -264,7 +264,7 @@ export function ItemInventoryPage() {
               disabled={sellSelection.size === 0}
               onClick={() => setConfirmBulkSell(true)}
             >
-              Sell {sellSelection.size} items ({totalSellValue.toLocaleString()} <GameIcon id="stardust" size={12} />)
+              Sell {sellSelection.size} items ({totalSellValue.toLocaleString()} <GameIcon id="pokedollar" size={12} />)
             </button>
           )}
         </div>
@@ -274,7 +274,7 @@ export function ItemInventoryPage() {
       {upgradeItem && (
         <HeldItemUpgradeModal
           item={upgradeItem}
-          playerStardust={player?.stardust ?? 0}
+          playerPokedollars={player?.pokedollars ?? 0}
           onClose={() => setUpgradeItemId(null)}
           hideChangeItem
         />

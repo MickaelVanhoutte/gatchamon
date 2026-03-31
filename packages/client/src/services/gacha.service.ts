@@ -204,6 +204,51 @@ export function summonSingleLegendary(): SummonResult {
   return { pokemon, template };
 }
 
+// ── Shop Summons (bypass pokeball costs) ──
+
+export function shopSummonMultiPremium(): SummonResult[] {
+  const player = loadPlayer();
+  if (!player) throw new Error('Player not found');
+
+  let pity = player.premiumPityCounter ?? 0;
+
+  const results: SummonResult[] = [];
+  const instances: PokemonInstance[] = [];
+
+  for (let i = 0; i < MULTI_COUNT; i++) {
+    pity++;
+    const isPityGuarantee = pity >= PREMIUM_PITY_THRESHOLD;
+    const stars = isPityGuarantee ? 5 : rollPremiumStarRating();
+    const template = pickFromPool(stars);
+    if (template.naturalStars === 5) pity = 0;
+    const pokemon = createInstance(template, player.id);
+    instances.push(pokemon);
+    results.push({ pokemon, template });
+  }
+
+  savePlayer({
+    ...player,
+    premiumPityCounter: pity,
+  });
+
+  addToCollection(instances);
+  trackSummons(MULTI_COUNT);
+
+  return results;
+}
+
+export function shopSummonSingleLegendary(): SummonResult {
+  const player = loadPlayer();
+  if (!player) throw new Error('Player not found');
+
+  const template = pickFromPool(5);
+  const pokemon = createInstance(template, player.id);
+  addToCollection([pokemon]);
+  trackSummons(1);
+
+  return { pokemon, template };
+}
+
 function updateUniqueCount(): void {
   const collection = loadCollection();
   const uniqueIds = new Set(collection.map(c => c.templateId));

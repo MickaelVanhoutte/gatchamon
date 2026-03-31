@@ -6,7 +6,7 @@ import type { OwnedPokemon } from '../stores/gameStore';
 import { isMaxLevel, canStarEvolve, calculateFodderXp, MAX_LEVEL_BY_STARS, xpToNextLevel, isActivePokemon } from '@gatchamon/shared';
 import { previewAltarFeed } from '../services/altar.service';
 import { assetUrl } from '../utils/asset-url';
-import { getSpriteBoost } from '../utils/sprite-scale';
+
 import './AltarPage.css';
 
 const STAR_COLORS: Record<number, string> = {
@@ -155,11 +155,7 @@ export function AltarPage() {
                       ? assetUrl(`monsters/ani-shiny/${mon.template.name.toLowerCase()}.gif`)
                       : assetUrl(mon.template.spriteUrl)}
                     alt={mon.template.name}
-                    style={{
-                      width: `${getSpriteScale(mon.template.height) * 80}%`,
-                      transform: `scale(${getSpriteBoost(mon.template.name)})`,
-                      transformOrigin: 'center bottom',
-                    }}
+                    style={{ width: `${getSpriteScale(mon.template.height) * 80}%` }}
                   />
                   {isSameSpecies && !isFodder && (
                     <div className="altar-cell-skillup-badge">Skill</div>

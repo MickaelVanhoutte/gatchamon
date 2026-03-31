@@ -23,11 +23,11 @@ interface HeldItemSelectModalProps {
   slot: HeldItemSlot;
   heldItems: HeldItemInstance[];
   equippedItems: HeldItemInstance[];
-  playerStardust: number;
+  playerPokedollars: number;
   onClose: () => void;
 }
 
-export function HeldItemSelectModal({ pokemon, slot, heldItems, equippedItems, playerStardust, onClose }: HeldItemSelectModalProps) {
+export function HeldItemSelectModal({ pokemon, slot, heldItems, equippedItems, playerPokedollars, onClose }: HeldItemSelectModalProps) {
   const { equipItem, unequipItem, sellItems: storeSellItems, refreshPlayer } = useGameStore();
   const [setFilter, setSetFilter] = useState<string>('');
   const [sortBy, setSortBy] = useState<SortOption>('stars');
@@ -82,7 +82,7 @@ export function HeldItemSelectModal({ pokemon, slot, heldItems, equippedItems, p
 
   function handleRemove() {
     if (!currentEquipped) return;
-    if (playerStardust < ITEM_REMOVAL_COST) return;
+    if (playerPokedollars < ITEM_REMOVAL_COST) return;
     if (!confirm(`Remove item? This costs ${ITEM_REMOVAL_COST.toLocaleString()} Stardust.`)) return;
     unequipItem(currentEquipped.itemId);
     refreshPlayer();
@@ -251,7 +251,7 @@ export function HeldItemSelectModal({ pokemon, slot, heldItems, equippedItems, p
                 }, 0);
                 return confirmBulkSell ? (
                   <div className="held-item-sell-confirm" style={{ flex: 1 }}>
-                    <span>Sell {sellSelection.size} items for {totalValue.toLocaleString()} <GameIcon id="stardust" size={12} />?</span>
+                    <span>Sell {sellSelection.size} items for {totalValue.toLocaleString()} <GameIcon id="pokedollar" size={12} />?</span>
                     <button className="held-item-sell-yes" onClick={() => {
                       storeSellItems(Array.from(sellSelection));
                       setSellMode(false);
@@ -267,7 +267,7 @@ export function HeldItemSelectModal({ pokemon, slot, heldItems, equippedItems, p
                     disabled={sellSelection.size === 0}
                     onClick={() => setConfirmBulkSell(true)}
                   >
-                    Sell {sellSelection.size} items ({totalValue.toLocaleString()} <GameIcon id="stardust" size={12} />)
+                    Sell {sellSelection.size} items ({totalValue.toLocaleString()} <GameIcon id="pokedollar" size={12} />)
                   </button>
                 );
               })()}
@@ -278,9 +278,9 @@ export function HeldItemSelectModal({ pokemon, slot, heldItems, equippedItems, p
                 <button
                   className="held-item-remove-btn"
                   onClick={handleRemove}
-                  disabled={playerStardust < ITEM_REMOVAL_COST}
+                  disabled={playerPokedollars < ITEM_REMOVAL_COST}
                 >
-                  Remove ({ITEM_REMOVAL_COST.toLocaleString()} <GameIcon id="stardust" size={12} />)
+                  Remove ({ITEM_REMOVAL_COST.toLocaleString()} <GameIcon id="pokedollar" size={12} />)
                 </button>
               )}
               <button

@@ -17,6 +17,7 @@ import { AltarPage } from './pages/AltarPage';
 import { InboxPage } from './pages/InboxPage';
 import { RetrySummonPage } from './pages/RetrySummonPage';
 import { ItemInventoryPage } from './pages/ItemInventoryPage';
+import { ShopPage } from './pages/ShopPage';
 import { BottomNav } from './components/layout/BottomNav';
 import { TopHUD } from './components/layout/TopHUD';
 import { TutorialOverlay } from './components/tutorial/TutorialOverlay';
@@ -97,6 +98,7 @@ export function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/summon" element={<SummonPage />} />
+          <Route path="/shop" element={<ShopPage />} />
           <Route path="/collection" element={<CollectionPage />} />
           <Route path="/pokedex" element={<PokedexPage />} />
           <Route path="/collection/:instanceId" element={<MonsterDetail />} />

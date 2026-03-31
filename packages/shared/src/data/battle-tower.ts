@@ -83,44 +83,57 @@ function getEnemyCount(floor: number): number {
 }
 
 function getFloorReward(floor: number): MissionReward {
-  // Floor 100: legendary pokeball
+  // Floor 100: legendary pokeball + stardust milestone
   if (floor === 100) {
-    return { legendaryPokeballs: 1, premiumPokeballs: 5, stardust: 1000 };
+    return { legendaryPokeballs: 1, premiumPokeballs: 5, pokedollars: 1000, stardust: 300 };
   }
 
   // Milestone floors with held items + Ditto (checked before generic 10th-floor)
   if (floor === 25) {
     return {
       regularPokeballs: 5,
-      stardust: 200,
+      pokedollars: 200,
       heldItem: { setId: 'choice_band', stars: 2 as 1 | 2 | 3 | 4 | 5 | 6, grade: 'rare' },
     };
   }
   if (floor === 50) {
     return {
       premiumPokeballs: 4,
-      stardust: 400,
+      pokedollars: 400,
       dittos: 1,
+      stardust: 100,
       heldItem: { setId: 'swift_wing', stars: 3 as 1 | 2 | 3 | 4 | 5 | 6, grade: 'hero' },
     };
   }
   if (floor === 75) {
     return {
       regularPokeballs: 10,
-      stardust: 600,
+      pokedollars: 600,
       heldItem: { setId: 'kings_rock', stars: 4 as 1 | 2 | 3 | 4 | 5 | 6, grade: 'hero' },
     };
   }
 
+  // Floor 80: stardust milestone
+  if (floor === 80) {
+    const premiumCount = 3 + Math.floor(floor / 30);
+    return { premiumPokeballs: premiumCount, pokedollars: 100 + floor * 5, stardust: 200 };
+  }
+
   // Floor 90: premium pokeballs + Ditto
   if (floor === 90) {
-    return { premiumPokeballs: 6, stardust: 550, dittos: 1 };
+    return { premiumPokeballs: 6, pokedollars: 550, dittos: 1 };
+  }
+
+  // Floor 30: stardust milestone (checked before generic 10th-floor)
+  if (floor === 30) {
+    const premiumCount = 3 + Math.floor(floor / 30);
+    return { premiumPokeballs: premiumCount, pokedollars: 100 + floor * 5, stardust: 50 };
   }
 
   // Every 10th floor: premium pokeballs (premium scroll)
   if (floor % 10 === 0) {
     const premiumCount = 3 + Math.floor(floor / 30);
-    return { premiumPokeballs: premiumCount, stardust: 100 + floor * 5 };
+    return { premiumPokeballs: premiumCount, pokedollars: 100 + floor * 5 };
   }
 
   // Every 5th floor (not 10th): essences
@@ -135,15 +148,15 @@ function getFloorReward(floor: number): MissionReward {
     }
     return {
       regularPokeballs: 3 + Math.floor(floor / 10),
-      stardust: 50 + floor * 5,
+      pokedollars: 50 + floor * 5,
       essences,
     };
   }
 
-  // Normal floors: pokeballs + stardust
+  // Normal floors: pokeballs + pokedollars
   return {
     regularPokeballs: 3 + Math.floor(floor / 10),
-    stardust: 50 + floor * 5,
+    pokedollars: 50 + floor * 5,
   };
 }
 

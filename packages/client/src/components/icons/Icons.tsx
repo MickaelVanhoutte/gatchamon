@@ -285,3 +285,15 @@ export const IconShrine = makeMultiPathIcon([
   'M2 9l10-7 10 7',
   'M10 19v-6h4v6',
 ]);
+
+// ─── Currency & Shop Icons ───
+
+export const IconPokedollar = makeMultiPathIcon([
+  'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z',
+  'M13 7h-2v3H8v2h3v3h2v-3h3v-2h-3V7z',
+]);
+
+export const IconShop = makeMultiPathIcon([
+  'M18.36 9l.6-3H5.04l.6 3h12.72zM20 4H4l-1 5v2h1v6h10v-6h4v6h2v-6h1v-2h-1V4z',
+  'M6 18v2h8v-2H6z',
+]);

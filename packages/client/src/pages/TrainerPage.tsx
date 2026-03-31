@@ -24,7 +24,7 @@ const COMBAT_SKILLS: SkillDef[] = [
 ];
 
 const ECONOMY_SKILLS: SkillDef[] = [
-  { key: 'stardustBonus', name: 'Stardust+', desc: 'Earn more stardust', unit: '+10% / lv' },
+  { key: 'pokedollarBonus', name: 'Pokedollar+', desc: 'Earn more pokedollars', unit: '+10% / lv' },
   { key: 'xpBonus', name: 'XP+', desc: 'Monsters earn more XP', unit: '+10% / lv' },
   { key: 'pokeballBonus', name: 'Pokeball+', desc: 'Earn more pokeballs', unit: '+10% / lv' },
   { key: 'essenceBonus', name: 'Essence+', desc: 'Earn more essences', unit: '+10% / lv' },

@@ -34,6 +34,7 @@ function getRewardSummary(reward: Record<string, any>): string {
   if (reward.legendaryPokeballs) parts.push(`${reward.legendaryPokeballs} Legendary Ball`);
   if (reward.premiumPokeballs) parts.push(`${reward.premiumPokeballs} Premium Balls`);
   if (reward.regularPokeballs) parts.push(`${reward.regularPokeballs} Pokeballs`);
+  if (reward.pokedollars) parts.push(`${reward.pokedollars} ₽`);
   if (reward.stardust) parts.push(`${reward.stardust} Stardust`);
   if (reward.essences) parts.push('Essences');
   if (reward.heldItem) parts.push('Held Item');

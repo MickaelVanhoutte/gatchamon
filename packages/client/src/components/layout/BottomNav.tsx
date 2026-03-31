@@ -9,6 +9,7 @@ import './BottomNav.css';
 const TABS = [
   { path: '/', icon: 'home', badge: false, tutorialId: 'nav-home' },
   { path: '/summon', icon: 'summon', badge: false, tutorialId: 'nav-summon' },
+  { path: '/shop', icon: 'shop', badge: false, tutorialId: 'nav-shop' },
   { path: '/collection', icon: 'collection', badge: false, tutorialId: 'nav-collection' },
   { path: '/missions', icon: 'trophy', badge: true, tutorialId: 'nav-missions' },
   { path: '/story', icon: 'swords', badge: false, tutorialId: 'nav-story' },

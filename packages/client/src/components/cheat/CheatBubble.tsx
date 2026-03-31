@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useGameStore } from '../../stores/gameStore';
 import { getMaxEnergy } from '@gatchamon/shared';
-import { updatePlayer, earnStardust } from '../../services/player.service';
+import { updatePlayer, earnStardust, earnPokedollars } from '../../services/player.service';
 import './CheatBubble.css';
 
 interface Feedback {
@@ -20,8 +20,12 @@ function executeCheat(command: string): Feedback {
       return { message: `Energy restored to ${maxEnergy}!`, success: true };
     }
     case '/stardust': {
-      earnStardust(200_000);
-      return { message: '+200,000 Stardust!', success: true };
+      earnStardust(500);
+      return { message: '+500 Stardust!', success: true };
+    }
+    case '/pokedollars': {
+      earnPokedollars(200_000);
+      return { message: '+200,000 Pokedollars!', success: true };
     }
     case '/valousuce': {
       updatePlayer({ premiumPokeballs: player.premiumPokeballs + 10 });

@@ -83,7 +83,9 @@ export interface ItemDungeonFloor {
   enemyLevel: number;
   enemies: number[];
   drops: ItemDungeonDrop[];
-  stardustReward: [number, number];
+  pokedollarReward: [number, number];
+  /** Rare stardust drop (high-level floors only) */
+  stardustDrop?: { chance: number; min: number; max: number };
   /** Override naturalStars for enemies on this floor */
   enemyStars?: number;
   /** Multiplier applied to enemy stats after normal computation (e.g. 1.3 = +30%) */

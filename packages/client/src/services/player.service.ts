@@ -14,7 +14,8 @@ const DEFAULT_STORY_PROGRESS: StoryProgress = { normal: { 1: 1 }, hard: {}, hell
 const STARTING_REGULAR_POKEBALLS = 50;
 const STARTING_PREMIUM_POKEBALLS = 10;
 const STARTING_ENERGY = 100;
-const STARTING_STARDUST = 10000;
+const STARTING_STARDUST = 0;
+const STARTING_POKEDOLLARS = 10000;
 
 export function createPlayer(name: string): Player {
   const player: Player = {
@@ -24,6 +25,7 @@ export function createPlayer(name: string): Player {
     premiumPokeballs: STARTING_PREMIUM_POKEBALLS,
     energy: STARTING_ENERGY,
     stardust: STARTING_STARDUST,
+    pokedollars: STARTING_POKEDOLLARS,
     storyProgress: structuredClone(DEFAULT_STORY_PROGRESS),
     materials: {},
     createdAt: new Date().toISOString(),
@@ -65,6 +67,23 @@ export function spendStardust(amount: number): Player {
   if (!player) throw new Error('No player found');
   if ((player.stardust ?? 0) < amount) throw new Error('Not enough stardust');
   player.stardust = (player.stardust ?? 0) - amount;
+  savePlayer(player);
+  return player;
+}
+
+export function earnPokedollars(amount: number): Player {
+  const player = loadPlayer();
+  if (!player) throw new Error('No player found');
+  player.pokedollars = (player.pokedollars ?? 0) + amount;
+  savePlayer(player);
+  return player;
+}
+
+export function spendPokedollars(amount: number): Player {
+  const player = loadPlayer();
+  if (!player) throw new Error('No player found');
+  if ((player.pokedollars ?? 0) < amount) throw new Error('Not enough pokedollars');
+  player.pokedollars = (player.pokedollars ?? 0) - amount;
   savePlayer(player);
   return player;
 }

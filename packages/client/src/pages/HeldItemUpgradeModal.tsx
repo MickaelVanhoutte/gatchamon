@@ -8,13 +8,13 @@ import './HeldItemUpgradeModal.css';
 
 interface HeldItemUpgradeModalProps {
   item: HeldItemInstance;
-  playerStardust: number;
+  playerPokedollars: number;
   onClose: () => void;
   onEquipSlot?: (slot: HeldItemSlot) => void;
   hideChangeItem?: boolean;
 }
 
-export function HeldItemUpgradeModal({ item: initialItem, playerStardust, onClose, onEquipSlot, hideChangeItem }: HeldItemUpgradeModalProps) {
+export function HeldItemUpgradeModal({ item: initialItem, playerPokedollars, onClose, onEquipSlot, hideChangeItem }: HeldItemUpgradeModalProps) {
   const { upgradeItem: storeUpgrade, sellItem: storeSell, heldItems } = useGameStore();
   const tutorialStep = useTutorialStore(s => s.step);
   const isTutorial = tutorialStep === 16;
@@ -30,7 +30,7 @@ export function HeldItemUpgradeModal({ item: initialItem, playerStardust, onClos
   const isMaxLevel = item.level >= 15;
   const cost = isMaxLevel ? 0 : getUpgradeCost(item.level, item.stars);
   const successRate = isMaxLevel ? 0 : getUpgradeSuccessRate(item.level + 1);
-  const canAfford = playerStardust >= cost;
+  const canAfford = playerPokedollars >= cost;
 
   function handleUpgrade() {
     if (isMaxLevel || !canAfford || animating) return;
@@ -115,7 +115,7 @@ export function HeldItemUpgradeModal({ item: initialItem, playerStardust, onClos
             <div className="held-item-upgrade-info">
               <div className="held-item-upgrade-info-row">
                 <span>Cost</span>
-                <span><GameIcon id="stardust" size={12} /> {cost.toLocaleString()}</span>
+                <span><GameIcon id="pokedollar" size={12} /> {cost.toLocaleString()}</span>
               </div>
               <div className="held-item-upgrade-info-row">
                 <span>Success Rate</span>
@@ -144,7 +144,7 @@ export function HeldItemUpgradeModal({ item: initialItem, playerStardust, onClos
               onClick={handleUpgrade}
               disabled={!canAfford || animating}
             >
-              {animating ? 'Upgrading...' : <>Upgrade ({cost.toLocaleString()} <GameIcon id="stardust" size={12} />)</>}
+              {animating ? 'Upgrading...' : <>Upgrade ({cost.toLocaleString()} <GameIcon id="pokedollar" size={12} />)</>}
             </button>
           ) : (
             <div className="held-item-upgrade-maxed">MAX LEVEL</div>
@@ -160,11 +160,11 @@ export function HeldItemUpgradeModal({ item: initialItem, playerStardust, onClos
               disabled={item.equippedTo !== null}
               title={item.equippedTo !== null ? 'Unequip item first' : undefined}
             >
-              Sell ({getItemSellValue(item).toLocaleString()} <GameIcon id="stardust" size={12} />)
+              Sell ({getItemSellValue(item).toLocaleString()} <GameIcon id="pokedollar" size={12} />)
             </button>
           ) : (
             <div className="held-item-sell-confirm">
-              <span>Sell for {getItemSellValue(item).toLocaleString()} <GameIcon id="stardust" size={12} />?</span>
+              <span>Sell for {getItemSellValue(item).toLocaleString()} <GameIcon id="pokedollar" size={12} />?</span>
               <button className="held-item-sell-yes" onClick={() => { storeSell(item.itemId); onClose(); }}>Yes</button>
               <button className="held-item-sell-no" onClick={() => setConfirmSell(false)}>No</button>
             </div>

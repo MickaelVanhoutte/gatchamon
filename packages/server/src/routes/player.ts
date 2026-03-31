@@ -33,12 +33,14 @@ playerRouter.post('/', (req, res) => {
     materials: {},
     createdAt: player.created_at,
     stardust: 0,
+    pokedollars: 0,
     trainerLevel: 1,
     trainerExp: 0,
     trainerSkillPoints: 0,
     trainerSkills: defaultTrainerSkills(),
     legendaryPokeballs: player.legendary_pokeballs ?? 0,
     towerProgress: player.tower_progress ?? 0,
+    premiumPityCounter: 0,
   };
 
   res.status(201).json(result);
@@ -63,12 +65,14 @@ playerRouter.get('/:id', (req, res) => {
     materials: {},
     createdAt: player.created_at,
     stardust: 0,
+    pokedollars: 0,
     trainerLevel: 1,
     trainerExp: 0,
     trainerSkillPoints: 0,
     trainerSkills: defaultTrainerSkills(),
     legendaryPokeballs: player.legendary_pokeballs ?? 0,
     towerProgress: player.tower_progress ?? 0,
+    premiumPityCounter: 0,
   };
 
   res.json(result);

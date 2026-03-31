@@ -78,6 +78,15 @@ export function loadPlayer(): Player | null {
   if ((player as any).premiumPityCounter === undefined) {
     player.premiumPityCounter = 0;
   }
+  // Migration: add pokedollars for existing players
+  if ((player as any).pokedollars === undefined) {
+    player.pokedollars = 0;
+  }
+  // Migration: rename stardustBonus → pokedollarBonus
+  if ((player.trainerSkills as any).stardustBonus !== undefined && (player.trainerSkills as any).pokedollarBonus === undefined) {
+    (player.trainerSkills as any).pokedollarBonus = (player.trainerSkills as any).stardustBonus;
+    delete (player.trainerSkills as any).stardustBonus;
+  }
   return player;
 }
 

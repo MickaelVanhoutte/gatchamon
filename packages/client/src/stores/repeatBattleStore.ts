@@ -3,7 +3,7 @@ import type { BattleRewards } from '@gatchamon/shared';
 
 export interface AccumulatedRewards {
   totalXp: number;
-  totalStardust: number;
+  totalPokedollars: number;
   essences: Record<string, number>;
   itemDrops: Array<{ itemId: string; setId: string; stars: number; grade: string }>;
   totalLevelUps: number;
@@ -30,7 +30,7 @@ export interface RepeatBattleConfig {
 
 const EMPTY_REWARDS: AccumulatedRewards = {
   totalXp: 0,
-  totalStardust: 0,
+  totalPokedollars: 0,
   essences: {},
   itemDrops: [],
   totalLevelUps: 0,
@@ -101,7 +101,7 @@ export const useRepeatBattleStore = create<RepeatBattleState>((set, get) => ({
       completedRuns: state.completedRuns + 1,
       rewards: {
         totalXp: acc.totalXp + (rewards.xpPerMon ?? 0),
-        totalStardust: acc.totalStardust + (rewards.stardust ?? 0),
+        totalPokedollars: acc.totalPokedollars + (rewards.pokedollars ?? 0),
         essences: newEssences,
         itemDrops: [
           ...acc.itemDrops,

@@ -434,6 +434,7 @@ function mergeReward(target: MissionReward, source: MissionReward): void {
   if (source.dittos) target.dittos = (target.dittos ?? 0) + source.dittos;
   if (source.legendaryPokeballs) target.legendaryPokeballs = (target.legendaryPokeballs ?? 0) + source.legendaryPokeballs;
   if (source.stardust) target.stardust = (target.stardust ?? 0) + source.stardust;
+  if (source.pokedollars) target.pokedollars = (target.pokedollars ?? 0) + source.pokedollars;
 }
 
 // ---------------------------------------------------------------------------
@@ -518,6 +519,17 @@ export function applyReward(reward: MissionReward): void {
       savePlayer({
         ...p,
         stardust: (p.stardust ?? 0) + reward.stardust,
+      });
+    }
+  }
+
+  // Pokedollar reward
+  if (reward.pokedollars && reward.pokedollars > 0) {
+    const p = loadPlayer();
+    if (p) {
+      savePlayer({
+        ...p,
+        pokedollars: (p.pokedollars ?? 0) + reward.pokedollars,
       });
     }
   }

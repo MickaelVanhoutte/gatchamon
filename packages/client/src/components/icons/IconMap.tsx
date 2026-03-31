@@ -10,6 +10,7 @@ import {
   IconWind, IconMuscle, IconTarget, IconCrown, IconBlade, IconMusic, IconMartialArts,
   IconGlasses, IconPaw, IconSandwich,
   IconTree, IconWheat, IconWave, IconMountain, IconShrine,
+  IconPokedollar, IconShop,
 } from './Icons';
 
 type IconComponent = ComponentType<{ size?: number } & SVGProps<SVGSVGElement>>;
@@ -80,6 +81,10 @@ const ICON_MAP: Record<string, IconComponent> = {
   glasses: IconGlasses,
   paw: IconPaw,
   sandwich: IconSandwich,
+
+  // Currency & Shop
+  pokedollar: IconPokedollar,
+  shop: IconShop,
 
   // Regions
   tree: IconTree,

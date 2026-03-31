@@ -19,7 +19,7 @@ const PCT_STATS: Array<keyof BaseStats> = ['critRate', 'critDmg', 'acc', 'res'];
 interface HeldItemEquipPanelProps {
   pokemon: OwnedPokemon;
   heldItems: HeldItemInstance[];
-  player: { stardust: number };
+  player: { pokedollars: number };
 }
 
 export function HeldItemEquipPanel({ pokemon, heldItems, player }: HeldItemEquipPanelProps) {
@@ -171,7 +171,7 @@ export function HeldItemEquipPanel({ pokemon, heldItems, player }: HeldItemEquip
           slot={selectSlot}
           heldItems={heldItems}
           equippedItems={equippedItems}
-          playerStardust={player.stardust ?? 0}
+          playerPokedollars={player.pokedollars ?? 0}
           onClose={() => setSelectSlot(null)}
         />
       )}
@@ -179,7 +179,7 @@ export function HeldItemEquipPanel({ pokemon, heldItems, player }: HeldItemEquip
       {upgradeItem && (
         <HeldItemUpgradeModal
           item={upgradeItem}
-          playerStardust={player.stardust ?? 0}
+          playerPokedollars={player.pokedollars ?? 0}
           onClose={() => setUpgradeItem(null)}
           onEquipSlot={(slot) => { setUpgradeItem(null); setSelectSlot(slot); }}
         />

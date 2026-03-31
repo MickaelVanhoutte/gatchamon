@@ -8,7 +8,7 @@ export interface TrainerSkills {
   globalDefBonus: number;      // 0-10, +2% DEF per level
   globalHpBonus: number;       // 0-10, +2% HP per level
   globalSpdBonus: number;      // 0-10, +1% SPD per level
-  stardustBonus: number;       // 0-5, +10% stardust per level
+  pokedollarBonus: number;     // 0-5, +10% pokedollars per level
   xpBonus: number;             // 0-5, +10% battle XP per level
   pokeballBonus: number;       // 0-5, +10% pokeball rewards per level
   essenceBonus: number;        // 0-5, +10% essence drops per level
@@ -22,6 +22,7 @@ export interface Player {
   legendaryPokeballs: number;
   energy: number;
   stardust: number;
+  pokedollars: number;
   storyProgress: StoryProgress;
   materials: Record<string, number>;
   towerProgress: number;

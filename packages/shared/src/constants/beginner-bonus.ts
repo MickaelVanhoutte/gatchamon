@@ -9,7 +9,7 @@ const BEGINNER_BONUS_DURATION_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 export const BEGINNER_BONUS = {
   xpMult: 2,
-  stardustMult: 2,
+  pokedollarMult: 2,
   essenceMult: 1.5,
   itemDropBonusChance: 0.5, // +50% chance of extra item drop
   summon5StarBonus: 2,      // +2% absolute

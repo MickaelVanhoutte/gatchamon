@@ -30,6 +30,7 @@ export interface MissionReward {
   dittos?: number;
   legendaryPokeballs?: number;
   stardust?: number;
+  pokedollars?: number;
 }
 
 export interface MissionDefinition {

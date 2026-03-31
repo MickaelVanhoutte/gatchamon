@@ -11,7 +11,7 @@ import {
   getItemSellValue,
 } from '@gatchamon/shared';
 import { loadHeldItems, saveHeldItems, getItemsForPokemon } from './storage';
-import { spendStardust, earnStardust } from './player.service';
+import { spendPokedollars, earnPokedollars } from './player.service';
 
 // ── Random helpers ──────────────────────────────────────────────────────
 
@@ -105,7 +105,7 @@ export function equipItem(itemId: string, pokemonInstanceId: string): void {
 
 export function unequipItem(itemId: string): void {
   // Costs stardust
-  spendStardust(ITEM_REMOVAL_COST);
+  spendPokedollars(ITEM_REMOVAL_COST);
 
   const items = loadHeldItems();
   const item = items.find(i => i.itemId === itemId);
@@ -130,7 +130,7 @@ export function upgradeItem(itemId: string): UpgradeResult {
   if (item.level >= 15) throw new Error('Item is already max level');
 
   const cost = getUpgradeCost(item.level, item.stars);
-  spendStardust(cost);
+  spendPokedollars(cost);
 
   const targetLevel = item.level + 1;
   const successRate = getUpgradeSuccessRate(targetLevel);
@@ -200,7 +200,7 @@ export function sellItem(itemId: string): number {
   const value = getItemSellValue(item);
   items.splice(idx, 1);
   saveHeldItems(items);
-  earnStardust(value);
+  earnPokedollars(value);
   return value;
 }
 
@@ -217,7 +217,7 @@ export function sellItems(itemIds: string[]): number {
 
   if (totalValue > 0) {
     saveHeldItems(remaining);
-    earnStardust(totalValue);
+    earnPokedollars(totalValue);
   }
   return totalValue;
 }

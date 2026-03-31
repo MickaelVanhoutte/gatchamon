@@ -124,14 +124,16 @@ export function calculateTowerRewards(state: BattleState): BattleRewards {
 
   const reward = floorDef.reward;
 
-  // Apply reward to player (beginner bonus on stardust & essences)
+  // Apply reward to player (beginner bonus on pokedollars & essences)
   const towerRewardPlayer = loadPlayer()!;
   const updates: Partial<typeof towerRewardPlayer> = {};
   if (reward.regularPokeballs) updates.regularPokeballs = towerRewardPlayer.regularPokeballs + reward.regularPokeballs;
   if (reward.premiumPokeballs) updates.premiumPokeballs = towerRewardPlayer.premiumPokeballs + reward.premiumPokeballs;
   if (reward.legendaryPokeballs) updates.legendaryPokeballs = (towerRewardPlayer.legendaryPokeballs ?? 0) + reward.legendaryPokeballs;
-  const towerStardustMult = beginnerTower ? BEGINNER_BONUS.stardustMult : 1;
-  if (reward.stardust) updates.stardust = (towerRewardPlayer.stardust ?? 0) + Math.floor(reward.stardust * towerStardustMult);
+  const towerPokedollarMult = beginnerTower ? BEGINNER_BONUS.pokedollarMult : 1;
+  if (reward.pokedollars) updates.pokedollars = (towerRewardPlayer.pokedollars ?? 0) + Math.floor(reward.pokedollars * towerPokedollarMult);
+  // Stardust milestones (no beginner bonus — premium currency)
+  if (reward.stardust) updates.stardust = (towerRewardPlayer.stardust ?? 0) + reward.stardust;
   if (reward.essences) {
     const materials = { ...(towerRewardPlayer.materials ?? {}) };
     const towerEssenceMult = beginnerTower ? BEGINNER_BONUS.essenceMult : 1;
@@ -195,7 +197,8 @@ export function calculateTowerRewards(state: BattleState): BattleRewards {
     xpPerMon,
     levelUps,
     essences: reward.essences,
-    stardust: reward.stardust ?? 0,
+    pokedollars: reward.pokedollars ?? 0,
+    stardust: reward.stardust ?? undefined,
     trainerXpGained: trainerXpBase,
     trainerLeveledUp: trainerResult.leveledUp,
     trainerNewLevel: trainerResult.newLevel,

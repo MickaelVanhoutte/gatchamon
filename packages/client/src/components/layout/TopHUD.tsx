@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useGameStore } from '../../stores/gameStore';
-import { getMaxEnergy, trainerXpToNextLevel, TOTAL_REGIONS, BEGINNER_BONUS, isBeginnerBonusActive } from '@gatchamon/shared';
+import { getMaxEnergy, trainerXpToNextLevel, TOTAL_REGIONS, BEGINNER_BONUS } from '@gatchamon/shared';
 import { GameIcon } from '../icons';
 import './TopHUD.css';
 
@@ -80,7 +80,7 @@ export function TopHUD() {
                     <div className="hud-beginner-tooltip-timer">Expires in {remaining}</div>
                     <ul className="hud-beginner-tooltip-list">
                       <li><span className="bonus-value">x{BEGINNER_BONUS.xpMult}</span> EXP (pokemon & trainer)</li>
-                      <li><span className="bonus-value">x{BEGINNER_BONUS.stardustMult}</span> Stardust</li>
+                      <li><span className="bonus-value">x{BEGINNER_BONUS.pokedollarMult}</span> Pokedollars</li>
                       <li><span className="bonus-value">x{BEGINNER_BONUS.essenceMult}</span> Essence drops</li>
                       <li><span className="bonus-value">+{BEGINNER_BONUS.summon5StarBonus}%</span> 5-star summon rate</li>
                       <li><span className="bonus-value">+{BEGINNER_BONUS.summon4StarBonus}%</span> 4-star summon rate</li>
@@ -107,6 +107,10 @@ export function TopHUD() {
         <div className="hud-resource">
           <GameIcon id="energy" size={14} className="hud-energy-icon" />
           <span>{player.energy}/{maxEnergy}</span>
+        </div>
+        <div className="hud-resource">
+          <GameIcon id="pokedollar" size={14} className="hud-pokedollar-icon" />
+          <span>{(player.pokedollars ?? 0).toLocaleString()}</span>
         </div>
         <div className="hud-resource">
           <GameIcon id="stardust" size={14} className="hud-stardust-icon" />

@@ -76,6 +76,7 @@ export interface BattleRewards {
   isFirstClear?: boolean;
   monsterLoot?: { templateId: number; stars: 1 | 2 | 3; instanceId: string };
   stardust?: number;
+  pokedollars?: number;
   itemDrops?: Array<{ itemId: string; setId: string; stars: number; grade: string }>;
   trainerXpGained?: number;
   trainerLeveledUp?: boolean;

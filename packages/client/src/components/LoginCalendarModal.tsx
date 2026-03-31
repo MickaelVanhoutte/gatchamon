@@ -15,6 +15,7 @@ function getRewardIcon(reward: MissionReward): string {
   if (reward.heldItem) return 'gift';
   if (reward.premiumPokeballs) return 'premiumPokeball';
   if (reward.essences) return 'sparkles';
+  if (reward.pokedollars) return 'pokedollar';
   if (reward.stardust) return 'stardust';
   if (reward.regularPokeballs) return 'pokeball';
   if (reward.energy) return 'energy';
@@ -28,6 +29,9 @@ function getRewardLabel(reward: MissionReward): string {
   if (reward.essences) {
     const total = Object.values(reward.essences).reduce((a, b) => a + b, 0);
     return `${total} Ess`;
+  }
+  if (reward.pokedollars) {
+    return reward.pokedollars >= 1000 ? `${reward.pokedollars / 1000}K ₽` : `${reward.pokedollars} ₽`;
   }
   if (reward.stardust) {
     return reward.stardust >= 1000 ? `${reward.stardust / 1000}K SD` : `${reward.stardust} SD`;

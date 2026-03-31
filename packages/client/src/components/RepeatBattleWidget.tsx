@@ -123,12 +123,12 @@ export function RepeatBattleModal() {
                         <span className="rb-reward-label">XP/mon</span>
                       </div>
                     )}
-                    {rewards.totalStardust > 0 && (
+                    {rewards.totalPokedollars > 0 && (
                       <div className="rb-reward-item">
                         <span className="rb-reward-value">
-                          +{rewards.totalStardust.toLocaleString()} <GameIcon id="stardust" size={12} />
+                          +{rewards.totalPokedollars.toLocaleString()} <GameIcon id="pokedollar" size={12} />
                         </span>
-                        <span className="rb-reward-label">Stardust</span>
+                        <span className="rb-reward-label">Pokedollars</span>
                       </div>
                     )}
                     {rewards.totalLevelUps > 0 && (

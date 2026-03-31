@@ -672,6 +672,9 @@ export function BattlePage() {
                       </div>
                     </div>
                   )}
+                  {rewards.pokedollars != null && rewards.pokedollars > 0 && (
+                    <p>+ {rewards.pokedollars.toLocaleString()} <span style={{color:'#d4a017'}}><GameIcon id="pokedollar" size={12} /></span> Pokedollars</p>
+                  )}
                   {rewards.stardust != null && rewards.stardust > 0 && (
                     <p>+ {rewards.stardust.toLocaleString()} <span style={{color:'#c084fc'}}><GameIcon id="stardust" size={12} /></span> Stardust</p>
                   )}
