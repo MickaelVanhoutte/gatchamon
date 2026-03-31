@@ -9,8 +9,8 @@
 const SPRITE_SCALE_BOOST: Record<string, number> = {
   // Large / iconic winged Pokemon — most noticeable when too small
   charizard:          1.6,
-  'charizard-megax':  1.6,
-  'charizard-megay':  1.6,
+  'charizard-megax':  2,
+  'charizard-megay':  2.2,
   articuno:           1.6,
   'articuno-galar':   1.5,
   zapdos:             1.6,
@@ -65,6 +65,9 @@ const SPRITE_SCALE_BOOST: Record<string, number> = {
   swanna:             1.2,
   pelipper:           1.2,
   cramorant:          1.2,
+  'clefable-mega':    1.6,
+  'beedrill-mega':    0.8,
+  'gyarados-mega':    1.6,
 
   // Mid-stage / smaller birds
   pidgeotto:          1.15,
@@ -86,7 +89,8 @@ const SPRITE_SCALE_BOOST: Record<string, number> = {
   flapple:            1.2,
 
   // Serpentine Pokemon whose Pokedex "height" is body length, not visual size
-  dratini:            0.5,
+  dratini:            0.6,
+  magikarp:           0.6,
 };
 
 /** Return the sprite scale boost multiplier for a given Pokemon name. */

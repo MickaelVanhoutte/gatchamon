@@ -154,9 +154,9 @@ function SkillPanel({ actor, selectedSkill, onSkillSelect, onCancelSelect, onSki
             key={skillId}
             className={`skill-btn ${!isReady && !isPassive ? 'on-cd' : ''} ${isPassive ? 'skill-passive' : ''}`}
             disabled={!isReady && !isPassive}
-            onPointerDown={isPassive ? undefined : () => handlePointerDown(skill)}
-            onPointerUp={isPassive ? undefined : () => handlePointerUp(skillId)}
-            onPointerLeave={isPassive ? undefined : handlePointerLeave}
+            onPointerDown={() => handlePointerDown(skill)}
+            onPointerUp={isPassive ? () => { if (longPressTimer.current) { clearTimeout(longPressTimer.current); longPressTimer.current = null; } } : () => handlePointerUp(skillId)}
+            onPointerLeave={handlePointerLeave}
             onClick={isPassive ? () => onSkillDetail(skill) : undefined}
           >
             <span className="skill-name">{skill.name}</span>
@@ -189,6 +189,7 @@ export function BattlePage() {
   const battleSpeedRef = useRef(savedSettings.current.speed);
   const monRefs = useRef<Map<string, HTMLElement>>(new Map());
   const isActingRef = useRef(false);
+  const lastActedRef = useRef<string | null>(null);
   const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
 
   const { playLogEntry, playMultiTargetEntries } = useBattleAnimation(arenaEl, monRefs);
@@ -289,9 +290,33 @@ export function BattlePage() {
 
   // Recompute turn order only when phase transitions away from 'animating'.
   // This prevents the timeline from jumping during enemy turn animations.
+  // When a player mon just acted, start it at the far right then animate it
+  // sliding to its real position via the CSS transition on .turn-order-slot.
   useEffect(() => {
     if (phase !== 'animating' && state) {
-      setTimeline(simulateTimeline(state.playerTeam, state.enemyTeam, state.currentActorId));
+      const tl = simulateTimeline(state.playerTeam, state.enemyTeam, state.currentActorId);
+      const justActed = lastActedRef.current;
+      lastActedRef.current = null;
+
+      // If the just-acted mon is in the new timeline (but not the current actor
+      // at position 0), place it at the far right first so it slides in.
+      const justActedIdx = justActed ? tl.findIndex(e => e.instanceId === justActed) : -1;
+      if (justActedIdx > 0) {
+        const maxTick = tl.length > 0 ? tl[tl.length - 1].tick : 1;
+        const startTl = tl.map(e =>
+          e.instanceId === justActed ? { ...e, tick: maxTick } : e
+        );
+        setTimeline(startTl);
+        // Wait for the browser to paint the far-right position, then set the
+        // real timeline so the CSS transition animates the slide.
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            setTimeline(tl);
+          });
+        });
+      } else {
+        setTimeline(tl);
+      }
     }
   }, [phase, state]);
 
@@ -310,6 +335,9 @@ export function BattlePage() {
       for (const mon of allMons) {
         hpSnapshot.set(mon.instanceId, { currentHp: mon.currentHp, isAlive: mon.isAlive });
       }
+
+      // Track which player mon just acted so the timeline can animate them from the end
+      lastActedRef.current = state.currentActorId!;
 
       // Compute timeline from pre-action gauges — this matches the engine's actual
       // turn order because gauges haven't been mutated yet by resolvePlayerAction.
@@ -343,6 +371,11 @@ export function BattlePage() {
         }
       }
 
+      // Rotating queue: acted mons move to the end instead of disappearing.
+      // Use even index-based spacing during animation for clean visuals.
+      let animQueue = [...preTimeline];
+      const showQueue = () => setTimeline(animQueue.map((e, idx) => ({ ...e, tick: idx })));
+
       // Animate each group, applying HP changes after each animation
       for (let gi = 0; gi < groups.length; gi++) {
         const group = groups[gi];
@@ -350,16 +383,10 @@ export function BattlePage() {
         const groupActorId = group[0].actorId;
         const groupActor = allMons.find(m => m.instanceId === groupActorId);
 
-        // Before enemy actions, show them as current actor and advance the timeline
+        // Before enemy actions, show them as current actor
         if (groupActor && !groupActor.isPlayerOwned) {
           setState(prev => prev ? { ...prev, currentActorId: groupActorId } : prev);
-          // Slice preTimeline so the current actor becomes position 0
-          const actorIdx = preTimeline.findIndex(e => e.instanceId === groupActorId);
-          if (actorIdx >= 0) {
-            const remaining = preTimeline.slice(actorIdx);
-            const baseTick = remaining[0].tick;
-            setTimeline(remaining.map(e => ({ ...e, tick: e.tick - baseTick })));
-          }
+          showQueue();
           await new Promise(r => setTimeout(r, 600 / spd));
         }
 
@@ -388,18 +415,15 @@ export function BattlePage() {
 
         setState({ ...result.state });
 
-        // Advance timeline to show the next actor after this group
-        const nextActorId = gi < groups.length - 1
-          ? groups[gi + 1][0].actorId
-          : result.state.currentActorId;
-        if (nextActorId) {
-          const nextIdx = preTimeline.findIndex(e => e.instanceId === nextActorId);
-          if (nextIdx >= 0) {
-            const remaining = preTimeline.slice(nextIdx);
-            const baseTick = remaining[0].tick;
-            setTimeline(remaining.map(e => ({ ...e, tick: e.tick - baseTick })));
-          }
+        // Rotate: acting mon goes to the end, remove dead mons
+        const acted = animQueue.find(e => e.instanceId === groupActorId);
+        animQueue = animQueue.filter(e => e.instanceId !== groupActorId);
+        if (acted) {
+          const deadIds = new Set(allMons.filter(m => !m.isAlive).map(m => m.instanceId));
+          if (!deadIds.has(acted.instanceId)) animQueue.push(acted);
+          animQueue = animQueue.filter(e => !deadIds.has(e.instanceId));
         }
+        showQueue();
 
         await new Promise(r => setTimeout(r, 400 / spd));
       }
@@ -586,7 +610,7 @@ export function BattlePage() {
           </div>
         </div>
         <button className={`speed-toggle ${battleSpeed === 2 ? 'active' : ''}`} onClick={toggleSpeed}>
-          {battleSpeed === 2 ? '>>x2' : '>>x1'}
+          {battleSpeed === 2 ? 'x2' : 'x1'}
         </button>
         <button className={`auto-toggle ${isAutoOn ? 'active' : ''}`} onClick={toggleAuto}>
           Auto
@@ -634,7 +658,7 @@ export function BattlePage() {
       </div>
 
       {/* Skill panel */}
-      {isPlayerTurn && currentActor && !isAutoOn ? (
+      {isPlayerTurn && currentActor && !isAutoOn && (
         <SkillPanel
           actor={currentActor}
           selectedSkill={selectedSkill}
@@ -642,30 +666,7 @@ export function BattlePage() {
           onCancelSelect={() => setSelectedSkill(null)}
           onSkillDetail={setDetailSkill}
         />
-      ) : phase !== 'victory' && phase !== 'defeat' && (() => {
-        // Show passive skills even when it's not the player's manual turn
-        const aliveMon = state?.playerTeam.find(m => m.isAlive);
-        if (!aliveMon) return null;
-        const tmpl = getTemplate(aliveMon.templateId);
-        const passiveSkills = (tmpl?.skillIds ?? [])
-          .map(id => SKILLS[id])
-          .filter(s => s?.category === 'passive');
-        if (passiveSkills.length === 0) return null;
-        return (
-          <div className="skill-panel">
-            {passiveSkills.map(skill => (
-              <button
-                key={skill.id}
-                className="skill-btn skill-passive"
-                onClick={() => setDetailSkill(skill)}
-              >
-                <span className="skill-name">{skill.name}</span>
-                <span className="passive-label">P</span>
-              </button>
-            ))}
-          </div>
-        );
-      })()}
+      )}
 
       {/* Pause overlay */}
       {isPaused && phase !== 'victory' && phase !== 'defeat' && (
@@ -978,15 +979,8 @@ function BattleMonSprite({
   // Scale sprite based on species height: small Pokemon ~0.8x, large ~1.5x
   const sizeScale = Math.min(1.5, Math.max(0.8, 0.5 + (tmpl.height ?? 1) * 0.45)) * getSpriteBoost(tmpl.name);
 
-  return (
-    <div
-      ref={registerRef}
-      className={`battle-mon ${!mon.isAlive ? 'dead' : ''} ${isTargetable ? 'targetable' : ''} ${isActive ? 'active-mon' : ''} ${mon.isBoss ? 'boss-mon' : ''}`}
-      onClick={mon.isAlive && isTargetable ? onClick : undefined}
-    >
-      {effectiveness !== null && mon.isAlive && (
-        <EffectivenessArrow effectiveness={effectiveness} />
-      )}
+  const hpBars = (
+    <>
       <div className="mon-hp-bar-bg">
         <div className="mon-hp-bar" style={{ width: `${hpPct}%`, background: hpColor }} />
       </div>
@@ -994,17 +988,49 @@ function BattleMonSprite({
         <div className="mon-atb-bar" style={{ width: `${Math.min(100, (mon.actionGauge / 1000) * 100)}%` }} />
       </div>
       <span className="mon-hp-text">{mon.currentHp}/{mon.maxHp}</span>
-      <div className="sprite-container">
-        <img
-          src={animatedSpriteUrl}
-          alt={tmpl.name}
-          className="battle-sprite"
-          style={{ transform: `scale(${sizeScale})` }}
-        />
-        {mon.isAlive && <StatusOverlay mon={mon} />}
-      </div>
-      {mon.isAlive && <EffectIcons mon={mon} onEffectClick={onEffectClick} />}
-      <span className="mon-name">{tmpl.name}</span>
+    </>
+  );
+
+  const sprite = (
+    <div className="sprite-container">
+      <img
+        src={animatedSpriteUrl}
+        alt={tmpl.name}
+        className="battle-sprite"
+        style={{ transform: `scale(${sizeScale})` }}
+      />
+      {mon.isAlive && <StatusOverlay mon={mon} />}
+    </div>
+  );
+
+  const nameLabel = <span className="mon-name">{tmpl.name}</span>;
+  const effectIcons = mon.isAlive && <EffectIcons mon={mon} onEffectClick={onEffectClick} />;
+  const effArrow = effectiveness !== null && mon.isAlive && (
+    <EffectivenessArrow effectiveness={effectiveness} />
+  );
+
+  return (
+    <div
+      ref={registerRef}
+      className={`battle-mon ${!mon.isAlive ? 'dead' : ''} ${isTargetable ? 'targetable' : ''} ${isActive ? 'active-mon' : ''} ${mon.isBoss ? 'boss-mon' : ''}`}
+      onClick={mon.isAlive && isTargetable ? onClick : undefined}
+    >
+      {mon.isPlayerOwned ? (
+        <>
+          {sprite}
+          {effectIcons}
+          {nameLabel}
+          {hpBars}
+        </>
+      ) : (
+        <>
+          {effArrow}
+          {nameLabel}
+          {hpBars}
+          {sprite}
+          {effectIcons}
+        </>
+      )}
     </div>
   );
 }

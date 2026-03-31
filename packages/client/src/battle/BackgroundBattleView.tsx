@@ -418,11 +418,8 @@ function MiniMonSprite({
   const animatedSpriteUrl = assetUrl(`monsters/${spriteDir}/${tmpl.name.toLowerCase()}.gif`);
   const sizeScale = Math.min(1.5, Math.max(0.8, 0.5 + (tmpl.height ?? 1) * 0.45));
 
-  return (
-    <div
-      ref={registerRef}
-      className={`battle-mon ${!mon.isAlive ? 'dead' : ''} ${isActive ? 'active-mon' : ''} ${mon.isBoss ? 'boss-mon' : ''}`}
-    >
+  const hpBars = (
+    <>
       <div className="mon-hp-bar-bg">
         <div className="mon-hp-bar" style={{ width: `${hpPct}%`, background: hpColor }} />
       </div>
@@ -430,17 +427,41 @@ function MiniMonSprite({
         <div className="mon-atb-bar" style={{ width: `${Math.min(100, (mon.actionGauge / 1000) * 100)}%` }} />
       </div>
       <span className="mon-hp-text">{mon.currentHp}/{mon.maxHp}</span>
-      <div className="sprite-container">
-        <img
-          src={animatedSpriteUrl}
-          alt={tmpl.name}
-          className="battle-sprite"
-          style={{ transform: `scale(${sizeScale})` }}
-        />
-        {mon.isAlive && <StatusOverlay mon={mon} />}
-      </div>
-      {mon.isAlive && <MiniEffectIcons mon={mon} />}
-      <span className="mon-name">{tmpl.name}</span>
+    </>
+  );
+
+  const sprite = (
+    <div className="sprite-container">
+      <img
+        src={animatedSpriteUrl}
+        alt={tmpl.name}
+        className="battle-sprite"
+        style={{ transform: `scale(${sizeScale})` }}
+      />
+      {mon.isAlive && <StatusOverlay mon={mon} />}
+    </div>
+  );
+
+  return (
+    <div
+      ref={registerRef}
+      className={`battle-mon ${!mon.isAlive ? 'dead' : ''} ${isActive ? 'active-mon' : ''} ${mon.isBoss ? 'boss-mon' : ''}`}
+    >
+      {mon.isPlayerOwned ? (
+        <>
+          {sprite}
+          {mon.isAlive && <MiniEffectIcons mon={mon} />}
+          <span className="mon-name">{tmpl.name}</span>
+          {hpBars}
+        </>
+      ) : (
+        <>
+          <span className="mon-name">{tmpl.name}</span>
+          {hpBars}
+          {sprite}
+          {mon.isAlive && <MiniEffectIcons mon={mon} />}
+        </>
+      )}
     </div>
   );
 }

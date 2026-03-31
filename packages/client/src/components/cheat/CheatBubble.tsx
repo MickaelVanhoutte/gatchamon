@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useGameStore } from '../../stores/gameStore';
-import { getMaxEnergy } from '@gatchamon/shared';
+import { getMaxEnergy, ACTIVE_POKEDEX } from '@gatchamon/shared';
+import type { PokemonInstance } from '@gatchamon/shared';
 import { updatePlayer, earnStardust, earnPokedollars } from '../../services/player.service';
+import { addToCollection } from '../../services/storage';
 import './CheatBubble.css';
 
 interface Feedback {
@@ -30,6 +32,20 @@ function executeCheat(command: string): Feedback {
     case '/valousuce': {
       updatePlayer({ premiumPokeballs: player.premiumPokeballs + 10 });
       return { message: '+10 Premium Pokeballs!', success: true };
+    }
+    case '/allmons': {
+      const instances: PokemonInstance[] = ACTIVE_POKEDEX.map(t => ({
+        instanceId: crypto.randomUUID(),
+        templateId: t.id,
+        ownerId: player.id,
+        level: 1,
+        stars: t.naturalStars,
+        exp: 0,
+        isShiny: false,
+        skillLevels: [1, 1, 1] as [number, number, number],
+      }));
+      addToCollection(instances);
+      return { message: `+${instances.length} Pokémon added!`, success: true };
     }
     default:
       return { message: 'Unknown code', success: false };
