@@ -11,28 +11,28 @@ export interface TowerFloorDef {
   statBoost?: number;
 }
 
-// Enemy pools sourced from region data, scaling with tower floor range
+// Enemy pools — Gen 1 only, difficulty through team composition & type coverage
 const TOWER_POOLS: Record<string, number[]> = {
-  // Floors 1-10: early-game Pokemon
-  early: [10, 13, 69, 43, 16, 19, 21, 39],
-  // Floors 11-20: mix of early-mid
-  earlyMid: [41, 43, 92, 19, 66, 74, 16, 13],
-  // Floors 21-30: mid-game
-  mid: [74, 41, 19, 66, 129, 60, 7, 25],
-  // Floors 31-40: mid-late
-  midLate: [25, 66, 74, 4, 58, 60, 63, 92],
-  // Floors 41-50: late-game common
-  late: [4, 58, 74, 92, 63, 41, 39, 133],
-  // Floors 51-60: late-game tough
-  lateTough: [92, 63, 60, 133, 147, 1, 7, 25],
-  // Floors 61-70: elite tier
-  elite: [133, 147, 1, 4, 7, 25, 127, 128],
-  // Floors 71-80: champion tier
-  champion: [147, 133, 127, 128, 131, 142, 106, 107],
-  // Floors 81-90: legendary tier
-  legendary: [142, 131, 115, 106, 107, 147, 133, 1],
-  // Floors 91-100: ultimate tier
-  ultimate: [142, 131, 115, 106, 107, 127, 128, 147],
+  // Floors 1-10: weak unevolved basics
+  early: [16, 19, 21],
+  // Floors 11-20: 2-star basics with diverse types
+  earlyMid: [25, 37, 41, 66],
+  // Floors 21-30: evolved 2-star forms
+  mid: [26, 34, 38, 42],
+  // Floors 31-40: strong 3-star final evolutions
+  midLate: [6, 9, 65, 94, 130],
+  // Floors 41-50: best 3-star finals + 4-star
+  late: [59, 94, 131, 143, 142],
+  // Floors 51-60: 4-star powerhouses
+  lateTough: [142, 143, 149, 130, 131],
+  // Floors 61-70: best of Gen 1 mix
+  elite: [149, 143, 65, 94, 130],
+  // Floors 71-80: legendary birds + Dragonite
+  champion: [144, 145, 146, 149, 143],
+  // Floors 81-90: Mewtwo + birds + Gyarados
+  legendary: [150, 144, 145, 146, 130],
+  // Floors 91-100: Mewtwo, Mew + top Gen 1
+  ultimate: [150, 151, 149, 143, 130],
 };
 
 function getEnemyPool(floor: number): number[] {
@@ -49,37 +49,34 @@ function getEnemyPool(floor: number): number[] {
 }
 
 function getEnemyLevel(floor: number): number {
-  if (floor <= 10) return 5 + floor * 2;
-  if (floor <= 20) return 10 + floor * 2;
-  if (floor <= 40) return floor * 3;
-  if (floor <= 60) return floor * 4;
-  if (floor <= 80) return floor * 5;
-  if (floor <= 99) return floor * 6;
-  return 300; // Floor 100 boss
+  // Smooth linear ramp: floor 1 → level 6, floor 100 → level 100
+  return Math.floor(5 + floor * 0.95);
 }
 
 function getEnemyStars(floor: number): 1 | 2 | 3 | 4 | 5 | 6 {
   if (floor <= 10) return 1;
-  if (floor <= 25) return 2;
-  if (floor <= 40) return 3;
-  if (floor <= 60) return 4;
-  if (floor <= 80) return 5;
+  if (floor <= 20) return 2;
+  if (floor <= 35) return 3;
+  if (floor <= 50) return 4;
+  if (floor <= 70) return 5;
   return 6;
 }
 
 function getStatBoost(floor: number): number | undefined {
-  if (floor <= 20) return undefined;
-  if (floor <= 40) return 1.2;
-  if (floor <= 60) return 1.5;
-  if (floor <= 80) return 1.8;
-  if (floor <= 99) return 2.2;
-  return 2.5; // Floor 100
+  if (floor <= 40) return undefined;
+  if (floor <= 60) return 1.1;
+  if (floor <= 80) return 1.2;
+  if (floor <= 99) return 1.3;
+  return 1.5; // Floor 100 boss
 }
 
 function getEnemyCount(floor: number): number {
-  if (floor === 100) return 4;
-  if (floor % 10 === 0) return 4; // Boss floors get 4 enemies
-  return 3;
+  // Floors 51+: 4 enemies base, 5 on boss floors
+  if (floor > 50) {
+    return floor % 10 === 0 ? 5 : 4;
+  }
+  // Floors 1-50: 3 enemies base, 4 on boss floors
+  return floor % 10 === 0 ? 4 : 3;
 }
 
 function getFloorReward(floor: number): MissionReward {
