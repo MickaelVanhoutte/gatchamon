@@ -2,6 +2,7 @@ import { useGameStore } from '../stores/gameStore';
 import { trainerXpToNextLevel, MAX_TRAINER_LEVEL, TRAINER_SKILL_MAX } from '@gatchamon/shared';
 import type { TrainerSkills } from '@gatchamon/shared';
 import { clearAll } from '../services/storage';
+import { EssenceBag } from '../components/EssenceBag';
 import './TrainerPage.css';
 
 interface SkillDef {
@@ -46,80 +47,84 @@ export function TrainerPage() {
   const xpPct = isMaxLevel ? 100 : Math.min(100, Math.floor((trainerExp / xpNeeded) * 100));
 
   return (
-    <div className="page trainer-page" data-nested-scroll>
-      <div className="trainer-page-inner">
-      {/* Header */}
-      <div className="trainer-header">
-        <div className="trainer-level-badge">
-          Trainer Lv.{trainerLevel}
-        </div>
-        {!isMaxLevel && (
-          <div className="trainer-xp-info">
-            {trainerExp} / {xpNeeded} XP
+    <div className="page trainer-page">
+      <div className="trainer-left-panel" data-nested-scroll>
+        {/* Header */}
+        <div className="trainer-header">
+          <div className="trainer-level-badge">
+            Trainer Lv.{trainerLevel}
           </div>
-        )}
-        <div className="trainer-xp-bar">
-          <div className="trainer-xp-fill" style={{ width: `${xpPct}%` }} />
+          {!isMaxLevel && (
+            <div className="trainer-xp-info">
+              {trainerExp} / {xpNeeded} XP
+            </div>
+          )}
+          <div className="trainer-xp-bar">
+            <div className="trainer-xp-fill" style={{ width: `${xpPct}%` }} />
+          </div>
+          <div className="trainer-sp">
+            {trainerSkillPoints > 0
+              ? `${trainerSkillPoints} Skill Point${trainerSkillPoints > 1 ? 's' : ''} Available`
+              : 'No Skill Points'}
+          </div>
         </div>
-        <div className="trainer-sp">
-          {trainerSkillPoints > 0
-            ? `${trainerSkillPoints} Skill Point${trainerSkillPoints > 1 ? 's' : ''} Available`
-            : 'No Skill Points'}
+
+        {/* Skill Categories */}
+        {CATEGORIES.map(cat => (
+          <div key={cat.title} className="trainer-category">
+            <h4 className="trainer-category-title">{cat.title}</h4>
+            {cat.skills.map(skill => {
+              const current = trainerSkills[skill.key];
+              const max = TRAINER_SKILL_MAX[skill.key];
+              const isMax = current >= max;
+              const canAllocate = trainerSkillPoints > 0 && !isMax;
+
+              return (
+                <div key={skill.key} className="trainer-skill-row">
+                  <div className="trainer-skill-info">
+                    <div className="trainer-skill-name">{skill.name}</div>
+                    <div className="trainer-skill-desc">{skill.desc} ({skill.unit})</div>
+                  </div>
+                  <div className="trainer-skill-pips">
+                    {Array.from({ length: max }, (_, i) => (
+                      <div
+                        key={i}
+                        className={`trainer-skill-pip ${i < current ? (isMax ? 'filled maxed' : 'filled') : ''}`}
+                      />
+                    ))}
+                  </div>
+                  <div className="trainer-skill-level">
+                    {isMax ? <span className="maxed">MAX</span> : `${current}/${max}`}
+                  </div>
+                  <button
+                    className="trainer-alloc-btn"
+                    disabled={!canAllocate}
+                    onClick={() => allocateTrainerSkill(skill.key)}
+                  >
+                    +
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        ))}
+        <div style={{ marginTop: 40, textAlign: 'center' }}>
+          <button
+            style={{ fontSize: '0.65rem', color: '#555', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.4 }}
+            onClick={() => {
+              if (window.confirm('Reset ALL data? This cannot be undone.')) {
+                clearAll();
+                window.location.reload();
+              }
+            }}
+          >
+            Reset Account
+          </button>
         </div>
       </div>
 
-      {/* Skill Categories */}
-      {CATEGORIES.map(cat => (
-        <div key={cat.title} className="trainer-category">
-          <h4 className="trainer-category-title">{cat.title}</h4>
-          {cat.skills.map(skill => {
-            const current = trainerSkills[skill.key];
-            const max = TRAINER_SKILL_MAX[skill.key];
-            const isMax = current >= max;
-            const canAllocate = trainerSkillPoints > 0 && !isMax;
-
-            return (
-              <div key={skill.key} className="trainer-skill-row">
-                <div className="trainer-skill-info">
-                  <div className="trainer-skill-name">{skill.name}</div>
-                  <div className="trainer-skill-desc">{skill.desc} ({skill.unit})</div>
-                </div>
-                <div className="trainer-skill-pips">
-                  {Array.from({ length: max }, (_, i) => (
-                    <div
-                      key={i}
-                      className={`trainer-skill-pip ${i < current ? (isMax ? 'filled maxed' : 'filled') : ''}`}
-                    />
-                  ))}
-                </div>
-                <div className="trainer-skill-level">
-                  {isMax ? <span className="maxed">MAX</span> : `${current}/${max}`}
-                </div>
-                <button
-                  className="trainer-alloc-btn"
-                  disabled={!canAllocate}
-                  onClick={() => allocateTrainerSkill(skill.key)}
-                >
-                  +
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      ))}
-      <div style={{ marginTop: 40, textAlign: 'center' }}>
-        <button
-          style={{ fontSize: '0.65rem', color: '#555', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.4 }}
-          onClick={() => {
-            if (window.confirm('Reset ALL data? This cannot be undone.')) {
-              clearAll();
-              window.location.reload();
-            }
-          }}
-        >
-          Reset Account
-        </button>
-      </div>
+      <div className="trainer-right-panel" data-nested-scroll>
+        <EssenceBag />
       </div>
     </div>
   );

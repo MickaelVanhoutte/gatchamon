@@ -12,7 +12,7 @@ export { REGIONS, TOTAL_REGIONS, getFloorCount } from './data/regions.js';
 export type { RegionDef } from './data/regions.js';
 export { GYM_LEADERS, LEAGUE_CHAMPIONS, getGymLeader, getLeagueChampion, getGymLeaderTeam, getBossDialogue } from './data/gym-leaders.js';
 export type { GymLeaderDef, LeagueChampionDef } from './data/gym-leaders.js';
-export { ESSENCES, getEssence } from './data/essences.js';
+export { ESSENCES, getEssence, ELEMENTS, TIERS, TIER_LABELS } from './data/essences.js';
 export { EVOLUTION_CHAINS, getEvolutionsFrom, canEvolve, getEvolutionLineage } from './data/evolutions.js';
 export { DUNGEONS, getDungeon } from './data/dungeons.js';
 export { BATTLE_TOWER, getTowerFloor } from './data/battle-tower.js';

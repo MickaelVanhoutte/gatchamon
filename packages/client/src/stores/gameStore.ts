@@ -8,6 +8,7 @@ import * as mergeService from '../services/merge.service';
 import * as altarService from '../services/altar.service';
 import * as evolutionService from '../services/evolution.service';
 import * as typeChangeService from '../services/type-change.service';
+import * as essenceMergeService from '../services/essence-merge.service';
 import * as heldItemService from '../services/held-item.service';
 import { regenerateEnergy } from '../services/energy.service';
 import { getUnclaimedMissionCount, getUnclaimedTrophyCount } from '../services/reward.service';
@@ -46,6 +47,7 @@ interface GameState {
   sellItems: (itemIds: string[]) => number;
   updateInstance: (instanceId: string, updates: Partial<PokemonInstance>) => void;
   allocateTrainerSkill: (skill: keyof TrainerSkills) => void;
+  mergeEssences: (element: string, targetTier: 'mid' | 'high', count: number) => void;
 }
 
 let energyRegenInterval: ReturnType<typeof setInterval> | null = null;
@@ -247,6 +249,12 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   allocateTrainerSkill: (skill: keyof TrainerSkills) => {
     playerService.allocateTrainerSkill(skill);
+    const updatedPlayer = storage.loadPlayer();
+    set({ player: updatedPlayer });
+  },
+
+  mergeEssences: (element: string, targetTier: 'mid' | 'high', count: number) => {
+    essenceMergeService.performMerge(element, targetTier, count);
     const updatedPlayer = storage.loadPlayer();
     set({ player: updatedPlayer });
   },

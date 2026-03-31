@@ -10,7 +10,7 @@ const ELEMENT_ICONS: Record<string, string> = {
   magic: 'magic',
 };
 
-const TIER_LABELS: Record<EssenceTier, string> = {
+export const TIER_LABELS: Record<EssenceTier, string> = {
   low: 'Low', mid: 'Mid', high: 'High',
 };
 
@@ -21,7 +21,7 @@ function makeEssence(element: PokemonType | 'magic', tier: EssenceTier): Essence
   return { id, element, tier, name, icon };
 }
 
-const ELEMENTS: (PokemonType | 'magic')[] = [
+export const ELEMENTS: (PokemonType | 'magic')[] = [
   'normal', 'fire', 'water', 'grass', 'electric', 'ice',
   'fighting', 'poison', 'ground', 'flying', 'psychic',
   'bug', 'rock', 'ghost', 'dragon',
@@ -29,7 +29,7 @@ const ELEMENTS: (PokemonType | 'magic')[] = [
   'magic',
 ];
 
-const TIERS: EssenceTier[] = ['low', 'mid', 'high'];
+export const TIERS: EssenceTier[] = ['low', 'mid', 'high'];
 
 export const ESSENCES: Record<string, EssenceDefinition> = {};
 for (const element of ELEMENTS) {
