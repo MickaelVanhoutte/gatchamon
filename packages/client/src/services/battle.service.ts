@@ -616,8 +616,8 @@ export function startDungeonBattle(
       mon.maxHp = mon.stats.hp;
       mon.currentHp = mon.stats.hp;
     }
-    // Speed bonus scales with floor depth (0→0, 9→100)
-    const dungeonSpeedBonus = floor.speedBonus ?? (floorIndex <= 1 ? 0 : Math.floor((floorIndex - 1) * (100 / 8)));
+    // Speed bonus scales with floor depth — essence dungeons cap at 60
+    const dungeonSpeedBonus = floor.speedBonus ?? (floorIndex <= 1 ? 0 : Math.floor((floorIndex - 1) * (60 / 8)));
     if (dungeonSpeedBonus > 0) {
       mon.stats.spd += dungeonSpeedBonus;
     }
