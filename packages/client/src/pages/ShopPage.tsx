@@ -119,24 +119,34 @@ export function ShopPage() {
 
       {phase === 'results' && (
         <div className="shop-results">
-          <h3>Summon Results ({results.length} monsters)</h3>
-          <div className="shop-results-grid">
-            {results.map((r, i) => {
-              const tmpl = getTemplate(r.pokemon.templateId) ?? r.template;
-              return (
-                <div key={i} className={`shop-result-card star-${tmpl.naturalStars}`}>
-                  <img
-                    src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${tmpl.id}.png`}
-                    alt={tmpl.name}
-                    className="shop-result-sprite"
-                  />
-                  <span className="shop-result-name">{tmpl.name}</span>
-                  <StarRating count={tmpl.naturalStars} size={8} />
-                  {r.pokemon.isShiny && <span className="shop-result-shiny">Shiny!</span>}
-                </div>
-              );
-            })}
-          </div>
+          {results.length > 0 ? (
+            <>
+              <h3>Summon Results ({results.length} monsters)</h3>
+              <div className="shop-results-grid">
+                {results.map((r, i) => {
+                  const tmpl = getTemplate(r.pokemon.templateId) ?? r.template;
+                  return (
+                    <div key={i} className={`shop-result-card star-${tmpl.naturalStars}`}>
+                      <img
+                        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${tmpl.id}.png`}
+                        alt={tmpl.name}
+                        className="shop-result-sprite"
+                      />
+                      <span className="shop-result-name">{tmpl.name}</span>
+                      <StarRating count={tmpl.naturalStars} size={8} />
+                      {r.pokemon.isShiny && <span className="shop-result-shiny">Shiny!</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          ) : (
+            <div className="shop-purchase-success">
+              <GameIcon id={selectedDef?.icon ?? 'energy'} size={48} />
+              <h3>Purchase Complete!</h3>
+              <p>{selectedDef?.description}</p>
+            </div>
+          )}
           <button className="shop-back-btn" onClick={handleBack}>Back to Shop</button>
         </div>
       )}

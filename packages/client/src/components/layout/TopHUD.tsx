@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useGameStore } from '../../stores/gameStore';
 import { getMaxEnergy, trainerXpToNextLevel, TOTAL_REGIONS, BEGINNER_BONUS } from '@gatchamon/shared';
+import { onUpdateAvailable } from '../../services/sw-update';
 import { GameIcon } from '../icons';
 import './TopHUD.css';
 
@@ -46,7 +47,12 @@ export function TopHUD() {
   const location = useLocation();
   const navigate = useNavigate();
   const [showBonusTooltip, setShowBonusTooltip] = useState(false);
+  const [updateAvailable, setUpdateAvailable] = useState(false);
   const { active: beginnerActive, remaining } = useBeginnerCountdown(player?.createdAt);
+
+  useEffect(() => {
+    onUpdateAvailable(() => setUpdateAvailable(true));
+  }, []);
 
   if (!player) return null;
   if (location.pathname.startsWith('/battle/')) return null;
@@ -79,12 +85,12 @@ export function TopHUD() {
                     <div className="hud-beginner-tooltip-title">Beginner Bonus</div>
                     <div className="hud-beginner-tooltip-timer">Expires in {remaining}</div>
                     <ul className="hud-beginner-tooltip-list">
-                      <li><span className="bonus-value">x{BEGINNER_BONUS.xpMult}</span> EXP (pokemon & trainer)</li>
-                      <li><span className="bonus-value">x{BEGINNER_BONUS.pokedollarMult}</span> Pokedollars</li>
-                      <li><span className="bonus-value">x{BEGINNER_BONUS.essenceMult}</span> Essence drops</li>
-                      <li><span className="bonus-value">+{BEGINNER_BONUS.summon5StarBonus}%</span> 5-star summon rate</li>
-                      <li><span className="bonus-value">+{BEGINNER_BONUS.summon4StarBonus}%</span> 4-star summon rate</li>
-                      <li><span className="bonus-value">+{Math.round(BEGINNER_BONUS.itemDropBonusChance * 100)}%</span> Held item drop chance</li>
+                      {BEGINNER_BONUS.xpMult > 1 && <li><span className="bonus-value">x{BEGINNER_BONUS.xpMult}</span> EXP (pokemon & trainer)</li>}
+                      {BEGINNER_BONUS.pokedollarMult > 1 && <li><span className="bonus-value">x{BEGINNER_BONUS.pokedollarMult}</span> Pokedollars</li>}
+                      {BEGINNER_BONUS.essenceMult > 1 && <li><span className="bonus-value">x{BEGINNER_BONUS.essenceMult}</span> Essence drops</li>}
+                      {BEGINNER_BONUS.summon5StarBonus > 0 && <li><span className="bonus-value">+{BEGINNER_BONUS.summon5StarBonus}%</span> 5-star summon rate</li>}
+                      {BEGINNER_BONUS.summon4StarBonus > 0 && <li><span className="bonus-value">+{BEGINNER_BONUS.summon4StarBonus}%</span> 4-star summon rate</li>}
+                      {BEGINNER_BONUS.itemDropBonusChance > 0 && <li><span className="bonus-value">+{Math.round(BEGINNER_BONUS.itemDropBonusChance * 100)}%</span> Held item drop chance</li>}
                     </ul>
                   </div>
                 </>
@@ -98,6 +104,16 @@ export function TopHUD() {
         <span className="hud-floor">Region {Object.keys(player.storyProgress.normal).length}/{TOTAL_REGIONS}</span>
       </div>
       <div className="hud-right">
+        {updateAvailable && (
+          <button className="hud-update-btn" onClick={() => window.location.reload()} title="Update available — tap to restart">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 2v6h-6" />
+              <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+              <path d="M3 22v-6h6" />
+              <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+            </svg>
+          </button>
+        )}
         <button className="hud-inbox-btn" onClick={() => navigate('/inbox')}>
           <GameIcon id="gift" size={14} />
           {inboxUnreadCount > 0 && (

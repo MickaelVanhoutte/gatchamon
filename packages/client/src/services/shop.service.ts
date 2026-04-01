@@ -1,6 +1,7 @@
 import type { SummonResult } from './gacha.service';
 import { shopSummonMultiPremium, shopSummonSingleLegendary } from './gacha.service';
 import { spendStardust } from './player.service';
+import { loadPlayer, savePlayer } from './storage';
 
 export interface ShopItemDef {
   id: string;
@@ -11,6 +12,13 @@ export interface ShopItemDef {
 }
 
 export const SHOP_ITEMS: ShopItemDef[] = [
+  {
+    id: 'energy_pack_100',
+    name: 'Energy Pack',
+    description: '100 Energy',
+    icon: 'energy',
+    cost: 50,
+  },
   {
     id: 'premium_pack_10',
     name: 'Premium Pack',
@@ -39,6 +47,14 @@ export function purchaseShopItem(itemId: string): ShopPurchaseResult {
   spendStardust(def.cost);
 
   const results: SummonResult[] = [];
+
+  if (itemId === 'energy_pack_100') {
+    const player = loadPlayer();
+    if (player) {
+      savePlayer({ ...player, energy: player.energy + 100 });
+    }
+    return { results };
+  }
 
   if (itemId === 'premium_pack_10') {
     results.push(...shopSummonMultiPremium());

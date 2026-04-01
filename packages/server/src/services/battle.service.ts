@@ -47,8 +47,8 @@ export interface FloorDef {
 
 const DIFFICULTY_LEVEL_BONUS: Record<Difficulty, number> = {
   normal: 0,
-  hard: 47,
-  hell: 97,
+  hard: 52,
+  hell: 107,
 };
 
 const DIFFICULTY_REWARD_MULT: Record<Difficulty, number> = {
@@ -237,7 +237,7 @@ function calculateRewards(state: BattleState): BattleRewards {
   const bossMult = isBoss ? 3 : 1;
 
   // Pokeballs: base scales with region and floor
-  const pokeballBase = 2 + regionId + Math.floor(floorNum / 3);
+  const pokeballBase = 1 + Math.floor(regionId / 2) + Math.floor(floorNum / 4);
   const pokeballs = Math.floor(pokeballBase * diffMult * bossMult);
 
   // XP: scales with region and floor

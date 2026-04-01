@@ -12,7 +12,7 @@ import * as essenceMergeService from '../services/essence-merge.service';
 import * as heldItemService from '../services/held-item.service';
 import { regenerateEnergy } from '../services/energy.service';
 import { getUnclaimedMissionCount, getUnclaimedTrophyCount } from '../services/reward.service';
-import { getUnreadInboxCount, grantBeginnerItemSet, grantNewPlayerEnergyBonus } from '../services/inbox.service';
+import { getUnreadInboxCount, grantNewPlayerEnergyBonus } from '../services/inbox.service';
 import { useTutorialStore } from './tutorialStore';
 
 export interface OwnedPokemon {
@@ -78,7 +78,6 @@ export const useGameStore = create<GameState>((set, get) => ({
         player = updated;
       }
       set({ player });
-      grantBeginnerItemSet();
       grantNewPlayerEnergyBonus();
       get().refreshRewards();
 

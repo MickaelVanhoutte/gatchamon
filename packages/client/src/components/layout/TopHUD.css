@@ -87,6 +87,28 @@
   color: #c4b5fd;
 }
 
+/* ── Update Available Button ──────────────────────────────── */
+
+.hud-update-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(230, 126, 0, 0.35);
+  border: 1.5px solid #e67e00;
+  border-radius: 50%;
+  color: #fbbf24;
+  cursor: pointer;
+  animation: hud-update-pulse 2s ease-in-out infinite;
+}
+
+@keyframes hud-update-pulse {
+  0%, 100% { box-shadow: 0 0 4px rgba(230, 126, 0, 0.4); }
+  50% { box-shadow: 0 0 10px rgba(230, 126, 0, 0.8); }
+}
+
 .hud-inbox-btn {
   position: relative;
   display: flex;

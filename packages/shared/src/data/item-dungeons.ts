@@ -23,32 +23,32 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
         { setId: 'power_band', minStars: 1, maxStars: 3, gradeWeights: { common: 50, rare: 35, hero: 15, legend: 0 } },
       ], pokedollarReward: [40, 60] },
       { enemyLevel: 34, enemies: [95, 75, 111], enemyStars: 2, drops: [
-        { setId: 'choice_band', minStars: 2, maxStars: 3, gradeWeights: { common: 40, rare: 35, hero: 20, legend: 5 } },
-        { setId: 'power_band', minStars: 2, maxStars: 3, gradeWeights: { common: 40, rare: 35, hero: 20, legend: 5 } },
+        { setId: 'choice_band', minStars: 2, maxStars: 3, gradeWeights: { common: 40, rare: 36, hero: 22, legend: 2 } },
+        { setId: 'power_band', minStars: 2, maxStars: 3, gradeWeights: { common: 40, rare: 36, hero: 22, legend: 2 } },
       ], pokedollarReward: [45, 65] },
-      { enemyLevel: 43, enemies: [111, 95, 76], enemyStars: 3, statBoost: 1.1, drops: [
-        { setId: 'choice_band', minStars: 2, maxStars: 4, gradeWeights: { common: 30, rare: 40, hero: 25, legend: 5 } },
-        { setId: 'power_band', minStars: 2, maxStars: 4, gradeWeights: { common: 30, rare: 40, hero: 25, legend: 5 } },
+      { enemyLevel: 43, enemies: [111, 95, 76], enemyStars: 3, statBoost: 1.15, drops: [
+        { setId: 'choice_band', minStars: 2, maxStars: 4, gradeWeights: { common: 30, rare: 41, hero: 27, legend: 2 } },
+        { setId: 'power_band', minStars: 2, maxStars: 4, gradeWeights: { common: 30, rare: 41, hero: 27, legend: 2 } },
       ], pokedollarReward: [50, 70] },
-      { enemyLevel: 50, enemies: [76, 111, 95], enemyStars: 3, statBoost: 1.2, drops: [
-        { setId: 'choice_band', minStars: 2, maxStars: 4, gradeWeights: { common: 20, rare: 40, hero: 30, legend: 10 } },
-        { setId: 'power_band', minStars: 2, maxStars: 4, gradeWeights: { common: 20, rare: 40, hero: 30, legend: 10 } },
+      { enemyLevel: 50, enemies: [76, 111, 95], enemyStars: 3, statBoost: 1.4, drops: [
+        { setId: 'choice_band', minStars: 2, maxStars: 4, gradeWeights: { common: 20, rare: 42, hero: 35, legend: 3 } },
+        { setId: 'power_band', minStars: 2, maxStars: 4, gradeWeights: { common: 20, rare: 42, hero: 35, legend: 3 } },
       ], pokedollarReward: [55, 75] },
-      { enemyLevel: 58, enemies: [76, 95, 111], enemyStars: 4, statBoost: 1.3, drops: [
-        { setId: 'choice_band', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 35, hero: 35, legend: 15 } },
-        { setId: 'power_band', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 35, hero: 35, legend: 15 } },
+      { enemyLevel: 58, enemies: [76, 95, 111], enemyStars: 4, statBoost: 1.4, drops: [
+        { setId: 'choice_band', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 40, hero: 40, legend: 5 } },
+        { setId: 'power_band', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 40, hero: 40, legend: 5 } },
       ], pokedollarReward: [60, 80] },
-      { enemyLevel: 68, enemies: [112, 76, 95], enemyStars: 5, statBoost: 1.5, drops: [  // Rhydon, Golem, Onix
-        { setId: 'choice_band', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 30, hero: 40, legend: 20 } },
-        { setId: 'power_band', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 30, hero: 40, legend: 20 } },
+      { enemyLevel: 68, enemies: [112, 76, 95], enemyStars: 5, statBoost: 1.6, drops: [  // Rhydon, Golem, Onix
+        { setId: 'choice_band', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 35, hero: 47, legend: 8 } },
+        { setId: 'power_band', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 35, hero: 47, legend: 8 } },
       ], pokedollarReward: [70, 90] },
-      { enemyLevel: 78, enemies: [112, 76, 95], enemyStars: 5, statBoost: 1.7, drops: [  // Rhydon, Golem, Onix
-        { setId: 'choice_band', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 25, hero: 45, legend: 25 } },
-        { setId: 'power_band', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 25, hero: 45, legend: 25 } },
+      { enemyLevel: 78, enemies: [112, 76, 95], enemyStars: 5, statBoost: 1.8, drops: [  // Rhydon, Golem, Onix
+        { setId: 'choice_band', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 30, hero: 55, legend: 10 } },
+        { setId: 'power_band', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 30, hero: 55, legend: 10 } },
       ], pokedollarReward: [80, 100], stardustDrop: { chance: 0.10, min: 3, max: 5 } },
-      { enemyLevel: 90, enemies: [112, 76, 95], enemyStars: 6, statBoost: 2.0, drops: [  // Rhydon, Golem, Onix
-        { setId: 'choice_band', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 20, hero: 45, legend: 35 } },
-        { setId: 'power_band', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 20, hero: 45, legend: 35 } },
+      { enemyLevel: 90, enemies: [112, 76, 95], enemyStars: 6, statBoost: 2.1, drops: [  // Rhydon, Golem, Onix
+        { setId: 'choice_band', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 30, hero: 55, legend: 15 } },
+        { setId: 'power_band', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 30, hero: 55, legend: 15 } },
       ], pokedollarReward: [90, 120], stardustDrop: { chance: 0.10, min: 3, max: 5 } },
     ],
   },
@@ -74,32 +74,32 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
         { setId: 'razor_fang', minStars: 1, maxStars: 3, gradeWeights: { common: 50, rare: 35, hero: 15, legend: 0 } },
       ], pokedollarReward: [40, 60] },
       { enemyLevel: 34, enemies: [44, 1, 69], enemyStars: 2, drops: [
-        { setId: 'leftovers', minStars: 2, maxStars: 3, gradeWeights: { common: 40, rare: 35, hero: 20, legend: 5 } },
-        { setId: 'razor_fang', minStars: 2, maxStars: 3, gradeWeights: { common: 40, rare: 35, hero: 20, legend: 5 } },
+        { setId: 'leftovers', minStars: 2, maxStars: 3, gradeWeights: { common: 40, rare: 36, hero: 22, legend: 2 } },
+        { setId: 'razor_fang', minStars: 2, maxStars: 3, gradeWeights: { common: 40, rare: 36, hero: 22, legend: 2 } },
       ], pokedollarReward: [45, 65] },
-      { enemyLevel: 43, enemies: [44, 45, 43], enemyStars: 3, statBoost: 1.1, drops: [
-        { setId: 'leftovers', minStars: 2, maxStars: 4, gradeWeights: { common: 30, rare: 40, hero: 25, legend: 5 } },
-        { setId: 'razor_fang', minStars: 2, maxStars: 4, gradeWeights: { common: 30, rare: 40, hero: 25, legend: 5 } },
+      { enemyLevel: 43, enemies: [44, 45, 43], enemyStars: 3, statBoost: 1.15, drops: [
+        { setId: 'leftovers', minStars: 2, maxStars: 4, gradeWeights: { common: 30, rare: 41, hero: 27, legend: 2 } },
+        { setId: 'razor_fang', minStars: 2, maxStars: 4, gradeWeights: { common: 30, rare: 41, hero: 27, legend: 2 } },
       ], pokedollarReward: [50, 70] },
-      { enemyLevel: 50, enemies: [45, 44, 1], enemyStars: 3, statBoost: 1.2, drops: [
-        { setId: 'leftovers', minStars: 2, maxStars: 4, gradeWeights: { common: 20, rare: 40, hero: 30, legend: 10 } },
-        { setId: 'razor_fang', minStars: 2, maxStars: 4, gradeWeights: { common: 20, rare: 40, hero: 30, legend: 10 } },
+      { enemyLevel: 50, enemies: [45, 44, 1], enemyStars: 3, statBoost: 1.4, drops: [
+        { setId: 'leftovers', minStars: 2, maxStars: 4, gradeWeights: { common: 20, rare: 42, hero: 35, legend: 3 } },
+        { setId: 'razor_fang', minStars: 2, maxStars: 4, gradeWeights: { common: 20, rare: 42, hero: 35, legend: 3 } },
       ], pokedollarReward: [55, 75] },
-      { enemyLevel: 58, enemies: [45, 69, 44], enemyStars: 4, statBoost: 1.3, drops: [
-        { setId: 'leftovers', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 35, hero: 35, legend: 15 } },
-        { setId: 'razor_fang', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 35, hero: 35, legend: 15 } },
+      { enemyLevel: 58, enemies: [45, 69, 44], enemyStars: 4, statBoost: 1.4, drops: [
+        { setId: 'leftovers', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 40, hero: 40, legend: 5 } },
+        { setId: 'razor_fang', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 40, hero: 40, legend: 5 } },
       ], pokedollarReward: [60, 80] },
-      { enemyLevel: 68, enemies: [3, 45, 71], enemyStars: 5, statBoost: 1.5, drops: [  // Venusaur, Vileplume, Victreebel
-        { setId: 'leftovers', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 30, hero: 40, legend: 20 } },
-        { setId: 'razor_fang', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 30, hero: 40, legend: 20 } },
+      { enemyLevel: 68, enemies: [3, 45, 71], enemyStars: 5, statBoost: 1.6, drops: [  // Venusaur, Vileplume, Victreebel
+        { setId: 'leftovers', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 35, hero: 47, legend: 8 } },
+        { setId: 'razor_fang', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 35, hero: 47, legend: 8 } },
       ], pokedollarReward: [70, 90] },
-      { enemyLevel: 78, enemies: [3, 45, 71], enemyStars: 5, statBoost: 1.7, drops: [  // Venusaur, Vileplume, Victreebel
-        { setId: 'leftovers', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 25, hero: 45, legend: 25 } },
-        { setId: 'razor_fang', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 25, hero: 45, legend: 25 } },
+      { enemyLevel: 78, enemies: [3, 45, 71], enemyStars: 5, statBoost: 1.8, drops: [  // Venusaur, Vileplume, Victreebel
+        { setId: 'leftovers', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 30, hero: 55, legend: 10 } },
+        { setId: 'razor_fang', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 30, hero: 55, legend: 10 } },
       ], pokedollarReward: [80, 100], stardustDrop: { chance: 0.10, min: 3, max: 5 } },
-      { enemyLevel: 90, enemies: [3, 45, 71], enemyStars: 6, statBoost: 2.0, drops: [  // Venusaur, Vileplume, Victreebel
-        { setId: 'leftovers', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 20, hero: 45, legend: 35 } },
-        { setId: 'razor_fang', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 20, hero: 45, legend: 35 } },
+      { enemyLevel: 90, enemies: [3, 45, 71], enemyStars: 6, statBoost: 2.1, drops: [  // Venusaur, Vileplume, Victreebel
+        { setId: 'leftovers', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 30, hero: 55, legend: 15 } },
+        { setId: 'razor_fang', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 30, hero: 55, legend: 15 } },
       ], pokedollarReward: [90, 120], stardustDrop: { chance: 0.10, min: 3, max: 5 } },
     ],
   },
@@ -125,32 +125,32 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
         { setId: 'quick_claw', minStars: 1, maxStars: 3, gradeWeights: { common: 50, rare: 35, hero: 15, legend: 0 } },
       ], pokedollarReward: [40, 60] },
       { enemyLevel: 34, enemies: [82, 25, 100], enemyStars: 2, drops: [
-        { setId: 'swift_wing', minStars: 2, maxStars: 3, gradeWeights: { common: 40, rare: 35, hero: 20, legend: 5 } },
-        { setId: 'quick_claw', minStars: 2, maxStars: 3, gradeWeights: { common: 40, rare: 35, hero: 20, legend: 5 } },
+        { setId: 'swift_wing', minStars: 2, maxStars: 3, gradeWeights: { common: 40, rare: 36, hero: 22, legend: 2 } },
+        { setId: 'quick_claw', minStars: 2, maxStars: 3, gradeWeights: { common: 40, rare: 36, hero: 22, legend: 2 } },
       ], pokedollarReward: [45, 65] },
-      { enemyLevel: 43, enemies: [26, 82, 81], enemyStars: 3, statBoost: 1.1, drops: [
-        { setId: 'swift_wing', minStars: 2, maxStars: 4, gradeWeights: { common: 30, rare: 40, hero: 25, legend: 5 } },
-        { setId: 'quick_claw', minStars: 2, maxStars: 4, gradeWeights: { common: 30, rare: 40, hero: 25, legend: 5 } },
+      { enemyLevel: 43, enemies: [26, 82, 81], enemyStars: 3, statBoost: 1.15, drops: [
+        { setId: 'swift_wing', minStars: 2, maxStars: 4, gradeWeights: { common: 30, rare: 41, hero: 27, legend: 2 } },
+        { setId: 'quick_claw', minStars: 2, maxStars: 4, gradeWeights: { common: 30, rare: 41, hero: 27, legend: 2 } },
       ], pokedollarReward: [50, 70] },
-      { enemyLevel: 50, enemies: [82, 26, 100], enemyStars: 3, statBoost: 1.2, drops: [
-        { setId: 'swift_wing', minStars: 2, maxStars: 4, gradeWeights: { common: 20, rare: 40, hero: 30, legend: 10 } },
-        { setId: 'quick_claw', minStars: 2, maxStars: 4, gradeWeights: { common: 20, rare: 40, hero: 30, legend: 10 } },
+      { enemyLevel: 50, enemies: [82, 26, 100], enemyStars: 3, statBoost: 1.4, drops: [
+        { setId: 'swift_wing', minStars: 2, maxStars: 4, gradeWeights: { common: 20, rare: 42, hero: 35, legend: 3 } },
+        { setId: 'quick_claw', minStars: 2, maxStars: 4, gradeWeights: { common: 20, rare: 42, hero: 35, legend: 3 } },
       ], pokedollarReward: [55, 75] },
-      { enemyLevel: 58, enemies: [26, 82, 25], enemyStars: 4, statBoost: 1.3, drops: [
-        { setId: 'swift_wing', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 35, hero: 35, legend: 15 } },
-        { setId: 'quick_claw', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 35, hero: 35, legend: 15 } },
+      { enemyLevel: 58, enemies: [26, 82, 25], enemyStars: 4, statBoost: 1.4, drops: [
+        { setId: 'swift_wing', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 40, hero: 40, legend: 5 } },
+        { setId: 'quick_claw', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 40, hero: 40, legend: 5 } },
       ], pokedollarReward: [60, 80] },
-      { enemyLevel: 68, enemies: [125, 82, 101], enemyStars: 5, statBoost: 1.5, drops: [  // Electabuzz, Magneton, Electrode
-        { setId: 'swift_wing', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 30, hero: 40, legend: 20 } },
-        { setId: 'quick_claw', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 30, hero: 40, legend: 20 } },
+      { enemyLevel: 68, enemies: [125, 82, 101], enemyStars: 5, statBoost: 1.6, drops: [  // Electabuzz, Magneton, Electrode
+        { setId: 'swift_wing', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 35, hero: 47, legend: 8 } },
+        { setId: 'quick_claw', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 35, hero: 47, legend: 8 } },
       ], pokedollarReward: [70, 90] },
-      { enemyLevel: 78, enemies: [125, 82, 101], enemyStars: 5, statBoost: 1.7, drops: [  // Electabuzz, Magneton, Electrode
-        { setId: 'swift_wing', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 25, hero: 45, legend: 25 } },
-        { setId: 'quick_claw', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 25, hero: 45, legend: 25 } },
+      { enemyLevel: 78, enemies: [125, 82, 101], enemyStars: 5, statBoost: 1.8, drops: [  // Electabuzz, Magneton, Electrode
+        { setId: 'swift_wing', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 30, hero: 55, legend: 10 } },
+        { setId: 'quick_claw', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 30, hero: 55, legend: 10 } },
       ], pokedollarReward: [80, 100], stardustDrop: { chance: 0.10, min: 3, max: 5 } },
-      { enemyLevel: 90, enemies: [125, 82, 101], enemyStars: 6, statBoost: 2.0, drops: [  // Electabuzz, Magneton, Electrode
-        { setId: 'swift_wing', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 20, hero: 45, legend: 35 } },
-        { setId: 'quick_claw', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 20, hero: 45, legend: 35 } },
+      { enemyLevel: 90, enemies: [125, 82, 101], enemyStars: 6, statBoost: 2.1, drops: [  // Electabuzz, Magneton, Electrode
+        { setId: 'swift_wing', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 30, hero: 55, legend: 15 } },
+        { setId: 'quick_claw', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 30, hero: 55, legend: 15 } },
       ], pokedollarReward: [90, 120], stardustDrop: { chance: 0.10, min: 3, max: 5 } },
     ],
   },
@@ -176,32 +176,32 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
         { setId: 'wise_glasses', minStars: 1, maxStars: 3, gradeWeights: { common: 50, rare: 35, hero: 15, legend: 0 } },
       ], pokedollarReward: [45, 65] },
       { enemyLevel: 34, enemies: [87, 124, 131], enemyStars: 2, drops: [
-        { setId: 'scope_lens', minStars: 2, maxStars: 3, gradeWeights: { common: 40, rare: 35, hero: 20, legend: 5 } },
-        { setId: 'wise_glasses', minStars: 2, maxStars: 3, gradeWeights: { common: 40, rare: 35, hero: 20, legend: 5 } },
+        { setId: 'scope_lens', minStars: 2, maxStars: 3, gradeWeights: { common: 40, rare: 36, hero: 22, legend: 2 } },
+        { setId: 'wise_glasses', minStars: 2, maxStars: 3, gradeWeights: { common: 40, rare: 36, hero: 22, legend: 2 } },
       ], pokedollarReward: [50, 70] },
-      { enemyLevel: 43, enemies: [131, 91, 124], enemyStars: 3, statBoost: 1.1, drops: [
-        { setId: 'scope_lens', minStars: 2, maxStars: 4, gradeWeights: { common: 30, rare: 40, hero: 25, legend: 5 } },
-        { setId: 'wise_glasses', minStars: 2, maxStars: 4, gradeWeights: { common: 30, rare: 40, hero: 25, legend: 5 } },
+      { enemyLevel: 43, enemies: [131, 91, 124], enemyStars: 3, statBoost: 1.15, drops: [
+        { setId: 'scope_lens', minStars: 2, maxStars: 4, gradeWeights: { common: 30, rare: 41, hero: 27, legend: 2 } },
+        { setId: 'wise_glasses', minStars: 2, maxStars: 4, gradeWeights: { common: 30, rare: 41, hero: 27, legend: 2 } },
       ], pokedollarReward: [55, 75] },
-      { enemyLevel: 50, enemies: [131, 124, 87], enemyStars: 3, statBoost: 1.2, drops: [
-        { setId: 'scope_lens', minStars: 2, maxStars: 4, gradeWeights: { common: 20, rare: 40, hero: 30, legend: 10 } },
-        { setId: 'wise_glasses', minStars: 2, maxStars: 4, gradeWeights: { common: 20, rare: 40, hero: 30, legend: 10 } },
+      { enemyLevel: 50, enemies: [131, 124, 87], enemyStars: 3, statBoost: 1.4, drops: [
+        { setId: 'scope_lens', minStars: 2, maxStars: 4, gradeWeights: { common: 20, rare: 42, hero: 35, legend: 3 } },
+        { setId: 'wise_glasses', minStars: 2, maxStars: 4, gradeWeights: { common: 20, rare: 42, hero: 35, legend: 3 } },
       ], pokedollarReward: [60, 80] },
-      { enemyLevel: 58, enemies: [144, 131, 91], enemyStars: 4, statBoost: 1.3, drops: [
-        { setId: 'scope_lens', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 35, hero: 35, legend: 15 } },
-        { setId: 'wise_glasses', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 35, hero: 35, legend: 15 } },
+      { enemyLevel: 58, enemies: [144, 131, 91], enemyStars: 4, statBoost: 1.4, drops: [
+        { setId: 'scope_lens', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 40, hero: 40, legend: 5 } },
+        { setId: 'wise_glasses', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 40, hero: 40, legend: 5 } },
       ], pokedollarReward: [65, 85] },
-      { enemyLevel: 68, enemies: [144, 124, 131], enemyStars: 5, statBoost: 1.5, drops: [  // Articuno, Jynx, Lapras
-        { setId: 'scope_lens', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 30, hero: 40, legend: 20 } },
-        { setId: 'wise_glasses', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 30, hero: 40, legend: 20 } },
+      { enemyLevel: 68, enemies: [144, 124, 131], enemyStars: 5, statBoost: 1.6, drops: [  // Articuno, Jynx, Lapras
+        { setId: 'scope_lens', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 35, hero: 47, legend: 8 } },
+        { setId: 'wise_glasses', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 35, hero: 47, legend: 8 } },
       ], pokedollarReward: [75, 95] },
-      { enemyLevel: 78, enemies: [144, 131, 124], enemyStars: 5, statBoost: 1.7, drops: [  // Articuno, Lapras, Jynx
-        { setId: 'scope_lens', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 25, hero: 45, legend: 25 } },
-        { setId: 'wise_glasses', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 25, hero: 45, legend: 25 } },
+      { enemyLevel: 78, enemies: [144, 131, 124], enemyStars: 5, statBoost: 1.8, drops: [  // Articuno, Lapras, Jynx
+        { setId: 'scope_lens', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 30, hero: 55, legend: 10 } },
+        { setId: 'wise_glasses', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 30, hero: 55, legend: 10 } },
       ], pokedollarReward: [85, 110], stardustDrop: { chance: 0.10, min: 3, max: 5 } },
-      { enemyLevel: 90, enemies: [144, 131, 144], enemyStars: 6, statBoost: 2.0, drops: [  // Articuno, Lapras, Articuno
-        { setId: 'scope_lens', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 20, hero: 45, legend: 35 } },
-        { setId: 'wise_glasses', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 20, hero: 45, legend: 35 } },
+      { enemyLevel: 90, enemies: [144, 131, 144], enemyStars: 6, statBoost: 2.1, drops: [  // Articuno, Lapras, Articuno
+        { setId: 'scope_lens', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 30, hero: 55, legend: 15 } },
+        { setId: 'wise_glasses', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 30, hero: 55, legend: 15 } },
       ], pokedollarReward: [95, 130], stardustDrop: { chance: 0.10, min: 3, max: 5 } },
     ],
   },
@@ -227,32 +227,32 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
         { setId: 'kings_rock', minStars: 1, maxStars: 3, gradeWeights: { common: 50, rare: 35, hero: 15, legend: 0 } },
       ], pokedollarReward: [45, 65] },
       { enemyLevel: 34, enemies: [148, 142, 130], enemyStars: 2, drops: [
-        { setId: 'focus_sash', minStars: 2, maxStars: 3, gradeWeights: { common: 40, rare: 35, hero: 20, legend: 5 } },
-        { setId: 'kings_rock', minStars: 2, maxStars: 3, gradeWeights: { common: 40, rare: 35, hero: 20, legend: 5 } },
+        { setId: 'focus_sash', minStars: 2, maxStars: 3, gradeWeights: { common: 40, rare: 36, hero: 22, legend: 2 } },
+        { setId: 'kings_rock', minStars: 2, maxStars: 3, gradeWeights: { common: 40, rare: 36, hero: 22, legend: 2 } },
       ], pokedollarReward: [50, 70] },
-      { enemyLevel: 43, enemies: [142, 148, 147], enemyStars: 3, statBoost: 1.1, drops: [
-        { setId: 'focus_sash', minStars: 2, maxStars: 4, gradeWeights: { common: 30, rare: 40, hero: 25, legend: 5 } },
-        { setId: 'kings_rock', minStars: 2, maxStars: 4, gradeWeights: { common: 30, rare: 40, hero: 25, legend: 5 } },
+      { enemyLevel: 43, enemies: [142, 148, 147], enemyStars: 3, statBoost: 1.15, drops: [
+        { setId: 'focus_sash', minStars: 2, maxStars: 4, gradeWeights: { common: 30, rare: 41, hero: 27, legend: 2 } },
+        { setId: 'kings_rock', minStars: 2, maxStars: 4, gradeWeights: { common: 30, rare: 41, hero: 27, legend: 2 } },
       ], pokedollarReward: [55, 75] },
-      { enemyLevel: 50, enemies: [148, 142, 149], enemyStars: 3, statBoost: 1.2, drops: [
-        { setId: 'focus_sash', minStars: 2, maxStars: 4, gradeWeights: { common: 20, rare: 40, hero: 30, legend: 10 } },
-        { setId: 'kings_rock', minStars: 2, maxStars: 4, gradeWeights: { common: 20, rare: 40, hero: 30, legend: 10 } },
+      { enemyLevel: 50, enemies: [148, 142, 149], enemyStars: 3, statBoost: 1.4, drops: [
+        { setId: 'focus_sash', minStars: 2, maxStars: 4, gradeWeights: { common: 20, rare: 42, hero: 35, legend: 3 } },
+        { setId: 'kings_rock', minStars: 2, maxStars: 4, gradeWeights: { common: 20, rare: 42, hero: 35, legend: 3 } },
       ], pokedollarReward: [60, 80] },
-      { enemyLevel: 58, enemies: [149, 148, 142], enemyStars: 4, statBoost: 1.3, drops: [
-        { setId: 'focus_sash', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 35, hero: 35, legend: 15 } },
-        { setId: 'kings_rock', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 35, hero: 35, legend: 15 } },
+      { enemyLevel: 58, enemies: [149, 148, 142], enemyStars: 4, statBoost: 1.4, drops: [
+        { setId: 'focus_sash', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 40, hero: 40, legend: 5 } },
+        { setId: 'kings_rock', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 40, hero: 40, legend: 5 } },
       ], pokedollarReward: [65, 85] },
-      { enemyLevel: 68, enemies: [149, 130, 142], enemyStars: 5, statBoost: 1.5, drops: [  // Dragonite, Gyarados, Aerodactyl
-        { setId: 'focus_sash', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 30, hero: 40, legend: 20 } },
-        { setId: 'kings_rock', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 30, hero: 40, legend: 20 } },
+      { enemyLevel: 68, enemies: [149, 130, 142], enemyStars: 5, statBoost: 1.6, drops: [  // Dragonite, Gyarados, Aerodactyl
+        { setId: 'focus_sash', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 35, hero: 47, legend: 8 } },
+        { setId: 'kings_rock', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 35, hero: 47, legend: 8 } },
       ], pokedollarReward: [75, 95] },
-      { enemyLevel: 78, enemies: [149, 142, 130], enemyStars: 5, statBoost: 1.7, drops: [  // Dragonite, Aerodactyl, Gyarados
-        { setId: 'focus_sash', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 25, hero: 45, legend: 25 } },
-        { setId: 'kings_rock', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 25, hero: 45, legend: 25 } },
+      { enemyLevel: 78, enemies: [149, 142, 130], enemyStars: 5, statBoost: 1.8, drops: [  // Dragonite, Aerodactyl, Gyarados
+        { setId: 'focus_sash', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 30, hero: 55, legend: 10 } },
+        { setId: 'kings_rock', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 30, hero: 55, legend: 10 } },
       ], pokedollarReward: [85, 110], stardustDrop: { chance: 0.10, min: 3, max: 5 } },
-      { enemyLevel: 90, enemies: [149, 142, 149], enemyStars: 6, statBoost: 2.0, drops: [  // Dragonite, Aerodactyl, Dragonite
-        { setId: 'focus_sash', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 20, hero: 45, legend: 35 } },
-        { setId: 'kings_rock', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 20, hero: 45, legend: 35 } },
+      { enemyLevel: 90, enemies: [149, 142, 149], enemyStars: 6, statBoost: 2.1, drops: [  // Dragonite, Aerodactyl, Dragonite
+        { setId: 'focus_sash', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 30, hero: 55, legend: 15 } },
+        { setId: 'kings_rock', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 30, hero: 55, legend: 15 } },
       ], pokedollarReward: [95, 130], stardustDrop: { chance: 0.10, min: 3, max: 5 } },
     ],
   },

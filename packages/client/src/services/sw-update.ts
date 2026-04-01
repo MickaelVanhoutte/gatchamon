@@ -1,8 +1,13 @@
-let updateCallback: (() => void) | null = null;
+let appReady = false;
 
-/** Register a callback to be notified when a new version is available. */
+/** Call once the loading screen is dismissed so future SW updates notify instead of reloading. */
+export function setAppReady() {
+  appReady = true;
+}
+
+/** Register a callback to be notified when a new version is available (in-game only). */
 export function onUpdateAvailable(cb: () => void) {
-  updateCallback = cb;
+  window.addEventListener('sw-update-available', () => cb());
 }
 
 function registerSW(): Promise<void> {
@@ -19,13 +24,19 @@ function registerSW(): Promise<void> {
       resolve();
     };
 
-    // Notify the UI when a new SW takes control instead of force-reloading
     let notified = false;
     if (navigator.serviceWorker.controller) {
       navigator.serviceWorker.addEventListener('controllerchange', () => {
         if (notified) return;
         notified = true;
-        updateCallback?.();
+        if (!appReady) {
+          // Still on loading screen — reload to apply update immediately
+          sessionStorage.setItem('sw-just-updated', '1');
+          location.reload();
+        } else {
+          // Already in-game — notify UI components
+          window.dispatchEvent(new Event('sw-update-available'));
+        }
       });
     }
 

@@ -1427,7 +1427,8 @@
 }
 
 /* ========== Landscape mobile (short viewport) ========== */
-@media (max-height: 500px) {
+/* max-height: actual landscape; orientation+max-width: portrait phone with CSS-forced rotation */
+@media (max-height: 500px), ((orientation: portrait) and (max-width: 600px)) {
   /* Turn bar compression */
   .turn-bar { padding: 3px 8px; gap: 4px; }
   .turn-order-track { height: 32px; padding: 0 14px; }
@@ -1442,10 +1443,10 @@
   .player-field { padding-bottom: 4px; }
 
   /* Wider containers to use horizontal space */
-  .battle-mon { width: clamp(80px, 18vw, 160px); gap: 1px; }
+  .battle-mon { width: clamp(80px, 18vmax, 160px); gap: 1px; }
 
-  /* Sprites sized relative to height */
-  .battle-sprite { width: clamp(48px, 12vh, 80px); height: clamp(48px, 12vh, 80px); }
+  /* Sprites sized relative to the smaller viewport dimension (effective height after rotation) */
+  .battle-sprite { width: clamp(52px, 15vmin, 80px); height: clamp(52px, 15vmin, 80px); }
 
   /* Compress vertical info elements */
   .mon-name { font-size: 0.55rem; line-height: 1; }

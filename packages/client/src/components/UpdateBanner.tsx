@@ -6,7 +6,10 @@ export function UpdateBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    onUpdateAvailable(() => setVisible(true));
+    onUpdateAvailable(() => {
+      setVisible(true);
+      setTimeout(() => setVisible(false), 3000);
+    });
   }, []);
 
   if (!visible) return null;

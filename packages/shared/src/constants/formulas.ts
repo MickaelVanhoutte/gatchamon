@@ -99,7 +99,7 @@ export function getEnergyRegenInterval(skills: TrainerSkills): number {
 export const MAX_TRAINER_LEVEL = 100;
 
 export function trainerXpToNextLevel(level: number): number {
-  return Math.floor(100 * Math.pow(1.15, level - 1));
+  return Math.floor(100 * Math.pow(1.22, level - 1));
 }
 
 export const TRAINER_SKILL_MAX: Record<keyof TrainerSkills, number> = {

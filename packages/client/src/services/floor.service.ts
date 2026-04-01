@@ -15,8 +15,8 @@ export interface FloorDef {
 
 export const DIFFICULTY_LEVEL_BONUS: Record<Difficulty, number> = {
   normal: 0,
-  hard: 47,
-  hell: 97,
+  hard: 52,
+  hell: 107,
 };
 
 export const DIFFICULTY_REWARD_MULT: Record<Difficulty, number> = {

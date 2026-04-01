@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { useGameStore } from './stores/gameStore';
-import { swReady } from './services/sw-update';
+import { swReady, setAppReady } from './services/sw-update';
 import { HomePage } from './pages/HomePage';
 import { SummonPage } from './pages/SummonPage';
 import { CollectionPage } from './pages/CollectionPage';
@@ -57,7 +57,7 @@ export function App() {
   }
 
   if (showLoading) {
-    return <LoadingScreen onStart={() => setShowLoading(false)} swReady={swDone} />;
+    return <LoadingScreen onStart={() => { setShowLoading(false); setAppReady(); }} swReady={swDone} />;
   }
 
   if (!player) {

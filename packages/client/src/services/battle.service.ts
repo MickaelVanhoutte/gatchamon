@@ -313,7 +313,7 @@ function calculateRewards(state: BattleState): BattleRewards {
   const pokedollarMult = (tSkills ? 1 + tSkills.pokedollarBonus * 0.1 : 1) * (beginnerStory ? BEGINNER_BONUS.pokedollarMult : 1);
   const xpMult = (tSkills ? 1 + tSkills.xpBonus * 0.1 : 1) * (beginnerStory ? BEGINNER_BONUS.xpMult : 1);
 
-  const pokeballBase = 2 + regionId + Math.floor(floorNum / 3);
+  const pokeballBase = 1 + Math.floor(regionId / 2) + Math.floor(floorNum / 4);
   const pokeballs = Math.floor(pokeballBase * diffMult * bossMult * pokeballMult);
 
   const xpBase = regionId * 10 + floorNum * 5;
@@ -350,9 +350,9 @@ function calculateRewards(state: BattleState): BattleRewards {
   }
 
   const firstClear = isFirstClear(regionId, floorNum, difficulty);
-  const firstClearPokeballs = firstClear ? pokeballs : 0;
+  const firstClearPokeballs = firstClear ? Math.floor(pokeballs * 0.5) : 0;
 
-  const randomRegularDrop = Math.random() < 0.3 ? Math.floor(1 + regionId / 3) : 0;
+  const randomRegularDrop = Math.random() < 0.2 ? Math.floor(1 + regionId / 4) : 0;
   const totalRegularPokeballs = firstClearPokeballs + randomRegularDrop;
 
   const premiumPokeballs = (isBoss && firstClear) ? 1 : 0;

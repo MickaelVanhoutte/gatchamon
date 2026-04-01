@@ -64,10 +64,10 @@ function getEnemyStars(floor: number): 1 | 2 | 3 | 4 | 5 | 6 {
 
 function getStatBoost(floor: number): number | undefined {
   if (floor <= 40) return undefined;
-  if (floor <= 60) return 1.1;
-  if (floor <= 80) return 1.2;
-  if (floor <= 99) return 1.3;
-  return 1.5; // Floor 100 boss
+  if (floor <= 60) return 1.15;
+  if (floor <= 80) return 1.25;
+  if (floor <= 99) return 1.4;
+  return 1.6; // Floor 100 boss
 }
 
 function getEnemyCount(floor: number): number {
@@ -144,7 +144,7 @@ function getFloorReward(floor: number): MissionReward {
       essences['magic_high'] = 1 + Math.floor(floor / 40);
     }
     return {
-      regularPokeballs: 3 + Math.floor(floor / 10),
+      regularPokeballs: 2 + Math.floor(floor / 15),
       pokedollars: 50 + floor * 5,
       essences,
     };
@@ -152,7 +152,7 @@ function getFloorReward(floor: number): MissionReward {
 
   // Normal floors: pokeballs + pokedollars
   return {
-    regularPokeballs: 3 + Math.floor(floor / 10),
+    regularPokeballs: 2 + Math.floor(floor / 15),
     pokedollars: 50 + floor * 5,
   };
 }

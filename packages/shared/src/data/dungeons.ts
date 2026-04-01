@@ -51,7 +51,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 43,
         enemies: [64, 576, 561],  // Kadabra, Gothitelle, Sigilyph
         enemyStars: 3,
-        statBoost: 1.1,
+        statBoost: 1.15,
         drops: [
           { essenceId: 'magic_mid', quantity: [3, 5], chance: 0.9 },
           { essenceId: 'magic_low', quantity: [2, 4], chance: 1.0 },
@@ -62,7 +62,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 50,
         enemies: [857, 281, 518],  // Hattrem, Kirlia, Musharna
         enemyStars: 3,
-        statBoost: 1.2,
+        statBoost: 1.4,
         drops: [
           { essenceId: 'magic_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'magic_high', quantity: [0, 2], chance: 0.35 },
@@ -72,7 +72,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 58,
         enemies: [65, 858, 579],  // Alakazam, Hatterene, Reuniclus
         enemyStars: 4,
-        statBoost: 1.3,
+        statBoost: 1.4,
         drops: [
           { essenceId: 'magic_mid', quantity: [4, 7], chance: 1.0 },
           { essenceId: 'magic_high', quantity: [1, 2], chance: 0.5 },
@@ -82,7 +82,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 68,
         enemies: [65, 858, 606],  // Alakazam, Hatterene, Beheeyem
         enemyStars: 5,
-        statBoost: 1.5,
+        statBoost: 1.6,
         drops: [
           { essenceId: 'magic_mid', quantity: [4, 8], chance: 1.0 },
           { essenceId: 'magic_high', quantity: [1, 3], chance: 0.6 },
@@ -92,7 +92,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 78,
         enemies: [282, 858, 579],  // Gardevoir, Hatterene, Reuniclus
         enemyStars: 5,
-        statBoost: 1.7,
+        statBoost: 1.8,
         drops: [
           { essenceId: 'magic_high', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'magic_mid', quantity: [5, 8], chance: 1.0 },
@@ -102,7 +102,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 90,
         enemies: [282, 858, 65],  // Gardevoir, Hatterene, Alakazam
         enemyStars: 6,
-        statBoost: 2.0,
+        statBoost: 2.1,
         drops: [
           { essenceId: 'magic_high', quantity: [3, 5], chance: 0.9 },
           { essenceId: 'magic_mid', quantity: [5, 9], chance: 1.0 },
@@ -163,7 +163,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 43,
         enemies: [127, 45, 49],  // Pinsir, Vileplume, Venomoth
         enemyStars: 3,
-        statBoost: 1.1,
+        statBoost: 1.15,
         drops: [
           { essenceId: 'grass_mid', quantity: [2, 5], chance: 0.85 },
           { essenceId: 'poison_mid', quantity: [1, 3], chance: 0.7 },
@@ -175,7 +175,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 50,
         enemies: [127, 45, 212],  // Pinsir, Vileplume, Scizor
         enemyStars: 3,
-        statBoost: 1.2,
+        statBoost: 1.4,
         drops: [
           { essenceId: 'grass_mid', quantity: [2, 6], chance: 0.95 },
           { essenceId: 'poison_mid', quantity: [2, 4], chance: 0.8 },
@@ -187,7 +187,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 58,
         enemies: [212, 127, 45],  // Scizor, Pinsir, Vileplume
         enemyStars: 4,
-        statBoost: 1.3,
+        statBoost: 1.4,
         drops: [
           { essenceId: 'grass_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'poison_mid', quantity: [2, 4], chance: 0.8 },
@@ -200,7 +200,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 68,
         enemies: [212, 127, 45],  // Scizor, Pinsir, Vileplume
         enemyStars: 5,
-        statBoost: 1.5,
+        statBoost: 1.6,
         drops: [
           { essenceId: 'grass_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'poison_mid', quantity: [2, 5], chance: 0.9 },
@@ -213,7 +213,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 78,
         enemies: [212, 127, 45],  // Scizor, Pinsir, Vileplume
         enemyStars: 5,
-        statBoost: 1.7,
+        statBoost: 1.8,
         drops: [
           { essenceId: 'grass_high', quantity: [1, 4], chance: 0.75 },
           { essenceId: 'poison_high', quantity: [1, 2], chance: 0.5 },
@@ -225,7 +225,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 90,
         enemies: [212, 127, 45],  // Scizor, Pinsir, Vileplume
         enemyStars: 6,
-        statBoost: 2.0,
+        statBoost: 2.1,
         drops: [
           { essenceId: 'grass_high', quantity: [2, 5], chance: 0.95 },
           { essenceId: 'poison_high', quantity: [1, 3], chance: 0.6 },
@@ -288,7 +288,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 43,
         enemies: [59, 76, 112],  // Arcanine, Golem, Rhydon
         enemyStars: 3,
-        statBoost: 1.1,
+        statBoost: 1.15,
         drops: [
           { essenceId: 'fire_mid', quantity: [2, 5], chance: 0.85 },
           { essenceId: 'rock_mid', quantity: [1, 3], chance: 0.7 },
@@ -300,7 +300,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 50,
         enemies: [59, 76, 112],  // Arcanine, Golem, Rhydon
         enemyStars: 3,
-        statBoost: 1.2,
+        statBoost: 1.4,
         drops: [
           { essenceId: 'fire_mid', quantity: [2, 6], chance: 0.95 },
           { essenceId: 'rock_mid', quantity: [2, 4], chance: 0.8 },
@@ -312,7 +312,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 58,
         enemies: [59, 76, 112],  // Arcanine, Golem, Rhydon
         enemyStars: 4,
-        statBoost: 1.3,
+        statBoost: 1.4,
         drops: [
           { essenceId: 'fire_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'rock_mid', quantity: [2, 4], chance: 0.8 },
@@ -325,7 +325,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 68,
         enemies: [59, 76, 112],  // Arcanine, Golem, Rhydon
         enemyStars: 5,
-        statBoost: 1.5,
+        statBoost: 1.6,
         drops: [
           { essenceId: 'fire_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'rock_mid', quantity: [2, 5], chance: 0.9 },
@@ -338,7 +338,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 78,
         enemies: [59, 76, 112],  // Arcanine, Golem, Rhydon
         enemyStars: 5,
-        statBoost: 1.7,
+        statBoost: 1.8,
         drops: [
           { essenceId: 'fire_high', quantity: [1, 4], chance: 0.75 },
           { essenceId: 'rock_high', quantity: [1, 2], chance: 0.5 },
@@ -350,7 +350,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 90,
         enemies: [59, 76, 112],  // Arcanine, Golem, Rhydon
         enemyStars: 6,
-        statBoost: 2.0,
+        statBoost: 2.1,
         drops: [
           { essenceId: 'fire_high', quantity: [2, 5], chance: 0.95 },
           { essenceId: 'rock_high', quantity: [1, 3], chance: 0.6 },
@@ -413,7 +413,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 43,
         enemies: [131, 148, 121],  // Lapras, Dragonair, Starmie
         enemyStars: 3,
-        statBoost: 1.1,
+        statBoost: 1.15,
         drops: [
           { essenceId: 'water_mid', quantity: [2, 5], chance: 0.85 },
           { essenceId: 'ice_mid', quantity: [1, 3], chance: 0.6 },
@@ -425,7 +425,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 50,
         enemies: [148, 131, 130],  // Dragonair, Lapras, Gyarados
         enemyStars: 3,
-        statBoost: 1.2,
+        statBoost: 1.4,
         drops: [
           { essenceId: 'water_mid', quantity: [2, 6], chance: 0.95 },
           { essenceId: 'ice_mid', quantity: [2, 3], chance: 0.7 },
@@ -437,7 +437,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 58,
         enemies: [148, 131, 130],  // Dragonair, Lapras, Gyarados
         enemyStars: 4,
-        statBoost: 1.3,
+        statBoost: 1.4,
         drops: [
           { essenceId: 'water_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'ice_mid', quantity: [2, 4], chance: 0.8 },
@@ -450,7 +450,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 68,
         enemies: [148, 131, 130],  // Dragonair, Lapras, Gyarados
         enemyStars: 5,
-        statBoost: 1.5,
+        statBoost: 1.6,
         drops: [
           { essenceId: 'water_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'ice_high', quantity: [1, 2], chance: 0.4 },
@@ -463,7 +463,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 78,
         enemies: [148, 131, 130],  // Dragonair, Lapras, Gyarados
         enemyStars: 5,
-        statBoost: 1.7,
+        statBoost: 1.8,
         drops: [
           { essenceId: 'water_high', quantity: [1, 4], chance: 0.75 },
           { essenceId: 'ice_high', quantity: [1, 2], chance: 0.5 },
@@ -475,7 +475,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 90,
         enemies: [148, 131, 130],  // Dragonair, Lapras, Gyarados
         enemyStars: 6,
-        statBoost: 2.0,
+        statBoost: 2.1,
         drops: [
           { essenceId: 'water_high', quantity: [2, 5], chance: 0.95 },
           { essenceId: 'ice_high', quantity: [1, 3], chance: 0.6 },
@@ -540,7 +540,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 43,
         enemies: [65, 125, 85],  // Alakazam, Electabuzz, Dodrio
         enemyStars: 3,
-        statBoost: 1.1,
+        statBoost: 1.15,
         drops: [
           { essenceId: 'electric_mid', quantity: [2, 5], chance: 0.85 },
           { essenceId: 'flying_mid', quantity: [1, 3], chance: 0.6 },
@@ -552,7 +552,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 50,
         enemies: [65, 125, 143],  // Alakazam, Electabuzz, Snorlax
         enemyStars: 3,
-        statBoost: 1.2,
+        statBoost: 1.4,
         drops: [
           { essenceId: 'electric_mid', quantity: [2, 6], chance: 0.95 },
           { essenceId: 'flying_mid', quantity: [2, 4], chance: 0.7 },
@@ -564,7 +564,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 58,
         enemies: [65, 125, 143],  // Alakazam, Electabuzz, Snorlax
         enemyStars: 4,
-        statBoost: 1.3,
+        statBoost: 1.4,
         drops: [
           { essenceId: 'electric_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'flying_mid', quantity: [2, 4], chance: 0.8 },
@@ -577,7 +577,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 68,
         enemies: [65, 125, 143],  // Alakazam, Electabuzz, Snorlax
         enemyStars: 5,
-        statBoost: 1.5,
+        statBoost: 1.6,
         drops: [
           { essenceId: 'electric_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'flying_high', quantity: [1, 2], chance: 0.4 },
@@ -590,7 +590,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 78,
         enemies: [65, 125, 143],  // Alakazam, Electabuzz, Snorlax
         enemyStars: 5,
-        statBoost: 1.7,
+        statBoost: 1.8,
         drops: [
           { essenceId: 'electric_high', quantity: [1, 4], chance: 0.75 },
           { essenceId: 'flying_high', quantity: [1, 2], chance: 0.5 },
@@ -602,7 +602,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 90,
         enemies: [65, 125, 143],  // Alakazam, Electabuzz, Snorlax
         enemyStars: 6,
-        statBoost: 2.0,
+        statBoost: 2.1,
         drops: [
           { essenceId: 'electric_high', quantity: [2, 5], chance: 0.95 },
           { essenceId: 'flying_high', quantity: [1, 3], chance: 0.6 },
@@ -666,7 +666,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 43,
         enemies: [94, 68, 97],  // Gengar, Machamp, Hypno
         enemyStars: 3,
-        statBoost: 1.1,
+        statBoost: 1.15,
         drops: [
           { essenceId: 'ghost_mid', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'fighting_mid', quantity: [1, 3], chance: 0.7 },
@@ -678,7 +678,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 50,
         enemies: [94, 68, 97],  // Gengar, Machamp, Hypno
         enemyStars: 3,
-        statBoost: 1.2,
+        statBoost: 1.4,
         drops: [
           { essenceId: 'ghost_mid', quantity: [3, 5], chance: 0.9 },
           { essenceId: 'fighting_mid', quantity: [2, 5], chance: 0.85 },
@@ -690,7 +690,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 58,
         enemies: [94, 68, 97],  // Gengar, Machamp, Hypno
         enemyStars: 4,
-        statBoost: 1.3,
+        statBoost: 1.4,
         drops: [
           { essenceId: 'ghost_mid', quantity: [3, 5], chance: 1.0 },
           { essenceId: 'fighting_mid', quantity: [2, 4], chance: 0.8 },
@@ -703,7 +703,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 68,
         enemies: [94, 68, 97],  // Gengar, Machamp, Hypno
         enemyStars: 5,
-        statBoost: 1.5,
+        statBoost: 1.6,
         drops: [
           { essenceId: 'ghost_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'fighting_mid', quantity: [2, 6], chance: 0.95 },
@@ -715,7 +715,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 78,
         enemies: [94, 68, 97],  // Gengar, Machamp, Hypno
         enemyStars: 5,
-        statBoost: 1.7,
+        statBoost: 1.8,
         drops: [
           { essenceId: 'ghost_high', quantity: [1, 3], chance: 0.7 },
           { essenceId: 'fighting_high', quantity: [1, 3], chance: 0.55 },
@@ -727,7 +727,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 90,
         enemies: [94, 68, 97],  // Gengar, Machamp, Hypno
         enemyStars: 6,
-        statBoost: 2.0,
+        statBoost: 2.1,
         drops: [
           { essenceId: 'ghost_high', quantity: [2, 5], chance: 0.95 },
           { essenceId: 'fighting_high', quantity: [1, 3], chance: 0.6 },
@@ -793,7 +793,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 43,
         enemies: [282, 122, 210],  // Gardevoir, Mr. Mime, Granbull
         enemyStars: 3,
-        statBoost: 1.1,
+        statBoost: 1.15,
         drops: [
           { essenceId: 'fairy_mid', quantity: [2, 5], chance: 0.85 },
           { essenceId: 'normal_mid', quantity: [1, 3], chance: 0.6 },
@@ -805,7 +805,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 50,
         enemies: [282, 122, 210],  // Gardevoir, Mr. Mime, Granbull
         enemyStars: 3,
-        statBoost: 1.2,
+        statBoost: 1.4,
         drops: [
           { essenceId: 'fairy_mid', quantity: [3, 6], chance: 0.95 },
           { essenceId: 'fairy_high', quantity: [0, 2], chance: 0.3 },
@@ -817,7 +817,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 58,
         enemies: [282, 122, 210],  // Gardevoir, Mr. Mime, Granbull
         enemyStars: 4,
-        statBoost: 1.3,
+        statBoost: 1.4,
         drops: [
           { essenceId: 'fairy_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'fairy_high', quantity: [1, 2], chance: 0.4 },
@@ -829,7 +829,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 68,
         enemies: [282, 122, 210],  // Gardevoir, Mr. Mime, Granbull
         enemyStars: 5,
-        statBoost: 1.5,
+        statBoost: 1.6,
         drops: [
           { essenceId: 'fairy_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'fairy_high', quantity: [1, 4], chance: 0.55 },
@@ -841,7 +841,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 78,
         enemies: [282, 122, 210],  // Gardevoir, Mr. Mime, Granbull
         enemyStars: 5,
-        statBoost: 1.7,
+        statBoost: 1.8,
         drops: [
           { essenceId: 'fairy_high', quantity: [1, 4], chance: 0.75 },
           { essenceId: 'normal_high', quantity: [1, 2], chance: 0.5 },
@@ -853,7 +853,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 90,
         enemies: [282, 122, 210],  // Gardevoir, Mr. Mime, Granbull
         enemyStars: 6,
-        statBoost: 2.0,
+        statBoost: 2.1,
         drops: [
           { essenceId: 'fairy_high', quantity: [2, 5], chance: 0.95 },
           { essenceId: 'normal_high', quantity: [1, 3], chance: 0.6 },
@@ -916,7 +916,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 43,
         enemies: [359, 215, 302],  // Absol, Sneasel, Sableye
         enemyStars: 3,
-        statBoost: 1.1,
+        statBoost: 1.15,
         drops: [
           { essenceId: 'dark_mid', quantity: [2, 5], chance: 0.85 },
           { essenceId: 'ghost_mid', quantity: [1, 3], chance: 0.6 },
@@ -928,7 +928,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 50,
         enemies: [359, 215, 302],  // Absol, Sneasel, Sableye
         enemyStars: 3,
-        statBoost: 1.2,
+        statBoost: 1.4,
         drops: [
           { essenceId: 'dark_mid', quantity: [3, 6], chance: 0.95 },
           { essenceId: 'dark_high', quantity: [0, 2], chance: 0.3 },
@@ -940,7 +940,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 58,
         enemies: [359, 215, 302],  // Absol, Sneasel, Sableye
         enemyStars: 4,
-        statBoost: 1.3,
+        statBoost: 1.4,
         drops: [
           { essenceId: 'dark_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'dark_high', quantity: [1, 2], chance: 0.4 },
@@ -952,7 +952,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 68,
         enemies: [359, 215, 302],  // Absol, Sneasel, Sableye
         enemyStars: 5,
-        statBoost: 1.5,
+        statBoost: 1.6,
         drops: [
           { essenceId: 'dark_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'dark_high', quantity: [1, 4], chance: 0.55 },
@@ -964,7 +964,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 78,
         enemies: [359, 215, 302],  // Absol, Sneasel, Sableye
         enemyStars: 5,
-        statBoost: 1.7,
+        statBoost: 1.8,
         drops: [
           { essenceId: 'dark_high', quantity: [1, 4], chance: 0.75 },
           { essenceId: 'ghost_high', quantity: [1, 2], chance: 0.5 },
@@ -976,7 +976,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 90,
         enemies: [359, 215, 302],  // Absol, Sneasel, Sableye
         enemyStars: 6,
-        statBoost: 2.0,
+        statBoost: 2.1,
         drops: [
           { essenceId: 'dark_high', quantity: [2, 5], chance: 0.95 },
           { essenceId: 'ghost_high', quantity: [1, 3], chance: 0.6 },
@@ -1039,7 +1039,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 43,
         enemies: [376, 306, 437],  // Metagross, Aggron, Bronzong
         enemyStars: 3,
-        statBoost: 1.1,
+        statBoost: 1.15,
         drops: [
           { essenceId: 'steel_mid', quantity: [2, 5], chance: 0.85 },
           { essenceId: 'rock_mid', quantity: [1, 3], chance: 0.6 },
@@ -1051,7 +1051,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 50,
         enemies: [376, 306, 437],  // Metagross, Aggron, Bronzong
         enemyStars: 3,
-        statBoost: 1.2,
+        statBoost: 1.4,
         drops: [
           { essenceId: 'steel_mid', quantity: [3, 6], chance: 0.95 },
           { essenceId: 'steel_high', quantity: [0, 2], chance: 0.3 },
@@ -1063,7 +1063,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 58,
         enemies: [376, 306, 437],  // Metagross, Aggron, Bronzong
         enemyStars: 4,
-        statBoost: 1.3,
+        statBoost: 1.4,
         drops: [
           { essenceId: 'steel_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'steel_high', quantity: [1, 2], chance: 0.4 },
@@ -1074,7 +1074,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 68,
         enemies: [376, 306, 437],  // Metagross, Aggron, Bronzong
         enemyStars: 5,
-        statBoost: 1.5,
+        statBoost: 1.6,
         drops: [
           { essenceId: 'steel_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'steel_high', quantity: [1, 4], chance: 0.55 },
@@ -1085,7 +1085,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 78,
         enemies: [376, 306, 437],  // Metagross, Aggron, Bronzong
         enemyStars: 5,
-        statBoost: 1.7,
+        statBoost: 1.8,
         drops: [
           { essenceId: 'steel_high', quantity: [1, 4], chance: 0.75 },
           { essenceId: 'rock_high', quantity: [1, 2], chance: 0.5 },
@@ -1097,7 +1097,7 @@ export const DUNGEONS: DungeonDef[] = [
         enemyLevel: 90,
         enemies: [376, 306, 437],  // Metagross, Aggron, Bronzong
         enemyStars: 6,
-        statBoost: 2.0,
+        statBoost: 2.1,
         drops: [
           { essenceId: 'steel_high', quantity: [2, 5], chance: 0.95 },
           { essenceId: 'rock_high', quantity: [1, 3], chance: 0.6 },
