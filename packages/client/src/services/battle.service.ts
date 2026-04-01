@@ -1,4 +1,4 @@
-import { getTemplate as getTemplateShared, computeStats, computeStatsWithItems, getActiveSetEffects, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel, BEGINNER_BONUS, isBeginnerBonusActive, getTowerFloor } from '@gatchamon/shared';
+import { getTemplate as getTemplateShared, computeStats, computeStatsWithItems, getActiveSetEffects, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel, BEGINNER_BONUS, isBeginnerBonusActive, getTowerFloor, STORY_ENERGY_COST } from '@gatchamon/shared';
 import { getSkillsForPokemon, SKILLS } from '@gatchamon/shared';
 import { TOTAL_REGIONS, getFloorCount } from '@gatchamon/shared';
 import {
@@ -535,6 +535,14 @@ export function startBattle(
 ): BattleResult {
   const player = loadPlayer();
   if (!player) throw new Error('Player not found');
+
+  if (player.energy < STORY_ENERGY_COST) {
+    throw new Error('Not enough energy');
+  }
+
+  savePlayer({ ...player, energy: player.energy - STORY_ENERGY_COST });
+  trackStat('totalEnergySpent', STORY_ENERGY_COST);
+  incrementMission('spend_energy', STORY_ENERGY_COST);
 
   const collection = loadCollection();
 

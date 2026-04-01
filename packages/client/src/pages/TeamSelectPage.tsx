@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
-import { REGIONS, DUNGEONS, ITEM_DUNGEONS, getTemplate, getTowerFloor, getFloorCount, getGymLeader, getLeagueChampion, isActivePokemon } from '@gatchamon/shared';
+import { REGIONS, DUNGEONS, ITEM_DUNGEONS, getTemplate, getTowerFloor, getFloorCount, getGymLeader, getLeagueChampion, isActivePokemon, STORY_ENERGY_COST } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
 import { startBattle, startDungeonBattle, startItemDungeonBattle, startTowerBattle } from '../services/battle.service';
 import { buildFloorEnemies } from '../services/floor.service';
@@ -252,7 +252,9 @@ export function TeamSelectPage() {
     ? (itemDungeonDef?.energyCost ?? 5)
     : mode === 'dungeon'
       ? (dungeonDef?.energyCost ?? 5)
-      : 0;
+      : mode === 'tower'
+        ? (getTowerFloor(floor)?.energyCost ?? 3)
+        : STORY_ENERGY_COST;
 
   return (
     <div className="page team-select-page">

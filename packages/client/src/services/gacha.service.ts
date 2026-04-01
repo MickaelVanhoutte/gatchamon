@@ -22,8 +22,8 @@ function rollRegularStarRating(guaranteeMinTwo = false): 1 | 2 | 3 {
 
 export function rollPremiumStarRating(): 3 | 4 | 5 {
   const roll = Math.random() * 100;
-  if (roll < 89) return 3;
-  if (roll < 99) return 4;
+  if (roll < 75) return 3;
+  if (roll < 95) return 4;
   return 5;
 }
 

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { GameIcon, StarRating } from '../components/icons';
-import { getTemplate, REGIONS, getFloorCount, getGymLeader, getLeagueChampion } from '@gatchamon/shared';
+import { getTemplate, REGIONS, getFloorCount, getGymLeader, getLeagueChampion, STORY_ENERGY_COST } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
 import { getFloorDefsForRegion } from '../services/floor.service';
 import { getFloorRewardPreview } from '../services/reward.service';
@@ -1719,9 +1719,9 @@ export function StoryModePage() {
                   <button
                     className={`floor-go-btn ${tutorialStep === 9 && floor.floor === 1 ? 'tutorial-target' : ''}`}
                     data-tutorial-id={floor.floor === 1 ? 'story-floor-go' : undefined}
-                    disabled={!isUnlocked}
+                    disabled={!isUnlocked || player.energy < STORY_ENERGY_COST}
                     onClick={() => {
-                      if (!isUnlocked) return;
+                      if (!isUnlocked || player.energy < STORY_ENERGY_COST) return;
                       if (tutorialStep === 9 && floor.floor === 1) advanceTutorial(); // step 9 → 10
                       navigate(`/battle/team-select?region=${selectedRegion.id}&floor=${floor.floor}&difficulty=${difficulty}`);
                     }}
@@ -1730,7 +1730,7 @@ export function StoryModePage() {
                       <span className="go-lock"><GameIcon id="lock" size={14} /></span>
                     ) : (
                       <>
-                        <span className="go-energy"><GameIcon id="energy" size={14} />3</span>
+                        <span className="go-energy"><GameIcon id="energy" size={14} />{STORY_ENERGY_COST}</span>
                         <span className="go-text">GO</span>
                       </>
                     )}

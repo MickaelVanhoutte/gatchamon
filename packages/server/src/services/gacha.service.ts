@@ -26,8 +26,8 @@ function rollRegularStarRating(guaranteeMinTwo = false): 1 | 2 | 3 {
 
 function rollPremiumStarRating(beginner = false): 3 | 4 | 5 {
   const roll = Math.random() * 100;
-  const fiveStarThreshold = beginner ? 100 - (1 + BEGINNER_BONUS.summon5StarBonus) : 99;
-  const fourStarThreshold = beginner ? fiveStarThreshold - (10 + BEGINNER_BONUS.summon4StarBonus) : 89;
+  const fiveStarThreshold = beginner ? 100 - (5 + BEGINNER_BONUS.summon5StarBonus) : 95;
+  const fourStarThreshold = beginner ? fiveStarThreshold - (20 + BEGINNER_BONUS.summon4StarBonus) : 75;
   if (roll >= fiveStarThreshold) return 5;
   if (roll >= fourStarThreshold) return 4;
   return 3;

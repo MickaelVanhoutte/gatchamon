@@ -85,6 +85,7 @@ export function calculateDamage(
 
 export const BASE_MAX_ENERGY = 100;
 export const BASE_ENERGY_REGEN_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes per 1 energy
+export const STORY_ENERGY_COST = 3;
 
 export function getMaxEnergy(skills: TrainerSkills): number {
   return BASE_MAX_ENERGY + skills.maxEnergyPool * 10;
