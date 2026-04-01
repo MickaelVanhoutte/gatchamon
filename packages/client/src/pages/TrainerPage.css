@@ -1,14 +1,22 @@
 .trainer-page {
-  height: 100%;
+  height: calc(100vh - var(--top-hud-height));
+  height: calc(100dvh - var(--top-hud-height));
   display: flex;
   flex-direction: row;
   overflow: hidden;
   padding: 0;
 }
 
+@media (orientation: portrait) {
+  .trainer-page {
+    height: calc(100vw - var(--top-hud-height));
+  }
+}
+
 /* ─── Left panel: trainer skills ─── */
 .trainer-left-panel {
   flex: 1;
+  height: 100%;
   overflow-y: auto;
   padding: 16px;
   -webkit-overflow-scrolling: touch;
@@ -18,6 +26,7 @@
 /* ─── Right panel: essence bag ─── */
 .trainer-right-panel {
   flex: 1;
+  height: 100%;
   overflow-y: auto;
   padding: 12px;
   -webkit-overflow-scrolling: touch;

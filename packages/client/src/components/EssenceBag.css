@@ -2,6 +2,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .essence-bag-title {
@@ -9,9 +10,12 @@
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 12px;
+  flex-shrink: 0;
 }
 
 .essence-list {
+  /* height: 0 + flex: 1 forces the list to stay within its parent */
+  height: 0;
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -36,15 +40,17 @@
   border-radius: 8px;
   overflow: hidden;
   box-shadow: var(--card-shadow);
+  flex-shrink: 0;
 }
 
 .essence-row-header {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
+  gap: 4px;
+  padding: 6px 8px;
   cursor: pointer;
   user-select: none;
+  overflow: hidden;
 }
 
 .essence-row-header:active {
@@ -53,34 +59,37 @@
 
 .essence-row-icon {
   flex-shrink: 0;
-  width: 20px;
+  width: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .essence-row-name {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-primary);
   text-transform: capitalize;
-  flex: 1;
-  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 40px;
+  flex-shrink: 1;
 }
 
 .essence-row-counts {
   display: flex;
-  gap: 4px;
+  gap: 3px;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .essence-tier-badge {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-  padding: 1px 5px;
+  padding: 1px 4px;
   border-radius: 4px;
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   font-weight: 600;
   white-space: nowrap;
 }

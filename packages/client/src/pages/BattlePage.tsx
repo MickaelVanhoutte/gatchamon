@@ -1018,17 +1018,17 @@ function BattleMonSprite({
       {mon.isPlayerOwned ? (
         <>
           {sprite}
-          {effectIcons}
           {nameLabel}
           {hpBars}
+          {effectIcons}
         </>
       ) : (
         <>
+          {effectIcons}
           {effArrow}
           {nameLabel}
           {hpBars}
           {sprite}
-          {effectIcons}
         </>
       )}
     </div>

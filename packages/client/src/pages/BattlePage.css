@@ -478,19 +478,14 @@
   object-fit: contain;
 }
 
-/* Effect icons row — buff/debuff indicators on the right side of sprite */
+/* Effect icons row — buff/debuff indicators below/above HP bar */
 .effect-icons-row {
-  position: absolute;
-  right: -6px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: grid;
-  grid-template-columns: 16px;
-  grid-template-rows: repeat(4, 16px);
-  grid-auto-flow: column;
-  grid-auto-columns: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 2px;
   z-index: 10;
+  max-width: 100%;
 }
 
 .effect-icon {
@@ -1429,5 +1424,52 @@
     padding: 16px 18px;
     width: 320px;
   }
+}
+
+/* ========== Landscape mobile (short viewport) ========== */
+@media (max-height: 500px) {
+  /* Turn bar compression */
+  .turn-bar { padding: 3px 8px; gap: 4px; }
+  .turn-order-track { height: 32px; padding: 0 14px; }
+  .turn-order-slot { width: 26px; height: 26px; }
+  .turn-order-slot.turn-current { width: 30px; height: 30px; }
+  .turn-order-number { width: 11px; height: 11px; font-size: 0.4rem; }
+  .speed-toggle, .pause-toggle, .auto-toggle { padding: 2px 6px; font-size: 0.55rem; }
+
+  /* Spread mons across full width, reduce vertical padding */
+  .battle-field { gap: 6px; padding: 2px 8px; justify-content: space-evenly; }
+  .enemy-field { margin-top: 0; padding-bottom: 2px; }
+  .player-field { padding-bottom: 4px; }
+
+  /* Wider containers to use horizontal space */
+  .battle-mon { width: clamp(80px, 18vw, 160px); gap: 1px; }
+
+  /* Sprites sized relative to height */
+  .battle-sprite { width: clamp(48px, 12vh, 80px); height: clamp(48px, 12vh, 80px); }
+
+  /* Compress vertical info elements */
+  .mon-name { font-size: 0.55rem; line-height: 1; }
+  .mon-hp-bar-bg { height: 4px; }
+  .mon-atb-bar-bg { height: 2px; margin-top: 0; }
+  .mon-hp-text { font-size: 0.5rem; line-height: 1; }
+
+  /* Skill panel */
+  .skill-btn { width: 44px; height: 44px; border-radius: 8px; }
+  .skill-panel { bottom: 4px; right: 4px; gap: 3px; }
+  .skill-name { font-size: 0.45rem; }
+  .cancel-btn { width: 30px; height: 30px; font-size: 0.65rem; }
+
+  /* Boss adjustments */
+  .boss-mon .mon-name { font-size: 0.65rem; }
+  .boss-mon .mon-hp-bar-bg { height: 5px; }
+  .boss-mon .mon-hp-text { font-size: 0.55rem; }
+
+  /* Effect icons */
+  .effect-icon { width: 13px; height: 13px; }
+
+  /* Floating numbers & arrows */
+  .floating-number { font-size: 0.85rem; }
+  .float-crit { font-size: 1rem; }
+  .eff-arrow { font-size: clamp(0.7rem, 1.5vw, 1rem); line-height: 1; }
 }
 

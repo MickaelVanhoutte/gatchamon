@@ -83,7 +83,7 @@ export function EssenceBag() {
               <div key={ess.element} className="essence-row">
                 <div className="essence-row-header" onClick={() => handleToggle(ess.element)}>
                   <div className="essence-row-icon">
-                    <GameIcon id={ess.element} size={16} color={`var(--type-${ess.element})`} />
+                    <GameIcon id={ess.element} size={14} color={`var(--type-${ess.element})`} />
                   </div>
                   <div className="essence-row-name">{ess.element}</div>
                   <div className="essence-row-counts">
@@ -92,7 +92,7 @@ export function EssenceBag() {
                       if (count === 0) return null;
                       return (
                         <span key={tier} className={`essence-tier-badge essence-tier-badge--${tier}`}>
-                          {TIER_LABELS[tier]} {count}
+                          {TIER_LABELS[tier][0]}{count}
                         </span>
                       );
                     })}
