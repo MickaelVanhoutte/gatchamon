@@ -81,6 +81,9 @@ export function App() {
               onChange={e => setNameInput(e.target.value)}
               placeholder="Enter name..."
               maxLength={20}
+              enterKeyHint="done"
+              autoComplete="off"
+              autoCorrect="off"
             />
             <button type="submit" disabled={!nameInput.trim()}>
               Start Adventure

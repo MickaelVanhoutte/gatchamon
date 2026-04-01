@@ -106,6 +106,11 @@ export function CheatBubble() {
         onChange={e => setInput(e.target.value)}
         onKeyDown={handleSubmit}
         placeholder="Type a code..."
+        enterKeyHint="send"
+        autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="off"
+        spellCheck={false}
       />
       {feedback && (
         <div className={`cheat-feedback ${feedback.success ? 'cheat-feedback--success' : 'cheat-feedback--error'}`}>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { assetUrl } from '../utils/asset-url';
+import { tryLockLandscape } from '../utils/orientation-lock';
 import './LoadingScreen.css';
 
 interface LoadingScreenProps {
@@ -23,7 +24,7 @@ export function LoadingScreen({ onStart, swReady = true }: LoadingScreenProps) {
   const canStart = minTimeElapsed && swReady;
 
   return (
-    <div className="loading-screen" onClick={() => canStart && onStart()}>
+    <div className="loading-screen" onClick={() => { if (!canStart) return; tryLockLandscape(); onStart(); }}>
       {/* Animated particles */}
       <div className="ls-particles">
         {Array.from({ length: 20 }).map((_, i) => (

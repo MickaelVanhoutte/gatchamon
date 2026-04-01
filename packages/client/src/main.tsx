@@ -16,7 +16,4 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   </React.StrictMode>
 );
 
-const orientation = screen.orientation as any;
-if (orientation?.lock) {
-  orientation.lock('landscape').catch(() => {});
-}
+// Orientation lock moved to LoadingScreen.tsx (requires user gesture to work)

@@ -125,10 +125,14 @@ export function PokedexPage() {
           <div className="pdex-filters">
             <input
               className="pdex-search"
-              type="text"
+              type="search"
+              inputMode="search"
               placeholder="Search by name..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
+              enterKeyHint="search"
+              autoComplete="off"
+              autoCorrect="off"
             />
             <div className="pdex-filter-row">
               <select

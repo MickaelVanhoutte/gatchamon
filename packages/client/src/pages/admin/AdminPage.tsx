@@ -114,10 +114,13 @@ export function AdminPage() {
             <div className="admin-filters">
               <input
                 className="admin-search"
-                type="text"
+                type="search"
+                inputMode="search"
                 placeholder="Search name..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
+                enterKeyHint="search"
+                autoComplete="off"
               />
               <select
                 className="admin-select"
@@ -240,6 +243,10 @@ export function AdminPage() {
               placeholder="Paste exported JSON here..."
               value={importText}
               onChange={e => setImportText(e.target.value)}
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
             />
             <div className="admin-import-actions">
               <button className="admin-btn" onClick={() => setShowImport(false)}>Cancel</button>

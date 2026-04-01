@@ -47,11 +47,14 @@ export function AdminSkillPicker({ pokemonId, slotIndex }: { pokemonId: number; 
         <div className="admin-skill-picker-filters">
           <input
             className="admin-search"
-            type="text"
+            type="search"
+            inputMode="search"
             placeholder="Search skill name or ID..."
             value={search}
             onChange={e => setSearch(e.target.value)}
             autoFocus
+            enterKeyHint="search"
+            autoComplete="off"
           />
           <select
             className="admin-select"
