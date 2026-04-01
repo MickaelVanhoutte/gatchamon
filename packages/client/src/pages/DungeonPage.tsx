@@ -52,6 +52,21 @@ export function DungeonPage() {
   const [selectedFloor, setSelectedFloor] = useState(initial.floor);
   const energyError = useEnergyError();
 
+  // Keep URL in sync so navigate(-1) from team-select restores state
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (tab !== 'essence') params.set('tab', tab);
+    if (tab !== 'tower') {
+      params.set('dungeonId', String(selectedDungeon.id));
+      if (selectedFloor > 0) params.set('floor', String(selectedFloor));
+    }
+    const newSearch = params.toString();
+    const currentSearch = searchParams.toString();
+    if (newSearch !== currentSearch) {
+      navigate(`?${newSearch}`, { replace: true });
+    }
+  }, [tab, selectedDungeon.id, selectedFloor]);
+
   const isItemDungeon = tab === 'items';
   const dungeonList = isItemDungeon ? ITEM_DUNGEONS : DUNGEONS;
 

@@ -12,6 +12,7 @@ import { assetUrl } from '../utils/asset-url';
 import { HeldItemEquipPanel } from './HeldItemEquipPanel';
 import { SkillCard } from '../components/monster/SkillCard';
 import { Spinner } from '../components/Spinner';
+import { EvolutionAnimation } from '../components/EvolutionAnimation';
 import { useTutorialStore } from '../stores/tutorialStore';
 import './CollectionPage.css';
 
@@ -58,6 +59,13 @@ export function CollectionPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<DetailTab>('info');
   const lastSelectedRef = useRef<string | null>(null);
+  const [evoAnim, setEvoAnim] = useState<{
+    fromSprite: string;
+    toSprite: string;
+    evolvedName: string;
+    instanceId: string;
+    targetTemplateId: number;
+  } | null>(null);
 
   const tutorialStep = useTutorialStore(s => s.step);
   const advanceTutorial = useTutorialStore(s => s.advanceStep);
@@ -387,8 +395,17 @@ export function CollectionPage() {
                               disabled={!validation.valid}
                               onClick={() => {
                                 if (confirm(`Evolve ${selected.template.name} into ${targetTemplate.name}?`)) {
-                                  evolvePokemon(selected.instance.instanceId, chain.to);
-                                  setSelectedId(selected.instance.instanceId);
+                                  const fromSprite = selected.instance.isShiny
+                                    ? assetUrl(`monsters/ani-shiny/${selected.template.name.toLowerCase()}.gif`)
+                                    : assetUrl(selected.template.spriteUrl);
+                                  const toSprite = assetUrl(targetTemplate.spriteUrl);
+                                  setEvoAnim({
+                                    fromSprite,
+                                    toSprite,
+                                    evolvedName: targetTemplate.name,
+                                    instanceId: selected.instance.instanceId,
+                                    targetTemplateId: chain.to,
+                                  });
                                 }
                               }}
                             >
@@ -480,6 +497,20 @@ export function CollectionPage() {
           )}
         </div>
       </div>
+
+      {/* Evolution animation overlay */}
+      {evoAnim && (
+        <EvolutionAnimation
+          fromSprite={evoAnim.fromSprite}
+          toSprite={evoAnim.toSprite}
+          evolvedName={evoAnim.evolvedName}
+          onComplete={() => {
+            evolvePokemon(evoAnim.instanceId, evoAnim.targetTemplateId);
+            setSelectedId(evoAnim.instanceId);
+            setEvoAnim(null);
+          }}
+        />
+      )}
     </div>
   );
 }
