@@ -160,16 +160,35 @@ export function getItemsForPokemon(instanceId: string): HeldItemInstance[] {
 
 // ── Team ────────────────────────────────────────────────────────────────
 
-const LAST_TEAM_KEY = 'gatchamon_last_team';
+const TEAM_KEY_PREFIX = 'gatchamon_team_';
+const LEGACY_TEAM_KEY = 'gatchamon_last_team';
 
-export function loadLastTeam(): string[] {
-  const raw = localStorage.getItem(LAST_TEAM_KEY);
-  if (!raw) return [];
+export function getTeamKey(mode: string, dungeonId?: number): string {
+  switch (mode) {
+    case 'dungeon':
+      return `${TEAM_KEY_PREFIX}dungeon_${dungeonId}`;
+    case 'item-dungeon':
+      return `${TEAM_KEY_PREFIX}item_dungeon_${dungeonId}`;
+    case 'tower':
+      return `${TEAM_KEY_PREFIX}tower`;
+    default:
+      return `${TEAM_KEY_PREFIX}story`;
+  }
+}
+
+export function loadLastTeam(teamKey: string): string[] {
+  const raw = localStorage.getItem(teamKey);
+  if (!raw) {
+    // Migration: fall back to the old shared key
+    const legacy = localStorage.getItem(LEGACY_TEAM_KEY);
+    if (!legacy) return [];
+    return safeParse<string[]>(legacy, []);
+  }
   return safeParse<string[]>(raw, []);
 }
 
-export function saveLastTeam(instanceIds: string[]): void {
-  localStorage.setItem(LAST_TEAM_KEY, JSON.stringify(instanceIds));
+export function saveLastTeam(instanceIds: string[], teamKey: string): void {
+  localStorage.setItem(teamKey, JSON.stringify(instanceIds));
 }
 
 const REWARDS_KEY = 'gatchamon_rewards';
@@ -268,7 +287,7 @@ export function saveLoginCalendar(state: LoginCalendarData): void {
 const BATTLE_SETTINGS_KEY = 'gatchamon_battle_settings';
 
 export interface BattleSettings {
-  speed: 1 | 2;
+  speed: 1 | 2 | 3;
   auto: boolean;
 }
 
@@ -335,7 +354,12 @@ export function clearAll(): void {
   localStorage.removeItem(RETRY_SUMMON_KEY);
   localStorage.removeItem(LOGIN_CALENDAR_KEY);
   localStorage.removeItem(BATTLE_SETTINGS_KEY);
-  localStorage.removeItem(LAST_TEAM_KEY);
+  localStorage.removeItem(LEGACY_TEAM_KEY);
   localStorage.removeItem(GRANTED_FLAGS_KEY);
   localStorage.removeItem(STORY_DIFFICULTY_KEY);
+  // Clear all per-dungeon team keys
+  for (let i = localStorage.length - 1; i >= 0; i--) {
+    const key = localStorage.key(i);
+    if (key?.startsWith(TEAM_KEY_PREFIX)) localStorage.removeItem(key);
+  }
 }

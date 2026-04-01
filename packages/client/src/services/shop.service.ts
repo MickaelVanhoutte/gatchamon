@@ -1,7 +1,7 @@
 import type { SummonResult } from './gacha.service';
 import { shopSummonMultiPremium, shopSummonSingleLegendary } from './gacha.service';
 import { spendStardust } from './player.service';
-import { loadPlayer, savePlayer } from './storage';
+import { loadPlayer, savePlayer, setGrantedFlag, hasGrantedFlag } from './storage';
 
 export interface ShopItemDef {
   id: string;
@@ -12,6 +12,13 @@ export interface ShopItemDef {
 }
 
 export const SHOP_ITEMS: ShopItemDef[] = [
+  {
+    id: 'speed_x3',
+    name: 'Speed x3',
+    description: 'Unlock x3 battle speed',
+    icon: 'sparkles',
+    cost: 300,
+  },
   {
     id: 'energy_pack_100',
     name: 'Energy Pack',
@@ -47,6 +54,11 @@ export function purchaseShopItem(itemId: string): ShopPurchaseResult {
   spendStardust(def.cost);
 
   const results: SummonResult[] = [];
+
+  if (itemId === 'speed_x3') {
+    setGrantedFlag('speed_x3');
+    return { results };
+  }
 
   if (itemId === 'energy_pack_100') {
     const player = loadPlayer();

@@ -121,6 +121,12 @@
   box-shadow: 0 0 8px rgba(249, 115, 22, 0.3);
 }
 
+.speed-toggle.speed-x3 {
+  border-color: #e11d48;
+  color: #be123c;
+  box-shadow: 0 0 10px rgba(225, 29, 72, 0.4);
+}
+
 .speed-toggle:hover {
   transform: scale(1.05);
 }

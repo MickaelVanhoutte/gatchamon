@@ -5,7 +5,7 @@ import { REGIONS, DUNGEONS, ITEM_DUNGEONS, getTemplate, getTowerFloor, getFloorC
 import type { Difficulty } from '@gatchamon/shared';
 import { startBattle, startDungeonBattle, startItemDungeonBattle, startTowerBattle } from '../services/battle.service';
 import { buildFloorEnemies } from '../services/floor.service';
-import { loadLastTeam, saveLastTeam } from '../services/storage';
+import { loadLastTeam, saveLastTeam, getTeamKey } from '../services/storage';
 import { useRotatedHorizontalScroll } from '../hooks/useRotatedHorizontalScroll';
 import { MonsterDetailModal } from '../components/MonsterDetailModal';
 import { GameIcon, StarRating } from '../components/icons';
@@ -54,6 +54,7 @@ export function TeamSelectPage() {
   const dungeonId = Number(searchParams.get('dungeonId') ?? 0);
   const dungeonFloor = Number(searchParams.get('floor') ?? 0);
   const isDungeonMode = mode === 'dungeon' || mode === 'item-dungeon';
+  const teamKey = getTeamKey(mode, dungeonId);
 
   const regionDef = REGIONS.find(r => r.id === region);
   const dungeonDef = DUNGEONS.find(d => d.id === dungeonId);
@@ -76,7 +77,7 @@ export function TeamSelectPage() {
       // Tutorial: auto-select all monsters
       setSelected(visibleCollection.map(m => m.instance.instanceId).slice(0, 4));
     } else {
-      const saved = loadLastTeam();
+      const saved = loadLastTeam(teamKey);
       const validIds = saved
         .filter(id => visibleCollection.some(m => m.instance.instanceId === id))
         .slice(0, 4);
@@ -85,7 +86,7 @@ export function TeamSelectPage() {
       }
     }
     setTeamRestored(true);
-  }, [visibleCollection, teamRestored]);
+  }, [visibleCollection, teamRestored, teamKey]);
 
   // Build enemy preview
   const enemyPreviews = useMemo((): EnemyPreview[] => {
@@ -170,7 +171,7 @@ export function TeamSelectPage() {
         setStartError('Repeat battle already in progress');
         return;
       }
-      saveLastTeam(selected);
+      saveLastTeam(selected, teamKey);
       const dDef = mode === 'item-dungeon' ? itemDungeonDef : dungeonDef;
       const config = {
         teamIds: [...selected],
@@ -187,7 +188,7 @@ export function TeamSelectPage() {
     }
 
     setIsStarting(true);
-    saveLastTeam(selected);
+    saveLastTeam(selected, teamKey);
     try {
       if (mode === 'tower') {
         const towerFloor = Number(searchParams.get('floor') ?? 1);

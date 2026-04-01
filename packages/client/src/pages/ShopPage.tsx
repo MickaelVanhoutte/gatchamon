@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { SHOP_ITEMS, purchaseShopItem } from '../services/shop.service';
 import type { SummonResult } from '../services/gacha.service';
+import { hasGrantedFlag } from '../services/storage';
 import { GameIcon, StarRating } from '../components/icons';
 import { getTemplate } from '@gatchamon/shared';
 import './ShopPage.css';
@@ -62,7 +63,7 @@ export function ShopPage() {
 
       {phase === 'browse' && (
         <div className="shop-items">
-          {SHOP_ITEMS.map(item => {
+          {SHOP_ITEMS.filter(item => !(item.id === 'speed_x3' && hasGrantedFlag('speed_x3'))).map(item => {
             const canAfford = stardust >= item.cost;
             return (
               <div key={item.id} className={`shop-card ${!canAfford ? 'shop-card-disabled' : ''}`}>
