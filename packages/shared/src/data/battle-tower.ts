@@ -9,6 +9,7 @@ export interface TowerFloorDef {
   reward: MissionReward;
   energyCost: number;
   statBoost?: number;
+  speedBonus?: number;
 }
 
 // Enemy pools — Gen 1 only, difficulty through team composition & type coverage
@@ -68,6 +69,12 @@ function getStatBoost(floor: number): number | undefined {
   if (floor <= 80) return 1.25;
   if (floor <= 99) return 1.4;
   return 1.6; // Floor 100 boss
+}
+
+function getSpeedBonus(floor: number): number {
+  if (floor <= 5) return 0;
+  // Ramp from 0 at floor 5 to 100 at floor 100
+  return Math.floor((floor - 5) * (100 / 95));
 }
 
 function getEnemyCount(floor: number): number {
@@ -161,6 +168,7 @@ function buildTowerFloors(): TowerFloorDef[] {
   const floors: TowerFloorDef[] = [];
   for (let floor = 1; floor <= 100; floor++) {
     const statBoost = getStatBoost(floor);
+    const speedBonus = getSpeedBonus(floor);
     floors.push({
       floor,
       enemyLevel: getEnemyLevel(floor),
@@ -170,6 +178,7 @@ function buildTowerFloors(): TowerFloorDef[] {
       reward: getFloorReward(floor),
       energyCost: floor <= 50 ? 3 : 4,
       ...(statBoost != null ? { statBoost } : {}),
+      ...(speedBonus > 0 ? { speedBonus } : {}),
     });
   }
   return floors;

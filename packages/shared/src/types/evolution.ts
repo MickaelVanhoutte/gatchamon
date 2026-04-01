@@ -39,6 +39,8 @@ export interface DungeonFloor {
   enemyStars?: number;
   /** Multiplier applied to enemy stats after normal computation (e.g. 1.3 = +30%) */
   statBoost?: number;
+  /** Flat speed bonus added to enemy speed (simulates held item speed) */
+  speedBonus?: number;
 }
 
 export interface DungeonDef {

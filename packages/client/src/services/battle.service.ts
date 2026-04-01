@@ -549,9 +549,17 @@ export function startBattle(
 
   const floorDef = buildFloorEnemies(floor.region, floor.floor, floor.difficulty);
 
+  // Speed bonus scales with region and difficulty to simulate held item speed
+  const diffSpeedBase = floor.difficulty === 'hell' ? 40 : floor.difficulty === 'hard' ? 20 : 0;
+  const diffSpeedPerRegion = floor.difficulty === 'hell' ? 4.5 : floor.difficulty === 'hard' ? 3.5 : 2.5;
+  const storySpeedBonus = Math.floor(diffSpeedBase + (floor.region - 1) * diffSpeedPerRegion);
+
   const enemyTeam: BattleMon[] = floorDef.enemies.map(e => {
     const id = `enemy_${crypto.randomUUID()}`;
     const mon = makeBattleMon(id, e.templateId, e.level, e.stars, false);
+    if (storySpeedBonus > 0) {
+      mon.stats.spd += storySpeedBonus;
+    }
     if (e.isBoss) mon.isBoss = true;
     return mon;
   });
@@ -607,6 +615,11 @@ export function startDungeonBattle(
       mon.stats.def = Math.floor(mon.stats.def * floor.statBoost);
       mon.maxHp = mon.stats.hp;
       mon.currentHp = mon.stats.hp;
+    }
+    // Speed bonus scales with floor depth (0→0, 9→100)
+    const dungeonSpeedBonus = floor.speedBonus ?? (floorIndex <= 1 ? 0 : Math.floor((floorIndex - 1) * (100 / 8)));
+    if (dungeonSpeedBonus > 0) {
+      mon.stats.spd += dungeonSpeedBonus;
     }
     if (isLastFloor && i === bossIndex) mon.isBoss = true;
     enemyTeam.push(mon);
@@ -664,6 +677,11 @@ export function startItemDungeonBattle(
       mon.maxHp = mon.stats.hp;
       mon.currentHp = mon.stats.hp;
     }
+    // Speed bonus scales with floor depth (0→0, 9→100)
+    const itemDungeonSpeedBonus = floor.speedBonus ?? (floorIndex <= 1 ? 0 : Math.floor((floorIndex - 1) * (100 / 8)));
+    if (itemDungeonSpeedBonus > 0) {
+      mon.stats.spd += itemDungeonSpeedBonus;
+    }
     if (isLastFloor && i === bossIndex) mon.isBoss = true;
     enemyTeam.push(mon);
   }
@@ -716,6 +734,9 @@ export function startTowerBattle(
       mon.stats.def = Math.floor(mon.stats.def * floorDef.statBoost);
       mon.maxHp = mon.stats.hp;
       mon.currentHp = mon.stats.hp;
+    }
+    if (floorDef.speedBonus) {
+      mon.stats.spd += floorDef.speedBonus;
     }
     if (towerFloor % 10 === 0 && i === Math.floor(floorDef.enemyCount / 2)) {
       mon.isBoss = true;

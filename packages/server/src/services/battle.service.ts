@@ -359,9 +359,17 @@ export function startBattle(
   // Build enemy team from region floor definition
   const floorDef = buildFloorEnemies(floor.region, floor.floor, floor.difficulty);
 
+  // Speed bonus scales with region and difficulty to simulate held item speed
+  const diffSpeedBase = floor.difficulty === 'hell' ? 40 : floor.difficulty === 'hard' ? 20 : 0;
+  const diffSpeedPerRegion = floor.difficulty === 'hell' ? 4.5 : floor.difficulty === 'hard' ? 3.5 : 2.5;
+  const storySpeedBonus = Math.floor(diffSpeedBase + (floor.region - 1) * diffSpeedPerRegion);
+
   const enemyTeam: BattleMon[] = floorDef.enemies.map(e => {
     const id = `enemy_${uuidv4()}`;
     const mon = makeBattleMon(id, e.templateId, e.level, e.stars, false);
+    if (storySpeedBonus > 0) {
+      mon.stats.spd += storySpeedBonus;
+    }
     if (e.isBoss) mon.isBoss = true;
     return mon;
   });
