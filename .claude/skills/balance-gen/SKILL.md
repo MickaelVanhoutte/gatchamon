@@ -83,14 +83,34 @@ Enter plan mode. Design the rework using these principles:
 ### Valid SkillTarget Options
 `single_enemy`, `all_enemies`, `self`, `single_ally`, `all_allies`
 
-### Stat Adjustment Guidelines
-When a Pokemon's role changes significantly, adjust its baseStats:
-- **Attackers:** High ATK, critRate, critDmg
-- **Tanks:** High HP, DEF; low SPD acceptable
-- **Healers/Supports:** High HP, RES; lower ATK
-- **Speed supports:** High SPD
-- **CC specialists:** High SPD, ACC
-- **Debuffers:** High ACC, SPD
+### Stat Formula (Compressed)
+Stats are generated from Pokemon BST (Base Stat Total) using a compressed formula that keeps all star tiers viable:
+
+```
+scale = bst / 500
+
+hp       = floor(450 + scale * 200)    // Range: ~528-722
+atk      = floor(60  + scale * 50)     // Range: ~79-128
+def      = floor(55  + scale * 45)     // Range: ~72-116
+spd      = game-speed-based            // Range: 80-130 (unchanged)
+critRate = floor(14  + scale * 7)      // Range: ~16-24
+critDmg  = floor(157 + scale * 12)     // Range: ~162-173
+acc      = floor(90  + scale * 11)     // Range: ~94-105
+res      = floor(15  + scale * 8)      // Range: ~18-26
+```
+
+**Design intent:** 1-star Pokemon average ~78% of 5-star stats (ATK/DEF). This makes every star tier playable — a 1-star with the right kit for your team is a valid choice, not dead weight. Higher stars are still strictly stronger in raw stats.
+
+**Rebalance script:** `packages/shared/scripts/rebalance-stats.mjs` — reverse-engineers BST from existing stats and applies the new formula. Run it after any manual stat edits to ensure consistency: `node packages/shared/scripts/rebalance-stats.mjs`
+
+### Role-Based Stat Tweaks
+After applying the formula, adjust individual Pokemon whose role needs stat emphasis:
+- **Attackers:** +5-10 ATK, +2-3 critRate
+- **Tanks:** +15-20 HP, +5-10 DEF, -10-15 ATK
+- **Healers/Supports:** +15-30 HP, +3-4 RES, -15-25 ATK
+- **Speed supports:** +3-5 SPD
+- **CC specialists:** +3-5 ACC
+- **Debuffers:** +3-5 ACC
 
 Present the plan as a table per Pokemon showing current vs proposed skills. Get user approval before proceeding.
 

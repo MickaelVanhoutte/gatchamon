@@ -307,15 +307,17 @@ function mapStats(bst: number, gameSpeed: number): {
   const scale = bst / 500;
   // SPD: map actual game speed (5-200) to 80-130 range, cap scaling at 150
   const clampedSpeed = Math.min(150, Math.max(5, gameSpeed));
+  // Compressed formula: higher floors, reduced scaling ranges
+  // 1-star averages ~78% of 5-star stats (was ~67%), making all stars playable
   return {
-    hp: Math.floor(350 + scale * 300),
-    atk: Math.floor(30 + scale * 80),
-    def: Math.floor(30 + scale * 70),
+    hp: Math.floor(450 + scale * 200),
+    atk: Math.floor(60 + scale * 50),
+    def: Math.floor(55 + scale * 45),
     spd: Math.min(130, Math.round(80 + (clampedSpeed - 5) / (150 - 5) * 50)),
-    critRate: Math.floor(10 + scale * 12),
-    critDmg: Math.floor(150 + scale * 20),
-    acc: Math.floor(85 + scale * 18),
-    res: Math.floor(10 + scale * 14),
+    critRate: Math.floor(14 + scale * 7),
+    critDmg: Math.floor(157 + scale * 12),
+    acc: Math.floor(90 + scale * 11),
+    res: Math.floor(15 + scale * 8),
   };
 }
 
