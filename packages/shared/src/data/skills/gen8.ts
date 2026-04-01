@@ -116,7 +116,7 @@ export const GEN8_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'heal', value: 3, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- scorbunny (fire) ---
@@ -593,7 +593,7 @@ export const GEN8_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'nullify', value: 0, duration: 2, chance: 18, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- dottler (bug/psychic) ---
@@ -828,7 +828,7 @@ export const GEN8_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'heal', value: 3, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- wooloo (normal) ---
@@ -985,7 +985,7 @@ export const GEN8_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'atb_reduce', value: 15, duration: 0, chance: 22 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- yamper (electric) ---
@@ -1265,7 +1265,7 @@ export const GEN8_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- appletun (grass/dragon) ---
@@ -1804,7 +1804,7 @@ export const GEN8_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'provoke', value: 0, duration: 1, chance: 25 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- hattrem (psychic) ---
@@ -2191,7 +2191,7 @@ export const GEN8_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'atb_reduce', value: 15, duration: 0, chance: 20 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- milcery (fairy) ---
@@ -2466,7 +2466,7 @@ export const GEN8_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'atb_reduce', value: 15, duration: 0, chance: 32 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- cufant (steel) ---
@@ -2505,7 +2505,7 @@ export const GEN8_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'counter', value: 0, duration: 1, chance: 34, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- copperajah (steel) ---
@@ -2662,7 +2662,7 @@ export const GEN8_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- arctovish (water/ice) ---
@@ -3176,7 +3176,7 @@ export const GEN8_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'reflect', value: 0, duration: 1, chance: 50, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- spectrier (ghost) ---
@@ -3368,7 +3368,7 @@ export const GEN8_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'nullify', value: 0, duration: 2, chance: 31, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- ursaluna (ground/normal) ---
@@ -3407,7 +3407,7 @@ export const GEN8_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'reflect', value: 0, duration: 1, chance: 35, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- sneasler (fighting/poison) ---

@@ -147,7 +147,8 @@ export type PassiveTrigger =
   | 'battle_start'     // Applied once at start of battle
   | 'turn_start'       // Each of this mon's turns
   | 'on_attack'        // After this mon attacks
-  | 'on_hit'           // When this mon takes damage
+  | 'on_hit'           // When this mon's attack deals damage to an enemy
+  | 'on_hit_received'  // When this mon takes damage from an enemy
   | 'on_crit'          // When this mon lands a crit
   | 'on_kill'          // When this mon kills an enemy
   | 'on_ally_death'    // When an ally faints

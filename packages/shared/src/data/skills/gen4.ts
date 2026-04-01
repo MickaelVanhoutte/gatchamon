@@ -195,7 +195,7 @@ export const GEN4_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'nullify', value: 0, duration: 2, chance: 35, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- piplup (water) ---
@@ -316,7 +316,7 @@ export const GEN4_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- starly (normal/flying) ---
@@ -514,7 +514,7 @@ export const GEN4_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'nullify', value: 0, duration: 2, chance: 19, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- kricketot (bug) ---
@@ -553,7 +553,7 @@ export const GEN4_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- kricketune (bug) ---
@@ -1144,7 +1144,7 @@ export const GEN4_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'atb_reduce', value: 15, duration: 0, chance: 18 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- pachirisu (electric) ---
@@ -1454,7 +1454,7 @@ export const GEN4_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'counter', value: 0, duration: 1, chance: 30, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- drifloon (ghost/flying) ---
@@ -3342,7 +3342,7 @@ export const GEN4_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'reflect', value: 0, duration: 1, chance: 34, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- mamoswine (ice/ground) ---
@@ -3924,7 +3924,7 @@ export const GEN4_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'nullify', value: 0, duration: 2, chance: 53, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- phione (water) ---

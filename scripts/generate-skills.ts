@@ -71,7 +71,7 @@ type InstantEffectId =
 type EffectId = BuffEffectId | DebuffEffectId | StatusEffectId | InstantEffectId;
 
 type PassiveTrigger =
-  | 'battle_start' | 'turn_start' | 'on_attack' | 'on_hit'
+  | 'battle_start' | 'turn_start' | 'on_attack' | 'on_hit' | 'on_hit_received'
   | 'on_crit' | 'on_kill' | 'on_ally_death' | 'hp_threshold' | 'always';
 
 interface SkillEffect {
@@ -1009,7 +1009,7 @@ function generateSkillsForPokemon(
       const r = rng();
       if (r < 0.07) {
         // 1: on_hit: counter
-        passiveTrigger = 'on_hit';
+        passiveTrigger = 'on_hit_received';
         passiveEffects.push({ id: 'counter', value: 0, duration: 1, chance: pCh(), target: 'self' });
       } else if (r < 0.14) {
         // 2: hp_threshold: endure
@@ -1023,7 +1023,7 @@ function generateSkillsForPokemon(
         passiveEffects.push({ id: 'def_buff', value: 0, duration: 2, chance: 100, target: 'all_allies' });
       } else if (r < 0.28) {
         // 4: on_hit: reflect self
-        passiveTrigger = 'on_hit';
+        passiveTrigger = 'on_hit_received';
         passiveEffects.push({ id: 'reflect', value: 0, duration: 1, chance: pCh(), target: 'self' });
       } else if (r < 0.35) {
         // 5: battle_start: threat + shield (multi)
@@ -1032,7 +1032,7 @@ function generateSkillsForPokemon(
         passiveEffects.push({ id: 'shield', value: randInt(15, 25, rng), duration: 3, chance: 100, target: 'self' });
       } else if (r < 0.42) {
         // 6: on_hit: provoke attacker
-        passiveTrigger = 'on_hit';
+        passiveTrigger = 'on_hit_received';
         passiveEffects.push({ id: 'provoke', value: 0, duration: 1, chance: 25 });
       } else if (r < 0.49) {
         // 7: hp_threshold: shield + def_buff
@@ -1055,7 +1055,7 @@ function generateSkillsForPokemon(
         passiveEffects.push({ id: 'res_buff', value: 0, duration: 999, chance: 100, target: 'self' });
       } else if (r < 0.77) {
         // 11: on_hit: nullify self
-        passiveTrigger = 'on_hit';
+        passiveTrigger = 'on_hit_received';
         passiveEffects.push({ id: 'nullify', value: 0, duration: 2, chance: pCh(), target: 'self' });
       } else if (r < 0.84) {
         // 12: battle_start: soul_protect all_allies
@@ -1070,7 +1070,7 @@ function generateSkillsForPokemon(
         passiveEffects.push({ id: 'recovery', value: 0, duration: 2, chance: 100, target: 'self' });
       } else if (r < 0.95) {
         // 14: on_hit: atb_reduce attacker
-        passiveTrigger = 'on_hit';
+        passiveTrigger = 'on_hit_received';
         passiveEffects.push({ id: 'atb_reduce', value: 15, duration: 0, chance: pCh() });
       } else {
         // 15: turn_start: shield all_allies
@@ -1128,7 +1128,7 @@ function generateSkillsForPokemon(
         passiveEffects.push({ id: 'recovery', value: 0, duration: 2, chance: 100, target: 'all_allies' });
       } else if (r < 0.70) {
         // 10: on_hit: heal all_allies
-        passiveTrigger = 'on_hit';
+        passiveTrigger = 'on_hit_received';
         passiveTarget = 'all_allies';
         passiveEffects.push({ id: 'heal', value: 3, duration: 0, chance: 100, target: 'all_allies' });
       } else if (r < 0.77) {
@@ -1153,7 +1153,7 @@ function generateSkillsForPokemon(
         passiveEffects.push({ id: 'shorten_debuffs', value: 1, duration: 0, chance: 100, target: 'all_allies' });
       } else {
         // 15: on_hit: balance_hp all_allies
-        passiveTrigger = 'on_hit';
+        passiveTrigger = 'on_hit_received';
         passiveTarget = 'all_allies';
         passiveEffects.push({ id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' });
       }
@@ -1205,7 +1205,7 @@ function generateSkillsForPokemon(
         passiveEffects.push({ id: 'detonate', value: 0, duration: 0, chance: 15 });
       } else if (r < 0.70) {
         // 10: on_hit: glancing on attacker
-        passiveTrigger = 'on_hit';
+        passiveTrigger = 'on_hit_received';
         passiveEffects.push({ id: 'glancing', value: 0, duration: 2, chance: 30 });
       } else if (r < 0.77) {
         // 11: on_attack: bleed target

@@ -203,7 +203,7 @@ export const GEN3_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'atb_reduce', value: 15, duration: 0, chance: 33 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- blaziken (fire/fighting) ---
@@ -242,7 +242,7 @@ export const GEN3_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'heal', value: 3, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- mudkip (water) ---
@@ -1213,7 +1213,7 @@ export const GEN3_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'glancing', value: 0, duration: 2, chance: 30 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- surskit (bug/water) ---
@@ -2152,7 +2152,7 @@ export const GEN3_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'atb_reduce', value: 15, duration: 0, chance: 35 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- meditite (fighting/psychic) ---
@@ -2583,7 +2583,7 @@ export const GEN3_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'glancing', value: 0, duration: 2, chance: 30 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- carvanha (water/dark) ---
@@ -3018,7 +3018,7 @@ export const GEN3_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'provoke', value: 0, duration: 1, chance: 25 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- vibrava (ground/dragon) ---
@@ -3651,7 +3651,7 @@ export const GEN3_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'glancing', value: 0, duration: 2, chance: 30 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- lileep (rock/grass) ---
@@ -4323,7 +4323,7 @@ export const GEN3_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- glalie (ice) ---

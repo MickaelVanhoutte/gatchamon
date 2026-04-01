@@ -1067,7 +1067,7 @@ export const GEN6_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'glancing', value: 0, duration: 2, chance: 30 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- doublade (steel/ghost) ---
@@ -2013,7 +2013,7 @@ export const GEN6_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'heal', value: 3, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- goomy (dragon) ---
@@ -2167,7 +2167,7 @@ export const GEN6_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'atb_reduce', value: 15, duration: 0, chance: 44 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- phantump (ghost/grass) ---
@@ -2285,7 +2285,7 @@ export const GEN6_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'atb_reduce', value: 15, duration: 0, chance: 30 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- avalugg (ice) ---
@@ -2564,7 +2564,7 @@ export const GEN6_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'atb_reduce', value: 15, duration: 0, chance: 50 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- volcanion (fire/water) ---
@@ -2604,6 +2604,6 @@ export const GEN6_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 };

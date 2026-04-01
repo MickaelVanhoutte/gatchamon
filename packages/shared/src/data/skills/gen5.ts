@@ -934,7 +934,7 @@ export const GEN5_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'glancing', value: 0, duration: 2, chance: 30 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- musharna (psychic) ---
@@ -1408,7 +1408,7 @@ export const GEN5_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- excadrill (ground/steel) ---
@@ -1447,7 +1447,7 @@ export const GEN5_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'reflect', value: 0, duration: 1, chance: 31, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- audino (normal) ---
@@ -2157,7 +2157,7 @@ export const GEN5_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'heal', value: 3, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- lilligant (grass) ---
@@ -2196,7 +2196,7 @@ export const GEN5_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- sandile (ground/dark) ---
@@ -3209,7 +3209,7 @@ export const GEN5_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'counter', value: 0, duration: 1, chance: 23, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- solosis (psychic) ---
@@ -3406,7 +3406,7 @@ export const GEN5_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'heal', value: 3, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- vanillite (ice) ---
@@ -4049,7 +4049,7 @@ export const GEN5_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'glancing', value: 0, duration: 2, chance: 30 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- klang (steel) ---
@@ -5068,7 +5068,7 @@ export const GEN5_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- bouffalant (normal) ---
@@ -5660,7 +5660,7 @@ export const GEN5_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'nullify', value: 0, duration: 2, chance: 43, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- reshiram (dragon/fire) ---

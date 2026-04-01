@@ -1246,10 +1246,16 @@ export function resolveSkill(
       if (counterResult) appliedEffects.push(counterResult);
     }
 
-    // Trigger on_hit passive for target
-    if (isOffensive && target.isAlive && damage > 0) {
-      const hitEffects = processPassiveTrigger('on_hit', target, state, { targetMon: actor });
+    // Trigger on_hit passive for attacker (when this mon's attack deals damage)
+    if (isOffensive && damage > 0) {
+      const hitEffects = processPassiveTrigger('on_hit', actor, state, { targetMon: target });
       appliedEffects.push(...hitEffects);
+    }
+
+    // Trigger on_hit_received passive for defender (when this mon takes damage)
+    if (isOffensive && target.isAlive && damage > 0) {
+      const recvEffects = processPassiveTrigger('on_hit_received', target, state, { targetMon: actor });
+      appliedEffects.push(...recvEffects);
     }
 
     // Trigger on_attack passive for actor

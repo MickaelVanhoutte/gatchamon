@@ -1022,7 +1022,7 @@ export const GEN9_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'nullify', value: 0, duration: 2, chance: 28, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- charcadet (fire) ---
@@ -1731,7 +1731,7 @@ export const GEN9_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'reflect', value: 0, duration: 1, chance: 20, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- rellor (bug) ---
@@ -1967,7 +1967,7 @@ export const GEN9_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'atb_reduce', value: 15, duration: 0, chance: 20 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- tinkaton (fairy/steel) ---
@@ -2281,7 +2281,7 @@ export const GEN9_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'glancing', value: 0, duration: 2, chance: 30 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- orthworm (steel) ---
@@ -2317,7 +2317,7 @@ export const GEN9_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'nullify', value: 0, duration: 2, chance: 40, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- glimmet (rock/poison) ---
@@ -2822,7 +2822,7 @@ export const GEN9_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'reflect', value: 0, duration: 1, chance: 30, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- frigibax (dragon/ice) ---
@@ -3014,7 +3014,7 @@ export const GEN9_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'provoke', value: 0, duration: 1, chance: 25 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- gimmighoul (ghost) ---

@@ -868,6 +868,263 @@
   border-top: 2px solid var(--card-border);
 }
 
+/* ─── Skill Editor (inline) ─── */
+
+.admin-skill-editor {
+  background: var(--bg-secondary);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.admin-skill-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.admin-skill-editor-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.admin-skill-editor-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+
+.admin-skill-editor-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  width: 60px;
+  flex-shrink: 0;
+}
+
+.admin-skill-editor-input {
+  flex: 1;
+  padding: 3px 6px;
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  font-size: 12px;
+  background: var(--bg-card);
+}
+
+.admin-skill-editor-input--sm {
+  width: 70px;
+  flex: none;
+}
+
+.admin-skill-editor-textarea {
+  flex: 1;
+  padding: 3px 6px;
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  font-size: 12px;
+  background: var(--bg-card);
+  resize: vertical;
+  font-family: inherit;
+}
+
+.admin-skill-editor-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+.admin-skill-editor-grid .admin-skill-editor-row {
+  margin-bottom: 0;
+}
+
+.admin-skill-editor-grid .admin-select {
+  font-size: 12px;
+  padding: 3px 6px;
+}
+
+/* Effects section */
+
+.admin-skill-editor-effects {
+  margin-top: 8px;
+  border-top: 1px solid var(--card-border);
+  padding-top: 8px;
+}
+
+.admin-skill-editor-effects-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.admin-skill-effect-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--card-border);
+  flex-wrap: wrap;
+}
+
+.admin-skill-effect-row:last-of-type {
+  border-bottom: none;
+}
+
+.admin-skill-effect-select {
+  width: 130px;
+  font-size: 11px !important;
+  padding: 2px 4px !important;
+}
+
+.admin-skill-effect-field {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 10px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.admin-skill-effect-field input {
+  width: 42px;
+  padding: 2px 4px;
+  border: 1px solid var(--card-border);
+  border-radius: 3px;
+  font-size: 11px;
+  text-align: right;
+  background: var(--bg-card);
+}
+
+.admin-skill-effect-target {
+  font-size: 11px !important;
+  padding: 2px 4px !important;
+  max-width: 100px;
+}
+
+.admin-skill-effect-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #ef4444;
+  padding: 0 4px;
+  line-height: 1;
+  opacity: 0.6;
+}
+
+.admin-skill-effect-remove:hover {
+  opacity: 1;
+}
+
+.admin-skill-editor-empty {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 8px;
+  font-size: 11px;
+}
+
+/* ─── Effects Reference Panel ─── */
+
+.admin-effects-panel {
+  grid-column: 1 / -1;
+  padding: 24px 32px;
+  overflow-y: auto;
+  max-width: 960px;
+}
+
+.admin-effects-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+
+.admin-effects-filters {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.admin-effects-group {
+  margin-bottom: 24px;
+}
+
+.admin-effects-group-title {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  margin: 0 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.admin-effects-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 8px;
+}
+
+.admin-effects-card {
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.admin-effects-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.admin-effects-card-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.admin-effects-card-name {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-effects-card-id {
+  font-size: 10px;
+  color: var(--text-secondary);
+  margin-left: auto;
+  font-family: monospace;
+}
+
+.admin-effects-card-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.admin-effects-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.admin-effects-tag {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
 /* ─── Responsive: hide editor panel on narrow screens ─── */
 
 @media (max-width: 800px) {

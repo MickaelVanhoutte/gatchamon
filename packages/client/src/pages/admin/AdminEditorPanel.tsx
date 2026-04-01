@@ -1,9 +1,10 @@
 import { useCallback, useRef, useState } from 'react';
-import type { PokemonTemplate, BaseStats } from '@gatchamon/shared';
+import type { PokemonTemplate, BaseStats, SkillDefinition } from '@gatchamon/shared';
 import { SKILLS } from '@gatchamon/shared';
 import { assetUrl } from '../../utils/asset-url';
 import { useAdminStore } from './useAdminStore';
 import { SkillTooltip } from './SkillTooltip';
+import { AdminSkillEditor } from './AdminSkillEditor';
 
 const STAT_LABELS: Record<keyof BaseStats, string> = {
   hp: 'HP', atk: 'ATK', def: 'DEF', spd: 'SPD',
@@ -19,7 +20,7 @@ const CATEGORY_SHORT: Record<string, string> = {
 export function AdminEditorPanel({ template }: { template: PokemonTemplate }) {
   const {
     diffs, getEffective, setStars, setSummonable, setStat,
-    resetPokemon, setSkillPickerSlot,
+    resetPokemon, setSkillPickerSlot, setCustomSkill, getEffectiveSkill,
   } = useAdminStore();
 
   const diff = diffs.get(template.id);
@@ -27,6 +28,7 @@ export function AdminEditorPanel({ template }: { template: PokemonTemplate }) {
   const hasDiff = !!diff;
 
   const [hoveredSlot, setHoveredSlot] = useState<number | null>(null);
+  const [editingSlot, setEditingSlot] = useState<number | null>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleTouchStart = useCallback((slot: number) => {
@@ -147,49 +149,72 @@ export function AdminEditorPanel({ template }: { template: PokemonTemplate }) {
         <div className="admin-section">
           <div className="admin-section-title">Skills</div>
           {eff.skillIds.map((skillId, i) => {
-            const skill = SKILLS[skillId];
+            const skill = getEffectiveSkill(template, i);
             const origSkillId = template.skillIds[i];
-            const modified = diff?.skillIds !== undefined && diff.skillIds[i] !== origSkillId;
+            const isCustom = !!diff?.customSkills?.[skillId];
+            const modified = isCustom || (diff?.skillIds !== undefined && diff.skillIds[i] !== origSkillId);
             return (
-              <div
-                key={i}
-                className={`admin-skill-slot${modified ? ' admin-skill-slot--modified' : ''}`}
-                onMouseEnter={() => setHoveredSlot(i)}
-                onMouseLeave={() => setHoveredSlot(null)}
-                onTouchStart={() => handleTouchStart(i)}
-                onTouchEnd={handleTouchEnd}
-                onTouchCancel={handleTouchEnd}
-              >
-                <span className="admin-skill-index">S{i + 1}</span>
-                <div className="admin-skill-info">
-                  <div className="admin-skill-name">
-                    {skill?.name ?? skillId}
-                    {skill && (
-                      <span
-                        className="admin-type-badge"
-                        style={{ background: `var(--type-${skill.type})`, marginLeft: 6, fontSize: 10 }}
-                      >
-                        {skill.type}
-                      </span>
-                    )}
-                  </div>
-                  <div className="admin-skill-meta">
-                    {skill ? `${CATEGORY_SHORT[skill.category]} · ${skill.cooldown > 0 ? `${skill.cooldown}t CD` : 'No CD'} · ${skill.multiplier}x` : 'Unknown skill'}
-                    {modified && (
-                      <span style={{ color: '#f59e0b', marginLeft: 6 }}>
-                        (was: {SKILLS[origSkillId]?.name ?? origSkillId})
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <button
-                  className="admin-skill-change-btn"
-                  onClick={() => setSkillPickerSlot(i)}
+              <div key={i}>
+                <div
+                  className={`admin-skill-slot${modified ? ' admin-skill-slot--modified' : ''}`}
+                  onMouseEnter={() => editingSlot !== i ? setHoveredSlot(i) : undefined}
+                  onMouseLeave={() => setHoveredSlot(null)}
+                  onTouchStart={() => handleTouchStart(i)}
+                  onTouchEnd={handleTouchEnd}
+                  onTouchCancel={handleTouchEnd}
                 >
-                  Change
-                </button>
-                {hoveredSlot === i && skill && (
-                  <SkillTooltip skill={skill} className="admin-skill-tooltip--floating" />
+                  <span className="admin-skill-index">S{i + 1}</span>
+                  <div className="admin-skill-info">
+                    <div className="admin-skill-name">
+                      {skill?.name ?? skillId}
+                      {skill && (
+                        <span
+                          className="admin-type-badge"
+                          style={{ background: `var(--type-${skill.type})`, marginLeft: 6, fontSize: 10 }}
+                        >
+                          {skill.type}
+                        </span>
+                      )}
+                      {isCustom && (
+                        <span style={{ color: '#8b5cf6', marginLeft: 4, fontSize: 10, fontWeight: 600 }}>
+                          custom
+                        </span>
+                      )}
+                    </div>
+                    <div className="admin-skill-meta">
+                      {skill ? `${CATEGORY_SHORT[skill.category]} · ${skill.cooldown > 0 ? `${skill.cooldown}t CD` : 'No CD'} · ${skill.multiplier}x` : 'Unknown skill'}
+                      {modified && !isCustom && (
+                        <span style={{ color: '#f59e0b', marginLeft: 6 }}>
+                          (was: {SKILLS[origSkillId]?.name ?? origSkillId})
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    className="admin-skill-change-btn"
+                    onClick={() => setEditingSlot(editingSlot === i ? null : i)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="admin-skill-change-btn"
+                    onClick={() => setSkillPickerSlot(i)}
+                  >
+                    Swap
+                  </button>
+                  {hoveredSlot === i && editingSlot !== i && skill && (
+                    <SkillTooltip skill={skill} className="admin-skill-tooltip--floating" />
+                  )}
+                </div>
+                {editingSlot === i && skill && (
+                  <AdminSkillEditor
+                    skill={skill}
+                    onSave={(updated) => {
+                      setCustomSkill(template.id, i as 0 | 1 | 2, updated);
+                      setEditingSlot(null);
+                    }}
+                    onClose={() => setEditingSlot(null)}
+                  />
                 )}
               </div>
             );

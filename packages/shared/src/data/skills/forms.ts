@@ -117,7 +117,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'glancing', value: 0, duration: 2, chance: 30 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- blastoise_mega (water) ---
@@ -156,7 +156,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'heal', value: 3, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- beedrill_mega (bug/poison) ---
@@ -593,7 +593,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'heal', value: 3, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- aerodactyl_mega (rock/flying) ---
@@ -1222,7 +1222,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- gardevoir_mega (psychic/fairy) ---
@@ -1339,7 +1339,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- aggron_mega (steel) ---
@@ -1539,7 +1539,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'atb_reduce', value: 15, duration: 0, chance: 42 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- altaria_mega (dragon/fairy) ---
@@ -3035,7 +3035,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'glancing', value: 0, duration: 2, chance: 30 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- rapidash_galar (psychic/fairy) ---
@@ -3114,7 +3114,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'glancing', value: 0, duration: 2, chance: 30 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- slowbro_galar (poison/psychic) ---
@@ -3153,7 +3153,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'counter', value: 0, duration: 1, chance: 30, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- weezing_galar (poison/fairy) ---
@@ -4124,7 +4124,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'heal', value: 3, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- goodra_hisui (steel/dragon) ---
@@ -4602,7 +4602,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- giratina_origin (ghost/dragon) ---
@@ -5384,7 +5384,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- thundurus_therian (electric/flying) ---
@@ -5577,7 +5577,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'nullify', value: 0, duration: 2, chance: 50, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- zygarde_complete (dragon/ground) ---
@@ -5838,7 +5838,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'counter', value: 0, duration: 1, chance: 50, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- silvally_fairy (normal) ---
@@ -5878,7 +5878,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- silvally_fighting (normal) ---
@@ -6193,7 +6193,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- silvally_psychic (normal) ---
@@ -6385,7 +6385,7 @@ export const FORMS_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'nullify', value: 0, duration: 2, chance: 42, target: 'self' }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- zamazenta_crowned (fighting/steel) ---

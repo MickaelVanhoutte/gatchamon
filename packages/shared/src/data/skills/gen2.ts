@@ -1380,7 +1380,7 @@ export const GEN2_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'heal', value: 3, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- hoppip (grass/flying) ---
@@ -2954,7 +2954,7 @@ export const GEN2_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'provoke', value: 0, duration: 1, chance: 25 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- houndour (dark/fire) ---
@@ -3652,7 +3652,7 @@ export const GEN2_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- larvitar (rock/ground) ---

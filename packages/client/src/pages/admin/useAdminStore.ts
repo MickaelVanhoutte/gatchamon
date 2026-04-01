@@ -1,12 +1,13 @@
 import { create } from 'zustand';
-import type { PokemonTemplate, PokemonType, BaseStats } from '@gatchamon/shared';
-import { POKEDEX } from '@gatchamon/shared';
+import type { PokemonTemplate, PokemonType, BaseStats, SkillDefinition } from '@gatchamon/shared';
+import { POKEDEX, SKILLS, STAR_MULTIPLIERS } from '@gatchamon/shared';
 
 export interface PokemonDiff {
   naturalStars?: 1 | 2 | 3 | 4 | 5;
   baseStats?: Partial<BaseStats>;
   summonable?: boolean;
   skillIds?: [string, string, string];
+  customSkills?: Record<string, SkillDefinition>;
 }
 
 type SortBy = 'id' | 'stars' | 'name';
@@ -14,7 +15,7 @@ type SummonableFilter = 'all' | 'yes' | 'no';
 type GenFilter = null | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
 export function getGeneration(id: number): number {
-  if (id >= 10000) return 0; // forms
+  if (id >= 10000) return getGeneration(id % 1000);
   if (id >= 906) return 9;
   if (id >= 810) return 8;
   if (id >= 722) return 7;
@@ -54,6 +55,8 @@ interface AdminState {
   setSummonable: (id: number, value: boolean) => void;
   setStat: (id: number, stat: keyof BaseStats, value: number) => void;
   setSkillId: (id: number, slotIndex: 0 | 1 | 2, skillId: string) => void;
+  setCustomSkill: (pokemonId: number, slotIndex: 0 | 1 | 2, skill: SkillDefinition) => void;
+  getEffectiveSkill: (template: PokemonTemplate, slotIndex: number) => SkillDefinition | null;
   resetPokemon: (id: number) => void;
   resetAll: () => void;
   exportDiff: () => string;
@@ -121,6 +124,11 @@ function cleanDiff(id: number, diff: PokemonDiff): PokemonDiff | null {
     }
   }
 
+  if (diff.customSkills && Object.keys(diff.customSkills).length > 0) {
+    cleaned.customSkills = diff.customSkills;
+    hasChanges = true;
+  }
+
   return hasChanges ? cleaned : null;
 }
 
@@ -150,9 +158,32 @@ export const useAdminStore = create<AdminState>((set, get) => ({
 
   setStars: (id, stars) => {
     const { diffs } = get();
+    const orig = originalMap.get(id);
+    if (!orig) return;
     const newDiffs = new Map(diffs);
     const existing = newDiffs.get(id) ?? {};
-    const updated = { ...existing, naturalStars: stars };
+    const oldStars = existing.naturalStars ?? orig.naturalStars;
+
+    let updated: PokemonDiff;
+    if (oldStars !== stars) {
+      const ratio = (STAR_MULTIPLIERS[stars] ?? 1) / (STAR_MULTIPLIERS[oldStars] ?? 1);
+      const curHp = existing.baseStats?.hp ?? orig.baseStats.hp;
+      const curAtk = existing.baseStats?.atk ?? orig.baseStats.atk;
+      const curDef = existing.baseStats?.def ?? orig.baseStats.def;
+      updated = {
+        ...existing,
+        naturalStars: stars,
+        baseStats: {
+          ...existing.baseStats,
+          hp: Math.round(curHp * ratio),
+          atk: Math.round(curAtk * ratio),
+          def: Math.round(curDef * ratio),
+        },
+      };
+    } else {
+      updated = { ...existing, naturalStars: stars };
+    }
+
     const cleaned = cleanDiff(id, updated);
     if (cleaned) newDiffs.set(id, cleaned);
     else newDiffs.delete(id);
@@ -199,6 +230,35 @@ export const useAdminStore = create<AdminState>((set, get) => ({
     if (cleaned) newDiffs.set(id, cleaned);
     else newDiffs.delete(id);
     set({ diffs: newDiffs });
+  },
+
+  setCustomSkill: (pokemonId, slotIndex, skill) => {
+    const { diffs } = get();
+    const orig = originalMap.get(pokemonId);
+    if (!orig) return;
+    const newDiffs = new Map(diffs);
+    const existing = newDiffs.get(pokemonId) ?? {};
+    const currentSkills: [string, string, string] = existing.skillIds
+      ? [...existing.skillIds]
+      : [...orig.skillIds];
+    currentSkills[slotIndex] = skill.id;
+    const updated: PokemonDiff = {
+      ...existing,
+      skillIds: currentSkills,
+      customSkills: { ...existing.customSkills, [skill.id]: skill },
+    };
+    const cleaned = cleanDiff(pokemonId, updated);
+    if (cleaned) newDiffs.set(pokemonId, cleaned);
+    else newDiffs.delete(pokemonId);
+    set({ diffs: newDiffs });
+  },
+
+  getEffectiveSkill: (template, slotIndex) => {
+    const diff = get().diffs.get(template.id);
+    const skillIds = diff?.skillIds ?? template.skillIds;
+    const skillId = skillIds[slotIndex];
+    if (diff?.customSkills?.[skillId]) return diff.customSkills[skillId];
+    return SKILLS[skillId] ?? null;
   },
 
   resetPokemon: (id) => {
@@ -258,6 +318,9 @@ export const useAdminStore = create<AdminState>((set, get) => ({
       if (diff.skillIds) {
         c.skillIds = { from: orig.skillIds, to: diff.skillIds };
       }
+      if (diff.customSkills && Object.keys(diff.customSkills).length > 0) {
+        c.customSkills = diff.customSkills;
+      }
 
       changes.push(entry);
     }
@@ -303,6 +366,9 @@ export const useAdminStore = create<AdminState>((set, get) => ({
         }
         if (c.skillIds) {
           diff.skillIds = c.skillIds.to ?? c.skillIds;
+        }
+        if (c.customSkills) {
+          diff.customSkills = c.customSkills;
         }
 
         const cleaned = cleanDiff(id, diff);

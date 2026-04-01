@@ -38,7 +38,7 @@ export const GEN7_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'heal', value: 3, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- dartrix (grass/flying) ---
@@ -575,7 +575,7 @@ export const GEN7_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'provoke', value: 0, duration: 1, chance: 25 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- charjabug (bug/electric) ---
@@ -2455,7 +2455,7 @@ export const GEN7_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'heal', value: 3, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- tapufini (water/fairy) ---
@@ -2653,7 +2653,7 @@ export const GEN7_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'provoke', value: 0, duration: 1, chance: 25 }],
     target: 'self',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 
   // --- nihilego (rock/poison) ---
@@ -3320,6 +3320,6 @@ export const GEN7_SKILLS: Record<string, SkillDefinition> = {
     multiplier: 0,
     effects: [{ id: 'balance_hp', value: 0, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit',
+    passiveTrigger: 'on_hit_received',
   },
 };
