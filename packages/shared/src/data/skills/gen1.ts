@@ -373,10 +373,10 @@ export const GEN1_SKILLS: Record<string, SkillDefinition> = {
   blastoise_skill3: {
     id: 'blastoise_skill3',
     name: 'Torrent',
-    description: 'Passive: revives a fallen ally with 20% HP.',
+    description: 'Passive: revives a fallen ally with 20% HP (6 turn CD).',
     type: 'water',
     category: 'passive',
-    cooldown: 0,
+    cooldown: 6,
     multiplier: 0,
     effects: [{ id: 'revive', value: 20, duration: 0, chance: 100, target: 'single_ally' }],
     target: 'single_ally',
@@ -5193,14 +5193,14 @@ export const GEN1_SKILLS: Record<string, SkillDefinition> = {
   lapras_skill3: {
     id: 'lapras_skill3',
     name: 'Water Absorb',
-    description: 'Passive: heals all allies for 5% HP.',
+    description: 'Passive: heals all allies for 5% HP at the start of turn.',
     type: 'water',
     category: 'passive',
     cooldown: 0,
     multiplier: 0,
     effects: [{ id: 'heal', value: 5, duration: 0, chance: 100, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit_received',
+    passiveTrigger: 'turn_start',
   },
 
   // --- ditto (normal) ---
@@ -5311,14 +5311,14 @@ export const GEN1_SKILLS: Record<string, SkillDefinition> = {
   vaporeon_skill3: {
     id: 'vaporeon_skill3',
     name: 'Water Absorb',
-    description: 'Passive: heals all allies for 5% HP.',
+    description: 'Passive: heals all allies for 5% HP at the start of turn.',
     type: 'water',
     category: 'passive',
     cooldown: 0,
     multiplier: 0,
     effects: [{ id: 'heal', value: 5, duration: 0, chance: 22, target: 'all_allies' }],
     target: 'all_allies',
-    passiveTrigger: 'on_hit_received',
+    passiveTrigger: 'turn_start',
   },
 
   // --- jolteon (electric) ---
