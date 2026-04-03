@@ -235,43 +235,81 @@ export function StoryModePage() {
   }
 
   // Waypoints between regions to break the regular zigzag into organic curves
-  const pathWaypoints = [
-    { x: 100, y: 380 },    // Verdant Woods
+  const kantoWaypoints = [
+    { x: 100, y: 380 },    // Pewter Passage
     { x: 175, y: 355 },    // drift right, barely rise
     { x: 235, y: 275 },    // then steeper rise
-    { x: 280, y: 220 },    // Windswept Plains
+    { x: 280, y: 220 },    // Cerulean Cove
     { x: 320, y: 235 },    // linger high, slight dip
     { x: 375, y: 340 },    // swing down
     { x: 430, y: 400 },    // continue
-    { x: 460, y: 420 },    // Toxic Marsh
+    { x: 460, y: 420 },    // Vermilion Docks
     { x: 500, y: 410 },    // stay low, drift right
     { x: 560, y: 345 },    // gradual rise
     { x: 610, y: 280 },    // continue
-    { x: 650, y: 250 },    // Crystal Caverns
+    { x: 650, y: 250 },    // Celadon Gardens
     { x: 700, y: 265 },    // linger, slight dip
     { x: 760, y: 355 },    // then drop
     { x: 810, y: 415 },    // approach low
-    { x: 840, y: 440 },    // Azure Coast
+    { x: 840, y: 440 },    // Fuchsia Marsh
     { x: 875, y: 425 },    // stay low
     { x: 935, y: 340 },    // rise
     { x: 985, y: 245 },    // continue rising
-    { x: 1020, y: 200 },   // Thunderpeak Ridge
+    { x: 1020, y: 200 },   // Saffron Towers
     { x: 1060, y: 215 },   // linger high
     { x: 1110, y: 295 },   // then drop
     { x: 1155, y: 355 },   // continue
-    { x: 1180, y: 380 },   // Ember Highlands
+    { x: 1180, y: 380 },   // Cinnabar Volcano
     { x: 1215, y: 370 },   // stay level
     { x: 1260, y: 295 },   // then rise
     { x: 1305, y: 220 },   // continue
-    { x: 1340, y: 180 },   // Phantom Ruins
+    { x: 1340, y: 180 },   // Viridian Fortress
     { x: 1385, y: 195 },   // linger high
     { x: 1440, y: 275 },   // then drop
     { x: 1480, y: 330 },   // continue
-    { x: 1500, y: 350 },   // Frozen Tundra
+    { x: 1500, y: 350 },   // Victory Road
     { x: 1545, y: 345 },   // almost flat
     { x: 1615, y: 300 },   // gentle rise
     { x: 1680, y: 260 },   // Pokemon League
   ];
+  const johtoWaypoints = [
+    { x: 100, y: 300 },    // Violet Skies
+    { x: 155, y: 325 },    // drift down
+    { x: 215, y: 395 },    // swing low
+    { x: 280, y: 440 },    // Azalea Woods
+    { x: 330, y: 420 },    // linger low
+    { x: 380, y: 350 },    // rise
+    { x: 425, y: 290 },    // continue
+    { x: 460, y: 260 },    // Goldenrod City
+    { x: 505, y: 275 },    // slight dip
+    { x: 560, y: 335 },    // drop
+    { x: 610, y: 370 },    // continue
+    { x: 640, y: 380 },    // Ecruteak Shrine
+    { x: 685, y: 395 },    // stay low
+    { x: 740, y: 435 },    // drop further
+    { x: 790, y: 455 },    // approach low
+    { x: 820, y: 460 },    // Cianwood Shore
+    { x: 860, y: 445 },    // stay low
+    { x: 920, y: 380 },    // rise
+    { x: 965, y: 330 },    // continue
+    { x: 1000, y: 300 },   // Olivine Harbor
+    { x: 1040, y: 315 },   // slight dip
+    { x: 1095, y: 375 },   // drop
+    { x: 1145, y: 405 },   // continue
+    { x: 1180, y: 420 },   // Mahogany Frost
+    { x: 1220, y: 405 },   // stay level
+    { x: 1275, y: 340 },   // rise
+    { x: 1325, y: 280 },   // continue
+    { x: 1360, y: 250 },   // Blackthorn Peak
+    { x: 1400, y: 265 },   // linger
+    { x: 1450, y: 325 },   // drop
+    { x: 1490, y: 365 },   // continue
+    { x: 1520, y: 380 },   // Johto Victory Road
+    { x: 1560, y: 370 },   // drift
+    { x: 1620, y: 310 },   // rise
+    { x: 1680, y: 260 },   // Johto Pokemon League
+  ];
+  const pathWaypoints = selectedArc === 'johto' ? johtoWaypoints : kantoWaypoints;
   const smoothPath = buildSmoothPath(pathWaypoints);
 
   return (
@@ -1650,41 +1688,44 @@ export function StoryModePage() {
         })}
 
         </div>{/* end map-scroll */}
+      </div>{/* end world-map */}
 
-        {/* Arc selector + Difficulty selector — fixed over map */}
-        <div className="map-header">
-          <div className="arc-selector">
-            {STORY_ARCS.map(arc => {
-              const isUnlocked = isArcUnlocked(arc, player);
-              return (
-                <button
-                  key={arc.id}
-                  className={`arc-tab ${selectedArc === arc.id ? 'active' : ''} ${!isUnlocked ? 'locked' : ''}`}
-                  onClick={() => isUnlocked && setSelectedArc(arc.id)}
-                  disabled={!isUnlocked}
-                >
-                  {arc.name}
-                  {!isUnlocked && ' 🔒'}
-                </button>
-              );
-            })}
-          </div>
-          <div className="difficulty-tabs">
-            {DIFFICULTIES.map(d => {
-              const unlocked = isDifficultyUnlocked(d.key);
-              return (
-                <button
-                  key={d.key}
-                  className={`difficulty-tab ${difficulty === d.key ? 'active' : ''} ${!unlocked ? 'locked' : ''}`}
-                  style={{ '--diff-color': d.color } as React.CSSProperties}
-                  onClick={() => handleDifficultyChange(d.key)}
-                  disabled={!unlocked}
-                >
-                  {unlocked ? d.label : <><GameIcon id="lock" size={14} /> {d.label}</>}
-                </button>
-              );
-            })}
-          </div>
+      {/* Difficulty selector — fixed left over map */}
+      <div className="map-header-left">
+        <div className="difficulty-tabs">
+          {DIFFICULTIES.map(d => {
+            const unlocked = isDifficultyUnlocked(d.key);
+            return (
+              <button
+                key={d.key}
+                className={`difficulty-tab ${difficulty === d.key ? 'active' : ''} ${!unlocked ? 'locked' : ''}`}
+                style={{ '--diff-color': d.color } as React.CSSProperties}
+                onClick={() => handleDifficultyChange(d.key)}
+                disabled={!unlocked}
+              >
+                {unlocked ? d.label : <><GameIcon id="lock" size={14} /> {d.label}</>}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      {/* Arc selector — fixed right over map */}
+      <div className="map-header-right">
+        <div className="arc-selector">
+          {STORY_ARCS.map(arc => {
+            const isUnlocked = isArcUnlocked(arc, player);
+            return (
+              <button
+                key={arc.id}
+                className={`arc-tab ${selectedArc === arc.id ? 'active' : ''} ${!isUnlocked ? 'locked' : ''}`}
+                onClick={() => isUnlocked && setSelectedArc(arc.id)}
+                disabled={!isUnlocked}
+              >
+                {arc.name}
+                {!isUnlocked && ' 🔒'}
+              </button>
+            );
+          })}
         </div>
       </div>
 
