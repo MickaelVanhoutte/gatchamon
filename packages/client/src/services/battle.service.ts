@@ -1,6 +1,6 @@
 import { getTemplate as getTemplateShared, computeStats, computeStatsWithItems, getActiveSetEffects, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel, BEGINNER_BONUS, isBeginnerBonusActive, getTowerFloor, STORY_ENERGY_COST } from '@gatchamon/shared';
 import { getSkillsForPokemon, SKILLS } from '@gatchamon/shared';
-import { TOTAL_REGIONS, getFloorCount } from '@gatchamon/shared';
+import { TOTAL_REGIONS, getFloorCount, isLeagueRegion, getArcForRegion, getNextRegionInArc, STORY_ARCS } from '@gatchamon/shared';
 import {
   applyPassives,
   advanceToNextActor,
@@ -301,7 +301,7 @@ function calculateRewards(state: BattleState): BattleRewards {
   }
 
   const { region: regionId, floor: floorNum, difficulty } = state.floor;
-  const isBoss = regionId === 10 || floorNum === getFloorCount(regionId);
+  const isBoss = isLeagueRegion(regionId) || floorNum === getFloorCount(regionId);
   const diffMult = DIFFICULTY_REWARD_MULT[difficulty];
   const bossMult = isBoss ? 3 : 1;
 
@@ -375,7 +375,7 @@ function calculateRewards(state: BattleState): BattleRewards {
   }
 
   let legendaryReward = 0;
-  if (firstClear && regionId === 10 && floorNum === getFloorCount(10)) {
+  if (firstClear && isLeagueRegion(regionId) && floorNum === getFloorCount(regionId)) {
     legendaryReward = 1;
     const lp = loadPlayer()!;
     savePlayer({ ...lp, legendaryPokeballs: (lp.legendaryPokeballs ?? 0) + 1 });
@@ -451,24 +451,35 @@ function advanceStoryProgress(
     progress[regionId] = floor + 1;
   } else {
     progress[regionId] = floorCount + 1;
-    if (regionId < TOTAL_REGIONS && !progress[regionId + 1]) {
-      progress[regionId + 1] = 1;
+    const nextRegion = getNextRegionInArc(regionId);
+    if (nextRegion !== undefined && !progress[nextRegion]) {
+      progress[nextRegion] = 1;
     }
-    checkDifficultyUnlock(storyProgress, difficulty);
+    checkDifficultyUnlock(storyProgress, difficulty, regionId);
   }
 }
 
-function checkDifficultyUnlock(storyProgress: StoryProgress, difficulty: Difficulty): void {
+function checkDifficultyUnlock(storyProgress: StoryProgress, difficulty: Difficulty, regionId: number): void {
+  const arc = getArcForRegion(regionId);
+  if (!arc) return;
   const progress = storyProgress[difficulty];
-  const allComplete = Array.from({ length: TOTAL_REGIONS }, (_, i) => i + 1)
-    .every(rId => progress[rId] === getFloorCount(rId) + 1);
-
+  const allComplete = arc.regionIds.every(rId => progress[rId] === getFloorCount(rId) + 1);
   if (!allComplete) return;
 
-  if (difficulty === 'normal' && Object.keys(storyProgress.hard).length === 0) {
-    storyProgress.hard[1] = 1;
-  } else if (difficulty === 'hard' && Object.keys(storyProgress.hell).length === 0) {
-    storyProgress.hell[1] = 1;
+  // Unlock next difficulty for this arc
+  if (difficulty === 'normal' && !storyProgress.hard[arc.regionIds[0]]) {
+    storyProgress.hard[arc.regionIds[0]] = 1;
+  } else if (difficulty === 'hard' && !storyProgress.hell[arc.regionIds[0]]) {
+    storyProgress.hell[arc.regionIds[0]] = 1;
+  }
+
+  // Unlock next arc's normal if this arc's normal is complete
+  if (difficulty === 'normal') {
+    for (const nextArc of STORY_ARCS) {
+      if (nextArc.prerequisite?.arcId === arc.id && !storyProgress.normal[nextArc.regionIds[0]]) {
+        storyProgress.normal[nextArc.regionIds[0]] = 1;
+      }
+    }
   }
 }
 

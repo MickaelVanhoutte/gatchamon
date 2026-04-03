@@ -12,28 +12,28 @@ export interface TowerFloorDef {
   speedBonus?: number;
 }
 
-// Enemy pools — Gen 1 only, difficulty through team composition & type coverage
+// Enemy pools — Gen 1 + Gen 2, difficulty through team composition & type coverage
 const TOWER_POOLS: Record<string, number[]> = {
   // Floors 1-10: weak unevolved basics
-  early: [16, 19, 21],
+  early: [16, 19, 21, 161, 163, 165],
   // Floors 11-20: 2-star basics with diverse types
-  earlyMid: [25, 37, 41, 66],
+  earlyMid: [25, 37, 41, 66, 179, 187, 175],
   // Floors 21-30: evolved 2-star forms
-  mid: [26, 34, 38, 42],
+  mid: [26, 34, 38, 42, 162, 164, 180],
   // Floors 31-40: strong 3-star final evolutions
-  midLate: [6, 9, 65, 94, 130],
+  midLate: [6, 9, 65, 94, 130, 181, 214, 229],
   // Floors 41-50: best 3-star finals + 4-star
-  late: [59, 94, 131, 143, 142],
+  late: [59, 94, 131, 143, 142, 212, 230, 208],
   // Floors 51-60: 4-star powerhouses
-  lateTough: [142, 143, 149, 130, 131],
-  // Floors 61-70: best of Gen 1 mix
-  elite: [149, 143, 65, 94, 130],
-  // Floors 71-80: legendary birds + Dragonite
-  champion: [144, 145, 146, 149, 143],
-  // Floors 81-90: Mewtwo + birds + Gyarados
-  legendary: [150, 144, 145, 146, 130],
-  // Floors 91-100: Mewtwo, Mew + top Gen 1
-  ultimate: [150, 151, 149, 143, 130],
+  lateTough: [142, 143, 149, 130, 131, 248, 212, 214],
+  // Floors 61-70: best of Gen 1+2 mix
+  elite: [149, 143, 65, 94, 130, 248, 230, 181],
+  // Floors 71-80: legendary birds + beasts + Dragonite
+  champion: [144, 145, 146, 149, 143, 243, 244, 245],
+  // Floors 81-90: Mewtwo + birds + Lugia + Ho-Oh
+  legendary: [150, 144, 145, 146, 130, 249, 250],
+  // Floors 91-100: Mewtwo, Mew + Lugia + Ho-Oh + Celebi + top Gen 1+2
+  ultimate: [150, 151, 149, 143, 130, 249, 250, 251],
 };
 
 function getEnemyPool(floor: number): number[] {

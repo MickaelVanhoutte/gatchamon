@@ -1,4 +1,5 @@
 import { GEN1 } from './pokedex/gen1.js';
+import { GEN2 } from './pokedex/gen2.js';
 import { POKEDEX } from './pokedex/index.js';
 import { EVOLUTION_CHAINS } from './evolutions.js';
 import type { PokemonTemplate } from '../types/pokemon.js';
@@ -9,21 +10,34 @@ import type { EvolutionChain } from '../types/evolution.js';
 export const GEN_RESTRICTION_ENABLED = true;
 
 const GEN1_IDS = new Set(GEN1.map(p => p.id));
+const GEN2_IDS = new Set(GEN2.map(p => p.id));
+const ACTIVE_GEN_IDS = new Set([...GEN1_IDS, ...GEN2_IDS]);
 
 /** Check whether a template ID is a Gen 1 Pokemon or a Mega form of one. */
 export function isGen1Pokemon(id: number): boolean {
   if (id < 10000) return GEN1_IDS.has(id);
-  // Forms use encoding: variantPrefix * 1000 + baseId
-  // Only allow Mega forms (10xxx), not regional forms (11xxx Alola, 12xxx Galar, 13xxx Hisui)
   const prefix = Math.floor(id / 1000);
   if (prefix !== 10) return false;
   return GEN1_IDS.has(id % 1000);
 }
 
+/** Check whether a template ID is a Gen 2 Pokemon or a Mega form of one. */
+export function isGen2Pokemon(id: number): boolean {
+  if (id < 10000) return GEN2_IDS.has(id);
+  const prefix = Math.floor(id / 1000);
+  if (prefix !== 10) return false;
+  return GEN2_IDS.has(id % 1000);
+}
+
 /** Check whether a template ID is currently available for gameplay. */
 export function isActivePokemon(id: number): boolean {
   if (!GEN_RESTRICTION_ENABLED) return true;
-  return isGen1Pokemon(id);
+  if (id < 10000) return ACTIVE_GEN_IDS.has(id);
+  // Forms use encoding: variantPrefix * 1000 + baseId
+  // Only allow Mega forms (10xxx), not regional forms (11xxx Alola, 12xxx Galar, 13xxx Hisui)
+  const prefix = Math.floor(id / 1000);
+  if (prefix !== 10) return false;
+  return ACTIVE_GEN_IDS.has(id % 1000);
 }
 
 // ── Filtered Pokedex ────────────────────────────────────────────────────────
@@ -50,16 +64,12 @@ export function canActiveEvolve(templateId: number): boolean {
 // Maps non-Gen1 dungeon enemy IDs to Gen1 equivalents.
 
 const DUNGEON_SUBSTITUTES: Record<number, number> = {
-  212: 123,   // Scizor       -> Scyther
-  209: 39,    // Snubbull     -> Jigglypuff
+  // Gen 2 IDs (212, 209, 210, 198, 215) are now active — removed
   546: 43,    // Cottonee     -> Oddish
   684: 35,    // Swirlix      -> Clefairy
   282: 65,    // Gardevoir    -> Alakazam
-  210: 40,    // Granbull     -> Wigglytuff
-  198: 42,    // Murkrow      -> Golbat
   261: 19,    // Poochyena    -> Rattata
   302: 94,    // Sableye      -> Gengar
-  215: 124,   // Sneasel      -> Jynx
   359: 97,    // Absol        -> Hypno
   304: 74,    // Aron         -> Geodude
   436: 81,    // Bronzor      -> Magnemite

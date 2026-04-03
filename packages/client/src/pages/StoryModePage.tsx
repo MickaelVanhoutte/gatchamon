@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { GameIcon, StarRating } from '../components/icons';
-import { getTemplate, REGIONS, getFloorCount, getGymLeader, getLeagueChampion, STORY_ENERGY_COST } from '@gatchamon/shared';
-import type { Difficulty } from '@gatchamon/shared';
+import { getTemplate, REGIONS, getFloorCount, getGymLeader, getLeagueChampion, isLeagueRegion, STORY_ENERGY_COST, STORY_ARCS, getArcForRegion } from '@gatchamon/shared';
+import type { Difficulty, StoryArc, Player } from '@gatchamon/shared';
 import { getFloorDefsForRegion } from '../services/floor.service';
 import { getFloorRewardPreview } from '../services/reward.service';
 import type { FloorRewardPreview } from '../services/reward.service';
@@ -61,6 +61,18 @@ function getMonsterName(templateId: number): string {
   return getTemplate(templateId)?.name ?? `#${templateId}`;
 }
 
+function isArcUnlocked(arc: StoryArc, player: Player | null): boolean {
+  if (!arc.prerequisite) return true;
+  if (!player) return false;
+  const prereqArc = STORY_ARCS.find(a => a.id === arc.prerequisite!.arcId);
+  if (!prereqArc) return false;
+  const progress = player.storyProgress[arc.prerequisite.difficulty];
+  return prereqArc.regionIds.every(rId => {
+    const floorCount = getFloorCount(rId);
+    return progress[rId] === floorCount + 1;
+  });
+}
+
 export function StoryModePage() {
   const { player } = useGameStore();
   const navigate = useNavigate();
@@ -72,6 +84,7 @@ export function StoryModePage() {
     if (['normal', 'hard', 'hell'].includes(saved)) return saved as Difficulty;
     return 'normal';
   });
+  const [selectedArc, setSelectedArc] = useState<string>('kanto');
   const floorListRef = useRef<HTMLDivElement>(null);
   const worldMapRef = useRef<HTMLDivElement>(null);
   useRotatedScroll(floorListRef);
@@ -88,6 +101,14 @@ export function StoryModePage() {
     }
   }, [tutorialStep]);
 
+  const currentArc = STORY_ARCS.find(a => a.id === selectedArc);
+  const arcRegions = currentArc ? REGIONS.filter(r => currentArc.regionIds.includes(r.id)) : REGIONS;
+
+  // Reset selected region when switching arcs
+  useEffect(() => {
+    setSelectedRegionId(null);
+  }, [selectedArc]);
+
   // Auto-open region from query params (e.g. returning from battle)
   useEffect(() => {
     const regionParam = searchParams.get('region');
@@ -97,7 +118,10 @@ export function StoryModePage() {
         setDifficulty(diffParam);
         saveStoryDifficulty(diffParam);
       }
-      setSelectedRegionId(Number(regionParam));
+      const regionId = Number(regionParam);
+      const arc = getArcForRegion(regionId);
+      if (arc) setSelectedArc(arc.id);
+      setSelectedRegionId(regionId);
       // Clean up query params
       setSearchParams({}, { replace: true });
     }
@@ -152,7 +176,7 @@ export function StoryModePage() {
     const rp = player.storyProgress[difficulty] ?? {};
     // Find the last region that is 'available' (not completed, not locked)
     let targetRegion: typeof REGIONS[number] | null = null;
-    for (const region of REGIONS) {
+    for (const region of arcRegions) {
       const floor = rp[region.id];
       if (floor === undefined) continue; // locked
       if (floor <= getFloorCount(region.id)) {
@@ -161,8 +185,8 @@ export function StoryModePage() {
     }
     // If all are completed, scroll to the last region
     if (!targetRegion) {
-      for (let i = REGIONS.length - 1; i >= 0; i--) {
-        if (rp[REGIONS[i].id] !== undefined) { targetRegion = REGIONS[i]; break; }
+      for (let i = arcRegions.length - 1; i >= 0; i--) {
+        if (rp[arcRegions[i].id] !== undefined) { targetRegion = arcRegions[i]; break; }
       }
     }
     if (!targetRegion) return;
@@ -171,20 +195,21 @@ export function StoryModePage() {
     setTimeout(() => {
       container.scrollLeft = Math.max(0, scrollTarget);
     }, 50);
-  }, [player, difficulty]);
+  }, [player, difficulty, selectedArc]);
 
   if (!player) return null;
 
   const progress = player.storyProgress;
   const regionProgress = progress[difficulty] ?? {};
-  const selectedRegion = REGIONS.find(r => r.id === selectedRegionId);
+  const selectedRegion = arcRegions.find(r => r.id === selectedRegionId);
   const selectedFloors = selectedRegion
     ? floors.filter(f => f.region === selectedRegion.id)
     : [];
 
   function isDifficultyUnlocked(diff: Difficulty): boolean {
+    if (!currentArc) return diff === 'normal';
     const rp = progress[diff];
-    return rp && Object.keys(rp).length > 0;
+    return rp && rp[currentArc.regionIds[0]] !== undefined;
   }
 
   function getRegionStatus(regionId: number) {
@@ -1590,7 +1615,7 @@ export function StoryModePage() {
           </svg>
 
           {/* Region markers (HTML overlay) */}
-          {REGIONS.map(region => {
+          {arcRegions.map(region => {
           const status = getRegionStatus(region.id);
           const stars = getRegionStars(region.id);
           const isSelected = selectedRegionId === region.id;
@@ -1626,8 +1651,24 @@ export function StoryModePage() {
 
         </div>{/* end map-scroll */}
 
-        {/* Difficulty selector — fixed over map */}
+        {/* Arc selector + Difficulty selector — fixed over map */}
         <div className="map-header">
+          <div className="arc-selector">
+            {STORY_ARCS.map(arc => {
+              const isUnlocked = isArcUnlocked(arc, player);
+              return (
+                <button
+                  key={arc.id}
+                  className={`arc-tab ${selectedArc === arc.id ? 'active' : ''} ${!isUnlocked ? 'locked' : ''}`}
+                  onClick={() => isUnlocked && setSelectedArc(arc.id)}
+                  disabled={!isUnlocked}
+                >
+                  {arc.name}
+                  {!isUnlocked && ' 🔒'}
+                </button>
+              );
+            })}
+          </div>
           <div className="difficulty-tabs">
             {DIFFICULTIES.map(d => {
               const unlocked = isDifficultyUnlocked(d.key);
@@ -1677,8 +1718,8 @@ export function StoryModePage() {
                   <div className="floor-entry-info">
                     <span className="floor-entry-number">
                       {(() => {
-                        if (selectedRegion.id === 10) {
-                          const champ = getLeagueChampion(floor.floor);
+                        if (isLeagueRegion(selectedRegion.id)) {
+                          const champ = getLeagueChampion(selectedRegion.id, floor.floor);
                           return champ
                             ? `${champ.icon} ${champ.name}`
                             : `${floor.floor}. ${selectedRegion.floorNames[floor.floor - 1] ?? ''}`;

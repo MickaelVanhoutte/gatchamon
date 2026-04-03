@@ -168,6 +168,47 @@
   z-index: 4;
 }
 
+/* Arc selector tabs */
+.arc-selector {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 6px;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 4px;
+  border-radius: 14px;
+  border: 1px solid var(--card-border, #d0e4ea);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.arc-tab {
+  padding: 5px 18px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary, #5a6a7a);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.arc-tab:hover:not(:disabled) {
+  color: var(--text-primary, #1a2332);
+  background: rgba(13, 148, 136, 0.08);
+}
+
+.arc-tab.active {
+  color: #e94560;
+  background: rgba(233, 69, 96, 0.1);
+  border: 1px solid rgba(233, 69, 96, 0.4);
+}
+
+.arc-tab.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Difficulty tabs */
 .difficulty-tabs {
   display: flex;
@@ -543,6 +584,17 @@
 
   .zone-icon {
     font-size: 0.9rem;
+  }
+
+  .arc-selector {
+    padding: 3px;
+    gap: 2px;
+    margin-bottom: 4px;
+  }
+
+  .arc-tab {
+    padding: 3px 12px;
+    font-size: 0.65rem;
   }
 
   .difficulty-tabs {

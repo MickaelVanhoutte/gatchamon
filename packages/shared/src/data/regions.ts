@@ -1,3 +1,5 @@
+import type { Difficulty } from '../types/player.js';
+
 export interface RegionDef {
   id: number;
   name: string;
@@ -9,6 +11,13 @@ export interface RegionDef {
   floorNames: string[];    // themed names (length = floorCount)
   floorCount?: number;     // defaults to 10 if omitted
   mapPosition: { x: number; y: number };
+}
+
+export interface StoryArc {
+  id: string;
+  name: string;
+  regionIds: number[];
+  prerequisite?: { arcId: string; difficulty: Difficulty };
 }
 
 export const REGIONS: RegionDef[] = [
@@ -191,7 +200,184 @@ export const REGIONS: RegionDef[] = [
     ],
     mapPosition: { x: 1680, y: 260 },
   },
+
+  // ── Gen 2 story: Johto regions ──
+  {
+    id: 11,
+    name: 'Violet Skies',
+    icon: 'bird',
+    color: '#6890f0',
+    commonPool: [16, 17, 21, 161, 163, 164, 165, 177, 187, 198, 19, 167, 172, 175],
+    bossPool: [18],                        // Pidgeot
+    bossCompanions: [164, 178],            // Noctowl, Xatu
+    floorNames: [
+      'Sky Trail', 'Feather Path', 'Nest Walk', 'Wind Ridge',
+      'Cloud Passage', 'Roost Ledge', 'Updraft Hall', 'Talon Pass',
+      'Aviary Gate', 'Violet Gym',
+    ],
+    mapPosition: { x: 100, y: 300 },
+  },
+  {
+    id: 12,
+    name: 'Azalea Woods',
+    icon: 'bug',
+    color: '#a8b820',
+    commonPool: [10, 13, 165, 166, 167, 168, 204, 191, 152, 46, 48, 194, 174, 172],
+    bossPool: [212],                       // Scizor
+    bossCompanions: [168, 205],            // Ariados, Forretress
+    floorNames: [
+      'Forest Entry', 'Silk Bridge', 'Cocoon Hollow', 'Moss Tunnel',
+      'Hive Chamber', 'Web Maze', 'Chrysalis Hall', 'Bark Trail',
+      'Canopy Depths', 'Azalea Gym',
+    ],
+    mapPosition: { x: 280, y: 440 },
+  },
+  {
+    id: 13,
+    name: 'Goldenrod City',
+    icon: 'star',
+    color: '#a8a878',
+    commonPool: [161, 162, 174, 190, 206, 216, 241, 35, 39, 133, 209, 173, 175, 183],
+    bossPool: [242],                       // Blissey
+    bossCompanions: [241, 210],            // Miltank, Granbull
+    floorNames: [
+      'Market Street', 'Radio Tower', 'Underground Pass', 'Game Corner',
+      'Train Station', 'Department Floor', 'Flower Shop', 'Contest Hall',
+      'Golden Arch', 'Goldenrod Gym',
+    ],
+    mapPosition: { x: 460, y: 260 },
+  },
+  {
+    id: 14,
+    name: 'Ecruteak Shrine',
+    icon: 'ghost',
+    color: '#705898',
+    commonPool: [92, 93, 200, 197, 177, 178, 196, 41, 42, 169, 202, 96, 63, 234],
+    bossPool: [94],                        // Gengar
+    bossCompanions: [200, 197],            // Misdreavus, Umbreon
+    floorNames: [
+      'Burnt Path', 'Shrine Gate', 'Bell Tower Base', 'Spirit Corridor',
+      'Incense Hall', 'Fog Bridge', 'Dance Theatre', 'Kimono Room',
+      'Sacred Peak', 'Ecruteak Gym',
+    ],
+    mapPosition: { x: 640, y: 380 },
+  },
+  {
+    id: 15,
+    name: 'Cianwood Shore',
+    icon: 'fist',
+    color: '#c03028',
+    commonPool: [66, 67, 236, 237, 57, 62, 214, 185, 217, 231, 186, 184, 56, 232],
+    bossPool: [68],                        // Machamp
+    bossCompanions: [237, 214],            // Hitmontop, Heracross
+    floorNames: [
+      'Tidal Path', 'Beach Approach', 'Rocky Shore', 'Wave Cave',
+      'Dojo Trail', 'Storm Cliff', 'Coral Bridge', 'Waterfall Pass',
+      'Surf Chamber', 'Cianwood Gym',
+    ],
+    mapPosition: { x: 820, y: 460 },
+  },
+  {
+    id: 16,
+    name: 'Olivine Harbor',
+    icon: 'shield',
+    color: '#b8b8d0',
+    commonPool: [81, 82, 205, 208, 212, 227, 170, 171, 179, 180, 181, 239, 204, 219],
+    bossPool: [208],                       // Steelix
+    bossCompanions: [212, 227],            // Scizor, Skarmory
+    floorNames: [
+      'Port Entrance', 'Cargo Wharf', 'Lighthouse Base', 'Iron Corridor',
+      'Steel Forge', 'Anchor Bay', 'Mast Walk', 'Hull Chamber',
+      'Compass Room', 'Olivine Gym',
+    ],
+    mapPosition: { x: 1000, y: 300 },
+  },
+  {
+    id: 17,
+    name: 'Mahogany Frost',
+    icon: 'ice',
+    color: '#98d8d8',
+    commonPool: [86, 87, 215, 220, 221, 225, 238, 90, 91, 170, 223, 224, 245, 199],
+    bossPool: [131],                       // Lapras
+    bossCompanions: [225, 221],            // Delibird, Piloswine
+    floorNames: [
+      'Frost Trail', 'Ice Cave', 'Frozen Lake', 'Snowdrift Pass',
+      'Glacier Path', 'Hail Ridge', 'Icicle Cavern', 'Sleet Bridge',
+      'Permafrost Hall', 'Mahogany Gym',
+    ],
+    mapPosition: { x: 1180, y: 420 },
+  },
+  {
+    id: 18,
+    name: 'Blackthorn Peak',
+    icon: 'dragon',
+    color: '#7038f8',
+    commonPool: [147, 148, 230, 207, 246, 247, 248, 142, 149, 228, 229, 233, 213, 193],
+    bossPool: [149],                       // Dragonite
+    bossCompanions: [230, 248],            // Kingdra, Tyranitar
+    floorNames: [
+      'Mountain Base', 'Dragon Path', 'Scale Ridge', 'Fang Cavern',
+      'Wyvern Pass', 'Drake Bridge', 'Claw Peak', 'Dragonlair',
+      'Summit Gate', 'Blackthorn Gym',
+    ],
+    mapPosition: { x: 1360, y: 250 },
+  },
+  {
+    id: 19,
+    name: 'Johto Victory Road',
+    icon: 'crown',
+    color: '#6a5acd',
+    commonPool: [169, 212, 214, 208, 248, 217, 232, 164, 178, 229, 205, 221, 237, 227],
+    bossPool: [248],                       // Tyranitar
+    bossCompanions: [212, 208],            // Scizor, Steelix
+    floorNames: [
+      'Cave Mouth', 'Boulder Path', 'Rapids Crossing', 'Strength Puzzle',
+      'Lantern Passage', 'Ledge Walk', 'Rock Climb', 'Waterfall Chamber',
+      'Final Approach', 'Victory Summit',
+    ],
+    mapPosition: { x: 1520, y: 380 },
+  },
+  {
+    id: 20,
+    name: 'Johto Pokemon League',
+    icon: 'crown',
+    color: '#7038f8',
+    commonPool: [152, 155, 158, 175, 196, 197, 243, 244],
+    bossPool: [249],                       // Lugia
+    bossCompanions: [243, 244],            // Raikou, Entei
+    floorCount: 5,
+    floorNames: [
+      'Will - Psychic Master', 'Koga - Poison Master', 'Bruno - Fighting Master',
+      'Karen - Dark Master', 'Lance - Champion',
+    ],
+    mapPosition: { x: 1680, y: 260 },
+  },
 ];
+
+export const STORY_ARCS: StoryArc[] = [
+  { id: 'kanto', name: 'Kanto', regionIds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+  {
+    id: 'johto', name: 'Johto', regionIds: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+    prerequisite: { arcId: 'kanto', difficulty: 'normal' },
+  },
+];
+
+export function getArcForRegion(regionId: number): StoryArc | undefined {
+  return STORY_ARCS.find(a => a.regionIds.includes(regionId));
+}
+
+export function isLeagueRegion(regionId: number): boolean {
+  const arc = getArcForRegion(regionId);
+  if (!arc) return false;
+  return regionId === arc.regionIds[arc.regionIds.length - 1];
+}
+
+export function getNextRegionInArc(regionId: number): number | undefined {
+  const arc = getArcForRegion(regionId);
+  if (!arc) return undefined;
+  const idx = arc.regionIds.indexOf(regionId);
+  return idx >= 0 && idx < arc.regionIds.length - 1 ? arc.regionIds[idx + 1] : undefined;
+}
 
 export const TOTAL_REGIONS = REGIONS.length;
 

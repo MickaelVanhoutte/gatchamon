@@ -1,4 +1,4 @@
-import { REGIONS, getFloorCount, getGymLeaderTeam, getLeagueChampion } from '@gatchamon/shared';
+import { REGIONS, getFloorCount, getGymLeaderTeam, getLeagueChampion, isLeagueRegion } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
 
 export interface FloorEnemy {
@@ -50,9 +50,9 @@ export function buildFloorEnemies(regionId: number, floor: number, difficulty: D
   const difficultyBonus = DIFFICULTY_LEVEL_BONUS[difficulty];
   const floorCount = getFloorCount(regionId);
 
-  // Region 10 (Pokemon League): every floor is a champion battle
-  if (regionId === 10) {
-    const champion = getLeagueChampion(floor);
+  // League regions (Pokemon League): every floor is a champion battle
+  if (isLeagueRegion(regionId)) {
+    const champion = getLeagueChampion(regionId, floor);
     if (champion) {
       const bossLevel = regionBase + floorBonus + difficultyBonus + 5;
       const baseStars = getBaseStars(regionId, true);

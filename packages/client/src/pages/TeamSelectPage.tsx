@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
-import { REGIONS, DUNGEONS, ITEM_DUNGEONS, getTemplate, getTowerFloor, getFloorCount, getGymLeader, getLeagueChampion, isActivePokemon, STORY_ENERGY_COST } from '@gatchamon/shared';
+import { REGIONS, DUNGEONS, ITEM_DUNGEONS, getTemplate, getTowerFloor, getFloorCount, getGymLeader, getLeagueChampion, isLeagueRegion, isActivePokemon, STORY_ENERGY_COST } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
 import { startBattle, startDungeonBattle, startItemDungeonBattle, startTowerBattle } from '../services/battle.service';
 import { buildFloorEnemies } from '../services/floor.service';
@@ -226,8 +226,8 @@ export function TeamSelectPage() {
   } else {
     const regionName = regionDef?.name ?? `Region ${region}`;
     const diffLabel = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
-    if (region === 10) {
-      const champ = getLeagueChampion(floor);
+    if (isLeagueRegion(region)) {
+      const champ = getLeagueChampion(region, floor);
       headerText = champ
         ? `${regionName} - ${champ.icon} ${champ.name} (${diffLabel})`
         : `${regionName} - Floor ${floor} (${diffLabel})`;

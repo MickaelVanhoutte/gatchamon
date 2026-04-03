@@ -18,6 +18,8 @@ import {
   TOTAL_REGIONS,
   DITTO_TEMPLATE_ID,
   getFloorCount,
+  isLeagueRegion,
+  STORY_ARCS,
 } from '@gatchamon/shared';
 import {
   loadRewardState,
@@ -60,10 +62,11 @@ export function loadOrInitRewardState(): RewardState {
 
   if (player) {
     const sp = player.storyProgress;
+    const allRegionIds = STORY_ARCS.flatMap(a => a.regionIds);
     for (const diff of ['normal', 'hard', 'hell'] as const) {
       const progress = sp[diff] ?? {};
       let completed = 0;
-      for (let r = 1; r <= TOTAL_REGIONS; r++) {
+      for (const r of allRegionIds) {
         if (progress[r] === getFloorCount(r) + 1) completed++;
       }
       if (diff === 'normal') stats.highestRegionNormal = completed;
@@ -214,10 +217,11 @@ export function refreshRegionStats(): void {
   if (!player) return;
   const state = loadOrInitRewardState();
   const sp = player.storyProgress;
+  const allRegionIds = STORY_ARCS.flatMap(a => a.regionIds);
   for (const diff of ['normal', 'hard', 'hell'] as const) {
     const progress = sp[diff] ?? {};
     let completed = 0;
-    for (let r = 1; r <= TOTAL_REGIONS; r++) {
+    for (const r of allRegionIds) {
       if (progress[r] === getFloorCount(r) + 1) completed++;
     }
     if (diff === 'normal') state.stats.highestRegionNormal = completed;
@@ -399,7 +403,7 @@ export function getFloorRewardPreview(
   difficulty: Difficulty,
   enemies: FloorEnemy[],
 ): FloorRewardPreview {
-  const isBoss = regionId === 10 || floor === getFloorCount(regionId);
+  const isBoss = isLeagueRegion(regionId) || floor === getFloorCount(regionId);
   const diffMult = DIFFICULTY_REWARD_MULT[difficulty];
   const bossMult = isBoss ? 3 : 1;
   const pokeballBase = 2 + regionId + Math.floor(floor / 3);

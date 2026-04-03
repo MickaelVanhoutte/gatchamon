@@ -1,4 +1,5 @@
 import type { Difficulty } from '../types/player.js';
+import { isLeagueRegion } from './regions.js';
 
 // ---------------------------------------------------------------------------
 // Gym Leader definitions for regions 1-9
@@ -15,6 +16,7 @@ export interface GymLeaderDef {
 }
 
 export interface LeagueChampionDef {
+  regionId: number;
   floor: number;
   name: string;
   icon: string;
@@ -129,6 +131,104 @@ export const GYM_LEADERS: GymLeaderDef[] = [
     dialogue: "I am the leader of Team Rocket! I shall make you feel a world of pain!",
   },
   // Region 9 (Victory Road) has no gym leader — uses fallback boss system
+
+  // ── Gen 2 story: Johto Gym Leaders ──
+  {
+    regionId: 11,
+    name: 'Falkner',
+    icon: '🐦',
+    team: [
+      [163, 164, 164],   // Hoothoot → Noctowl → Noctowl
+      [16, 17, 18],       // Pidgey → Pidgeotto → Pidgeot
+      [17, 18, 18],       // Pidgeotto → Pidgeot → Pidgeot
+    ],
+    bossIndex: 2,
+    dialogue: "People say you can clip Flying-type Pokemon's wings with a jolt of electricity... I won't allow such insPokemon's Pokemon trainers!",
+  },
+  {
+    regionId: 12,
+    name: 'Bugsy',
+    icon: '🐛',
+    team: [
+      [11, 12, 12],       // Metapod → Butterfree → Butterfree
+      [14, 15, 15],       // Kakuna → Beedrill → Beedrill
+      [123, 123, 212],    // Scyther → Scyther → Scizor
+    ],
+    bossIndex: 2,
+    dialogue: "I'm Bugsy! I never lose when it comes to Bug-type Pokemon!",
+  },
+  {
+    regionId: 13,
+    name: 'Whitney',
+    icon: '⭐',
+    team: [
+      [35, 36, 36],       // Clefairy → Clefable → Clefable
+      [161, 162, 162],    // Sentret → Furret → Furret
+      [241, 241, 241],    // Miltank → Miltank → Miltank
+    ],
+    bossIndex: 2,
+    dialogue: "Everyone was so easy to beat! I mean, I just kept winning! Wahaha!",
+  },
+  {
+    regionId: 14,
+    name: 'Morty',
+    icon: '👻',
+    team: [
+      [92, 93, 93],       // Gastly → Haunter → Haunter
+      [200, 200, 200],    // Misdreavus → Misdreavus → Misdreavus
+      [93, 94, 94],       // Haunter → Gengar → Gengar
+    ],
+    bossIndex: 2,
+    dialogue: "I see... Your journey has taken you to many places and you have witnessed much. I'm going to show you the power of Ghost-type Pokemon!",
+  },
+  {
+    regionId: 15,
+    name: 'Chuck',
+    icon: '👊',
+    team: [
+      [57, 57, 57],       // Primeape → Primeape → Primeape
+      [236, 237, 237],    // Tyrogue → Hitmontop → Hitmontop
+      [61, 62, 62],       // Poliwhirl → Poliwrath → Poliwrath
+    ],
+    bossIndex: 2,
+    dialogue: "Wahahah! I trained under the waterfall of this cave every day! The power of my Fighting Pokemon shall crush you!",
+  },
+  {
+    regionId: 16,
+    name: 'Jasmine',
+    icon: '🛡️',
+    team: [
+      [81, 82, 82],       // Magnemite → Magneton → Magneton
+      [204, 205, 205],    // Pineco → Forretress → Forretress
+      [95, 208, 208],     // Onix → Steelix → Steelix
+    ],
+    bossIndex: 2,
+    dialogue: "...Um... I don't really know how to say this, but... I...I really love Steel-type Pokemon. They're so cool and beautiful...",
+  },
+  {
+    regionId: 17,
+    name: 'Pryce',
+    icon: '❄️',
+    team: [
+      [86, 87, 87],       // Seel → Dewgong → Dewgong
+      [215, 215, 215],    // Sneasel → Sneasel → Sneasel
+      [220, 221, 221],    // Swinub → Piloswine → Piloswine
+    ],
+    bossIndex: 2,
+    dialogue: "Pokemon have been my Pokemon for over fifty years now. It'd be Pokemon of me to think I had no more to learn!",
+  },
+  {
+    regionId: 18,
+    name: 'Clair',
+    icon: '🐉',
+    team: [
+      [148, 148, 149],    // Dragonair → Dragonair → Dragonite
+      [130, 130, 130],    // Gyarados → Gyarados → Gyarados
+      [148, 230, 230],    // Dragonair → Kingdra → Kingdra
+    ],
+    bossIndex: 2,
+    dialogue: "Do you know the Pokemon Dragon's Den? I learned to train Pokemon there. I'm going to use my Pokemon power to crush you!",
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -138,6 +238,7 @@ export const GYM_LEADERS: GymLeaderDef[] = [
 export const LEAGUE_CHAMPIONS: LeagueChampionDef[] = [
   // ── Gen 1 story: Kanto Elite Four + Champion ──
   {
+    regionId: 10,
     floor: 1,
     name: 'Lorelei',
     icon: '❄️',
@@ -147,6 +248,7 @@ export const LEAGUE_CHAMPIONS: LeagueChampionDef[] = [
     floorName: 'Lorelei - Ice Master',
   },
   {
+    regionId: 10,
     floor: 2,
     name: 'Bruno',
     icon: '💪',
@@ -156,6 +258,7 @@ export const LEAGUE_CHAMPIONS: LeagueChampionDef[] = [
     floorName: 'Bruno - Fighting Master',
   },
   {
+    regionId: 10,
     floor: 3,
     name: 'Agatha',
     icon: '👻',
@@ -165,6 +268,7 @@ export const LEAGUE_CHAMPIONS: LeagueChampionDef[] = [
     floorName: 'Agatha - Ghost Master',
   },
   {
+    regionId: 10,
     floor: 4,
     name: 'Lance',
     icon: '🐉',
@@ -174,6 +278,7 @@ export const LEAGUE_CHAMPIONS: LeagueChampionDef[] = [
     floorName: 'Lance - Dragon Master',
   },
   {
+    regionId: 10,
     floor: 5,
     name: 'Blue',
     icon: '👑',
@@ -181,6 +286,58 @@ export const LEAGUE_CHAMPIONS: LeagueChampionDef[] = [
     bossIndex: 5,
     dialogue: "Hey! I heard you beat the Elite Four! Well, I'm the Champion! You'll need more than that to beat me!",
     floorName: 'Blue - Champion',
+  },
+
+  // ── Gen 2 story: Johto Elite Four + Champion ──
+  {
+    regionId: 20,
+    floor: 1,
+    name: 'Will',
+    icon: '🔮',
+    team: [178, 124, 80, 103],  // Xatu, Jynx, Slowbro, Exeggutor
+    bossIndex: 0,
+    dialogue: "I have trained all around the world, making my Psychic-type Pokemon powerful.",
+    floorName: 'Will - Psychic Master',
+  },
+  {
+    regionId: 20,
+    floor: 2,
+    name: 'Koga',
+    icon: '🥷',
+    team: [168, 205, 89, 169],  // Ariados, Forretress, Muk, Crobat
+    bossIndex: 3,
+    dialogue: "Pokemon is not merely about brute force — you shall see soon enough!",
+    floorName: 'Koga - Poison Master',
+  },
+  {
+    regionId: 20,
+    floor: 3,
+    name: 'Bruno',
+    icon: '💪',
+    team: [237, 106, 107, 68],  // Hitmontop, Hitmonlee, Hitmonchan, Machamp
+    bossIndex: 3,
+    dialogue: "We will grind you down with our superior power! Hoo hah!",
+    floorName: 'Bruno - Fighting Master',
+  },
+  {
+    regionId: 20,
+    floor: 4,
+    name: 'Karen',
+    icon: '🌑',
+    team: [197, 198, 94, 229],  // Umbreon, Murkrow, Gengar, Houndoom
+    bossIndex: 3,
+    dialogue: "Strong Pokemon. Weak Pokemon. That is only the selfish perception of people. Truly skilled trainers should try to win with their favorites.",
+    floorName: 'Karen - Dark Master',
+  },
+  {
+    regionId: 20,
+    floor: 5,
+    name: 'Lance',
+    icon: '🐉',
+    team: [149, 149, 149, 142, 6, 130],  // 3x Dragonite, Aerodactyl, Charizard, Gyarados
+    bossIndex: 0,
+    dialogue: "I've been Pokemon Champion for too long now... You are the first trainer in a long while who has given me a Pokemon. Let me test your true power!",
+    floorName: 'Lance - Champion',
   },
 ];
 
@@ -192,8 +349,8 @@ export function getGymLeader(regionId: number): GymLeaderDef | undefined {
   return GYM_LEADERS.find(g => g.regionId === regionId);
 }
 
-export function getLeagueChampion(floor: number): LeagueChampionDef | undefined {
-  return LEAGUE_CHAMPIONS.find(c => c.floor === floor);
+export function getLeagueChampion(regionId: number, floor: number): LeagueChampionDef | undefined {
+  return LEAGUE_CHAMPIONS.find(c => c.regionId === regionId && c.floor === floor);
 }
 
 /** Get the team template IDs for a gym leader, resolved for difficulty. */
@@ -212,8 +369,8 @@ export function getBossDialogue(
   regionId: number,
   floor: number,
 ): { name: string; icon: string; dialogue: string } | null {
-  if (regionId === 10) {
-    const champion = getLeagueChampion(floor);
+  if (isLeagueRegion(regionId)) {
+    const champion = getLeagueChampion(regionId, floor);
     if (!champion) return null;
     return { name: champion.name, icon: champion.icon, dialogue: champion.dialogue };
   }
