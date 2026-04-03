@@ -4,6 +4,7 @@ import { useTutorialStore } from '../stores/tutorialStore';
 import { SummonPortal } from '../components/summon/SummonPortal';
 import { SummonRevealSequence } from '../components/summon/SummonRevealSequence';
 import { SummonResult } from '../components/summon/SummonResult';
+import { PieceSummonTab } from '../components/summon/PieceSummonTab';
 import { GameIcon } from '../components/icons';
 import { SUMMON_COSTS } from '../services/gacha.service';
 import { assetUrl } from '../utils/asset-url';
@@ -22,7 +23,7 @@ export function SummonPage() {
   const [results, setResults] = useState<OwnedPokemon[]>([]);
   const [resultsReady, setResultsReady] = useState(false);
   const [error, setError] = useState('');
-  const [selectedBall, setSelectedBall] = useState<PokeballType>('regular');
+  const [selectedBall, setSelectedBall] = useState<PokeballType | 'pieces'>('regular');
 
   // Tutorial step 5: auto-switch to premium
   useEffect(() => {
@@ -31,15 +32,16 @@ export function SummonPage() {
     }
   }, [tutorialStep]);
 
-  const costs = SUMMON_COSTS[selectedBall];
-  const currency = selectedBall === 'legendary'
+  const activeBall = selectedBall === 'pieces' ? 'regular' : selectedBall;
+  const costs = SUMMON_COSTS[activeBall];
+  const currency = activeBall === 'legendary'
     ? player?.legendaryPokeballs ?? 0
-    : selectedBall === 'premium'
+    : activeBall === 'premium'
     ? player?.premiumPokeballs ?? 0
     : player?.regularPokeballs ?? 0;
-  const iconId = selectedBall === 'legendary'
+  const iconId = activeBall === 'legendary'
     ? 'legendaryPokeball'
-    : selectedBall === 'premium'
+    : activeBall === 'premium'
     ? 'premiumPokeball'
     : 'pokeball';
 
@@ -49,7 +51,7 @@ export function SummonPage() {
     setPhase('summoning');
 
     try {
-      const newPokemon = await summon(count, selectedBall);
+      const newPokemon = await summon(count, activeBall);
       // Preload reveal sprites while the portal animation is still playing
       for (const p of newPokemon) {
         const name = p.template.name.toLowerCase();
@@ -114,7 +116,16 @@ export function SummonPage() {
                   <GameIcon id="legendaryPokeball" size={16} />
                   <span>Legendary</span>
                 </button>
+                <button
+                  className={`pokeball-type-tab ${selectedBall === 'pieces' ? 'active' : ''}`}
+                  onClick={() => setSelectedBall('pieces')}
+                >
+                  <GameIcon id="sparkles" size={16} />
+                  <span>Pieces</span>
+                </button>
               </div>
+              {selectedBall === 'pieces' && <PieceSummonTab />}
+              {selectedBall !== 'pieces' && <>
               <div className="summon-rates">
                 {selectedBall === 'regular' && (
                   <>
@@ -146,6 +157,7 @@ export function SummonPage() {
                   <span className="summon-pity-label">{player.premiumPityCounter ?? 0}/200 — 5★ guaranteed</span>
                 </div>
               )}
+              </>}
             </div>
           )}
 
@@ -160,7 +172,7 @@ export function SummonPage() {
             </div>
           )}
 
-          <div className="summon-center-row">
+          {selectedBall !== 'pieces' && <div className="summon-center-row">
             <button
               className={`summon-btn summon-single ${inTutorial ? 'tutorial-target' : ''}`}
               data-tutorial-id="summon-btn-single"
@@ -192,7 +204,7 @@ export function SummonPage() {
                 <span className="btn-cost">{(costs as any).multi} <GameIcon id={iconId} size={14} /></span>
               </button>
             )}
-          </div>
+          </div>}
 
           {error && <p className="summon-error">{error}</p>}
         </div>
@@ -202,7 +214,7 @@ export function SummonPage() {
         <SummonPortal
           resultsReady={resultsReady}
           onComplete={handlePortalComplete}
-          pokeballType={selectedBall}
+          pokeballType={selectedBall === 'pieces' ? 'regular' : selectedBall}
         />
       )}
 

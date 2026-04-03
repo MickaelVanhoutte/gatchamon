@@ -182,6 +182,19 @@ export function RepeatBattleModal() {
                       })}
                     </div>
                   )}
+
+                  {Object.keys(rewards.mysteryPieces).length > 0 && (
+                    <div className="rb-essence-list">
+                      {Object.entries(rewards.mysteryPieces).map(([tidStr, qty]) => {
+                        const tmpl = getTemplate(Number(tidStr));
+                        return (
+                          <span key={tidStr} className="rb-essence-item rb-loot-item">
+                            <GameIcon id="sparkles" size={12} /> {tmpl?.name ?? '???'} x{qty} pieces
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
                 </>
               ) : (
                 <p className="rb-no-rewards">No rewards yet...</p>

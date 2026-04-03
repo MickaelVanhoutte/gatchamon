@@ -1,8 +1,9 @@
-import { getDungeon, getItemDungeon, getTemplate, SKILLS } from '@gatchamon/shared';
+import { getDungeon, getItemDungeon, getTemplate, SKILLS, getMysteryDungeonDef } from '@gatchamon/shared';
 import type { BattleResult } from '@gatchamon/shared';
 import {
   startDungeonBattle,
   startItemDungeonBattle,
+  startMysteryDungeonBattle,
   getBattleState,
   resolvePlayerAction,
   deleteBattle,
@@ -21,12 +22,14 @@ function runSingleBattleHeadless(
   teamIds: string[],
   dungeonId: number,
   floorIndex: number,
-  mode: 'dungeon' | 'item-dungeon',
+  mode: 'dungeon' | 'item-dungeon' | 'mystery-dungeon',
 ): BattleResult {
   // Start battle (deducts energy, creates state)
-  const result = mode === 'dungeon'
-    ? startDungeonBattle(teamIds, dungeonId, floorIndex)
-    : startItemDungeonBattle(teamIds, dungeonId, floorIndex);
+  const result = mode === 'mystery-dungeon'
+    ? startMysteryDungeonBattle(teamIds, floorIndex)
+    : mode === 'dungeon'
+      ? startDungeonBattle(teamIds, dungeonId, floorIndex)
+      : startItemDungeonBattle(teamIds, dungeonId, floorIndex);
 
   const battleId = result.state.battleId;
 
@@ -106,11 +109,18 @@ export async function runRepeatBattles(config: RepeatBattleConfig): Promise<void
 
     // Check energy
     const player = loadPlayer();
-    const dungeonDef = config.mode === 'dungeon'
-      ? getDungeon(config.dungeonId)
-      : getItemDungeon(config.dungeonId);
+    let energyCost: number;
+    if (config.mode === 'mystery-dungeon') {
+      const mysteryDef = getMysteryDungeonDef();
+      energyCost = mysteryDef.energyCosts[config.floorIndex];
+    } else {
+      const dungeonDef = config.mode === 'dungeon'
+        ? getDungeon(config.dungeonId)
+        : getItemDungeon(config.dungeonId);
+      energyCost = dungeonDef?.energyCost ?? Infinity;
+    }
 
-    if (!player || !dungeonDef || player.energy < dungeonDef.energyCost) {
+    if (!player || player.energy < energyCost) {
       store().setStatus('stopped_no_energy');
       return;
     }

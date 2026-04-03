@@ -57,3 +57,25 @@ export interface DungeonRewards {
   essences: Record<string, number>;
   xpPerMon: number;
 }
+
+// ---------------------------------------------------------------------------
+// Mystery Dungeon — daily rotating dungeon with piece rewards
+// ---------------------------------------------------------------------------
+
+export interface MysteryDungeonFloor {
+  enemyLevel: number;
+  enemies: number[];       // templateIds
+  enemyStars: number;
+  statBoost?: number;
+  speedBonus?: number;
+  pieceReward: number;     // 1-5 pieces per clear
+}
+
+export interface MysteryDungeonDef {
+  featuredTemplateId: number;
+  dateKey: string;         // "YYYY-MM-DD" UTC
+  name: string;
+  description: string;
+  energyCosts: number[];   // per-floor energy cost (2-6)
+  floors: MysteryDungeonFloor[];
+}

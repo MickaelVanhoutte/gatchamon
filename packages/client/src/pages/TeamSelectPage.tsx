@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
-import { REGIONS, DUNGEONS, ITEM_DUNGEONS, getTemplate, getTowerFloor, getFloorCount, getGymLeader, getLeagueChampion, isLeagueRegion, isActivePokemon, STORY_ENERGY_COST } from '@gatchamon/shared';
+import { REGIONS, DUNGEONS, ITEM_DUNGEONS, getTemplate, getTowerFloor, getFloorCount, getGymLeader, getLeagueChampion, isLeagueRegion, isActivePokemon, STORY_ENERGY_COST, getMysteryDungeonDef } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
-import { startBattle, startDungeonBattle, startItemDungeonBattle, startTowerBattle } from '../services/battle.service';
+import { startBattle, startDungeonBattle, startItemDungeonBattle, startTowerBattle, startMysteryDungeonBattle } from '../services/battle.service';
 import { buildFloorEnemies } from '../services/floor.service';
 import { loadLastTeam, saveLastTeam, getTeamKey } from '../services/storage';
 import { useRotatedHorizontalScroll } from '../hooks/useRotatedHorizontalScroll';
@@ -53,12 +53,13 @@ export function TeamSelectPage() {
   const difficulty = (searchParams.get('difficulty') as Difficulty) ?? 'normal';
   const dungeonId = Number(searchParams.get('dungeonId') ?? 0);
   const dungeonFloor = Number(searchParams.get('floor') ?? 0);
-  const isDungeonMode = mode === 'dungeon' || mode === 'item-dungeon';
+  const isDungeonMode = mode === 'dungeon' || mode === 'item-dungeon' || mode === 'mystery-dungeon';
   const teamKey = getTeamKey(mode, dungeonId);
 
   const regionDef = REGIONS.find(r => r.id === region);
   const dungeonDef = DUNGEONS.find(d => d.id === dungeonId);
   const itemDungeonDef = ITEM_DUNGEONS.find(d => d.id === dungeonId);
+  const mysteryDungeonDef = mode === 'mystery-dungeon' ? getMysteryDungeonDef() : null;
 
   useEffect(() => {
     loadCollection();
@@ -90,6 +91,20 @@ export function TeamSelectPage() {
 
   // Build enemy preview
   const enemyPreviews = useMemo((): EnemyPreview[] => {
+    if (mode === 'mystery-dungeon' && mysteryDungeonDef) {
+      const floorData = mysteryDungeonDef.floors[dungeonFloor];
+      if (!floorData) return [];
+      return floorData.enemies.map(tid => {
+        const tmpl = getTemplate(tid);
+        return {
+          templateId: tid,
+          name: tmpl?.name ?? '???',
+          spriteUrl: tmpl?.spriteUrl ?? '',
+          level: floorData.enemyLevel,
+          stars: floorData.enemyStars,
+        };
+      });
+    }
     if (mode === 'item-dungeon' && itemDungeonDef) {
       const floorData = itemDungeonDef.floors[dungeonFloor];
       const level = floorData?.enemyLevel ?? 10;
@@ -172,14 +187,16 @@ export function TeamSelectPage() {
         return;
       }
       saveLastTeam(selected, teamKey);
-      const dDef = mode === 'item-dungeon' ? itemDungeonDef : dungeonDef;
+      const dName = mode === 'mystery-dungeon'
+        ? (mysteryDungeonDef?.name ?? 'Mystery Dungeon')
+        : mode === 'item-dungeon' ? itemDungeonDef?.name : dungeonDef?.name;
       const config = {
         teamIds: [...selected],
         dungeonId,
         floorIndex: dungeonFloor,
-        mode: mode as 'dungeon' | 'item-dungeon',
+        mode: mode as 'dungeon' | 'item-dungeon' | 'mystery-dungeon',
         totalRuns: repeatCount,
-        dungeonName: dDef?.name ?? 'Dungeon',
+        dungeonName: dName ?? 'Dungeon',
         floorLabel: `B${dungeonFloor + 1}`,
       };
       repeatStore.startRepeat(config);
@@ -190,7 +207,10 @@ export function TeamSelectPage() {
     setIsStarting(true);
     saveLastTeam(selected, teamKey);
     try {
-      if (mode === 'tower') {
+      if (mode === 'mystery-dungeon') {
+        const result = startMysteryDungeonBattle(selected, dungeonFloor);
+        navigate(`/battle/${result.state.battleId}`);
+      } else if (mode === 'tower') {
         const towerFloor = Number(searchParams.get('floor') ?? 1);
         const result = startTowerBattle(selected, towerFloor);
         navigate(`/battle/${result.state.battleId}`);
@@ -216,7 +236,10 @@ export function TeamSelectPage() {
   );
 
   let headerText: string;
-  if (mode === 'tower') {
+  if (mode === 'mystery-dungeon' && mysteryDungeonDef) {
+    const featuredTemplate = getTemplate(mysteryDungeonDef.featuredTemplateId);
+    headerText = `Mystery Dungeon (${featuredTemplate?.name ?? '???'}) - B${dungeonFloor + 1}`;
+  } else if (mode === 'tower') {
     const towerFloor = Number(searchParams.get('floor') ?? 1);
     headerText = `Battle Tower - Floor ${towerFloor}`;
   } else if (mode === 'item-dungeon' && itemDungeonDef) {
@@ -249,13 +272,15 @@ export function TeamSelectPage() {
       : assetUrl(mon.template.spriteUrl);
   };
 
-  const energyCost = mode === 'item-dungeon'
-    ? (itemDungeonDef?.energyCost ?? 5)
-    : mode === 'dungeon'
-      ? (dungeonDef?.energyCost ?? 5)
-      : mode === 'tower'
-        ? (getTowerFloor(floor)?.energyCost ?? 3)
-        : STORY_ENERGY_COST;
+  const energyCost = mode === 'mystery-dungeon'
+    ? (mysteryDungeonDef?.energyCosts[dungeonFloor] ?? 4)
+    : mode === 'item-dungeon'
+      ? (itemDungeonDef?.energyCost ?? 5)
+      : mode === 'dungeon'
+        ? (dungeonDef?.energyCost ?? 5)
+        : mode === 'tower'
+          ? (getTowerFloor(floor)?.energyCost ?? 3)
+          : STORY_ENERGY_COST;
 
   return (
     <div className="page team-select-page">

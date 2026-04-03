@@ -5,9 +5,10 @@ import { DUNGEONS, ESSENCES, ITEM_DUNGEONS, getItemSet, BATTLE_TOWER, getCurrent
 import type { DungeonDef, ItemDungeonDef } from '@gatchamon/shared';
 import { GameIcon } from '../components/icons';
 import { useRepeatBattleStore } from '../stores/repeatBattleStore';
+import { MysteryDungeonPanel } from './MysteryDungeonPanel';
 import './DungeonPage.css';
 
-type DungeonTab = 'essence' | 'items' | 'tower';
+type DungeonTab = 'essence' | 'items' | 'tower' | 'mystery';
 
 function useEnergyError() {
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +57,7 @@ export function DungeonPage() {
   useEffect(() => {
     const params = new URLSearchParams();
     if (tab !== 'essence') params.set('tab', tab);
-    if (tab !== 'tower') {
+    if (tab !== 'tower' && tab !== 'mystery') {
       params.set('dungeonId', String(selectedDungeon.id));
       if (selectedFloor > 0) params.set('floor', String(selectedFloor));
     }
@@ -130,11 +131,18 @@ export function DungeonPage() {
         >
           <GameIcon id="tower" size={14} /> Tower
         </button>
+        <button
+          className={`dungeon-tab-btn ${tab === 'mystery' ? 'dungeon-tab-btn--active' : ''}`}
+          onClick={() => handleTabChange('mystery')}
+        >
+          Mystery
+        </button>
       </div>
 
       {tab === 'tower' && <TowerPanel player={player} navigate={navigate} />}
+      {tab === 'mystery' && <MysteryDungeonPanel />}
 
-      {tab !== 'tower' && <div className="dungeon-layout">
+      {tab !== 'tower' && tab !== 'mystery' && <div className="dungeon-layout">
         {/* Left: Dungeon list */}
         <div className="dungeon-list">
           {dungeonList.map(d => (

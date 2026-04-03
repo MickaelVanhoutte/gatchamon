@@ -87,6 +87,10 @@ export function loadPlayer(): Player | null {
     (player.trainerSkills as any).pokedollarBonus = (player.trainerSkills as any).stardustBonus;
     delete (player.trainerSkills as any).stardustBonus;
   }
+  // Migration: add mysteryPieces for existing players
+  if ((player as any).mysteryPieces === undefined) {
+    player.mysteryPieces = {};
+  }
   return player;
 }
 

@@ -41,6 +41,7 @@ playerRouter.post('/', (req, res) => {
     legendaryPokeballs: player.legendary_pokeballs ?? 0,
     towerProgress: player.tower_progress ?? 0,
     premiumPityCounter: 0,
+    mysteryPieces: {},
   };
 
   res.status(201).json(result);
@@ -73,6 +74,7 @@ playerRouter.get('/:id', (req, res) => {
     legendaryPokeballs: player.legendary_pokeballs ?? 0,
     towerProgress: player.tower_progress ?? 0,
     premiumPityCounter: 0,
+    mysteryPieces: {},
   };
 
   res.json(result);

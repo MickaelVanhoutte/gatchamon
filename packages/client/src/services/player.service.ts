@@ -37,6 +37,7 @@ export function createPlayer(name: string): Player {
     legendaryPokeballs: 0,
     towerProgress: 0,
     premiumPityCounter: 0,
+    mysteryPieces: {},
   };
   savePlayer(player);
   return player;

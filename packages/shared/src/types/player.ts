@@ -34,6 +34,7 @@ export interface Player {
   trainerSkillPoints: number;
   trainerSkills: TrainerSkills;
   premiumPityCounter: number;   // pulls since last 5★ from premium summon
+  mysteryPieces: Record<number, number>;  // templateId → piece count
 }
 
 /**

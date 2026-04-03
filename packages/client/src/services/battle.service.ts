@@ -1,4 +1,4 @@
-import { getTemplate as getTemplateShared, computeStats, computeStatsWithItems, getActiveSetEffects, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel, BEGINNER_BONUS, isBeginnerBonusActive, getTowerFloor, STORY_ENERGY_COST } from '@gatchamon/shared';
+import { getTemplate as getTemplateShared, computeStats, computeStatsWithItems, getActiveSetEffects, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel, BEGINNER_BONUS, isBeginnerBonusActive, getTowerFloor, STORY_ENERGY_COST, getMysteryDungeonDef, getMysteryDungeonDateKey } from '@gatchamon/shared';
 import { getSkillsForPokemon, SKILLS } from '@gatchamon/shared';
 import { TOTAL_REGIONS, getFloorCount, isLeagueRegion, getArcForRegion, getNextRegionInArc, STORY_ARCS } from '@gatchamon/shared';
 import {
@@ -289,7 +289,69 @@ function calculateItemDungeonRewards(state: BattleState): BattleRewards {
   };
 }
 
+function calculateMysteryDungeonRewards(state: BattleState): BattleRewards {
+  const def = getMysteryDungeonDef(state.mysteryDateKey);
+  const floorIndex = state.floor.floor - 1;
+  const floor = def.floors[floorIndex];
+
+  const trainerPlayer = loadPlayer();
+  const tSkills = trainerPlayer?.trainerSkills;
+  const beginner = trainerPlayer ? isBeginnerBonusActive(trainerPlayer.createdAt) : false;
+  const pokedollarMult = (tSkills ? 1 + tSkills.pokedollarBonus * 0.1 : 1) * (beginner ? BEGINNER_BONUS.pokedollarMult : 1);
+  const xpMult = (tSkills ? 1 + tSkills.xpBonus * 0.1 : 1) * (beginner ? BEGINNER_BONUS.xpMult : 1);
+
+  const xpPerMon = Math.floor(floor.enemyLevel * 8 * xpMult);
+  const levelUps: Array<{ instanceId: string; newLevel: number }> = [];
+
+  // Apply XP
+  const collection = loadCollection();
+  for (const mon of state.playerTeam) {
+    const inst = collection.find(p => p.instanceId === mon.instanceId);
+    if (!inst) continue;
+    if (isMaxLevel(inst.level, inst.stars)) continue;
+    const maxLevel = MAX_LEVEL_BY_STARS[inst.stars] ?? 99;
+    let currentLevel = inst.level;
+    let currentExp = inst.exp + xpPerMon;
+    let needed = xpToNextLevel(currentLevel);
+    while (currentExp >= needed && currentLevel < maxLevel) {
+      currentExp -= needed;
+      currentLevel++;
+      needed = xpToNextLevel(currentLevel);
+      levelUps.push({ instanceId: mon.instanceId, newLevel: currentLevel });
+    }
+    if (currentLevel >= maxLevel) { currentLevel = maxLevel; currentExp = 0; }
+    updateInstance(mon.instanceId, { level: currentLevel, exp: currentExp });
+  }
+
+  const pokedollarReward = Math.floor((20 + floor.enemyLevel * 2) * pokedollarMult);
+  const pieceCount = floor.pieceReward;
+
+  // Save pieces and pokedollars
+  const player = loadPlayer()!;
+  const mysteryPieces = { ...(player.mysteryPieces ?? {}) };
+  mysteryPieces[def.featuredTemplateId] = (mysteryPieces[def.featuredTemplateId] ?? 0) + pieceCount;
+  savePlayer({ ...player, mysteryPieces, pokedollars: (player.pokedollars ?? 0) + pokedollarReward });
+
+  trackStat('totalBattlesDungeon', 1);
+  incrementMission('battle_dungeon', 1);
+  checkAndUpdateTrophies();
+
+  const trainerXpBase = (floorIndex + 1) * 8 + 10;
+  const trainerResult = grantTrainerXp(trainerXpBase);
+
+  return {
+    regularPokeballs: 0, premiumPokeballs: 0, xpPerMon, levelUps, pokedollars: pokedollarReward,
+    mysteryPieces: { templateId: def.featuredTemplateId, count: pieceCount },
+    trainerXpGained: trainerXpBase,
+    trainerLeveledUp: trainerResult.leveledUp,
+    trainerNewLevel: trainerResult.newLevel,
+  };
+}
+
 function calculateRewards(state: BattleState): BattleRewards {
+  if (state.mode === 'mystery-dungeon') {
+    return calculateMysteryDungeonRewards(state);
+  }
   if (state.mode === 'item-dungeon') {
     return calculateItemDungeonRewards(state);
   }
@@ -494,6 +556,7 @@ function initBattle(
   mode: BattleState['mode'],
   playerId: string,
   dungeonId?: number,
+  mysteryDateKey?: string,
 ): BattleResult {
   const battleId = crypto.randomUUID();
   const state: BattleState = {
@@ -508,6 +571,7 @@ function initBattle(
     floor,
     mode,
     dungeonId,
+    mysteryDateKey,
     recap: {},
   };
 
@@ -706,6 +770,62 @@ export function startItemDungeonBattle(
   }
 
   return initBattle(playerTeam, enemyTeam, { region: 0, floor: floorIndex + 1, difficulty: 'normal' }, 'item-dungeon', player.id, dungeonId);
+}
+
+export function startMysteryDungeonBattle(
+  teamInstanceIds: string[],
+  floorIndex: number,
+): BattleResult {
+  const player = loadPlayer();
+  if (!player) throw new Error('Player not found');
+
+  const def = getMysteryDungeonDef();
+  const energyCost = def.energyCosts[floorIndex];
+
+  if (player.energy < energyCost) {
+    throw new Error('Not enough energy');
+  }
+
+  savePlayer({ ...player, energy: player.energy - energyCost });
+  trackStat('totalEnergySpent', energyCost);
+  incrementMission('spend_energy', energyCost);
+
+  const collection = loadCollection();
+  const playerTeam: BattleMon[] = [];
+  for (const instId of teamInstanceIds) {
+    const inst = collection.find(p => p.instanceId === instId && p.ownerId === player.id);
+    if (!inst) throw new Error(`Pokemon instance ${instId} not found`);
+    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true, inst.skillLevels));
+  }
+
+  if (playerTeam.length === 0) throw new Error('Team cannot be empty');
+
+  const floor = def.floors[floorIndex];
+  if (!floor) throw new Error(`Invalid mystery dungeon floor ${floorIndex}`);
+
+  const isLastFloor = floorIndex === def.floors.length - 1;
+  const bossIndex = Math.floor(floor.enemies.length / 2);
+
+  const enemyTeam: BattleMon[] = [];
+  for (let i = 0; i < floor.enemies.length; i++) {
+    const templateId = floor.enemies[i];
+    const id = `mystery_enemy_${crypto.randomUUID()}`;
+    const mon = makeBattleMon(id, templateId, floor.enemyLevel, floor.enemyStars, false);
+    if (floor.statBoost) {
+      mon.stats.hp = Math.floor(mon.stats.hp * floor.statBoost);
+      mon.stats.atk = Math.floor(mon.stats.atk * floor.statBoost);
+      mon.stats.def = Math.floor(mon.stats.def * floor.statBoost);
+      mon.maxHp = mon.stats.hp;
+      mon.currentHp = mon.stats.hp;
+    }
+    if (floor.speedBonus && floor.speedBonus > 0) {
+      mon.stats.spd += floor.speedBonus;
+    }
+    if (isLastFloor && i === bossIndex) mon.isBoss = true;
+    enemyTeam.push(mon);
+  }
+
+  return initBattle(playerTeam, enemyTeam, { region: 0, floor: floorIndex + 1, difficulty: 'normal' }, 'mystery-dungeon', player.id, undefined, def.dateKey);
 }
 
 export function startTowerBattle(

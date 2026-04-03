@@ -8,6 +8,7 @@ export interface AccumulatedRewards {
   itemDrops: Array<{ itemId: string; setId: string; stars: number; grade: string }>;
   totalLevelUps: number;
   monsterLoots: Array<{ templateId: number; stars: number }>;
+  mysteryPieces: Record<number, number>;
 }
 
 export type RepeatStatus =
@@ -22,7 +23,7 @@ export interface RepeatBattleConfig {
   teamIds: string[];
   dungeonId: number;
   floorIndex: number;
-  mode: 'dungeon' | 'item-dungeon';
+  mode: 'dungeon' | 'item-dungeon' | 'mystery-dungeon';
   totalRuns: number;
   dungeonName: string;
   floorLabel: string;
@@ -35,6 +36,7 @@ const EMPTY_REWARDS: AccumulatedRewards = {
   itemDrops: [],
   totalLevelUps: 0,
   monsterLoots: [],
+  mysteryPieces: {},
 };
 
 interface RepeatBattleState {
@@ -97,6 +99,11 @@ export const useRepeatBattleStore = create<RepeatBattleState>((set, get) => ({
         newEssences[id] = (newEssences[id] ?? 0) + qty;
       }
     }
+    const newPieces = { ...acc.mysteryPieces };
+    if (rewards.mysteryPieces) {
+      const { templateId, count } = rewards.mysteryPieces;
+      newPieces[templateId] = (newPieces[templateId] ?? 0) + count;
+    }
     return {
       completedRuns: state.completedRuns + 1,
       rewards: {
@@ -111,6 +118,7 @@ export const useRepeatBattleStore = create<RepeatBattleState>((set, get) => ({
         monsterLoots: rewards.monsterLoot
           ? [...acc.monsterLoots, { templateId: rewards.monsterLoot.templateId, stars: rewards.monsterLoot.stars }]
           : acc.monsterLoots,
+        mysteryPieces: newPieces,
       },
     };
   }),
