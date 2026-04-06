@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { isActivePokemon } from '@gatchamon/shared';
 import { useGameStore } from '../stores/gameStore';
 import { useTutorialStore } from '../stores/tutorialStore';
-import { IslandScene } from '../components/island/IslandScene';
+import { CityScene } from '../components/city/CityScene';
 import { LoginCalendarModal } from '../components/LoginCalendarModal';
 import { canClaimToday } from '../services/login-calendar.service';
 import { CheatBubble } from '../components/cheat/CheatBubble';
@@ -41,7 +41,7 @@ export function HomePage() {
 
   return (
     <div className="page island-page">
-      <IslandScene
+      <CityScene
         monsters={topMonsters}
         onNavigate={navigate}
       />

@@ -7,6 +7,17 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.3.1',
+    date: '2026-04-06',
+    changes: [
+      'New home screen: scrollable illustrated city street replaces the old meadow scene',
+      'Each building in the city maps to a menu entry (Summon Lab, PokéMart, PC Center, Route Gate, etc.)',
+      'Tap a building sign to navigate — center alley leads to Story mode',
+      'Pokémon hang out on the street foreground with idle breathing animations',
+      'Atmospheric overlays: vignette and light rays',
+    ],
+  },
+  {
     version: '0.3.0',
     date: '2026-04-06',
     changes: [

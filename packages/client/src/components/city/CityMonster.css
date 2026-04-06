@@ -1,0 +1,145 @@
+.city-monster {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 6;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+}
+
+.city-monster-sprite-wrap {
+  position: relative;
+  will-change: transform;
+}
+
+.city-monster-sprite-wrap img {
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.08));
+}
+
+.city-monster-shadow {
+  height: 14px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.22) 0%, transparent 70%);
+  border-radius: 50%;
+  margin: -4px auto 0;
+}
+
+.city-monster-label {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
+  color: #e2e8f0;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 10;
+  margin-bottom: 4px;
+}
+
+.city-monster-label.visible {
+  opacity: 1;
+}
+
+/* ========================================
+   IDLE BREATHING — sprite bobs up/down subtly
+   ======================================== */
+
+.city-monster-sprite-wrap.roam-0 { animation: city-idle-1 5s ease-in-out infinite; }
+.city-monster-sprite-wrap.roam-1 { animation: city-idle-2 6.5s ease-in-out infinite; }
+.city-monster-sprite-wrap.roam-2 { animation: city-idle-3 5.5s ease-in-out infinite; }
+.city-monster-sprite-wrap.roam-3 { animation: city-idle-4 7s ease-in-out infinite; }
+.city-monster-sprite-wrap.roam-4 { animation: city-idle-5 6s ease-in-out infinite; }
+.city-monster-sprite-wrap.roam-5 { animation: city-idle-6 5.8s ease-in-out infinite; }
+
+@keyframes city-idle-1 {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50%      { transform: translateY(-2px) scaleY(1.015); }
+}
+
+@keyframes city-idle-2 {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  40%      { transform: translateY(-1.5px) scaleY(1.012); }
+  70%      { transform: translateY(-2.5px) scaleY(1.018); }
+}
+
+@keyframes city-idle-3 {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  55%      { transform: translateY(-2px) scaleY(1.014); }
+}
+
+@keyframes city-idle-4 {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  35%      { transform: translateY(-1px) scaleY(1.01); }
+  65%      { transform: translateY(-2.5px) scaleY(1.016); }
+}
+
+@keyframes city-idle-5 {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  45%      { transform: translateY(-2px) scaleY(1.013); }
+  80%      { transform: translateY(-1px) scaleY(1.008); }
+}
+
+@keyframes city-idle-6 {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  60%      { transform: translateY(-1.5px) scaleY(1.015); }
+}
+
+/* Shadow breathing */
+.city-monster-shadow.shadow-breathe-0 { animation: city-shadow-1 5s ease-in-out infinite; }
+.city-monster-shadow.shadow-breathe-1 { animation: city-shadow-2 6.5s ease-in-out infinite; }
+.city-monster-shadow.shadow-breathe-2 { animation: city-shadow-3 5.5s ease-in-out infinite; }
+.city-monster-shadow.shadow-breathe-3 { animation: city-shadow-4 7s ease-in-out infinite; }
+.city-monster-shadow.shadow-breathe-4 { animation: city-shadow-5 6s ease-in-out infinite; }
+.city-monster-shadow.shadow-breathe-5 { animation: city-shadow-6 5.8s ease-in-out infinite; }
+
+@keyframes city-shadow-1 {
+  0%, 100% { transform: scale(1, 1); opacity: 1; }
+  50%      { transform: scale(0.92, 0.85); opacity: 0.7; }
+}
+
+@keyframes city-shadow-2 {
+  0%, 100% { transform: scale(1, 1); opacity: 1; }
+  40%      { transform: scale(0.94, 0.88); opacity: 0.75; }
+  70%      { transform: scale(0.90, 0.82); opacity: 0.65; }
+}
+
+@keyframes city-shadow-3 {
+  0%, 100% { transform: scale(1, 1); opacity: 1; }
+  55%      { transform: scale(0.92, 0.85); opacity: 0.7; }
+}
+
+@keyframes city-shadow-4 {
+  0%, 100% { transform: scale(1, 1); opacity: 1; }
+  35%      { transform: scale(0.95, 0.90); opacity: 0.8; }
+  65%      { transform: scale(0.90, 0.82); opacity: 0.65; }
+}
+
+@keyframes city-shadow-5 {
+  0%, 100% { transform: scale(1, 1); opacity: 1; }
+  45%      { transform: scale(0.92, 0.85); opacity: 0.7; }
+  80%      { transform: scale(0.96, 0.92); opacity: 0.85; }
+}
+
+@keyframes city-shadow-6 {
+  0%, 100% { transform: scale(1, 1); opacity: 1; }
+  60%      { transform: scale(0.93, 0.86); opacity: 0.72; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .city-monster-sprite-wrap,
+  .city-monster-shadow {
+    animation: none;
+  }
+}
