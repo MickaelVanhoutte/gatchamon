@@ -7,6 +7,13 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.2.10',
+    date: '2026-04-06',
+    changes: [
+      'Fixed held item set filter row not scrollable on mobile',
+    ],
+  },
+  {
     version: '0.2.9',
     date: '2026-04-06',
     changes: [
