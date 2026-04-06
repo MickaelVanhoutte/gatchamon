@@ -11,7 +11,7 @@
 .lightning-flash {
   position: absolute;
   inset: 0;
-  background: rgba(99, 102, 241, 0.35);
+  background: rgba(250, 204, 21, 0.35);
   opacity: 0;
   z-index: 1;
 }
@@ -143,12 +143,12 @@
 
 /* 3-star sparkle tier */
 .tier-sparkle .lightning-spark {
-  background: #818cf8;
+  background: #facc15;
   box-shadow: 0 0 10px rgba(129, 140, 248, 0.8), 0 0 20px rgba(129, 140, 248, 0.4);
 }
 
 .tier-sparkle .lightning-shimmer-ring {
-  border-color: #818cf8;
+  border-color: #facc15;
   box-shadow:
     0 0 24px rgba(129, 140, 248, 0.6),
     0 0 48px rgba(129, 140, 248, 0.35),
@@ -231,7 +231,7 @@
     #ff6b6b,
     #ffd700,
     #51cf66,
-    #818cf8,
+    #facc15,
     #cc5de8,
     #ff6b6b
   );
@@ -258,7 +258,7 @@
     #ffd700,
     #ff6b6b 25%,
     #51cf66 50%,
-    #818cf8 75%,
+    #facc15 75%,
     transparent
   );
   border-radius: 2px;

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { assetUrl } from '../utils/asset-url';
 import { tryLockLandscape } from '../utils/orientation-lock';
 import { changelog } from '../data/changelog';
 import './LoadingScreen.css';
@@ -27,9 +26,26 @@ export function LoadingScreen({ onStart, swReady = true }: LoadingScreenProps) {
 
   return (
     <div className="loading-screen" onClick={() => { if (!canStart || changelogOpen) return; tryLockLandscape(); onStart(); }}>
-      {/* Animated particles */}
+      {/* Full-screen background image */}
+      <div className="ls-bg">
+        <img src="/splash/pikachu-4.jpg" alt="" className="ls-bg-img" />
+      </div>
+
+      {/* Dark gradient overlay */}
+      <div className="ls-overlay" />
+
+      {/* Vignette */}
+      <div className="ls-vignette" />
+
+      {/* White flash burst */}
+      <div className="ls-flash" />
+
+      {/* Light rays behind title */}
+      <div className="ls-rays" />
+
+      {/* Firefly particles */}
       <div className="ls-particles">
-        {Array.from({ length: 20 }).map((_, i) => (
+        {Array.from({ length: 15 }).map((_, i) => (
           <div key={i} className="ls-particle" style={{
             left: `${Math.random() * 100}%`,
             animationDelay: `${Math.random() * 6}s`,
@@ -38,42 +54,21 @@ export function LoadingScreen({ onStart, swReady = true }: LoadingScreenProps) {
         ))}
       </div>
 
-      {/* Radial glow behind logo */}
-      <div className="ls-glow" />
+      {/* Center title */}
+      <h1 className="ls-title">
+        <span className="ls-title-gatcha">Forge</span>
+        <span className="ls-title-mon"> : Monster Vault</span>
+      </h1>
 
-      {/* Silhouette Pokémon on left and right */}
-      <div className="ls-pokemon ls-pokemon-left">
-        <img src={assetUrl('monsters/ani/charizard.gif')} alt="" />
-      </div>
-      <div className="ls-pokemon ls-pokemon-right">
-        <img src={assetUrl('monsters/ani/mewtwo.gif')} alt="" />
-      </div>
+      {/* Top-left changelog button */}
+      {changelog[0] && (
+        <button className="ls-changelog-btn" onClick={e => { e.stopPropagation(); setChangelogOpen(true); }}>
+          {justUpdated ? `Updated to ${changelog[0].version} — ` : ''}What&apos;s New?
+        </button>
+      )}
 
-      {/* Center content */}
-      <div className="ls-center">
-        <div className="ls-logo-container">
-          <div className="ls-pokeball-icon">
-            <div className="ls-pokeball-top" />
-            <div className="ls-pokeball-band">
-              <div className="ls-pokeball-button" />
-            </div>
-            <div className="ls-pokeball-bottom" />
-          </div>
-          <h1 className="ls-title">
-            <span className="ls-title-gatcha">Forge</span>
-            <span className="ls-title-mon"> : Monster Vault</span>
-          </h1>
-          <p className="ls-subtitle">Gotta Catch &apos;Em All</p>
-        </div>
-      </div>
-
-      {/* Bottom */}
+      {/* Bottom-anchored content */}
       <div className="ls-bottom">
-        {justUpdated && changelog[0] && (
-          <button className="ls-changelog-btn" onClick={e => { e.stopPropagation(); setChangelogOpen(true); }}>
-            Updated to {changelog[0].version} — What&apos;s New?
-          </button>
-        )}
         {canStart ? (
           <p className="ls-tap-text">Touch to Start</p>
         ) : minTimeElapsed ? (

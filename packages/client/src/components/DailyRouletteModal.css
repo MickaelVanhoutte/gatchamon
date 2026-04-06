@@ -85,8 +85,8 @@
 }
 
 .roulette-cell--ultra-rare {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(251, 191, 36, 0.18));
-  border-color: rgba(245, 158, 11, 0.35);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(250, 204, 21, 0.18));
+  border-color: rgba(250, 204, 21, 0.35);
 }
 
 /* Highlight animation (cycling through cells) */
@@ -111,8 +111,8 @@
 }
 
 .roulette-cell--highlight.roulette-cell--ultra-rare {
-  border-color: #f59e0b;
-  box-shadow: 0 0 12px rgba(245, 158, 11, 0.6), inset 0 0 8px rgba(245, 158, 11, 0.2);
+  border-color: #facc15;
+  box-shadow: 0 0 12px rgba(250, 204, 21, 0.6), inset 0 0 8px rgba(255, 255, 255, 0.15);
 }
 
 /* Winner glow */
@@ -138,8 +138,8 @@
 }
 
 .roulette-cell--winner.roulette-cell--ultra-rare {
-  border-color: #f59e0b;
-  box-shadow: 0 0 20px rgba(245, 158, 11, 0.7);
+  border-color: #facc15;
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.7);
 }
 
 @keyframes roulette-winner-pulse {
@@ -179,7 +179,7 @@
 }
 
 .roulette-spin-cell--active {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, #4a5f94, #3b5080);
   border-color: rgba(255, 255, 255, 0.15);
   color: white;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
@@ -196,8 +196,8 @@
 }
 
 @keyframes roulette-btn-pulse {
-  0%, 100% { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 2px 8px rgba(99, 102, 241, 0.3); }
-  50% { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 2px 16px rgba(99, 102, 241, 0.6); }
+  0%, 100% { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 2px 8px rgba(250, 204, 21, 0.35); }
+  50% { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 2px 16px rgba(250, 204, 21, 0.6); }
 }
 
 .roulette-spin-label {
@@ -212,14 +212,14 @@
   margin-top: 10px;
   background: var(--glass-bg, rgba(30, 42, 72, 0.85));
   border-radius: 10px;
-  border: 1px solid rgba(99, 102, 241, 0.3);
+  border: 1px solid rgba(250, 204, 21, 0.35);
   width: 100%;
 }
 
 .roulette-result-text {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #818cf8;
+  color: #facc15;
   margin: 0;
   display: flex;
   align-items: center;
@@ -228,7 +228,7 @@
 }
 
 .roulette-result--ultra-rare .roulette-result-text {
-  color: #fbbf24;
+  color: #facc15;
 }
 
 .roulette-result--rare .roulette-result-text {
@@ -237,7 +237,7 @@
 
 .roulette-again-btn {
   margin-top: 8px;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, #4a5f94, #3b5080);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;

@@ -176,7 +176,7 @@ export function AdminEditorPanel({ template }: { template: PokemonTemplate }) {
                         </span>
                       )}
                       {isCustom && (
-                        <span style={{ color: '#8b5cf6', marginLeft: 4, fontSize: 10, fontWeight: 600 }}>
+                        <span style={{ color: '#d97706', marginLeft: 4, fontSize: 10, fontWeight: 600 }}>
                           custom
                         </span>
                       )}

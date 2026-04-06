@@ -171,10 +171,10 @@
 }
 
 .auto-toggle.active {
-  border-color: var(--accent, #6366f1);
-  color: #818cf8;
-  background: rgba(99, 102, 241, 0.12);
-  box-shadow: 0 0 12px rgba(99, 102, 241, 0.4), 0 0 24px rgba(99, 102, 241, 0.15);
+  border-color: var(--accent, #facc15);
+  color: #facc15;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 12px rgba(250, 204, 21, 0.4), 0 0 24px rgba(255, 255, 255, 0.12);
 }
 
 .auto-toggle:hover {
@@ -216,10 +216,10 @@
 }
 
 .float-crit {
-  color: var(--rarity-6, #fbbf24);
+  color: var(--rarity-6, #facc15);
   font-size: 1.4rem;
   -webkit-text-stroke: 2px rgba(0, 0, 0, 0.8);
-  text-shadow: 0 0 8px rgba(251, 191, 36, 0.6), 0 1px 3px #000, 0 0 12px rgba(251, 191, 36, 0.4);
+  text-shadow: 0 0 8px rgba(250, 204, 21, 0.6), 0 1px 3px #000, 0 0 12px rgba(250, 204, 21, 0.4);
 }
 
 .float-super {
@@ -252,7 +252,7 @@
 }
 
 .float-endure {
-  color: #f59e0b;
+  color: #facc15;
   font-size: 0.85rem;
   text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
 }
@@ -414,7 +414,7 @@
 }
 
 .active-mon .battle-sprite {
-  filter: drop-shadow(0 0 8px var(--rarity-6, #fbbf24));
+  filter: drop-shadow(0 0 8px var(--rarity-6, #facc15));
 }
 
 @keyframes target-pulse {
@@ -499,9 +499,9 @@
 .mon-atb-bar {
   height: 100%;
   border-radius: 2px;
-  background: linear-gradient(90deg, var(--accent, #6366f1), #818cf8);
+  background: linear-gradient(90deg, var(--accent, #facc15), #facc15);
   transition: width 0.3s ease;
-  box-shadow: 0 0 4px rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 4px rgba(250, 204, 21, 0.5);
 }
 
 .mon-hp-text {
@@ -597,7 +597,7 @@
   left: -3px;
   font-size: 0.4rem;
   font-weight: 700;
-  color: var(--rarity-6, #fbbf24);
+  color: var(--rarity-6, #facc15);
   background: rgba(0, 0, 0, 0.8);
   border-radius: 3px;
   min-width: 8px;
@@ -662,20 +662,20 @@
   justify-content: center;
   gap: 2px;
   padding: 4px;
-  background: linear-gradient(135deg, var(--accent, #6366f1), #8b5cf6);
+  background: linear-gradient(135deg, var(--accent, #facc15), #facc15);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 10px;
   color: #ffffff;
   cursor: pointer;
   position: relative;
   transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(250, 204, 21, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .skill-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #818cf8, #a78bfa);
+  background: linear-gradient(135deg, #4a5f94, #3b5080);
   transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(250, 204, 21, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .skill-btn:active:not(:disabled) {
@@ -706,20 +706,20 @@
   width: 20px;
   height: 20px;
   background: var(--bg-card, #2a3560);
-  border: 1px solid rgba(99, 102, 241, 0.4);
+  border: 1px solid rgba(250, 204, 21, 0.4);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.65rem;
   font-weight: 700;
-  color: #818cf8;
+  color: #facc15;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
   animation: cd-pulse 1.5s ease-in-out infinite;
 }
 
 @keyframes cd-pulse {
-  0%, 100% { transform: scale(1); color: #818cf8; }
+  0%, 100% { transform: scale(1); color: #facc15; }
   50% { transform: scale(1.1); color: #c7d2fe; }
 }
 
@@ -748,7 +748,7 @@
   right: -6px;
   width: 18px;
   height: 18px;
-  background: rgba(139, 92, 246, 0.85);
+  background: rgba(234, 179, 8, 0.85);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -849,7 +849,7 @@
 }
 
 .target-hint {
-  color: var(--rarity-6, #fbbf24);
+  color: var(--rarity-6, #facc15);
   font-size: 0.8rem;
   font-weight: 600;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
@@ -952,11 +952,11 @@
 
 /* Victory — gold gradient title */
 .overlay-content h2.victory {
-  background: linear-gradient(135deg, #f59e0b, #fbbf24, #fcd34d, #fbbf24, #f59e0b);
+  background: linear-gradient(135deg, #facc15, #facc15, #fde047, #facc15, #facc15);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 2px 6px rgba(245, 158, 11, 0.5));
+  filter: drop-shadow(0 2px 6px rgba(250, 204, 21, 0.5));
   text-shadow: none;
 }
 
@@ -983,7 +983,7 @@
 }
 
 .level-ups {
-  color: var(--rarity-6, #fbbf24);
+  color: var(--rarity-6, #facc15);
   font-weight: 600;
 }
 
@@ -1002,14 +1002,14 @@
 
 .essence-item {
   font-size: 0.85rem;
-  color: #a78bfa;
+  color: #facc15;
 }
 
 .first-clear-banner {
-  color: var(--rarity-6, #fbbf24);
+  color: var(--rarity-6, #facc15);
   font-weight: 700;
   font-size: 1.1rem;
-  text-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+  text-shadow: 0 0 8px rgba(250, 204, 21, 0.4);
 }
 
 .monster-loot-reward {
@@ -1047,14 +1047,14 @@
 }
 
 .loot-stars {
-  color: var(--rarity-6, #fbbf24);
+  color: var(--rarity-6, #facc15);
   font-size: 0.85rem;
 }
 
 /* ── Return button — game-btn pattern ─────────────────────────────── */
 .return-btn {
   padding: 12px 48px;
-  background: linear-gradient(135deg, var(--accent, #6366f1), #8b5cf6);
+  background: linear-gradient(135deg, var(--accent, #facc15), #facc15);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 10px;
@@ -1062,13 +1062,13 @@
   font-weight: 600;
   cursor: pointer;
   margin-top: 8px;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(250, 204, 21, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
   transition: all 0.2s;
 }
 
 .return-btn:hover {
-  background: linear-gradient(135deg, #818cf8, #a78bfa);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  box-shadow: 0 4px 12px rgba(250, 204, 21, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .return-btn:active {
@@ -1192,7 +1192,7 @@
 /* ── Sleep: floating Z-z-z text ───────────────────────────────────── */
 .status-sleep > span {
   position: absolute;
-  color: #818cf8;
+  color: #facc15;
   font-weight: 700;
   text-shadow: 0 0 4px rgba(129, 140, 248, 0.6);
   animation: sleep-float 2s ease-in-out infinite;
@@ -1237,12 +1237,12 @@
 
 /* ── Immunity: golden glow/aura ───────────────────────────────────── */
 .status-immunity {
-  box-shadow: 0 0 10px rgba(251, 191, 36, 0.5), inset 0 0 10px rgba(251, 191, 36, 0.15);
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.12);
   animation: immunity-glow 1.8s ease-in-out infinite;
 }
 @keyframes immunity-glow {
-  0%, 100% { box-shadow: 0 0 8px rgba(251, 191, 36, 0.4), inset 0 0 8px rgba(251, 191, 36, 0.1); }
-  50% { box-shadow: 0 0 16px rgba(251, 191, 36, 0.7), inset 0 0 14px rgba(251, 191, 36, 0.2); }
+  0%, 100% { box-shadow: 0 0 8px rgba(250, 204, 21, 0.4), inset 0 0 8px rgba(255, 255, 255, 0.08); }
+  50% { box-shadow: 0 0 16px rgba(250, 204, 21, 0.7), inset 0 0 14px rgba(255, 255, 255, 0.15); }
 }
 
 /* ── Invincibility: white glowing outline ─────────────────────────── */
@@ -1280,12 +1280,12 @@
 
 /* ── Endure: orange pulsing border ────────────────────────────────── */
 .status-endure {
-  border: 2px solid rgba(217, 119, 6, 0.6);
+  border: 2px solid rgba(234, 179, 8, 0.6);
   animation: endure-pulse 1.5s ease-in-out infinite;
 }
 @keyframes endure-pulse {
-  0%, 100% { border-color: rgba(217, 119, 6, 0.4); }
-  50% { border-color: rgba(217, 119, 6, 0.9); box-shadow: inset 0 0 10px rgba(217, 119, 6, 0.2); }
+  0%, 100% { border-color: rgba(234, 179, 8, 0.4); }
+  50% { border-color: rgba(234, 179, 8, 0.9); box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.15); }
 }
 
 /* ── Reflect: purple shimmer ──────────────────────────────────────── */

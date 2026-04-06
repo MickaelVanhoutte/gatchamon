@@ -37,8 +37,8 @@
   transform: scale(1.04);
   box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.5),
-    0 0 16px color-mix(in srgb, var(--rarity-color, #6366f1) 50%, transparent);
-  border-color: var(--rarity-color, rgba(99, 102, 241, 0.5));
+    0 0 16px color-mix(in srgb, var(--rarity-color, #facc15) 50%, transparent);
+  border-color: var(--rarity-color, rgba(250, 204, 21, 0.5));
 }
 
 /* 4★+ enhanced glow */
@@ -53,8 +53,8 @@
 .monster-card.high-rarity:hover {
   box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.5),
-    0 0 20px color-mix(in srgb, var(--rarity-color, #6366f1) 65%, transparent),
-    0 0 40px color-mix(in srgb, var(--rarity-color, #6366f1) 25%, transparent);
+    0 0 20px color-mix(in srgb, var(--rarity-color, #facc15) 65%, transparent),
+    0 0 40px color-mix(in srgb, var(--rarity-color, #facc15) 25%, transparent);
 }
 
 /* Animated border shimmer for 4★+ */
@@ -91,10 +91,10 @@
 
 /* Selected state — indigo accent ring */
 .monster-card.selected {
-  border-color: #6366f1;
+  border-color: #facc15;
   box-shadow:
-    0 0 0 3px rgba(99, 102, 241, 0.5),
-    0 0 16px rgba(99, 102, 241, 0.4),
+    0 0 0 3px rgba(250, 204, 21, 0.5),
+    0 0 16px rgba(250, 204, 21, 0.4),
     0 4px 16px rgba(0, 0, 0, 0.4);
   animation: card-selected-pulse 1.5s ease-in-out infinite;
 }
@@ -102,14 +102,14 @@
 @keyframes card-selected-pulse {
   0%, 100% {
     box-shadow:
-      0 0 0 3px rgba(99, 102, 241, 0.5),
-      0 0 12px rgba(99, 102, 241, 0.3),
+      0 0 0 3px rgba(250, 204, 21, 0.5),
+      0 0 12px rgba(250, 204, 21, 0.35),
       0 4px 16px rgba(0, 0, 0, 0.4);
   }
   50% {
     box-shadow:
-      0 0 0 3px rgba(99, 102, 241, 0.7),
-      0 0 20px rgba(99, 102, 241, 0.5),
+      0 0 0 3px rgba(250, 204, 21, 0.7),
+      0 0 20px rgba(250, 204, 21, 0.5),
       0 4px 16px rgba(0, 0, 0, 0.4);
   }
 }

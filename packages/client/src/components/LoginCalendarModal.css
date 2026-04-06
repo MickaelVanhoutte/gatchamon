@@ -85,14 +85,14 @@
   position: absolute;
   inset: 0;
   border-radius: 8px;
-  background: rgba(99, 102, 241, 0.15);
+  background: rgba(255, 255, 255, 0.12);
   pointer-events: none;
 }
 
 .lcm-cell--today {
-  border-color: #f59e0b;
-  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
-  background: rgba(245, 158, 11, 0.1);
+  border-color: #facc15;
+  box-shadow: 0 0 8px rgba(250, 204, 21, 0.4);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .lcm-cell--today-unclaimed {
@@ -100,8 +100,8 @@
 }
 
 @keyframes lcm-pulse {
-  0%, 100% { box-shadow: 0 0 8px rgba(245, 158, 11, 0.4); }
-  50% { box-shadow: 0 0 16px rgba(245, 158, 11, 0.7); }
+  0%, 100% { box-shadow: 0 0 8px rgba(250, 204, 21, 0.4); }
+  50% { box-shadow: 0 0 16px rgba(250, 204, 21, 0.7); }
 }
 
 .lcm-cell--future {
@@ -116,7 +116,7 @@
 }
 
 .lcm-cell--today .lcm-day-number {
-  color: #f59e0b;
+  color: #facc15;
 }
 
 .lcm-reward-icon {
@@ -139,7 +139,7 @@
   position: absolute;
   top: 1px;
   right: 2px;
-  color: #6366f1;
+  color: #facc15;
 }
 
 /* Claim banner */
@@ -147,14 +147,14 @@
   margin-top: 12px;
   text-align: center;
   padding: 8px;
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  border: 1px solid rgba(99, 102, 241, 0.3);
+  border: 1px solid rgba(250, 204, 21, 0.35);
 }
 
 .lcm-banner-text {
   font-size: 0.75rem;
-  color: #818cf8;
+  color: #facc15;
   font-weight: 600;
   margin: 0;
 }

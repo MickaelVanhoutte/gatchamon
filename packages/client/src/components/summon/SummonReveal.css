@@ -31,7 +31,7 @@
   max-width: 120px;
   max-height: 120px;
   object-fit: contain;
-  filter: drop-shadow(0 0 16px rgba(99, 102, 241, 0.5))
+  filter: drop-shadow(0 0 16px rgba(250, 204, 21, 0.5))
     drop-shadow(0 0 6px rgba(226, 232, 240, 0.3));
 }
 
@@ -40,7 +40,7 @@
   filter:
     drop-shadow(0 0 16px rgba(255, 215, 0, 0.7))
     drop-shadow(0 0 32px rgba(255, 215, 0, 0.4))
-    drop-shadow(0 0 4px rgba(251, 191, 36, 0.5));
+    drop-shadow(0 0 4px rgba(250, 204, 21, 0.5));
 }
 
 /* Silhouette class removed -- GSAP manages the filter transition on the img directly */
@@ -56,9 +56,9 @@
   position: absolute;
   width: 6px;
   height: 6px;
-  background: #fbbf24;
+  background: #facc15;
   border-radius: 50%;
-  box-shadow: 0 0 10px #fbbf24, 0 0 5px rgba(226, 232, 240, 0.6);
+  box-shadow: 0 0 10px #facc15, 0 0 5px rgba(226, 232, 240, 0.6);
   top: 50%;
   left: 50%;
   transform: rotate(var(--sparkle-angle)) translateY(-50px);
@@ -81,20 +81,20 @@
   position: absolute;
   top: -8px;
   right: -20px;
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  background: linear-gradient(135deg, #4a5f94, #3b5080);
   color: #1a2342;
   font-size: 0.6rem;
   font-weight: 800;
   padding: 2px 6px;
   border-radius: 4px;
   letter-spacing: 1px;
-  box-shadow: 0 0 10px rgba(251, 191, 36, 0.6);
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.6);
   animation: badge-glow 1.5s ease-in-out infinite;
 }
 
 @keyframes badge-glow {
-  0%, 100% { box-shadow: 0 0 10px rgba(251, 191, 36, 0.6); }
-  50% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.9); }
+  0%, 100% { box-shadow: 0 0 10px rgba(250, 204, 21, 0.6); }
+  50% { box-shadow: 0 0 20px rgba(250, 204, 21, 0.9); }
 }
 
 /* Stars */
@@ -115,12 +115,12 @@
   font-size: 1.3rem;
   font-weight: 700;
   color: #e2e8f0;
-  text-shadow: 0 2px 12px rgba(99, 102, 241, 0.4), 0 2px 8px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 2px 12px rgba(250, 204, 21, 0.4), 0 2px 8px rgba(0, 0, 0, 0.6);
   opacity: 0;
 }
 
 .reveal-shiny-icon {
-  color: #fbbf24;
+  color: #facc15;
   margin-left: 6px;
   font-size: 1rem;
 }

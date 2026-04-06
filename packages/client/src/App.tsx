@@ -17,6 +17,7 @@ import { AltarPage } from './pages/AltarPage';
 import { InboxPage } from './pages/InboxPage';
 import { RetrySummonPage } from './pages/RetrySummonPage';
 import { ItemInventoryPage } from './pages/ItemInventoryPage';
+import { HeldItemManagePage } from './pages/HeldItemManagePage';
 import { ShopPage } from './pages/ShopPage';
 import { BottomNav } from './components/layout/BottomNav';
 import { TopHUD } from './components/layout/TopHUD';
@@ -112,6 +113,7 @@ export function App() {
           <Route path="/altar" element={<AltarPage />} />
           <Route path="/inbox" element={<InboxPage />} />
           <Route path="/inventory" element={<ItemInventoryPage />} />
+          <Route path="/items/:pokemonInstanceId" element={<HeldItemManagePage />} />
           <Route path="/retry-summon" element={<RetrySummonPage />} />
           <Route path="/battle/team-select" element={<TeamSelectPage />} />
           <Route path="/battle/:battleId" element={<BattlePage />} />

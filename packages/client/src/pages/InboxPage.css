@@ -70,7 +70,7 @@
 }
 
 .inbox-card:hover {
-  box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.12);
 }
 
 .inbox-card.claimed {
@@ -79,7 +79,7 @@
 }
 
 .inbox-card.unread {
-  background: rgba(99, 102, 241, 0.06);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .inbox-card-icon {
@@ -131,7 +131,7 @@
   gap: 8px;
   margin-top: 4px;
   font-size: 0.7rem;
-  color: #fbbf24;
+  color: #facc15;
 }
 
 .inbox-card-rewards span {
@@ -161,10 +161,10 @@
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, #4a5f94, #3b5080);
   color: white;
   transition: all 0.15s;
-  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 2px 6px rgba(250, 204, 21, 0.35);
 }
 
 .inbox-claim-btn:hover {

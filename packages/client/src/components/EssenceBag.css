@@ -54,7 +54,7 @@
 }
 
 .essence-row-header:active {
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .essence-row-icon {
@@ -100,13 +100,13 @@
 }
 
 .essence-tier-badge--mid {
-  background: rgba(99, 102, 241, 0.15);
-  color: #818cf8;
+  background: rgba(255, 255, 255, 0.12);
+  color: #facc15;
 }
 
 .essence-tier-badge--high {
-  background: rgba(251, 191, 36, 0.15);
-  color: #fbbf24;
+  background: rgba(255, 255, 255, 0.12);
+  color: #facc15;
 }
 
 .essence-row-chevron {
@@ -147,9 +147,9 @@
 }
 
 .essence-merge-tier-btn.active {
-  border-color: var(--accent, #6366f1);
-  background: rgba(99, 102, 241, 0.15);
-  color: #818cf8;
+  border-color: var(--accent, #facc15);
+  background: rgba(255, 255, 255, 0.12);
+  color: #facc15;
 }
 
 .essence-merge-tier-btn:disabled {
@@ -180,9 +180,9 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  border: 1px solid var(--accent, #6366f1);
-  background: rgba(99, 102, 241, 0.1);
-  color: #818cf8;
+  border: 1px solid var(--accent, #facc15);
+  background: rgba(255, 255, 255, 0.08);
+  color: #facc15;
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
@@ -198,7 +198,7 @@
 }
 
 .essence-merge-qty-btn:not(:disabled):active {
-  background: rgba(99, 102, 241, 0.25);
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .essence-merge-qty-value {
@@ -228,7 +228,7 @@
 }
 
 .essence-merge-arrow {
-  color: var(--accent, #6366f1);
+  color: var(--accent, #facc15);
   font-weight: 700;
 }
 
@@ -237,7 +237,7 @@
   padding: 6px 12px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 6px;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, #4a5f94, #3b5080);
   color: white;
   font-size: 0.75rem;
   font-weight: 600;

@@ -7,10 +7,32 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.2.12',
+    date: '2026-04-06',
+    changes: [
+      'Unified held item management into one full-screen page (equip, upgrade, sell all in one place)',
+      'Tapping any item slot now navigates to dedicated manage page instead of tiny modal',
+      'Made back button more visible on item manage page',
+      'Removed redundant held item modals for cleaner UX',
+    ],
+  },
+  {
+    version: '0.2.11',
+    date: '2026-04-06',
+    changes: [
+      'Fixed static sprites for mega & alternate forms (Starmie-Mega, Clefable-Mega, etc.)',
+      'Held item panel now scrollable in collection detail view',
+      'Added Upgrade button in held item selection for equipped items',
+      'Enlarged pokeball type selector buttons on summon screen',
+      'Changelog button always visible on loading screen',
+    ],
+  },
+  {
     version: '0.2.10',
     date: '2026-04-06',
     changes: [
       'Fixed held item set filter row not scrollable on mobile',
+      'Fixed upgrade button unreachable for equipped held items — tap an equipped slot to upgrade, tap an empty slot to equip',
     ],
   },
   {

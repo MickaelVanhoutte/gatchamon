@@ -222,7 +222,6 @@ export function DungeonPage() {
             className="dungeon-enter-btn"
             onClick={handleEnter}
             disabled={!player || player.energy < selectedDungeon.energyCost}
-            style={{ background: selectedDungeon.color }}
           >
             Go ({selectedDungeon.energyCost} <GameIcon id="energy" size={14} />)
           </button>

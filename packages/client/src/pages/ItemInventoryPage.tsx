@@ -4,7 +4,6 @@ import type { HeldItemInstance, HeldItemSlot } from '@gatchamon/shared';
 import { ITEM_SETS, MAX_HELD_ITEMS, GRADE_COLORS, getItemSellValue } from '@gatchamon/shared';
 import { useGameStore } from '../stores/gameStore';
 import { HeldItemCard } from '../components/held-item/HeldItemCard';
-import { HeldItemUpgradeModal } from './HeldItemUpgradeModal';
 import { GameIcon } from '../components/icons';
 import './ItemInventoryPage.css';
 
@@ -41,8 +40,6 @@ export function ItemInventoryPage() {
   const [sellMode, setSellMode] = useState(false);
   const [sellSelection, setSellSelection] = useState<Set<string>>(new Set());
   const [confirmBulkSell, setConfirmBulkSell] = useState(false);
-  const [upgradeItemId, setUpgradeItemId] = useState<string | null>(null);
-
   useEffect(() => {
     loadHeldItems();
     loadCollection();
@@ -85,8 +82,6 @@ export function ItemInventoryPage() {
     return groups;
   }, [filteredItems]);
 
-  const upgradeItem = upgradeItemId ? heldItems.find(i => i.itemId === upgradeItemId) : null;
-
   function getEquippedPokemonName(item: HeldItemInstance): string | null {
     if (!item.equippedTo) return null;
     return pokemonNameMap.get(item.equippedTo) ?? null;
@@ -100,8 +95,9 @@ export function ItemInventoryPage() {
       else next.add(item.itemId);
       setSellSelection(next);
       setConfirmBulkSell(false);
-    } else {
-      setUpgradeItemId(item.itemId);
+    } else if (item.equippedTo) {
+      // Navigate to the manage page for the pokemon that has this item equipped
+      navigate(`/items/${item.equippedTo}?slot=${item.slot}`);
     }
   }
 
@@ -270,15 +266,6 @@ export function ItemInventoryPage() {
         </div>
       )}
 
-      {/* Upgrade modal */}
-      {upgradeItem && (
-        <HeldItemUpgradeModal
-          item={upgradeItem}
-          playerPokedollars={player?.pokedollars ?? 0}
-          onClose={() => setUpgradeItemId(null)}
-          hideChangeItem
-        />
-      )}
     </div>
   );
 }

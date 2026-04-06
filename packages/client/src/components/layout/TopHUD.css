@@ -42,11 +42,11 @@
   font-size: 0.55rem;
   font-weight: 900;
   color: #1a1a2e;
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  background: linear-gradient(135deg, #4a5f94, #3b5080);
   padding: 0 5px;
   border-radius: 4px;
   box-shadow:
-    0 1px 4px rgba(251, 191, 36, 0.4),
+    0 1px 4px rgba(250, 204, 21, 0.4),
     0 2px 8px rgba(0, 0, 0, 0.3);
   text-shadow: none;
   letter-spacing: -0.02em;
@@ -60,7 +60,7 @@
   font-size: 0.8rem;
   color: #ffffff;
   text-shadow:
-    0 0 8px rgba(99, 102, 241, 0.4),
+    0 0 8px rgba(250, 204, 21, 0.4),
     0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
@@ -77,12 +77,12 @@
 
 .hud-xp-fill {
   height: 100%;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  background: linear-gradient(90deg, #4a5f94, #3b5080);
   border-radius: 2px;
   transition: width 0.3s ease;
   box-shadow:
-    0 0 6px rgba(99, 102, 241, 0.5),
-    0 0 12px rgba(139, 92, 246, 0.3);
+    0 0 6px rgba(250, 204, 21, 0.5),
+    0 0 12px rgba(234, 179, 8, 0.3);
   position: relative;
 }
 
@@ -93,7 +93,7 @@
   top: -2px;
   width: 5px;
   height: 7px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(139, 92, 246, 0.6) 40%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(234, 179, 8, 0.6) 40%, transparent 70%);
   border-radius: 50%;
   animation: xp-sparkle 1.2s ease-in-out infinite;
   pointer-events: none;
@@ -135,13 +135,13 @@
 
 /* Resource type colored left-borders */
 .hud-resource--energy {
-  border-left-color: #fbbf24;
+  border-left-color: #facc15;
 }
 .hud-resource--pokedollar {
-  border-left-color: #fbbf24;
+  border-left-color: #facc15;
 }
 .hud-resource--stardust {
-  border-left-color: #a78bfa;
+  border-left-color: #facc15;
 }
 .hud-resource--pokeball {
   border-left-color: #ef4444;
@@ -161,7 +161,7 @@
 }
 
 .hud-energy-icon {
-  color: #fbbf24;
+  color: #facc15;
 }
 
 .hud-pokedollar-icon {
@@ -184,7 +184,7 @@
   background: rgba(230, 126, 0, 0.2);
   border: 1.5px solid rgba(230, 126, 0, 0.5);
   border-radius: 50%;
-  color: #fbbf24;
+  color: #facc15;
   cursor: pointer;
   animation: hud-update-pulse 2s ease-in-out infinite;
 }
@@ -257,26 +257,26 @@
   justify-content: center;
   width: 26px;
   height: 26px;
-  background: rgba(99, 102, 241, 0.15);
-  border: 1px solid rgba(99, 102, 241, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 50%;
-  color: #a78bfa;
+  color: #facc15;
   cursor: pointer;
   transition: background 0.15s, box-shadow 0.15s;
 }
 
 .hud-roulette-btn:hover {
-  background: rgba(99, 102, 241, 0.25);
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .hud-roulette-btn--available {
-  border-color: rgba(99, 102, 241, 0.5);
+  border-color: rgba(250, 204, 21, 0.5);
   animation: hud-roulette-glow 2s ease-in-out infinite;
 }
 
 @keyframes hud-roulette-glow {
-  0%, 100% { box-shadow: 0 0 4px rgba(99, 102, 241, 0.2); }
-  50% { box-shadow: 0 0 10px rgba(99, 102, 241, 0.5), 0 0 16px rgba(139, 92, 246, 0.3); }
+  0%, 100% { box-shadow: 0 0 4px rgba(255, 255, 255, 0.15); }
+  50% { box-shadow: 0 0 10px rgba(250, 204, 21, 0.5), 0 0 16px rgba(234, 179, 8, 0.3); }
 }
 
 /* ── Beginner Bonus Badge with animated glow ring ────────── */
@@ -289,7 +289,7 @@
   display: flex;
   align-items: center;
   gap: 3px;
-  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  background: linear-gradient(135deg, #4a5f94, #3b5080);
   color: #fff;
   font-size: 0.55rem;
   font-weight: 700;
@@ -311,7 +311,7 @@
   inset: -3px;
   border-radius: 11px;
   background: transparent;
-  border: 2px solid rgba(245, 158, 11, 0.5);
+  border: 2px solid rgba(250, 204, 21, 0.5);
   z-index: -1;
   animation: beginner-glow-ring 2s ease-in-out infinite;
   pointer-events: none;
@@ -319,12 +319,12 @@
 
 @keyframes beginner-glow-ring {
   0%, 100% {
-    border-color: rgba(245, 158, 11, 0.3);
-    box-shadow: 0 0 4px rgba(245, 158, 11, 0.2);
+    border-color: rgba(250, 204, 21, 0.35);
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.15);
   }
   50% {
-    border-color: rgba(245, 158, 11, 0.7);
-    box-shadow: 0 0 12px rgba(245, 158, 11, 0.5), 0 0 20px rgba(239, 68, 68, 0.2);
+    border-color: rgba(250, 204, 21, 0.7);
+    box-shadow: 0 0 12px rgba(250, 204, 21, 0.5), 0 0 20px rgba(239, 68, 68, 0.2);
   }
 }
 
@@ -334,7 +334,7 @@
   position: absolute;
   inset: 0;
   border-radius: 8px;
-  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  background: linear-gradient(135deg, #4a5f94, #3b5080);
   z-index: -1;
 }
 
@@ -365,7 +365,7 @@
   background: rgba(30, 42, 72, 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 12px;
   padding: 12px 14px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
@@ -380,7 +380,7 @@
 .hud-beginner-tooltip-title {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #fbbf24;
+  color: #facc15;
   margin-bottom: 2px;
 }
 

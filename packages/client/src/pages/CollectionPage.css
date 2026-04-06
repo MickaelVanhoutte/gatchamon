@@ -50,10 +50,10 @@
 
 .pdex-nav-btn {
   padding: 4px 10px;
-  background: rgba(99, 102, 241, 0.12);
-  border: 1px solid rgba(99, 102, 241, 0.25);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 6px;
-  color: #6366f1;
+  color: #facc15;
   font-size: 0.7rem;
   font-weight: 700;
   cursor: pointer;
@@ -61,7 +61,7 @@
 }
 
 .pdex-nav-btn:hover {
-  background: rgba(99, 102, 241, 0.25);
+  background: rgba(255, 255, 255, 0.18);
 }
 
 /* Main split layout */
@@ -119,17 +119,17 @@
 }
 
 .box-cell:hover {
-  border-color: #6366f1;
+  border-color: #facc15;
   box-shadow:
     inset 0 0 0 1px rgba(0, 0, 0, 0.5),
-    inset 0 0 0 2px rgba(99, 102, 241, 0.5),
-    inset 0 0 14px rgba(99, 102, 241, 0.15),
-    0 0 6px rgba(99, 102, 241, 0.3);
+    inset 0 0 0 2px rgba(250, 204, 21, 0.5),
+    inset 0 0 14px rgba(255, 255, 255, 0.12),
+    0 0 6px rgba(250, 204, 21, 0.35);
 }
 
 /* ========== Selected cell — animated glow ring ========== */
 .box-cell--selected {
-  border-color: #6366f1;
+  border-color: #facc15;
   animation: selected-pulse 1.5s ease-in-out infinite;
 }
 
@@ -137,18 +137,18 @@
   0%, 100% {
     box-shadow:
       inset 0 0 0 1px rgba(0, 0, 0, 0.5),
-      inset 0 0 0 2px rgba(99, 102, 241, 0.6),
-      inset 0 0 14px rgba(99, 102, 241, 0.15),
-      0 0 8px rgba(99, 102, 241, 0.5),
-      0 0 16px rgba(99, 102, 241, 0.25);
+      inset 0 0 0 2px rgba(250, 204, 21, 0.6),
+      inset 0 0 14px rgba(255, 255, 255, 0.12),
+      0 0 8px rgba(250, 204, 21, 0.5),
+      0 0 16px rgba(255, 255, 255, 0.18);
   }
   50% {
     box-shadow:
       inset 0 0 0 1px rgba(0, 0, 0, 0.5),
-      inset 0 0 0 2px rgba(99, 102, 241, 0.9),
-      inset 0 0 18px rgba(99, 102, 241, 0.25),
-      0 0 14px rgba(99, 102, 241, 0.7),
-      0 0 28px rgba(99, 102, 241, 0.4);
+      inset 0 0 0 2px rgba(250, 204, 21, 0.9),
+      inset 0 0 18px rgba(255, 255, 255, 0.18),
+      0 0 14px rgba(250, 204, 21, 0.7),
+      0 0 28px rgba(250, 204, 21, 0.4);
   }
 }
 
@@ -248,9 +248,9 @@
 }
 
 .box-tab--active {
-  background: rgba(99, 102, 241, 0.12);
+  background: rgba(255, 255, 255, 0.1);
   border-color: transparent;
-  color: #818cf8;
+  color: #facc15;
   font-weight: 700;
 }
 
@@ -262,9 +262,9 @@
   top: 15%;
   bottom: 15%;
   width: 3px;
-  background: linear-gradient(180deg, #818cf8, #6366f1);
+  background: linear-gradient(180deg, #4a5f94, #3b5080);
   border-radius: 3px 0 0 3px;
-  box-shadow: 0 0 8px rgba(99, 102, 241, 0.6);
+  box-shadow: 0 0 8px rgba(250, 204, 21, 0.6);
   animation: tab-indicator-in 0.25s ease-out;
 }
 
@@ -296,7 +296,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #6366f1, #a78bfa, #818cf8, #6366f1);
+  background: linear-gradient(90deg, #facc15, #facc15, #facc15, #facc15);
   background-size: 200% 100%;
   animation: accent-shimmer 3s linear infinite;
   flex-shrink: 0;
@@ -358,7 +358,7 @@
 
 .box-detail-exp-fill {
   height: 100%;
-  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  background: linear-gradient(90deg, #4a5f94, #3b5080);
   border-radius: 6px;
   transition: width 0.3s;
 }
@@ -448,8 +448,8 @@
 
 .box-sort-select:focus,
 .box-type-select:focus {
-  border-color: rgba(99, 102, 241, 0.5);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+  border-color: rgba(250, 204, 21, 0.5);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12);
   outline: none;
 }
 
@@ -503,8 +503,8 @@
 .skill-card-index {
   font-size: 0.6rem;
   font-weight: 800;
-  color: #6366f1;
-  background: rgba(99, 102, 241, 0.15);
+  color: #facc15;
+  background: rgba(255, 255, 255, 0.12);
   padding: 2px 5px;
   border-radius: 4px;
   flex-shrink: 0;
@@ -520,7 +520,7 @@
 .skill-card-level {
   font-size: 0.6rem;
   font-weight: 700;
-  color: #6366f1;
+  color: #facc15;
   flex-shrink: 0;
 }
 
@@ -620,8 +620,8 @@
 }
 
 .skill-effect--stun {
-  background: rgba(251, 191, 36, 0.2);
-  color: #fbbf24;
+  background: rgba(255, 255, 255, 0.15);
+  color: #facc15;
 }
 
 .skill-effect-detail {
@@ -634,7 +634,7 @@
   flex: 1;
   height: 12px;
   line-height: 12px;
-  background: linear-gradient(90deg, #f59e0b, #ef4444);
+  background: linear-gradient(90deg, #4a5f94, #3b5080);
   border-radius: 6px;
   text-align: center;
   font-size: 0.55rem;
@@ -647,7 +647,7 @@
 .box-powerup-btn {
   width: 100%;
   padding: 10px 8px;
-  background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 40%, #d97706 100%);
+  background: linear-gradient(180deg, #facc15 0%, #facc15 40%, #facc15 100%);
   border: none;
   border-radius: 8px;
   color: #2a3560;
@@ -671,15 +671,15 @@
       inset 0 1px 0 rgba(255, 255, 255, 0.35),
       inset 0 -2px 0 rgba(0, 0, 0, 0.2),
       0 2px 4px rgba(0, 0, 0, 0.4),
-      0 0 10px rgba(251, 191, 36, 0.3);
+      0 0 10px rgba(250, 204, 21, 0.35);
   }
   50% {
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.35),
       inset 0 -2px 0 rgba(0, 0, 0, 0.2),
       0 2px 4px rgba(0, 0, 0, 0.4),
-      0 0 20px rgba(251, 191, 36, 0.6),
-      0 0 30px rgba(245, 158, 11, 0.2);
+      0 0 20px rgba(250, 204, 21, 0.6),
+      0 0 30px rgba(255, 255, 255, 0.15);
   }
 }
 
@@ -698,23 +698,23 @@
 .box-max-stars-badge {
   text-align: center;
   padding: 6px;
-  background: rgba(99, 102, 241, 0.12);
-  border: 1px solid rgba(99, 102, 241, 0.25);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 8px;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #6366f1;
+  color: #facc15;
 }
 
 /* ========== Merge mode grid ========== */
 .box-cell--merge-mode {
   cursor: pointer;
-  border-color: rgba(245, 158, 11, 0.4);
+  border-color: rgba(250, 204, 21, 0.4);
 }
 
 .box-cell--merge-mode:hover {
-  border-color: #f59e0b;
-  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+  border-color: #facc15;
+  box-shadow: 0 0 8px rgba(250, 204, 21, 0.4);
 }
 
 .box-cell--fodder {
@@ -805,7 +805,7 @@
   font-size: 0.75rem;
   font-weight: 800;
   cursor: pointer;
-  background: linear-gradient(180deg, #818cf8 0%, #6366f1 40%, #4f46e5 100%);
+  background: linear-gradient(180deg, #facc15 0%, #facc15 40%, #facc15 100%);
   color: white;
   transition: transform 0.1s;
   box-shadow:
@@ -824,15 +824,15 @@
       inset 0 1px 0 rgba(255, 255, 255, 0.3),
       inset 0 -2px 0 rgba(0, 0, 0, 0.2),
       0 2px 4px rgba(0, 0, 0, 0.4),
-      0 0 8px rgba(99, 102, 241, 0.3);
+      0 0 8px rgba(250, 204, 21, 0.35);
   }
   50% {
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.3),
       inset 0 -2px 0 rgba(0, 0, 0, 0.2),
       0 2px 4px rgba(0, 0, 0, 0.4),
-      0 0 18px rgba(99, 102, 241, 0.5),
-      0 0 28px rgba(99, 102, 241, 0.15);
+      0 0 18px rgba(250, 204, 21, 0.5),
+      0 0 28px rgba(255, 255, 255, 0.12);
   }
 }
 
@@ -927,7 +927,7 @@
 }
 
 .merge-confirm {
-  background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 40%, #d97706 100%);
+  background: linear-gradient(180deg, #facc15 0%, #facc15 40%, #facc15 100%);
   color: #2a3560;
   font-weight: 800;
   box-shadow:
@@ -1016,7 +1016,7 @@
 }
 
 .box-switch input:checked + .box-switch-slider {
-  background: #6366f1;
+  background: #facc15;
 }
 
 .box-switch input:checked + .box-switch-slider::before {
@@ -1025,17 +1025,9 @@
 
 /* ========== Trainer skill pip ========== */
 .trainer-skill-pip.filled {
-  background: #6366f1;
+  background: #facc15;
 }
 
-/* ========== Items expanded mode ========== */
-.box-layout--items-expanded .box-grid-panel {
-  display: none;
-}
-
-.box-layout--items-expanded .box-detail-panel {
-  width: 100%;
-}
 
 /* ========== Responsive ========== */
 @media (max-width: 768px) {

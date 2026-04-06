@@ -49,7 +49,7 @@
 }
 
 .dungeon-tab-btn--active {
-  color: #818cf8;
+  color: #facc15;
   border-bottom-color: var(--accent);
 }
 
@@ -88,12 +88,12 @@
 }
 
 .dungeon-card:hover {
-  background: rgba(99, 102, 241, 0.08);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .dungeon-card--selected {
-  background: rgba(99, 102, 241, 0.1);
-  box-shadow: 0 0 8px rgba(99, 102, 241, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.18);
   border-left-color: var(--accent);
 }
 
@@ -185,13 +185,13 @@
 }
 
 .dungeon-floor-btn:hover {
-  background: rgba(99, 102, 241, 0.08);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .dungeon-floor-btn--active {
-  background: rgba(99, 102, 241, 0.15);
+  background: rgba(255, 255, 255, 0.12);
   border-color: var(--accent);
-  color: #818cf8;
+  color: #facc15;
 }
 
 /* Floor info */
@@ -274,14 +274,14 @@
   cursor: pointer;
   transition: all 0.15s;
   margin-top: auto;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  box-shadow: 0 2px 8px rgba(250, 204, 21, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .dungeon-enter-btn:hover {
   opacity: 0.85;
-  background: linear-gradient(135deg, #818cf8, #a78bfa);
+  background: linear-gradient(135deg, #4a5f94, #3b5080);
 }
 
 .dungeon-enter-btn:active {
@@ -325,8 +325,8 @@
 .tower-reset-timer {
   font-size: 0.65rem;
   font-weight: 600;
-  color: #818cf8;
-  background: rgba(99, 102, 241, 0.12);
+  color: #facc15;
+  background: rgba(255, 255, 255, 0.1);
   padding: 2px 8px;
   border-radius: 4px;
 }
@@ -337,7 +337,7 @@
   align-items: center;
   gap: 8px;
   padding: 20px;
-  color: #fbbf24;
+  color: #facc15;
   font-size: 1.1rem;
   font-weight: 700;
 }
@@ -414,7 +414,7 @@
   width: 16px;
   height: 16px;
   background: var(--accent);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15);
   margin-top: 6px;
 }
 
@@ -433,8 +433,8 @@
 }
 
 .tower-node--current .tower-node-body {
-  background: rgba(99, 102, 241, 0.08);
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   padding: 8px 10px;
   margin: 4px 0 4px 4px;
@@ -450,7 +450,7 @@
 }
 
 .tower-node--current .tower-node-floor {
-  color: #818cf8;
+  color: #facc15;
   font-size: 0.82rem;
 }
 
@@ -483,8 +483,8 @@
 .tower-node-badge {
   font-size: 0.6rem;
   font-weight: 700;
-  color: #818cf8;
-  background: rgba(99, 102, 241, 0.15);
+  color: #facc15;
+  background: rgba(255, 255, 255, 0.12);
   padding: 2px 8px;
   border-radius: 4px;
   align-self: flex-start;
@@ -499,13 +499,13 @@
   padding: 8px 20px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 10px;
-  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  background: linear-gradient(135deg, #4a5f94, #3b5080);
   color: white;
   font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(250, 204, 21, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
@@ -696,6 +696,6 @@
   gap: 6px;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #818cf8;
+  color: #facc15;
   padding: 4px 0;
 }

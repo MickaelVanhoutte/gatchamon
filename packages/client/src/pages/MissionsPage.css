@@ -140,7 +140,7 @@
 
 .mission-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  background: linear-gradient(90deg, #4a5f94, #3b5080);
   border-radius: 3px;
   transition: width 0.3s;
 }
@@ -164,7 +164,7 @@
 }
 
 .reward-pokeballs {
-  color: #fbbf24;
+  color: #facc15;
   display: flex;
   align-items: center;
   gap: 3px;
@@ -181,11 +181,11 @@
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, #4a5f94, #3b5080);
   color: white;
   transition: all 0.15s;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 2px 6px rgba(250, 204, 21, 0.35);
 }
 
 .mission-claim-btn:disabled {
@@ -211,14 +211,14 @@
   gap: 10px;
   padding: 12px;
   margin-top: 4px;
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.08), rgba(99, 102, 241, 0.08));
-  border: 1px solid rgba(251, 191, 36, 0.2);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06));
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 10px;
 }
 
 .all-dailies-bonus.ready {
-  border-color: #fbbf24;
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.12), rgba(99, 102, 241, 0.12));
+  border-color: #facc15;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));
   animation: bonus-pulse 1.5s ease-in-out infinite;
 }
 
@@ -227,8 +227,8 @@
 }
 
 @keyframes bonus-pulse {
-  0%, 100% { box-shadow: 0 0 0 rgba(251, 191, 36, 0); }
-  50% { box-shadow: 0 0 12px rgba(251, 191, 36, 0.3); }
+  0%, 100% { box-shadow: 0 0 0 rgba(250, 204, 21, 0); }
+  50% { box-shadow: 0 0 12px rgba(250, 204, 21, 0.35); }
 }
 
 .bonus-info {
@@ -255,19 +255,19 @@
 
 .bonus-reward {
   font-size: 0.8rem;
-  color: #fbbf24;
+  color: #facc15;
   flex-shrink: 0;
 }
 
 .bonus-claim {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  background: linear-gradient(135deg, #4a5f94, #3b5080);
   color: #1a2342;
   border: 1px solid rgba(255, 255, 255, 0.15);
   font-weight: 700;
 }
 
 .bonus-claim:not(:disabled):hover {
-  background: linear-gradient(135deg, #fcd34d, #fbbf24);
+  background: linear-gradient(135deg, #fde047, #facc15);
 }
 
 /* ─── Trophies ─── */
@@ -318,7 +318,7 @@
 .trophy-current {
   font-size: 1rem;
   font-weight: 700;
-  color: #fbbf24;
+  color: #facc15;
   flex-shrink: 0;
 }
 
@@ -365,7 +365,7 @@
 
 .tier-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  background: linear-gradient(90deg, #4a5f94, #3b5080);
   border-radius: 2px;
   transition: width 0.3s;
 }
@@ -375,7 +375,7 @@
 }
 
 .tier-reward {
-  color: #fbbf24;
+  color: #facc15;
   font-size: 0.7rem;
   width: 50px;
   text-align: right;
@@ -393,11 +393,11 @@
   font-size: 0.7rem;
   font-weight: 600;
   cursor: pointer;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, #4a5f94, #3b5080);
   color: white;
   flex-shrink: 0;
   transition: all 0.15s;
-  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 2px 6px rgba(250, 204, 21, 0.35);
 }
 
 .tier-claim-btn:disabled {

@@ -29,7 +29,7 @@ const STAR_COLORS: Record<number, string> = {
   1: '#9ca3af',
   2: '#4ade80',
   3: '#60a5fa',
-  4: '#a78bfa',
+  4: '#fbbf24',
   5: '#f87171',
   6: '#fbbf24',
 };
@@ -59,7 +59,6 @@ export function CollectionPage() {
   const [sortBy, setSortBy] = useState<SortBy>('stars');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<DetailTab>('info');
-  const [itemsExpanded, setItemsExpanded] = useState(false);
   const lastSelectedRef = useRef<string | null>(null);
   const [evoAnim, setEvoAnim] = useState<{
     fromSprite: string;
@@ -71,13 +70,6 @@ export function CollectionPage() {
 
   const tutorialStep = useTutorialStore(s => s.step);
   const advanceTutorial = useTutorialStore(s => s.advanceStep);
-
-  // Reset expanded items when navigating away via BottomNav
-  useEffect(() => {
-    const handler = () => setItemsExpanded(false);
-    window.addEventListener('nav-change', handler);
-    return () => window.removeEventListener('nav-change', handler);
-  }, []);
 
   useEffect(() => {
     loadCollection();
@@ -184,11 +176,11 @@ export function CollectionPage() {
           <button className="pdex-nav-btn" onClick={() => navigate('/inventory')}>
             Items
           </button>
-          <button className="box-close" onClick={() => { if (itemsExpanded) { setItemsExpanded(false); } else { history.back(); } }}><GameIcon id="close" size={18} /></button>
+          <button className="box-close" onClick={() => { history.back(); }}><GameIcon id="close" size={18} /></button>
         </div>
       </div>
 
-      <div className={`box-layout ${itemsExpanded ? 'box-layout--items-expanded' : ''}`}>
+      <div className="box-layout">
         {/* Left: Compact grid */}
         <div className="box-grid-panel">
           {isLoading && <div className="box-grid-loading"><Spinner label="Loading..." /></div>}
@@ -238,11 +230,11 @@ export function CollectionPage() {
               <div className="box-tabs">
                 <button
                   className={`box-tab ${activeTab === 'info' ? 'box-tab--active' : ''}`}
-                  onClick={() => { setActiveTab('info'); setItemsExpanded(false); }}
+                  onClick={() => setActiveTab('info')}
                 >Info</button>
                 <button
                   className={`box-tab ${activeTab === 'skill' ? 'box-tab--active' : ''}`}
-                  onClick={() => { setActiveTab('skill'); setItemsExpanded(false); }}
+                  onClick={() => setActiveTab('skill')}
                 >Skill</button>
                 <button
                   className={`box-tab ${activeTab === 'items' ? 'box-tab--active' : ''} ${tutorialStep === 14 ? 'tutorial-target' : ''}`}
@@ -254,7 +246,7 @@ export function CollectionPage() {
                 >Items</button>
                 <button
                   className={`box-tab ${activeTab === 'misc' ? 'box-tab--active' : ''}`}
-                  onClick={() => { setActiveTab('misc'); setItemsExpanded(false); }}
+                  onClick={() => setActiveTab('misc')}
                 >Misc</button>
               </div>
 
@@ -301,8 +293,6 @@ export function CollectionPage() {
                   pokemon={selected}
                   heldItems={heldItems}
                   player={{ pokedollars: player?.pokedollars ?? 0 }}
-                  expanded={itemsExpanded}
-                  onToggleExpand={() => setItemsExpanded(v => !v)}
                 />
               ) : activeTab === 'info' ? (
                 <>

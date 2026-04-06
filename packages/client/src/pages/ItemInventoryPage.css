@@ -38,9 +38,9 @@
 }
 
 .inventory-capacity--warning {
-  color: #f59e0b;
-  border-color: rgba(245, 158, 11, 0.4);
-  background: rgba(245, 158, 11, 0.08);
+  color: #facc15;
+  border-color: rgba(250, 204, 21, 0.4);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .inventory-capacity--full {
@@ -129,13 +129,13 @@
 
 .inventory-sidebar-item:hover {
   background: var(--bg-primary);
-  border-color: rgba(99, 102, 241, 0.2);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .inventory-sidebar-item--active {
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   border-color: var(--accent);
-  color: #818cf8;
+  color: #facc15;
 }
 
 .inventory-sidebar-item-name {
@@ -157,8 +157,8 @@
 }
 
 .inventory-sidebar-item--active .inventory-sidebar-item-count {
-  color: #818cf8;
-  background: rgba(99, 102, 241, 0.15);
+  color: #facc15;
+  background: rgba(255, 255, 255, 0.12);
 }
 
 /* Slot filter tabs */
@@ -190,9 +190,9 @@
 }
 
 .inventory-slot-tab--active {
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   border-color: var(--accent);
-  color: #818cf8;
+  color: #facc15;
 }
 
 /* Main content area */

@@ -145,7 +145,7 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: 2px solid var(--zone-color, #6366f1);
+  border: 2px solid var(--zone-color, #facc15);
   animation: zone-ring-pulse 2s ease-out infinite;
   pointer-events: none;
 }
@@ -234,7 +234,7 @@
 
 .arc-tab:hover:not(:disabled) {
   color: #e2e8f0;
-  background: rgba(99, 102, 241, 0.12);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .arc-tab.active {
@@ -276,12 +276,12 @@
 
 .difficulty-tab:hover:not(:disabled) {
   color: #e2e8f0;
-  background: rgba(99, 102, 241, 0.12);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .difficulty-tab.active {
   color: var(--diff-color, #78c850);
-  background: rgba(99, 102, 241, 0.12);
+  background: rgba(255, 255, 255, 0.1);
   border: 1px solid color-mix(in srgb, var(--diff-color, #78c850) 40%, transparent);
 }
 
@@ -342,8 +342,8 @@
 }
 
 .floor-panel-close:hover {
-  background: rgba(99, 102, 241, 0.15);
-  color: #6366f1;
+  background: rgba(255, 255, 255, 0.12);
+  color: #facc15;
 }
 
 .floor-panel-difficulty {
@@ -389,9 +389,9 @@
 }
 
 .floor-entry.current {
-  border-color: #6366f1;
-  background: rgba(99, 102, 241, 0.1);
-  box-shadow: 0 0 12px rgba(99, 102, 241, 0.2);
+  border-color: #facc15;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
 }
 
 .floor-entry.completed {
@@ -417,7 +417,7 @@
 }
 
 .floor-entry.current .floor-entry-number {
-  color: #818cf8;
+  color: #facc15;
 }
 
 /* Enemy portraits row */
@@ -451,7 +451,7 @@
   height: 56px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, #4a5f94, #3b5080);
   color: #fff;
   cursor: pointer;
   display: flex;
@@ -463,12 +463,12 @@
   transition: all 0.2s;
   padding: 0;
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(250, 204, 21, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .floor-go-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #818cf8, #a78bfa);
+  background: linear-gradient(135deg, #4a5f94, #3b5080);
   border-color: rgba(255, 255, 255, 0.25);
   transform: scale(1.05);
 }
@@ -513,9 +513,9 @@
 }
 
 .reward-tag.first-clear {
-  background: rgba(251, 191, 36, 0.15);
-  color: #fbbf24;
-  border: 1px solid rgba(251, 191, 36, 0.3);
+  background: rgba(255, 255, 255, 0.12);
+  color: #facc15;
+  border: 1px solid rgba(250, 204, 21, 0.35);
 }
 
 .reward-tag.replay {

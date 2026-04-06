@@ -21,12 +21,12 @@
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  background: rgba(139, 92, 246, 0.15);
+  background: rgba(255, 255, 255, 0.12);
   padding: 0.3rem 0.6rem;
   border-radius: 8px;
   font-weight: 600;
   color: #c4b5fd;
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .shop-stardust-icon {
@@ -65,8 +65,8 @@
 }
 
 .shop-card:not(.shop-card-disabled):hover {
-  border-color: rgba(139, 92, 246, 0.4);
-  box-shadow: 0 0 12px rgba(139, 92, 246, 0.15);
+  border-color: rgba(234, 179, 8, 0.4);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.12);
 }
 
 .shop-card-disabled {
@@ -79,10 +79,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   flex-shrink: 0;
-  border: 1px solid rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .shop-card-info {
@@ -120,7 +120,7 @@
 }
 
 .shop-buy-btn {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, #4a5f94, #3b5080);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
@@ -129,7 +129,7 @@
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(250, 204, 21, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
@@ -217,14 +217,14 @@
 }
 
 .shop-confirm-yes {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, #4a5f94, #3b5080);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   padding: 0.5rem 1.5rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 2px 8px rgba(250, 204, 21, 0.35);
 }
 
 .shop-confirm-yes:active {

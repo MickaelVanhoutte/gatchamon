@@ -7,7 +7,7 @@
 
 .spinner {
   border: 3px solid rgba(255, 255, 255, 0.08);
-  border-top-color: var(--accent, #6366f1);
+  border-top-color: var(--accent, #facc15);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }

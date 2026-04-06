@@ -80,7 +80,7 @@
 .mdm-section h4 {
   margin: 0 0 6px;
   font-size: 0.8rem;
-  color: #6366f1;
+  color: #facc15;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -115,7 +115,7 @@
 
 .mdm-stat-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #6366f1, #818cf8);
+  background: linear-gradient(90deg, #4a5f94, #3b5080);
   border-radius: 3px;
   transition: width 0.3s;
 }
@@ -129,7 +129,7 @@
 }
 
 .mdm-stat-bonus {
-  color: #818cf8;
+  color: #facc15;
   font-size: 0.65rem;
 }
 
@@ -153,8 +153,8 @@
 }
 
 .mdm-item-slot.filled {
-  border-color: rgba(99, 102, 241, 0.4);
-  background: rgba(99, 102, 241, 0.08);
+  border-color: rgba(250, 204, 21, 0.4);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .mdm-item-icon {

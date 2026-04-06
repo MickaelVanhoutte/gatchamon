@@ -1,0 +1,678 @@
+/* ========== Held Item Manage Page ========== */
+.manage-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Header */
+.manage-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--card-border);
+  flex-shrink: 0;
+}
+
+.manage-back {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.manage-back:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.manage-title {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.manage-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.manage-sort {
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  padding: 4px 6px;
+  font-size: 0.65rem;
+}
+
+/* Slot strip */
+.manage-slot-strip {
+  display: flex;
+  gap: 4px;
+  padding: 6px 12px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--card-border);
+  flex-shrink: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.manage-slot-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.manage-slot {
+  flex: 1;
+  min-width: 54px;
+  height: 54px;
+  cursor: pointer;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.15s;
+  border: 2px solid transparent;
+}
+
+.manage-slot:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.manage-slot--active {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.manage-slot-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.manage-slot-num {
+  font-size: 0.85rem;
+  font-weight: 700;
+  opacity: 0.4;
+  color: var(--text-secondary);
+}
+
+/* Body scrollable area */
+.manage-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+}
+
+/* Equipped item detail section */
+.manage-equipped-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.manage-equipped-card {
+  border: 2px solid;
+  border-radius: 10px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.manage-equipped-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.manage-equipped-actions .held-item-upgrade-btn {
+  flex: 2;
+}
+
+.manage-equipped-actions .held-item-remove-btn {
+  flex: 1;
+}
+
+.manage-equipped-actions .held-item-upgrade-maxed {
+  flex: 2;
+}
+
+/* Empty slot prompt */
+.manage-empty-slot-prompt {
+  text-align: center;
+  padding: 16px;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+}
+
+/* Set bonuses */
+.manage-set-bonuses {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Item selection section */
+.manage-select-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Filter tabs (horizontal scroll) */
+.manage-filter-strip {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+  padding: 2px 0;
+}
+
+.manage-filter-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.manage-filter-tab {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.manage-filter-tab:hover {
+  background: var(--bg-primary);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.manage-filter-tab--active {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: var(--accent);
+  color: #fbbf24;
+}
+
+.manage-filter-count {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: var(--bg-primary);
+  padding: 1px 5px;
+  border-radius: 8px;
+  min-width: 16px;
+  text-align: center;
+}
+
+.manage-filter-tab--active .manage-filter-count {
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.15);
+}
+
+/* Item grid */
+.manage-item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 6px;
+  align-content: start;
+}
+
+.manage-grid-empty {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 24px;
+  font-size: 0.8rem;
+  grid-column: 1 / -1;
+}
+
+/* Stat preview chips */
+.manage-stat-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-height: 4px;
+}
+
+/* Not found */
+.manage-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+/* Bottom action bar */
+.manage-actions-bar {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--card-border);
+  background: var(--bg-card);
+  flex-shrink: 0;
+}
+
+/* ========== Button styles (from old modals) ========== */
+
+/* Upgrade button */
+.held-item-upgrade-btn {
+  background: rgba(74, 222, 128, 0.2);
+  border: 1px solid rgba(74, 222, 128, 0.4);
+  color: #4ade80;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.held-item-upgrade-btn:hover:not(:disabled) {
+  background: rgba(74, 222, 128, 0.3);
+  box-shadow: 0 0 8px rgba(74, 222, 128, 0.2);
+}
+
+.held-item-upgrade-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.held-item-upgrade-maxed {
+  text-align: center;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+/* Remove button */
+.held-item-remove-btn {
+  background: rgba(255, 107, 107, 0.15);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  color: #ff6b6b;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.held-item-remove-btn:hover {
+  background: rgba(255, 107, 107, 0.25);
+}
+
+.held-item-remove-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Equip button */
+.held-item-equip-action-btn {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.held-item-equip-action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.held-item-equip-action-btn:not(:disabled):hover {
+  background: rgba(245, 158, 11, 0.2);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.2);
+}
+
+/* Sell mode button */
+.held-item-sell-mode-btn {
+  background: rgba(255, 107, 107, 0.12);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  color: #ff6b6b;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.held-item-sell-mode-btn.active {
+  background: rgba(255, 107, 107, 0.3);
+}
+
+/* Sell bulk button */
+.held-item-sell-bulk-btn {
+  background: rgba(255, 107, 107, 0.15);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  color: #ff6b6b;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.held-item-sell-bulk-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Sell confirm */
+.held-item-sell-confirm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: #ff6b6b;
+}
+
+.held-item-sell-confirm span {
+  flex: 1;
+}
+
+.held-item-sell-yes {
+  background: #ff6b6b;
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.held-item-sell-no {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  border: 1px solid var(--card-border);
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ========== Upgrade card detail styles ========== */
+
+.held-item-upgrade-card-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.held-item-upgrade-icon {
+  font-size: 1.2rem;
+}
+
+.held-item-upgrade-set {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.held-item-upgrade-slot {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  background: var(--bg-primary);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.held-item-upgrade-stars {
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.held-item-upgrade-grade {
+  text-transform: capitalize;
+  font-size: 0.7rem;
+}
+
+.held-item-upgrade-level {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #4ade80;
+  text-align: center;
+  margin: 6px 0;
+}
+
+.held-item-upgrade-main {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  padding: 6px 0;
+  border-top: 1px solid var(--card-border);
+}
+
+.held-item-upgrade-main-val {
+  color: #4ade80;
+}
+
+.held-item-upgrade-subs {
+  padding-top: 6px;
+  border-top: 1px solid var(--card-border);
+}
+
+.held-item-upgrade-sub {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  padding: 2px 0;
+}
+
+/* Result message */
+.held-item-upgrade-result {
+  text-align: center;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.result-success {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+.result-fail {
+  background: rgba(255, 107, 107, 0.15);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.2);
+}
+
+/* Upgrade info */
+.held-item-upgrade-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.held-item-upgrade-info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.held-item-upgrade-milestone {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+/* Set effect banner */
+.held-item-select-set-effect {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--bg-secondary);
+  border-bottom: 2px solid var(--accent);
+  flex-shrink: 0;
+  border-radius: 6px;
+}
+
+.held-item-select-set-effect-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.held-item-select-set-effect-pieces {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: var(--bg-primary);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.held-item-select-set-effect-desc {
+  font-size: 0.65rem;
+  color: #fbbf24;
+  font-weight: 600;
+  flex: 1;
+  text-align: right;
+}
+
+/* Stat chips */
+.stat-up { color: #4ade80; }
+.stat-down { color: #ff6b6b; }
+
+.held-item-preview-chip {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.held-item-preview-chip.stat-up {
+  background: rgba(74, 222, 128, 0.12);
+}
+
+.held-item-preview-chip.stat-down {
+  background: rgba(255, 107, 107, 0.12);
+}
+
+/* Set bonus styles (reused from equip panel) */
+.held-item-set-bonus {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--bg-surface);
+  border-left: 3px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  font-size: 0.7rem;
+}
+
+.held-item-set-icon { font-size: 0.8rem; }
+.held-item-set-name { font-weight: 600; color: var(--text-primary); }
+.held-item-set-desc { color: #4ade80; margin-left: auto; }
+.held-item-set-bonus--inactive { opacity: 0.5; }
+.held-item-set-desc--hidden { color: var(--text-secondary); font-style: italic; }
+
+/* Tutorial highlights */
+.tutorial-highlight {
+  animation: tutorial-pulse 1.5s ease-in-out infinite;
+  box-shadow: 0 0 12px 2px rgba(245, 158, 11, 0.7), inset 0 0 4px rgba(245, 158, 11, 0.2);
+  border-color: rgba(245, 158, 11, 0.8) !important;
+}
+
+.held-item-upgrade-btn.tutorial-highlight {
+  animation: upgrade-tutorial-pulse 1.5s ease-in-out infinite;
+  box-shadow: 0 0 12px 2px rgba(74, 222, 128, 0.7), inset 0 0 4px rgba(74, 222, 128, 0.2);
+  border-color: rgba(74, 222, 128, 0.8) !important;
+}
+
+@keyframes tutorial-pulse {
+  0%, 100% { box-shadow: 0 0 8px 1px rgba(245, 158, 11, 0.4); }
+  50% { box-shadow: 0 0 16px 4px rgba(245, 158, 11, 0.8); }
+}
+
+@keyframes upgrade-tutorial-pulse {
+  0%, 100% { box-shadow: 0 0 8px 1px rgba(74, 222, 128, 0.4); }
+  50% { box-shadow: 0 0 16px 4px rgba(74, 222, 128, 0.8); }
+}
+
+/* Animations */
+@keyframes held-item-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+@keyframes held-item-glow {
+  0% { box-shadow: 0 0 0 rgba(74, 222, 128, 0); }
+  50% { box-shadow: 0 0 20px rgba(74, 222, 128, 0.4); }
+  100% { box-shadow: 0 0 0 rgba(74, 222, 128, 0); }
+}
+
+.held-item-upgrading {
+  animation: held-item-shake 0.3s ease-in-out;
+}
+
+.held-item-upgrade-success {
+  animation: held-item-glow 0.5s ease-out;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 400px) {
+  .manage-slot {
+    min-width: 48px;
+    height: 48px;
+  }
+
+  .manage-item-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+}
