@@ -1337,6 +1337,30 @@ export function resolveSkill(
     });
   }
 
+  // Emit heal log entries for mons healed as side-effects (e.g. self-heal on
+  // offensive skills, or "heal all_allies" on AoE attacks). These mons are not
+  // in the targets array so the per-target healAmount calculation misses them.
+  const targetIds = new Set(targets.map(t => t.instanceId));
+  for (const mon of allMons) {
+    if (targetIds.has(mon.instanceId)) continue;
+    const prevHp = hpBefore.get(mon.instanceId) ?? mon.currentHp;
+    const sideHeal = mon.currentHp - prevHp;
+    if (sideHeal > 0) {
+      logs.push({
+        turn: state.turnNumber,
+        actorId: actor.instanceId,
+        actorName: actorTemplate.name,
+        skillUsed: skill.id,
+        skillName: skill.name,
+        targetId: mon.instanceId,
+        targetName: getTemplate(mon.templateId).name,
+        damage: 0, isCrit: false, effectiveness: 1,
+        effects: [],
+        healAmount: sideHeal,
+      });
+    }
+  }
+
   // Set cooldown for the skill (Skill Refresh: skip cooldown, consumed)
   if (skill.cooldown > 0) {
     if (hasBuff(actor, 'skill_refresh')) {

@@ -7,6 +7,20 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.3.4',
+    date: '2026-04-06',
+    changes: [
+      'Added falling leaves particles to home screen and story map for extra atmosphere',
+    ],
+  },
+  {
+    version: '0.3.3',
+    date: '2026-04-06',
+    changes: [
+      'Fixed healing floating numbers not appearing on allies when healed by offensive skills (e.g. self-heal on attack, heal-all-allies on AoE)',
+    ],
+  },
+  {
     version: '0.3.2',
     date: '2026-04-06',
     changes: [

@@ -867,6 +867,19 @@ export function IslandScene({ monsters, onNavigate }: IslandSceneProps) {
               }}
             />
           ))}
+          {Array.from({ length: 8 }, (_, i) => (
+            <div
+              key={`leaf-${i}`}
+              className={`meadow-leaf meadow-leaf-${(i % 3) + 1}`}
+              style={{
+                left: `${5 + ((i * 31 + 11) % 88)}%`,
+                animationDuration: `${10 + (i % 4) * 2.5}s`,
+                animationDelay: `${(i * 2.1) % 12}s`,
+                width: `${8 + (i % 3) * 3}px`,
+                height: `${8 + (i % 3) * 3}px`,
+              }}
+            />
+          ))}
         </div>
 
         {/* Monsters */}

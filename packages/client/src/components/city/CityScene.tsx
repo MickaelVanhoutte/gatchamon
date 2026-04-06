@@ -108,6 +108,44 @@ export function CityScene({ monsters, onNavigate }: CitySceneProps) {
         {/* Atmospheric overlays */}
         <div className="city-vignette" />
         <div className="city-light-rays" />
+        <div className="city-particles">
+          {[
+            { left: 8,  bottom: 5,  path: 'a', dur: 4.2, delay: 0 },
+            { left: 22, bottom: 20, path: 'b', dur: 5.0, delay: 1.2 },
+            { left: 35, bottom: 12, path: 'c', dur: 4.6, delay: 0.5 },
+            { left: 48, bottom: 8,  path: 'd', dur: 5.4, delay: 2.0 },
+            { left: 58, bottom: 25, path: 'a', dur: 5.8, delay: 3.1 },
+            { left: 67, bottom: 15, path: 'c', dur: 4.0, delay: 0.8 },
+            { left: 75, bottom: 3,  path: 'b', dur: 4.8, delay: 1.8 },
+            { left: 84, bottom: 18, path: 'd', dur: 5.2, delay: 2.6 },
+            { left: 15, bottom: 10, path: 'c', dur: 4.4, delay: 3.5 },
+            { left: 91, bottom: 22, path: 'a', dur: 5.6, delay: 0.3 },
+          ].map((f, i) => (
+            <div
+              key={`ff-${i}`}
+              className={`city-firefly city-firefly-${f.path}`}
+              style={{
+                left: `${f.left}%`,
+                bottom: `${f.bottom}%`,
+                animationDuration: `${f.dur}s`,
+                animationDelay: `${f.delay}s`,
+              }}
+            />
+          ))}
+          {[10, 22, 14, 28, 12, 24, 16, 20].map((size, i) => (
+            <div
+              key={`lf-${i}`}
+              className={`city-leaf city-leaf-${(i % 3) + 1}`}
+              style={{
+                left: `${4 + ((i * 31 + 9) % 90)}%`,
+                animationDuration: `${5 + (i % 4) * 1.5}s`,
+                animationDelay: `${(i * 1.1) % 6}s`,
+                width: `${size}px`,
+                height: `${size}px`,
+              }}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Black fade overlay for building transition */}

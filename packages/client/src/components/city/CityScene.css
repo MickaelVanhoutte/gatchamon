@@ -86,6 +86,131 @@
 }
 
 /* ========================================
+   FIREFLIES & FALLING LEAVES
+   ======================================== */
+
+.city-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.city-firefly {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 230, 100, 0.9);
+  border-radius: 50%;
+  box-shadow:
+    0 0 12px 4px rgba(255, 210, 60, 0.7),
+    0 0 30px 8px rgba(255, 180, 40, 0.3);
+}
+
+/* Path A — rises right then drifts left */
+.city-firefly-a { animation: city-ff-a linear infinite; }
+@keyframes city-ff-a {
+  0%   { transform: translate(0, 0);              opacity: 0; }
+  4%   {                                           opacity: 0.9; }
+  15%  { transform: translate(40px, -70px);        opacity: 1; }
+  35%  { transform: translate(-20px, -180px);      opacity: 0.7; }
+  55%  { transform: translate(50px, -280px);       opacity: 1; }
+  75%  { transform: translate(-30px, -370px);      opacity: 0.5; }
+  90%  {                                           opacity: 0.2; }
+  100% { transform: translate(10px, -440px);       opacity: 0; }
+}
+
+/* Path B — gentle S-curve leftward */
+.city-firefly-b { animation: city-ff-b linear infinite; }
+@keyframes city-ff-b {
+  0%   { transform: translate(0, 0);              opacity: 0; }
+  4%   {                                           opacity: 0.85; }
+  20%  { transform: translate(-35px, -90px);       opacity: 1; }
+  40%  { transform: translate(25px, -200px);       opacity: 0.8; }
+  60%  { transform: translate(-45px, -300px);      opacity: 0.6; }
+  80%  { transform: translate(15px, -380px);       opacity: 0.4; }
+  92%  {                                           opacity: 0.15; }
+  100% { transform: translate(-20px, -430px);      opacity: 0; }
+}
+
+/* Path C — wide horizontal wander */
+.city-firefly-c { animation: city-ff-c linear infinite; }
+@keyframes city-ff-c {
+  0%   { transform: translate(0, 0);              opacity: 0; }
+  5%   {                                           opacity: 0.95; }
+  18%  { transform: translate(60px, -50px);        opacity: 0.9; }
+  32%  { transform: translate(-40px, -140px);      opacity: 1; }
+  50%  { transform: translate(55px, -230px);       opacity: 0.7; }
+  68%  { transform: translate(-50px, -320px);      opacity: 0.9; }
+  82%  { transform: translate(30px, -390px);       opacity: 0.4; }
+  95%  {                                           opacity: 0.15; }
+  100% { transform: translate(-15px, -450px);      opacity: 0; }
+}
+
+/* Path D — mostly vertical with small wobble */
+.city-firefly-d { animation: city-ff-d linear infinite; }
+@keyframes city-ff-d {
+  0%   { transform: translate(0, 0);              opacity: 0; }
+  3%   {                                           opacity: 0.9; }
+  20%  { transform: translate(12px, -110px);       opacity: 1; }
+  40%  { transform: translate(-8px, -220px);       opacity: 0.8; }
+  60%  { transform: translate(15px, -310px);       opacity: 0.6; }
+  80%  { transform: translate(-12px, -390px);      opacity: 0.35; }
+  93%  {                                           opacity: 0.1; }
+  100% { transform: translate(5px, -440px);        opacity: 0; }
+}
+
+.city-leaf {
+  position: absolute;
+  top: -30px;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+  opacity: 0;
+  animation: city-leaf-fall linear infinite;
+}
+
+.city-leaf::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 0 50% 50% 50%;
+  background: var(--leaf-color, rgba(80, 140, 50, 0.7));
+  transform: rotate(45deg);
+}
+
+.city-leaf-1 { --leaf-color: rgba(80, 140, 50, 0.7); }
+.city-leaf-2 { --leaf-color: rgba(140, 175, 60, 0.65); }
+.city-leaf-3 { --leaf-color: rgba(190, 130, 40, 0.65); }
+
+@keyframes city-leaf-fall {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  5% { opacity: 0.85; }
+  25% {
+    transform: translateY(160px) translateX(50px) rotate(90deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(320px) translateX(-30px) rotate(200deg);
+    opacity: 0.75;
+  }
+  75% {
+    transform: translateY(480px) translateX(40px) rotate(310deg);
+    opacity: 0.55;
+  }
+  95% { opacity: 0.2; }
+  100% {
+    transform: translateY(620px) translateX(-15px) rotate(400deg);
+    opacity: 0;
+  }
+}
+
+/* ========================================
    MONSTER LAYER
    ======================================== */
 
@@ -140,8 +265,11 @@
    ======================================== */
 
 @media (prefers-reduced-motion: reduce) {
-  .city-light-rays {
+  .city-light-rays,
+  .city-firefly,
+  .city-leaf {
     animation: none;
+    opacity: 0;
   }
   .city-scroll.city-zooming {
     animation: none;

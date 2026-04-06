@@ -1674,14 +1674,35 @@ export function StoryModePage() {
           <div className="map-fog map-fog-2" />
           <div className="map-fog map-fog-3" />
           <div className="map-particles">
-            {Array.from({ length: 6 }, (_, i) => (
+            {[
+              { left: 10, bottom: 10, path: 'a', dur: 4.5, delay: 0 },
+              { left: 30, bottom: 22, path: 'b', dur: 5.2, delay: 1.4 },
+              { left: 50, bottom: 8,  path: 'c', dur: 4.0, delay: 0.6 },
+              { left: 65, bottom: 18, path: 'a', dur: 5.6, delay: 2.2 },
+              { left: 80, bottom: 5,  path: 'c', dur: 4.8, delay: 3.0 },
+              { left: 92, bottom: 15, path: 'b', dur: 5.0, delay: 0.9 },
+            ].map((f, i) => (
               <div
                 key={i}
-                className="map-firefly"
+                className={`map-firefly map-firefly-${f.path}`}
                 style={{
-                  left: `${5 + ((i * 41 + 7) % 90)}%`,
-                  animationDuration: `${7 + (i % 4) * 1.6}s`,
-                  animationDelay: `${(i * 1.7) % 9}s`,
+                  left: `${f.left}%`,
+                  bottom: `${f.bottom}%`,
+                  animationDuration: `${f.dur}s`,
+                  animationDelay: `${f.delay}s`,
+                }}
+              />
+            ))}
+            {[9, 20, 12, 24, 11, 18].map((size, i) => (
+              <div
+                key={`leaf-${i}`}
+                className={`map-leaf map-leaf-${(i % 3) + 1}`}
+                style={{
+                  left: `${3 + ((i * 29 + 9) % 92)}%`,
+                  animationDuration: `${5 + (i % 4) * 1.3}s`,
+                  animationDelay: `${(i * 1.0) % 5}s`,
+                  width: `${size}px`,
+                  height: `${size}px`,
                 }}
               />
             ))}
