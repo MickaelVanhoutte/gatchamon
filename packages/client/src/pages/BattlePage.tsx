@@ -1094,7 +1094,7 @@ function BattleMonSprite({
     <div
       ref={registerRef}
       className={`battle-mon ${!mon.isAlive ? 'dead' : ''} ${isTargetable ? 'targetable' : ''} ${isActive ? 'active-mon' : ''} ${mon.isBoss ? 'boss-mon' : ''} ${isFocused ? 'focused' : ''}`}
-      style={arcOffset ? { transform: `translateY(${arcOffset}px)` } : undefined}
+      style={arcOffset ? { marginTop: `${arcOffset}px` } : undefined}
       onClick={mon.isAlive && isTargetable ? onClick : undefined}
     >
       {mon.isPlayerOwned ? (
