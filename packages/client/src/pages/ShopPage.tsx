@@ -75,16 +75,12 @@ export function ShopPage() {
                   <p className="shop-card-desc">{item.description}</p>
                 </div>
                 <div className="shop-card-footer">
-                  <div className="shop-card-cost">
-                    <GameIcon id="stardust" size={14} />
-                    <span>{item.cost.toLocaleString()}</span>
-                  </div>
                   <button
                     className="shop-buy-btn"
                     disabled={!canAfford}
                     onClick={() => handleBuy(item.id)}
                   >
-                    Buy
+                    Buy · <GameIcon id="stardust" size={12} /> {item.cost.toLocaleString()}
                   </button>
                 </div>
               </div>

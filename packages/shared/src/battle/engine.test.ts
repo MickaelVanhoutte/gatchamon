@@ -761,9 +761,11 @@ describe('processStartOfTurn', () => {
   it('recovery heals 15% max HP', () => {
     const mon = makeMon({ currentHp: 500, buffs: [makeBuff('recovery')] });
     const state = makeState({ playerTeam: [mon] });
-    const effects = processStartOfTurn(mon, state);
+    const result = processStartOfTurn(mon, state);
     expect(mon.currentHp).toBe(500 + Math.floor(1000 * 0.15));
-    expect(effects.some(e => e.includes('recovered'))).toBe(true);
+    expect(result.texts.some(e => e.includes('recovered'))).toBe(true);
+    expect(result.heals.length).toBe(1);
+    expect(result.heals[0].amount).toBe(Math.floor(1000 * 0.15));
   });
 
   it('recovery blocked by unrecoverable', () => {

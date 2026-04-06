@@ -41,8 +41,8 @@
   font-size: 0.8rem;
   font-weight: 600;
   background: transparent;
-  border: 1.5px solid rgba(242, 249, 240, 0.3);
-  border-radius: 999px;
+  border: none;
+  border-radius: 0;
   color: var(--text-primary);
   cursor: pointer;
   transition: color 0.15s, background 0.15s, border-color 0.15s;
@@ -284,6 +284,7 @@
   cursor: pointer;
   transition: all 0.15s;
   margin-top: auto;
+  flex-shrink: 0;
   background: linear-gradient(180deg, #F7D117 0%, #D9B510 100%);
   box-shadow: 0 4px 16px rgba(247, 209, 23, 0.4);
   text-shadow: none;
@@ -482,7 +483,7 @@
 
 .tower-node--locked .tower-node-floor {
   color: var(--text-muted);
-  opacity: 0.4;
+  opacity: 0.6;
 }
 
 .tower-node--locked .tower-node-body > svg {
@@ -555,6 +556,7 @@
   flex: 1;
   overflow-y: auto;
   padding: 12px;
+  padding-bottom: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;

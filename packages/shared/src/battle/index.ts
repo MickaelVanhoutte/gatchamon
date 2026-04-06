@@ -14,4 +14,4 @@ export {
   checkBattleEnd,
   autoResolveEnemyTurns,
 } from './engine.js';
-export type { CCResult, TimelineEntry } from './engine.js';
+export type { CCResult, TimelineEntry, TurnStartResult } from './engine.js';

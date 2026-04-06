@@ -1796,7 +1796,7 @@ export function StoryModePage() {
                         if (floor.isBoss) {
                           const leader = getGymLeader(selectedRegion.id);
                           return leader
-                            ? `BOSS - ${leader.icon} ${leader.name}`
+                            ? `BOSS - ${leader.name}`
                             : `BOSS - ${selectedRegion.floorNames[getFloorCount(selectedRegion.id) - 1] ?? ''}`;
                         }
                         return `${floor.floor}. ${selectedRegion.floorNames[floor.floor - 1] ?? ''}`;

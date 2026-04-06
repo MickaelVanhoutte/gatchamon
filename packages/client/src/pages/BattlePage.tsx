@@ -259,14 +259,9 @@ export function BattlePage() {
     if (entry.resisted) {
       parts.push({ text: 'Resisted!', cls: 'float-resist-label' });
     }
-    // Heals show as positive green number on the actor
-    const healEffect = entry.effects.find(e => e === 'heal' || e === 'recovery');
-    if (healEffect && entry.damage <= 0) {
-      const actorEl = monRefs.current.get(entry.actorId);
-      const actorContainer = actorEl?.closest('.battle-mon') as HTMLElement | null;
-      if (actorContainer) {
-        spawnFloat(actorContainer, '+Heal', 'float-heal');
-      }
+    // Heals show as positive green number on the target
+    if (entry.healAmount && entry.healAmount > 0) {
+      parts.push({ text: `+${entry.healAmount}`, cls: 'float-heal' });
     }
 
     let delay = 0;
@@ -418,17 +413,21 @@ export function BattlePage() {
           await new Promise(r => setTimeout(r, 600 / spd));
         }
 
-        if (group.length > 1) {
-          // Multi-target: play animation once on all targets
-          await Promise.race([
-            playMultiTargetEntries(group),
-            new Promise(r => setTimeout(r, 2000 / spd)),
-          ]);
-        } else {
-          await Promise.race([
-            playLogEntry(group[0]),
-            new Promise(r => setTimeout(r, 2000 / spd)),
-          ]);
+        const isPseudoEntry = group[0].skillUsed.startsWith('__');
+
+        if (!isPseudoEntry) {
+          if (group.length > 1) {
+            // Multi-target: play animation once on all targets
+            await Promise.race([
+              playMultiTargetEntries(group),
+              new Promise(r => setTimeout(r, 2000 / spd)),
+            ]);
+          } else {
+            await Promise.race([
+              playLogEntry(group[0]),
+              new Promise(r => setTimeout(r, 2000 / spd)),
+            ]);
+          }
         }
 
         // Apply HP changes for all entries in this group + spawn floating numbers
@@ -436,6 +435,9 @@ export function BattlePage() {
           const mon = allMons.find(m => m.instanceId === entry.targetId);
           if (mon) {
             mon.currentHp = Math.max(0, mon.currentHp - entry.damage);
+            if (entry.healAmount && entry.healAmount > 0) {
+              mon.currentHp = Math.min(mon.maxHp, mon.currentHp + entry.healAmount);
+            }
             if (mon.currentHp <= 0) mon.isAlive = false;
           }
           spawnFloatingNumber(entry);

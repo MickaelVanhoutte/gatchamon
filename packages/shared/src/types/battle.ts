@@ -59,6 +59,7 @@ export interface BattleLogEntry {
   reflected?: number;
   endured?: boolean;
   resisted?: boolean;
+  healAmount?: number;
 }
 
 export interface BattleAction {

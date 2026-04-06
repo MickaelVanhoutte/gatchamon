@@ -145,7 +145,6 @@ export function MysteryDungeonPanel() {
         className="dungeon-enter-btn"
         onClick={handleEnter}
         disabled={!player || player.energy < energyCost}
-        style={{ background: themeColor }}
       >
         Go ({energyCost} <GameIcon id="energy" size={14} />)
       </button>

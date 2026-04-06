@@ -12,7 +12,7 @@
   transform: translateX(-50%);
   font-size: 0.9rem;
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--text-primary, #F2F9F0);
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -26,10 +26,10 @@
   position: absolute;
   bottom: 16px;
   right: 16px;
-  background: var(--glass-bg);
+  background: rgba(11, 77, 83, 0.7);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #94a3b8;
+  border: 1px solid rgba(242, 249, 240, 0.25);
+  color: var(--text-primary, #F2F9F0);
   padding: 8px 20px;
   border-radius: 8px;
   font-size: 0.85rem;

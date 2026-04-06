@@ -454,8 +454,25 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
   state.turnNumber++;
 
   // Process start-of-turn effects for the player actor
-  const turnEffects = processStartOfTurn(actor, state);
+  const turnResult = processStartOfTurn(actor, state);
+  const turnEffects = turnResult.texts;
   const logs: BattleLogEntry[] = [];
+
+  // Create heal log entries for turn-start heals
+  for (const heal of turnResult.heals) {
+    logs.push({
+      turn: state.turnNumber,
+      actorId: actor.instanceId,
+      actorName: template.name,
+      skillUsed: '__turn_heal',
+      skillName: heal.source,
+      targetId: heal.instanceId,
+      targetName: heal.name,
+      damage: 0, isCrit: false, effectiveness: 1,
+      effects: [],
+      healAmount: heal.amount,
+    });
+  }
 
   if (!actor.isAlive) {
     // Actor died from DoT

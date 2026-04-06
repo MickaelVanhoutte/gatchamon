@@ -7,6 +7,44 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.2.21',
+    date: '2026-04-06',
+    changes: [
+      'Healing numbers now show actual values (+96) instead of generic "+Heal" text',
+      'Turn-start heals (Recovery buff, Sleep heal, Leftovers) now display floating green numbers on the healed Pokemon',
+      'Skill-based heals (e.g. Starmie Psychic) now show heal amounts on each healed ally',
+    ],
+  },
+  {
+    version: '0.2.20',
+    date: '2026-04-06',
+    changes: [
+      'Increased locked tower floor text opacity from 0.4 to 0.6 for readability',
+      'Removed inline background color override on mystery dungeon Go button so it uses default yellow CSS styling',
+      'Added flex-shrink: 0 to dungeon enter button to prevent squishing',
+      'Added padding-bottom to mystery dungeon panel to prevent Go button cutoff',
+    ],
+  },
+  {
+    version: '0.2.19',
+    date: '2026-04-06',
+    changes: [
+      'Removed border-radius from collection header (.box-header)',
+      'Removed border-radius from pokedex filter bar (.pdex-filters)',
+      'Removed border-radius and borders from dungeon section tab buttons for flat tab segment look',
+      'Brightened --text-secondary to #d8efe8 and --text-muted to #8fb8cc for better readability on blue backgrounds',
+    ],
+  },
+  {
+    version: '0.2.18',
+    date: '2026-04-06',
+    changes: [
+      'Increased bottom nav expanded bar opacity from 0.10 to solid teal frosted glass (0.75)',
+      'Fixed skip button and progress counter visibility on summon reveal sequence with white text and teal background',
+      'Added mobile scroll support to shop page with overflow-y and bottom nav padding offset',
+    ],
+  },
+  {
     version: '0.2.17',
     date: '2026-04-06',
     changes: [

@@ -134,7 +134,7 @@ export function defaultTrainerSkills(): TrainerSkills {
 // ── Altar / Power-Up Circle ───────────────────────────────────────────
 
 export const FODDER_XP_STAR_MULTIPLIERS: Record<number, number> = {
-  1: 1, 2: 1.5, 3: 2, 4: 3, 5: 5, 6: 8,
+  1: 1, 2: 2, 3: 4, 4: 8, 5: 15, 6: 25,
 };
 
 export const MAX_SKILL_LEVEL = 5;
@@ -142,7 +142,7 @@ export const SKILL_LEVEL_MULTIPLIER_BONUS = 0.15;
 export const DITTO_TEMPLATE_ID = 132;
 
 export function calculateFodderXp(fodderLevel: number, fodderStars: number): number {
-  return Math.floor(fodderLevel * 50 * (FODDER_XP_STAR_MULTIPLIERS[fodderStars] ?? 1));
+  return Math.floor(fodderLevel * 150 * (FODDER_XP_STAR_MULTIPLIERS[fodderStars] ?? 1));
 }
 
 export function getSkillMultiplierBonus(skillLevel: number): number {

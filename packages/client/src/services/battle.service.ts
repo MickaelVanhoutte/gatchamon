@@ -932,18 +932,50 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
 
   // Trigger turn_start passives
   const turnStartEffects = processPassiveTrigger('turn_start', actor, state);
-  const turnEffects = processStartOfTurn(actor, state);
-  const allTurnEffects = [...turnStartEffects, ...turnEffects];
+  const turnResult = processStartOfTurn(actor, state);
+  const allTurnEffects = [...turnStartEffects, ...turnResult.texts];
   const logs: BattleLogEntry[] = [];
+
+  // Create heal log entries for turn-start heals
+  for (const heal of turnResult.heals) {
+    logs.push({
+      turn: state.turnNumber,
+      actorId: actor.instanceId,
+      actorName: template.name,
+      skillUsed: '__turn_heal',
+      skillName: heal.source,
+      targetId: heal.instanceId,
+      targetName: heal.name,
+      damage: 0, isCrit: false, effectiveness: 1,
+      effects: [],
+      healAmount: heal.amount,
+    });
+  }
 
   // Proc heal_per_turn (Leftovers) at turn start
   const actorTurnEffects = battleSetEffects.get(actor.instanceId);
   if (actorTurnEffects && actor.isAlive) {
     for (const eff of actorTurnEffects) {
       if (eff.procEffect === 'heal_per_turn' && actor.currentHp < actor.maxHp) {
+        const oldHp = actor.currentHp;
         const healAmt = Math.floor(actor.maxHp * (eff.procValue ?? 15) / 100);
         actor.currentHp = Math.min(actor.maxHp, actor.currentHp + healAmt);
+        const healed = actor.currentHp - oldHp;
         allTurnEffects.push(`${template.name} recovered ${healAmt} HP from Leftovers!`);
+        if (healed > 0) {
+          logs.push({
+            turn: state.turnNumber,
+            actorId: actor.instanceId,
+            actorName: template.name,
+            skillUsed: '__turn_heal',
+            skillName: 'Leftovers',
+            targetId: actor.instanceId,
+            targetName: template.name,
+            damage: 0, isCrit: false, effectiveness: 1,
+            effects: [],
+            healAmount: healed,
+          });
+        }
       }
     }
   }

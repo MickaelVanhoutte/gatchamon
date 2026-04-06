@@ -411,8 +411,14 @@ export function simulateTimeline(
 // Start of turn processing
 // ---------------------------------------------------------------------------
 
-export function processStartOfTurn(mon: BattleMon, state: BattleState): string[] {
-  const effects: string[] = [];
+export interface TurnStartResult {
+  texts: string[];
+  heals: { instanceId: string; name: string; amount: number; source: string }[];
+}
+
+export function processStartOfTurn(mon: BattleMon, state: BattleState): TurnStartResult {
+  const texts: string[] = [];
+  const heals: TurnStartResult['heals'] = [];
   const template = getTemplate(mon.templateId);
   const hasInvincibility = hasBuff(mon, 'invincibility');
   const hasUnrecoverable = hasDebuff(mon, 'unrecoverable');
@@ -428,7 +434,8 @@ export function processStartOfTurn(mon: BattleMon, state: BattleState): string[]
     const healed = mon.currentHp - oldHp;
     trackHeal(state, mon.instanceId, healed);
     if (healed > 0) {
-      effects.push(`${template.name} recovered ${healed} HP (Recovery)${hasAntiHeal ? ' (Anti-Heal)' : ''}`);
+      texts.push(`${template.name} recovered ${healed} HP (Recovery)${hasAntiHeal ? ' (Anti-Heal)' : ''}`);
+      heals.push({ instanceId: mon.instanceId, name: template.name, amount: healed, source: 'Recovery' });
     }
   }
 
@@ -441,7 +448,8 @@ export function processStartOfTurn(mon: BattleMon, state: BattleState): string[]
     const healed = mon.currentHp - oldHp;
     trackHeal(state, mon.instanceId, healed);
     if (healed > 0) {
-      effects.push(`${template.name} recovered ${healed} HP while sleeping${hasAntiHeal ? ' (Anti-Heal)' : ''}`);
+      texts.push(`${template.name} recovered ${healed} HP while sleeping${hasAntiHeal ? ' (Anti-Heal)' : ''}`);
+      heals.push({ instanceId: mon.instanceId, name: template.name, amount: healed, source: 'Sleep' });
     }
   }
 
@@ -451,19 +459,19 @@ export function processStartOfTurn(mon: BattleMon, state: BattleState): string[]
     if (poisonStacks > 0) {
       const dotDmg = Math.floor(mon.maxHp * 0.05 * poisonStacks);
       mon.currentHp = Math.max(0, mon.currentHp - dotDmg);
-      effects.push(`${template.name} takes ${dotDmg} poison damage (${poisonStacks} stacks)`);
+      texts.push(`${template.name} takes ${dotDmg} poison damage (${poisonStacks} stacks)`);
       if (mon.currentHp <= 0) {
         // Check endure
         if (hasBuff(mon, 'endure')) {
           mon.currentHp = 1;
-          effects.push(`${template.name} endured!`);
+          texts.push(`${template.name} endured!`);
         } else if (hasBuff(mon, 'soul_protect')) {
           mon.currentHp = Math.floor(mon.maxHp * 0.3);
           mon.buffs = mon.buffs.filter(b => b.id !== 'soul_protect');
-          effects.push(`${template.name}'s Soul Protect activated! Revived with 30% HP`);
+          texts.push(`${template.name}'s Soul Protect activated! Revived with 30% HP`);
         } else {
           mon.isAlive = false;
-          effects.push(`${template.name} fainted from poison!`);
+          texts.push(`${template.name} fainted from poison!`);
         }
       }
     }
@@ -476,18 +484,18 @@ export function processStartOfTurn(mon: BattleMon, state: BattleState): string[]
     if (burnStacks > 0) {
       const dotDmg = burnDebuffs.reduce((sum, d) => sum + Math.floor(d.value * 0.05), 0);
       mon.currentHp = Math.max(0, mon.currentHp - dotDmg);
-      effects.push(`${template.name} takes ${dotDmg} burn damage (${burnStacks} stacks)`);
+      texts.push(`${template.name} takes ${dotDmg} burn damage (${burnStacks} stacks)`);
       if (mon.currentHp <= 0) {
         if (hasBuff(mon, 'endure')) {
           mon.currentHp = 1;
-          effects.push(`${template.name} endured!`);
+          texts.push(`${template.name} endured!`);
         } else if (hasBuff(mon, 'soul_protect')) {
           mon.currentHp = Math.floor(mon.maxHp * 0.3);
           mon.buffs = mon.buffs.filter(b => b.id !== 'soul_protect');
-          effects.push(`${template.name}'s Soul Protect activated! Revived with 30% HP`);
+          texts.push(`${template.name}'s Soul Protect activated! Revived with 30% HP`);
         } else {
           mon.isAlive = false;
-          effects.push(`${template.name} fainted from burn!`);
+          texts.push(`${template.name} fainted from burn!`);
         }
       }
     }
@@ -499,18 +507,18 @@ export function processStartOfTurn(mon: BattleMon, state: BattleState): string[]
     if (bleedStacks > 0) {
       const dotDmg = Math.floor(mon.maxHp * 0.04 * bleedStacks);
       mon.currentHp = Math.max(0, mon.currentHp - dotDmg);
-      effects.push(`${template.name} takes ${dotDmg} bleed damage (${bleedStacks} stacks)`);
+      texts.push(`${template.name} takes ${dotDmg} bleed damage (${bleedStacks} stacks)`);
       if (mon.currentHp <= 0) {
         if (hasBuff(mon, 'endure')) {
           mon.currentHp = 1;
-          effects.push(`${template.name} endured!`);
+          texts.push(`${template.name} endured!`);
         } else if (hasBuff(mon, 'soul_protect')) {
           mon.currentHp = Math.floor(mon.maxHp * 0.3);
           mon.buffs = mon.buffs.filter(b => b.id !== 'soul_protect');
-          effects.push(`${template.name}'s Soul Protect activated! Revived with 30% HP`);
+          texts.push(`${template.name}'s Soul Protect activated! Revived with 30% HP`);
         } else {
           mon.isAlive = false;
-          effects.push(`${template.name} fainted from bleed!`);
+          texts.push(`${template.name} fainted from bleed!`);
         }
       }
     }
@@ -522,18 +530,18 @@ export function processStartOfTurn(mon: BattleMon, state: BattleState): string[]
     if (expiringBombs.length > 0) {
       const bombDmg = Math.floor(mon.maxHp * 0.25 * expiringBombs.length);
       mon.currentHp = Math.max(0, mon.currentHp - bombDmg);
-      effects.push(`${template.name} takes ${bombDmg} bomb damage (${expiringBombs.length} bombs detonated!)`);
+      texts.push(`${template.name} takes ${bombDmg} bomb damage (${expiringBombs.length} bombs detonated!)`);
       if (mon.currentHp <= 0) {
         if (hasBuff(mon, 'endure')) {
           mon.currentHp = 1;
-          effects.push(`${template.name} endured!`);
+          texts.push(`${template.name} endured!`);
         } else if (hasBuff(mon, 'soul_protect')) {
           mon.currentHp = Math.floor(mon.maxHp * 0.3);
           mon.buffs = mon.buffs.filter(b => b.id !== 'soul_protect');
-          effects.push(`${template.name}'s Soul Protect activated! Revived with 30% HP`);
+          texts.push(`${template.name}'s Soul Protect activated! Revived with 30% HP`);
         } else {
           mon.isAlive = false;
-          effects.push(`${template.name} fainted from bomb explosion!`);
+          texts.push(`${template.name} fainted from bomb explosion!`);
         }
       }
     }
@@ -551,7 +559,7 @@ export function processStartOfTurn(mon: BattleMon, state: BattleState): string[]
   mon.buffs = mon.buffs.filter(b => b.remainingTurns > 0);
   mon.debuffs = mon.debuffs.filter(d => d.remainingTurns > 0);
 
-  return effects;
+  return { texts, heals };
 }
 
 // ---------------------------------------------------------------------------
@@ -1049,6 +1057,11 @@ export function resolveSkill(
   const hasGlancing = hasDebuff(actor, 'glancing');
   const isGlancingHit = hasGlancing && Math.random() < 0.5;
 
+  // Snapshot HP for all mons to track heal amounts per target
+  const allMons = [...state.playerTeam, ...state.enemyTeam];
+  const hpBefore = new Map<string, number>();
+  for (const m of allMons) hpBefore.set(m.instanceId, m.currentHp);
+
   for (const target of targets) {
     const targetTemplate = getTemplate(target.templateId);
     let damage = 0;
@@ -1298,6 +1311,12 @@ export function resolveSkill(
       appliedEffects.push(...hpEffects);
     }
 
+    // Compute heal amount for this target based on HP change from snapshot
+    const prevHp = hpBefore.get(target.instanceId) ?? target.currentHp;
+    const healAmount = Math.max(0, target.currentHp - prevHp + damage);
+    // Update snapshot so next iteration uses correct baseline
+    hpBefore.set(target.instanceId, target.currentHp);
+
     logs.push({
       turn: state.turnNumber,
       actorId: actor.instanceId,
@@ -1314,6 +1333,7 @@ export function resolveSkill(
       shieldAbsorbed,
       reflected,
       endured,
+      ...(healAmount > 0 ? { healAmount } : {}),
     });
   }
 
@@ -1470,8 +1490,24 @@ export function autoResolveEnemyTurns(state: BattleState): BattleLogEntry[] {
 
     // Trigger turn_start passives
     const turnStartEffects = processPassiveTrigger('turn_start', actor, state);
-    const turnEffects = processStartOfTurn(actor, state);
-    const allTurnEffects = [...turnStartEffects, ...turnEffects];
+    const turnResult = processStartOfTurn(actor, state);
+    const allTurnEffects = [...turnStartEffects, ...turnResult.texts];
+
+    // Create heal log entries for turn-start heals
+    for (const heal of turnResult.heals) {
+      logs.push({
+        turn: state.turnNumber,
+        actorId: actor.instanceId,
+        actorName: getTemplate(actor.templateId).name,
+        skillUsed: '__turn_heal',
+        skillName: heal.source,
+        targetId: heal.instanceId,
+        targetName: heal.name,
+        damage: 0, isCrit: false, effectiveness: 1,
+        effects: [],
+        healAmount: heal.amount,
+      });
+    }
 
     if (!actor.isAlive) {
       checkBattleEnd(state);

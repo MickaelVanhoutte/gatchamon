@@ -16,6 +16,7 @@
   padding: 6px;
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--card-border);
+  border-radius: 0;
 }
 
 .pdex-search {
