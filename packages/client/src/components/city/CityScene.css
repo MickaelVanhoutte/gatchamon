@@ -102,11 +102,53 @@
 }
 
 /* ========================================
+   STORY ZOOM TRANSITION
+   ======================================== */
+
+.city-scroll.city-zoom-story {
+  animation: city-zoom-in 1s ease-in forwards;
+  transform-origin: 50% 35%;
+}
+
+@keyframes city-zoom-in {
+  0%   { transform: scale(1); }
+  100% { transform: scale(3); }
+}
+
+/* Black overlay that fades in during the zoom */
+.city-fade-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
+}
+
+.city-fade-overlay.active {
+  animation: city-fade-black 1s ease-in forwards;
+  animation-delay: 0.3s;
+}
+
+@keyframes city-fade-black {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ========================================
    REDUCED MOTION
    ======================================== */
 
 @media (prefers-reduced-motion: reduce) {
   .city-light-rays {
+    animation: none;
+  }
+  .city-scroll.city-zoom-story {
+    animation: none;
+  }
+  .city-fade-overlay.active {
+    opacity: 1;
     animation: none;
   }
 }

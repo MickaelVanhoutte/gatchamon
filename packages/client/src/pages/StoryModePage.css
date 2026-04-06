@@ -826,3 +826,22 @@
     font-size: 0.55rem;
   }
 }
+
+/* ========================================
+   CITY TRANSITION — FADE FROM BLACK
+   ======================================== */
+
+.story-fade-from-black {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease-out;
+}
+
+.story-fade-from-black.active {
+  opacity: 1;
+  transition: none;
+}

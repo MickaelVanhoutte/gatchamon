@@ -1,9 +1,10 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import type { OwnedPokemon } from '../../stores/gameStore';
 import { useGameStore } from '../../stores/gameStore';
 import { useRotatedHorizontalScroll } from '../../hooks/useRotatedHorizontalScroll';
 import { CityBuilding } from './CityBuilding';
 import { CityMonster } from './CityMonster';
+import { assetUrl } from '../../utils/asset-url';
 import './CityScene.css';
 
 /*
@@ -28,12 +29,14 @@ const BUILDINGS = [
 
 interface CitySceneProps {
   monsters: OwnedPokemon[];
-  onNavigate: (path: string) => void;
+  onNavigate: (path: string, options?: { state?: unknown }) => void;
 }
 
 export function CityScene({ monsters, onNavigate }: CitySceneProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollInnerRef = useRef<HTMLDivElement>(null);
   const unclaimedRewardCount = useGameStore(s => s.unclaimedRewardCount);
+  const [zooming, setZooming] = useState(false);
   useRotatedHorizontalScroll(scrollRef);
 
   /* Auto-scroll to center on mount */
@@ -46,14 +49,39 @@ export function CityScene({ monsters, onNavigate }: CitySceneProps) {
     return () => clearTimeout(timer);
   }, []);
 
+  const handleNavigate = useCallback((path: string) => {
+    if (path === '/story') {
+      // Zoom into the center alley, then fade to black, then navigate
+      const scene = scrollRef.current;
+      const inner = scrollInnerRef.current;
+      if (!scene || !inner) { onNavigate(path); return; }
+
+      // First, scroll to center the alley
+      const alleyCenter = inner.scrollWidth * 0.50;
+      const viewCenter = scene.clientWidth / 2;
+      scene.scrollTo({ left: alleyCenter - viewCenter, behavior: 'smooth' });
+
+      // Start zoom after scroll settles
+      setTimeout(() => setZooming(true), 200);
+
+      // Navigate after zoom + fade completes — pass state so story page fades in from black
+      setTimeout(() => onNavigate(path, { state: { fromCity: true } }), 1200);
+      return;
+    }
+    onNavigate(path);
+  }, [onNavigate]);
+
   return (
     <div className="city-scene" ref={scrollRef} data-horizontal-scroll>
-      <div className="city-scroll">
+      <div
+        className={`city-scroll ${zooming ? 'city-zoom-story' : ''}`}
+        ref={scrollInnerRef}
+      >
 
         {/* Background image — drives scroll width via aspect-ratio */}
         <img
           className="city-bg-img"
-          src="/backgrounds/poke-street.png"
+          src={assetUrl('backgrounds/poke-street.png')}
           alt=""
           draggable={false}
         />
@@ -64,7 +92,7 @@ export function CityScene({ monsters, onNavigate }: CitySceneProps) {
             key={b.id}
             building={b}
             badgeCount={b.id === 'missions' ? unclaimedRewardCount : 0}
-            onNavigate={onNavigate}
+            onNavigate={handleNavigate}
           />
         ))}
 
@@ -79,6 +107,9 @@ export function CityScene({ monsters, onNavigate }: CitySceneProps) {
         <div className="city-vignette" />
         <div className="city-light-rays" />
       </div>
+
+      {/* Black fade overlay for story transition */}
+      <div className={`city-fade-overlay ${zooming ? 'active' : ''}`} />
     </div>
   );
 }

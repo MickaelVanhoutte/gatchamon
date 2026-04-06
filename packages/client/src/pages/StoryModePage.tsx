@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { GameIcon, StarRating } from '../components/icons';
 import { getTemplate, REGIONS, getFloorCount, getGymLeader, getLeagueChampion, isLeagueRegion, STORY_ENERGY_COST, STORY_ARCS, getArcForRegion } from '@gatchamon/shared';
@@ -76,7 +76,9 @@ function isArcUnlocked(arc: StoryArc, player: Player | null): boolean {
 export function StoryModePage() {
   const { player } = useGameStore();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [fadeIn, setFadeIn] = useState(() => !!(location.state as { fromCity?: boolean })?.fromCity);
   const [floors, setFloors] = useState<FloorInfo[]>([]);
   const [selectedRegionId, setSelectedRegionId] = useState<number | null>(null);
   const [difficulty, setDifficulty] = useState<Difficulty>(() => {
@@ -92,6 +94,14 @@ export function StoryModePage() {
 
   const tutorialStep = useTutorialStore(s => s.step);
   const advanceTutorial = useTutorialStore(s => s.advanceStep);
+
+  // Fade from black when arriving from city transition
+  useEffect(() => {
+    if (fadeIn) {
+      const timer = setTimeout(() => setFadeIn(false), 50);
+      return () => clearTimeout(timer);
+    }
+  }, [fadeIn]);
 
   // Tutorial: auto-select region 1 when arriving at step 8
   useEffect(() => {
@@ -314,6 +324,10 @@ export function StoryModePage() {
 
   return (
     <div className="page story-page">
+      {/* Fade from black overlay (city transition) */}
+      {fadeIn !== undefined && (
+        <div className={`story-fade-from-black ${fadeIn ? 'active' : ''}`} />
+      )}
       {/* World Map — horizontal scroll */}
       <div className="world-map" ref={worldMapRef} data-horizontal-scroll>
         <div className="map-scroll">
