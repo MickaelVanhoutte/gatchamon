@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useGameStore } from '../../stores/gameStore';
-import { getMaxEnergy, trainerXpToNextLevel, TOTAL_REGIONS, BEGINNER_BONUS } from '@gatchamon/shared';
+import { getMaxEnergy, trainerXpToNextLevel, BEGINNER_BONUS } from '@gatchamon/shared';
 import { onUpdateAvailable } from '../../services/sw-update';
 import { canSpinToday, getRemainingSpins } from '../../services/roulette.service';
 import { DailyRouletteModal } from '../DailyRouletteModal';
@@ -107,7 +107,7 @@ export function TopHUD() {
         <div className="hud-xp-bar">
           <div className="hud-xp-fill" style={{ width: `${xpPct}%` }} />
         </div>
-        <span className="hud-floor">Region {Object.keys(player.storyProgress.normal).length}/{TOTAL_REGIONS}</span>
+
       </div>
       <div className="hud-right">
         {updateAvailable && (

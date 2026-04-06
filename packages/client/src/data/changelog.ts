@@ -7,6 +7,14 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.2.14',
+    date: '2026-04-06',
+    changes: [
+      'Added more padding to pokeball selector buttons in summon screen',
+      'Flattened UI design: removed heavy gold glows and shadows from buttons, HUD, and nav bar',
+    ],
+  },
+  {
     version: '0.2.13',
     date: '2026-04-06',
     changes: [

@@ -129,7 +129,7 @@
   align-items: center;
   justify-content: center;
   gap: 3px;
-  padding: 8px 16px 7px;
+  padding: 8px 22px 7px;
   border: 1px solid transparent;
   border-radius: 10px;
   background: transparent;
@@ -174,9 +174,9 @@
 
 .pokeball-type-tab.active {
   background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(250, 204, 21, 0.4);
+  border-color: rgba(255, 255, 255, 0.15);
   color: #fff;
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.12);
+  box-shadow: none;
   transform: scale(1.03);
 }
 
@@ -188,8 +188,8 @@
 
 .pokeball-type-tab.legendary.active {
   background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(250, 204, 21, 0.4);
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: none;
 }
 
 .pokeball-type-tab.glowing.active {
@@ -575,10 +575,9 @@
   font-family: inherit;
   font-size: 1rem;
   box-shadow:
-    0 4px 20px rgba(250, 204, 21, 0.35),
-    0 1px 3px rgba(0, 0, 0, 0.3),
+    0 2px 6px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   transition: transform 0.1s, box-shadow 0.1s;
   -webkit-tap-highlight-color: transparent;
   position: relative;
@@ -611,27 +610,15 @@
   50% { left: 120%; }
 }
 
-/* Pulsing glow ring when affordable (not disabled) */
+/* Subtle ring when affordable (not disabled) */
 .summon-btn:not(:disabled)::before {
   content: '';
   position: absolute;
-  inset: -3px;
-  border-radius: 19px;
+  inset: -2px;
+  border-radius: 18px;
   background: transparent;
-  border: 2px solid rgba(250, 204, 21, 0.4);
-  animation: glow-ring-pulse 2s ease-in-out infinite;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   pointer-events: none;
-}
-
-@keyframes glow-ring-pulse {
-  0%, 100% {
-    border-color: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.08);
-  }
-  50% {
-    border-color: rgba(250, 204, 21, 0.6);
-    box-shadow: 0 0 20px rgba(250, 204, 21, 0.35);
-  }
 }
 
 .summon-btn:active:not(:disabled) {
@@ -651,12 +638,7 @@
 }
 
 .summon-btn:not(:disabled) {
-  animation: summon-btn-glow 2.5s ease-in-out infinite;
-}
-
-@keyframes summon-btn-glow {
-  0%, 100% { box-shadow: 0 4px 20px rgba(250, 204, 21, 0.35), 0 1px 3px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15); }
-  50% { box-shadow: 0 4px 30px rgba(250, 204, 21, 0.55), 0 0 40px rgba(255, 255, 255, 0.12), 0 1px 3px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15); }
+  /* No pulsing glow — flat design */
 }
 
 .btn-label {
@@ -675,34 +657,8 @@
 .summon-multi {
   background: linear-gradient(180deg, #facc15 0%, #facc15 40%, #facc15 100%);
   box-shadow:
-    0 4px 20px rgba(250, 204, 21, 0.35),
-    0 1px 3px rgba(0, 0, 0, 0.3),
+    0 2px 6px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.summon-multi:not(:disabled)::before {
-  border-color: rgba(250, 204, 21, 0.4);
-  animation: glow-ring-pulse-gold 2s ease-in-out infinite;
-}
-
-@keyframes glow-ring-pulse-gold {
-  0%, 100% {
-    border-color: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.08);
-  }
-  50% {
-    border-color: rgba(250, 204, 21, 0.6);
-    box-shadow: 0 0 20px rgba(250, 204, 21, 0.35);
-  }
-}
-
-.summon-multi:not(:disabled) {
-  animation: summon-btn-gold-glow 2.5s ease-in-out infinite;
-}
-
-@keyframes summon-btn-gold-glow {
-  0%, 100% { box-shadow: 0 4px 20px rgba(250, 204, 21, 0.35), 0 1px 3px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2); }
-  50% { box-shadow: 0 4px 30px rgba(250, 204, 21, 0.55), 0 0 40px rgba(255, 255, 255, 0.12), 0 1px 3px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2); }
 }
 
 /* ===== Rates info button (floating top-left) ===== */
