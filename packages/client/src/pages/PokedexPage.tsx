@@ -10,9 +10,10 @@ import {
   getEvolutionLineage,
   getActiveEvolutionsFrom,
 } from '@gatchamon/shared';
-import type { PokemonType, PokemonTemplate, BaseStats } from '@gatchamon/shared';
+import type { PokemonType, PokemonTemplate, BaseStats, EffectId } from '@gatchamon/shared';
 import { assetUrl } from '../utils/asset-url';
 import { SkillCard } from '../components/monster/SkillCard';
+import { EffectFilterDropdown } from '../components/EffectFilterDropdown';
 import './CollectionPage.css';
 import './PokedexPage.css';
 
@@ -55,6 +56,23 @@ export function PokedexPage() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<DetailTab>('info');
   const [showForms, setShowForms] = useState(false);
+  const [effectFilters, setEffectFilters] = useState<Set<EffectId>>(new Set());
+
+  // Pre-compute effect set per template for fast filtering
+  const templateEffectsMap = useMemo(() => {
+    const map = new Map<number, Set<EffectId>>();
+    for (const t of ACTIVE_POKEDEX) {
+      const skills = getSkillsForPokemon(t.skillIds);
+      const effectIds = new Set<EffectId>();
+      for (const skill of skills) {
+        for (const effect of skill.effects) {
+          if (effect.id) effectIds.add(effect.id);
+        }
+      }
+      map.set(t.id, effectIds);
+    }
+    return map;
+  }, []);
 
   useEffect(() => {
     loadCollection();
@@ -71,6 +89,13 @@ export function PokedexPage() {
         if (!showForms && t.id >= 15000) return false;
         if (searchQuery && !t.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
         if (typeFilter && !t.types.includes(typeFilter)) return false;
+        if (effectFilters.size > 0) {
+          const tEffects = templateEffectsMap.get(t.id);
+          if (!tEffects) return false;
+          for (const eid of effectFilters) {
+            if (!tEffects.has(eid)) return false;
+          }
+        }
         return true;
       })
       .sort((a, b) => {
@@ -78,7 +103,7 @@ export function PokedexPage() {
         if (sortBy === 'stars') return b.naturalStars - a.naturalStars || a.id - b.id;
         return a.name.localeCompare(b.name);
       });
-  }, [searchQuery, typeFilter, sortBy, showForms]);
+  }, [searchQuery, typeFilter, sortBy, showForms, effectFilters, templateEffectsMap]);
 
   const selected = selectedId != null ? getTemplate(selectedId) : null;
 
@@ -160,6 +185,10 @@ export function PokedexPage() {
               >
                 Forms
               </button>
+              <EffectFilterDropdown
+                selected={effectFilters}
+                onChange={setEffectFilters}
+              />
             </div>
           </div>
 

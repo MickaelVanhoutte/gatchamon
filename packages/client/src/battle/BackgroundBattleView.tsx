@@ -171,10 +171,17 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
   useEffect(() => {
     if (hasStartedRef.current) return;
     hasStartedRef.current = true;
+    const runBefore = useRepeatBattleStore.getState().currentRun;
     startNextBattle();
+    const didIncrement = useRepeatBattleStore.getState().currentRun > runBefore;
     return () => {
       const bid = battleIdRef.current;
       if (bid) deleteBattle(bid);
+      // Undo the increment from this mount so StrictMode remount starts fresh
+      if (didIncrement) {
+        const s = useRepeatBattleStore.getState();
+        useRepeatBattleStore.setState({ currentRun: Math.max(0, s.currentRun - 1) });
+      }
       hasStartedRef.current = false;
     };
   }, [startNextBattle]);

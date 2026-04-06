@@ -20,6 +20,7 @@ import {
   getFloorCount,
   isLeagueRegion,
   STORY_ARCS,
+  getEvolutionLineage,
 } from '@gatchamon/shared';
 import {
   loadRewardState,
@@ -343,12 +344,13 @@ export function rollMonsterLoot(
   for (const enemy of enemies) {
     const rate = (STAR_LOOT_RATES[enemy.stars] ?? 0.10) + diffBonus;
     if (Math.random() < rate) {
-      const template = getTemplate(enemy.templateId);
+      const baseTemplateId = getEvolutionLineage(enemy.templateId)[0];
+      const template = getTemplate(baseTemplateId);
       if (!template) continue;
 
       const instance: PokemonInstance = {
         instanceId: crypto.randomUUID(),
-        templateId: enemy.templateId,
+        templateId: baseTemplateId,
         ownerId: player.id,
         level: 1,
         stars: enemy.stars,
@@ -369,7 +371,7 @@ export function rollMonsterLoot(
       state.stats.uniqueMonstersOwned = uniqueIds.size;
       saveRewardState(state);
 
-      return { templateId: enemy.templateId, stars: enemy.stars, instanceId: instance.instanceId };
+      return { templateId: baseTemplateId, stars: enemy.stars, instanceId: instance.instanceId };
     }
   }
 
