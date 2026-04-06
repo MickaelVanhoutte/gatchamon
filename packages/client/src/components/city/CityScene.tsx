@@ -36,7 +36,7 @@ export function CityScene({ monsters, onNavigate }: CitySceneProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollInnerRef = useRef<HTMLDivElement>(null);
   const unclaimedRewardCount = useGameStore(s => s.unclaimedRewardCount);
-  const [zooming, setZooming] = useState(false);
+  const [zoomTarget, setZoomTarget] = useState<{ xPct: number; buildingId: string } | null>(null);
   useRotatedHorizontalScroll(scrollRef);
 
   /* Auto-scroll to center on mount */
@@ -50,32 +50,34 @@ export function CityScene({ monsters, onNavigate }: CitySceneProps) {
   }, []);
 
   const handleNavigate = useCallback((path: string) => {
-    if (path === '/story') {
-      // Zoom into the center alley, then fade to black, then navigate
-      const scene = scrollRef.current;
-      const inner = scrollInnerRef.current;
-      if (!scene || !inner) { onNavigate(path); return; }
+    if (zoomTarget) return; // prevent double-click
 
-      // First, scroll to center the alley
-      const alleyCenter = inner.scrollWidth * 0.50;
-      const viewCenter = scene.clientWidth / 2;
-      scene.scrollTo({ left: alleyCenter - viewCenter, behavior: 'smooth' });
+    const building = BUILDINGS.find(b => b.path === path);
+    const scene = scrollRef.current;
+    const inner = scrollInnerRef.current;
+    if (!building || !scene || !inner) { onNavigate(path); return; }
 
-      // Start zoom after scroll settles
-      setTimeout(() => setZooming(true), 200);
+    // Scroll to center the target building
+    const targetCenter = inner.scrollWidth * (building.xPct / 100);
+    const viewCenter = scene.clientWidth / 2;
+    scene.scrollTo({ left: targetCenter - viewCenter, behavior: 'smooth' });
 
-      // Navigate after zoom + fade completes — pass state so story page fades in from black
-      setTimeout(() => onNavigate(path, { state: { fromCity: true } }), 1200);
-      return;
-    }
-    onNavigate(path);
-  }, [onNavigate]);
+    // Start zoom after scroll settles
+    setTimeout(() => setZoomTarget({ xPct: building.xPct, buildingId: building.id }), 200);
+
+    // Navigate after zoom + fade completes
+    setTimeout(() => {
+      onNavigate(path, { state: { fromCity: true, buildingId: building.id } });
+      setZoomTarget(null);
+    }, 1200);
+  }, [onNavigate, zoomTarget]);
 
   return (
     <div className="city-scene" ref={scrollRef} data-horizontal-scroll>
       <div
-        className={`city-scroll ${zooming ? 'city-zoom-story' : ''}`}
+        className={`city-scroll ${zoomTarget ? 'city-zooming' : ''}`}
         ref={scrollInnerRef}
+        style={zoomTarget ? { transformOrigin: `${zoomTarget.xPct}% 35%` } as React.CSSProperties : undefined}
       >
 
         {/* Background image — drives scroll width via aspect-ratio */}
@@ -108,8 +110,8 @@ export function CityScene({ monsters, onNavigate }: CitySceneProps) {
         <div className="city-light-rays" />
       </div>
 
-      {/* Black fade overlay for story transition */}
-      <div className={`city-fade-overlay ${zooming ? 'active' : ''}`} />
+      {/* Black fade overlay for building transition */}
+      <div className={`city-fade-overlay ${zoomTarget ? 'active' : ''}`} />
     </div>
   );
 }

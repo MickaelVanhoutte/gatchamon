@@ -104,9 +104,9 @@
    STORY ZOOM TRANSITION
    ======================================== */
 
-.city-scroll.city-zoom-story {
+.city-scroll.city-zooming {
   animation: city-zoom-in 1s ease-in forwards;
-  transform-origin: 50% 35%;
+  /* transform-origin set inline per building */
 }
 
 @keyframes city-zoom-in {
@@ -143,7 +143,7 @@
   .city-light-rays {
     animation: none;
   }
-  .city-scroll.city-zoom-story {
+  .city-scroll.city-zooming {
     animation: none;
   }
   .city-fade-overlay.active {

@@ -41,17 +41,35 @@ export function App() {
   const inputRef = useRef<HTMLInputElement>(null);
   useRotatedScroll(scrollRef);
 
-  // Cloud wipe transition on route change
+  // Transition on route change: fade-from-black (city) or cloud wipe (other)
   const [cloudWipe, setCloudWipe] = useState(false);
+  const [fadeFromBlack, setFadeFromBlack] = useState(false);
   const prevPath = useRef(location.pathname);
+
   useEffect(() => {
     if (location.pathname !== prevPath.current) {
       prevPath.current = location.pathname;
-      setCloudWipe(true);
-      const t = setTimeout(() => setCloudWipe(false), 400);
-      return () => clearTimeout(t);
+      const state = location.state as { fromCity?: boolean } | null;
+      if (state?.fromCity) {
+        // Coming from city zoom: fade from black, skip cloud wipe
+        setFadeFromBlack(true);
+        const t = setTimeout(() => setFadeFromBlack(false), 50);
+        return () => clearTimeout(t);
+      } else {
+        // Normal navigation: cloud wipe
+        setCloudWipe(true);
+        const t = setTimeout(() => setCloudWipe(false), 400);
+        return () => clearTimeout(t);
+      }
     }
-  }, [location.pathname]);
+  }, [location.pathname, location.state]);
+
+  // Clear fromCity state to prevent fade on browser back/forward
+  useEffect(() => {
+    if ((location.state as { fromCity?: boolean } | null)?.fromCity) {
+      window.history.replaceState({}, '');
+    }
+  }, [location.state]);
 
   useEffect(() => {
     loadPlayer();
@@ -139,6 +157,9 @@ export function App() {
       <RepeatBattleModal />
       <UpdateBanner />
       {cloudWipe && <div className="cloud-wipe" />}
+      {fadeFromBlack !== undefined && (
+        <div className={`fade-from-black ${fadeFromBlack ? 'active' : ''}`} />
+      )}
     </div>
   );
 }

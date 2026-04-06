@@ -7,6 +7,13 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.3.2',
+    date: '2026-04-06',
+    changes: [
+      'All city buildings now have cinematic zoom + fade-to-black transition when entering',
+    ],
+  },
+  {
     version: '0.3.1',
     date: '2026-04-06',
     changes: [
