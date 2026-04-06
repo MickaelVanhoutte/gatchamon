@@ -7,6 +7,15 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.2.13',
+    date: '2026-04-06',
+    changes: [
+      'Decluttered header bar: resources (Pokedollars, Stardust, Pokeballs) now grouped in a bag dropdown',
+      'Energy remains visible directly in the header for quick access',
+      'Increased spacing between header elements for better readability',
+    ],
+  },
+  {
     version: '0.2.12',
     date: '2026-04-06',
     changes: [

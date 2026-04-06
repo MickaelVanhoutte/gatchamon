@@ -111,7 +111,7 @@
 
 .hud-right {
   display: flex;
-  gap: 3px;
+  gap: 6px;
   align-items: center;
 }
 
@@ -136,18 +136,6 @@
 /* Resource type colored left-borders */
 .hud-resource--energy {
   border-left-color: #facc15;
-}
-.hud-resource--pokedollar {
-  border-left-color: #facc15;
-}
-.hud-resource--stardust {
-  border-left-color: #facc15;
-}
-.hud-resource--pokeball {
-  border-left-color: #ef4444;
-}
-.hud-resource--premium {
-  border-left-color: #60a5fa;
 }
 
 /* Icon inside resource pill */
@@ -409,4 +397,87 @@
   min-width: 36px;
   font-weight: 700;
   color: #34d399;
+}
+
+/* ── Bag / Resources Dropdown ────────────────────────────── */
+
+.hud-bag-wrapper {
+  position: relative;
+}
+
+.hud-bag-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.hud-bag-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.hud-bag-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+}
+
+.hud-bag-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 100;
+  min-width: 200px;
+  background: rgba(30, 42, 72, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  animation: tooltip-appear 0.15s ease-out;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hud-bag-dropdown-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.hud-bag-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+}
+
+.hud-bag-row + .hud-bag-row {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hud-bag-label {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.7);
+  flex: 1;
+}
+
+.hud-bag-value {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  text-align: right;
 }

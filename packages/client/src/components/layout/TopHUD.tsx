@@ -49,6 +49,7 @@ export function TopHUD() {
   const location = useLocation();
   const navigate = useNavigate();
   const [showBonusTooltip, setShowBonusTooltip] = useState(false);
+  const [showResources, setShowResources] = useState(false);
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [showRoulette, setShowRoulette] = useState(false);
   const [rouletteAvailable, setRouletteAvailable] = useState(canSpinToday());
@@ -77,7 +78,7 @@ export function TopHUD() {
             <div className="hud-beginner-wrapper">
               <button
                 className="hud-beginner-badge"
-                onClick={() => setShowBonusTooltip(v => !v)}
+                onClick={() => { setShowBonusTooltip(v => !v); setShowResources(false); }}
               >
                 <GameIcon id="sparkles" size={12} />
                 <span>Beginner</span>
@@ -135,21 +136,38 @@ export function TopHUD() {
           <GameIcon id="energy" size={12} className="hud-energy-icon" />
           <span>{player.energy}/{maxEnergy}</span>
         </div>
-        <div className="hud-resource hud-resource--pokedollar">
-          <GameIcon id="pokedollar" size={12} className="hud-pokedollar-icon" />
-          <span>{(player.pokedollars ?? 0).toLocaleString()}</span>
-        </div>
-        <div className="hud-resource hud-resource--stardust">
-          <GameIcon id="stardust" size={12} className="hud-stardust-icon" />
-          <span>{(player.stardust ?? 0).toLocaleString()}</span>
-        </div>
-        <div className="hud-resource hud-resource--pokeball">
-          <GameIcon id="pokeball" size={12} />
-          <span>{player.regularPokeballs}</span>
-        </div>
-        <div className="hud-resource hud-resource--premium">
-          <GameIcon id="premiumPokeball" size={12} />
-          <span>{player.premiumPokeballs}</span>
+        <div className="hud-bag-wrapper">
+          <button className="hud-bag-btn" onClick={() => { setShowResources(v => !v); setShowBonusTooltip(false); }} aria-expanded={showResources} aria-label="Resources">
+            <GameIcon id="bag" size={13} />
+          </button>
+          {showResources && (
+            <>
+              <div className="hud-bag-overlay" onClick={() => setShowResources(false)} />
+              <div className="hud-bag-dropdown">
+                <div className="hud-bag-dropdown-title">Resources</div>
+                <div className="hud-bag-row">
+                  <GameIcon id="pokedollar" size={14} className="hud-pokedollar-icon" />
+                  <span className="hud-bag-label">Pokedollars</span>
+                  <span className="hud-bag-value">{(player.pokedollars ?? 0).toLocaleString()}</span>
+                </div>
+                <div className="hud-bag-row">
+                  <GameIcon id="stardust" size={14} className="hud-stardust-icon" />
+                  <span className="hud-bag-label">Stardust</span>
+                  <span className="hud-bag-value">{(player.stardust ?? 0).toLocaleString()}</span>
+                </div>
+                <div className="hud-bag-row">
+                  <GameIcon id="pokeball" size={14} />
+                  <span className="hud-bag-label">Pokeballs</span>
+                  <span className="hud-bag-value">{player.regularPokeballs}</span>
+                </div>
+                <div className="hud-bag-row">
+                  <GameIcon id="premiumPokeball" size={14} />
+                  <span className="hud-bag-label">Premium</span>
+                  <span className="hud-bag-value">{player.premiumPokeballs}</span>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </header>

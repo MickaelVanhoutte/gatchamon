@@ -286,6 +286,17 @@ export const IconShrine = makeMultiPathIcon([
   'M10 19v-6h4v6',
 ]);
 
+// ─── Bag Icon ───
+
+export const IconBag = makeMultiPathIcon([
+  // Bag body
+  'M6 10v8a2 2 0 002 2h8a2 2 0 002-2v-8H6z',
+  // Flap
+  'M4 10h16l-1-4H5l-1 4z',
+  // Straps
+  'M9 6V4a3 3 0 016 0v2',
+]);
+
 // ─── Currency & Shop Icons ───
 
 export const IconPokedollar = makeMultiPathIcon([
