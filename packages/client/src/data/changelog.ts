@@ -7,6 +7,17 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.2.15',
+    date: '2026-04-06',
+    changes: [
+      'Replaced awkward Pokémon roaming with gentle idle breathing animations and responsive shadows',
+      'Added atmospheric overlays to home screen: vignette, firefly particles, fog wisps, light rays, canopy gradients',
+      'Added organic noise texture to ground SVG on both home and story screens',
+      'Added atmospheric overlays to story map: vignette, fireflies, fog patches, canopy edge gradients',
+      'Improved story path with shadow and glow effect, added ground shadows under zone markers',
+    ],
+  },
+  {
     version: '0.2.14',
     date: '2026-04-06',
     changes: [

@@ -42,6 +42,160 @@
 }
 
 /* ========================================
+   ATMOSPHERIC OVERLAYS
+   ======================================== */
+
+/* Vignette — darkens edges, draws focus to center */
+.meadow-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 35%,
+    rgba(0, 0, 0, 0.45) 100%
+  );
+}
+
+/* Canopy edge shadows — forest clearing feel */
+.meadow-world::before,
+.meadow-world::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.meadow-world::before {
+  top: 0;
+  height: 15%;
+  background: linear-gradient(180deg, rgba(0, 20, 10, 0.4) 0%, transparent 100%);
+}
+
+.meadow-world::after {
+  bottom: 0;
+  height: 10%;
+  background: linear-gradient(0deg, rgba(0, 10, 5, 0.3) 0%, transparent 100%);
+}
+
+/* Diagonal light rays — subtle dusk moonlight */
+.meadow-light-rays {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    30deg,
+    rgba(255, 240, 200, 0.025) 0px,
+    transparent 2px,
+    transparent 40px,
+    rgba(255, 240, 200, 0.025) 42px
+  );
+  animation: rays-drift 40s linear infinite;
+}
+
+@keyframes rays-drift {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(80px); }
+}
+
+/* Fog wisps — slow drifting atmosphere */
+.meadow-fog {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  width: 500px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(200, 220, 200, 0.07) 0%, transparent 70%);
+}
+
+.meadow-fog-1 {
+  top: 340px;
+  left: 200px;
+  animation: fog-drift-1 25s ease-in-out infinite alternate;
+}
+
+.meadow-fog-2 {
+  top: 60px;
+  left: 500px;
+  width: 400px;
+  height: 50px;
+  animation: fog-drift-2 30s ease-in-out infinite alternate;
+}
+
+@keyframes fog-drift-1 {
+  0%   { transform: translateX(0) scaleX(1); opacity: 0.6; }
+  50%  { opacity: 1; }
+  100% { transform: translateX(120px) scaleX(1.15); opacity: 0.5; }
+}
+
+@keyframes fog-drift-2 {
+  0%   { transform: translateX(0) scaleX(1); opacity: 0.5; }
+  50%  { opacity: 0.9; }
+  100% { transform: translateX(-100px) scaleX(1.2); opacity: 0.4; }
+}
+
+/* Firefly particles */
+.meadow-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.meadow-firefly {
+  position: absolute;
+  bottom: 10%;
+  width: 3px;
+  height: 3px;
+  background: rgba(255, 200, 80, 0.85);
+  border-radius: 50%;
+  box-shadow:
+    0 0 6px rgba(255, 180, 50, 0.6),
+    0 0 14px rgba(255, 160, 30, 0.25);
+  animation: firefly-float linear infinite;
+}
+
+@keyframes firefly-float {
+  0% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0;
+  }
+  8% { opacity: 0.8; }
+  25% {
+    transform: translateY(-180px) translateX(25px) scale(0.9);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-350px) translateX(-15px) scale(0.7);
+    opacity: 0.8;
+  }
+  75% {
+    transform: translateY(-500px) translateX(20px) scale(0.5);
+    opacity: 0.4;
+  }
+  92% { opacity: 0.2; }
+  100% {
+    transform: translateY(-650px) translateX(-10px) scale(0.3);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .meadow-firefly,
+  .meadow-fog,
+  .meadow-light-rays {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* ========================================
    MONSTER LAYER
    ======================================== */
 

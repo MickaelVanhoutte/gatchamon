@@ -67,7 +67,7 @@ export function IslandMonster({ owned, positionIndex }: IslandMonsterProps) {
           style={{ width: size, height: size }}
         />
       </div>
-      <div className="island-monster-shadow" style={{ width: size * 0.6 }} />
+      <div className={`island-monster-shadow shadow-breathe-${positionIndex % 6}`} style={{ width: size * 0.6 }} />
     </div>
   );
 }

@@ -324,10 +324,18 @@ export function StoryModePage() {
                 <stop offset="0%" stopColor="rgba(0,0,0,0.15)" />
                 <stop offset="100%" stopColor="transparent" />
               </radialGradient>
+              <filter id="mapGroundNoise" x="0" y="0" width="100%" height="100%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" result="noise" />
+                <feColorMatrix type="saturate" values="0" in="noise" result="grey" />
+                <feBlend in="SourceGraphic" in2="grey" mode="soft-light" />
+              </filter>
+              <filter id="pathGlow">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="2" />
+              </filter>
             </defs>
 
             {/* ===== BASE GROUND ===== */}
-            <rect width={MAP_W} height={MAP_H} fill="#78aa52" />
+            <rect width={MAP_W} height={MAP_H} fill="#78aa52" filter="url(#mapGroundNoise)" />
 
             {/* Lighter grass patches — ambient variation */}
             <ellipse cx="190" cy="150" rx="130" ry="85" fill="#82b858" opacity={0.25} />
@@ -1647,10 +1655,30 @@ export function StoryModePage() {
               <ellipse cx="1620" cy="518" rx="6" ry="4" fill="#8a7860" />
             </g>
 
-            {/* ===== CONNECTING PATH — thin dark dashed line ===== */}
+            {/* ===== CONNECTING PATH — shadow + glow + dashed line ===== */}
+            <path d={smoothPath} fill="none" stroke="rgba(0,0,0,0.12)" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" filter="url(#pathGlow)" />
             <path d={smoothPath} fill="none" stroke="rgba(0,0,0,0.08)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
             <path d={smoothPath} fill="none" stroke="#3a3020" strokeWidth="3" strokeDasharray="10,8" strokeLinecap="round" strokeLinejoin="round" opacity={0.55} />
           </svg>
+
+          {/* Atmospheric overlays */}
+          <div className="map-vignette" />
+          <div className="map-fog map-fog-1" />
+          <div className="map-fog map-fog-2" />
+          <div className="map-fog map-fog-3" />
+          <div className="map-particles">
+            {Array.from({ length: 6 }, (_, i) => (
+              <div
+                key={i}
+                className="map-firefly"
+                style={{
+                  left: `${5 + ((i * 41 + 7) % 90)}%`,
+                  animationDuration: `${7 + (i % 4) * 1.6}s`,
+                  animationDelay: `${(i * 1.7) % 9}s`,
+                }}
+              />
+            ))}
+          </div>
 
           {/* Region markers (HTML overlay) */}
           {arcRegions.map(region => {

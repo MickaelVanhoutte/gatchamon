@@ -252,6 +252,12 @@ export function IslandScene({ monsters, onNavigate }: IslandSceneProps) {
               <stop offset="0%" stopColor="#4090a8" opacity="0.3" />
               <stop offset="100%" stopColor="transparent" />
             </radialGradient>
+            {/* Organic noise texture */}
+            <filter id="groundNoise" x="0" y="0" width="100%" height="100%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" result="noise" />
+              <feColorMatrix type="saturate" values="0" in="noise" result="grey" />
+              <feBlend in="SourceGraphic" in2="grey" mode="soft-light" />
+            </filter>
             {/* Tree shadow */}
             <radialGradient id="treeShadow">
               <stop offset="0%" stopColor="rgba(0,0,0,0.18)" />
@@ -266,7 +272,7 @@ export function IslandScene({ monsters, onNavigate }: IslandSceneProps) {
           </defs>
 
           {/* ===== BASE GROUND ===== */}
-          <rect width="1200" height="800" fill="#6aaa48" />
+          <rect width="1200" height="800" fill="#6aaa48" filter="url(#groundNoise)" />
 
           {/* Lighter grass patches — large soft areas */}
           <ellipse cx="300" cy="200" rx="200" ry="120" fill="#72b852" opacity="0.45" />
@@ -843,6 +849,25 @@ export function IslandScene({ monsters, onNavigate }: IslandSceneProps) {
             <path d="M242,130 L240,120 M244,130 L244,118 M246,130 L248,120" />
           </g>
         </svg>
+
+        {/* Atmospheric overlays */}
+        <div className="meadow-vignette" />
+        <div className="meadow-light-rays" />
+        <div className="meadow-fog meadow-fog-1" />
+        <div className="meadow-fog meadow-fog-2" />
+        <div className="meadow-particles">
+          {Array.from({ length: 10 }, (_, i) => (
+            <div
+              key={i}
+              className="meadow-firefly"
+              style={{
+                left: `${8 + ((i * 37 + 13) % 84)}%`,
+                animationDuration: `${6 + (i % 5) * 1.4}s`,
+                animationDelay: `${(i * 1.3) % 8}s`,
+              }}
+            />
+          ))}
+        </div>
 
         {/* Monsters */}
         <div className="meadow-monsters">

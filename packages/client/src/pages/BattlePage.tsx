@@ -678,7 +678,10 @@ export function BattlePage() {
       <div className="battle-arena" ref={setArenaEl}>
         {/* Enemy team */}
         <div className="battle-field enemy-field">
-          {state.enemyTeam.map(mon => {
+          {state.enemyTeam.map((mon, i) => {
+            const n = state.enemyTeam.length;
+            const t = n > 1 ? i / (n - 1) : 0.5;
+            const arcOffset = -24 * 4 * t * (1 - t); // negative = up for enemies
             const skill = selectedSkill ? SKILLS[selectedSkill] : null;
             return (
               <BattleMonSprite
@@ -695,6 +698,7 @@ export function BattlePage() {
                 }}
                 skillType={skill?.type}
                 onEffectClick={handleEffectClick}
+                arcOffset={arcOffset}
                 registerRef={(el) => {
                   if (el) monRefs.current.set(mon.instanceId, el);
                   else monRefs.current.delete(mon.instanceId);
@@ -706,18 +710,24 @@ export function BattlePage() {
 
         {/* Player team */}
         <div className="battle-field player-field">
-          {state.playerTeam.map(mon => (
-            <BattleMonSprite
-              key={mon.instanceId}
-              mon={mon}
-              isActive={mon.instanceId === state.currentActorId}
-              onEffectClick={handleEffectClick}
-              registerRef={(el) => {
-                if (el) monRefs.current.set(mon.instanceId, el);
-                else monRefs.current.delete(mon.instanceId);
-              }}
-            />
-          ))}
+          {state.playerTeam.map((mon, i) => {
+            const n = state.playerTeam.length;
+            const t = n > 1 ? i / (n - 1) : 0.5;
+            const arcOffset = 40 * 4 * t * (1 - t); // positive = down for allies
+            return (
+              <BattleMonSprite
+                key={mon.instanceId}
+                mon={mon}
+                isActive={mon.instanceId === state.currentActorId}
+                onEffectClick={handleEffectClick}
+                arcOffset={arcOffset}
+                registerRef={(el) => {
+                  if (el) monRefs.current.set(mon.instanceId, el);
+                  else monRefs.current.delete(mon.instanceId);
+                }}
+              />
+            );
+          })}
         </div>
       </div>
 
@@ -1022,6 +1032,7 @@ function BattleMonSprite({
   skillType,
   registerRef,
   onEffectClick,
+  arcOffset,
 }: {
   mon: BattleMon;
   isTargetable?: boolean;
@@ -1031,6 +1042,7 @@ function BattleMonSprite({
   skillType?: PokemonType;
   registerRef?: (el: HTMLDivElement | null) => void;
   onEffectClick?: (id: EffectId, stacks: number, turns: number) => void;
+  arcOffset?: number;
 }) {
   const tmpl = getTemplate(mon.templateId);
   if (!tmpl) return null;
@@ -1082,6 +1094,7 @@ function BattleMonSprite({
     <div
       ref={registerRef}
       className={`battle-mon ${!mon.isAlive ? 'dead' : ''} ${isTargetable ? 'targetable' : ''} ${isActive ? 'active-mon' : ''} ${mon.isBoss ? 'boss-mon' : ''} ${isFocused ? 'focused' : ''}`}
+      style={arcOffset ? { transform: `translateY(${arcOffset}px)` } : undefined}
       onClick={mon.isAlive && isTargetable ? onClick : undefined}
     >
       {mon.isPlayerOwned ? (

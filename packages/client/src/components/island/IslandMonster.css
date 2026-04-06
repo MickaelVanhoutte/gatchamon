@@ -52,65 +52,84 @@
   opacity: 1;
 }
 
-/* 6 different roaming animations to desync the monsters */
-@keyframes island-roam-1 {
-  0%   { transform: translate(0, 0); }
-  15%  { transform: translate(5px, -5px); }
-  30%  { transform: translate(8px, 0); }
-  50%  { transform: translate(4px, -6px); }
-  65%  { transform: translate(-4px, -3px); }
-  80%  { transform: translate(-8px, 0); }
-  100% { transform: translate(0, 0); }
+/* 6 gentle idle-breathing animations (vertical bob + subtle scale, no lateral drift) */
+@keyframes island-idle-1 {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50%      { transform: translateY(-2px) scaleY(1.015); }
 }
 
-@keyframes island-roam-2 {
-  0%   { transform: translate(0, 0); }
-  20%  { transform: translate(-6px, -4px); }
-  40%  { transform: translate(-3px, -7px); }
-  60%  { transform: translate(5px, -2px); }
-  80%  { transform: translate(7px, -5px); }
-  100% { transform: translate(0, 0); }
+@keyframes island-idle-2 {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  40%      { transform: translateY(-1.5px) scaleY(1.012); }
+  70%      { transform: translateY(-2.5px) scaleY(1.018); }
 }
 
-@keyframes island-roam-3 {
-  0%   { transform: translate(0, 0); }
-  25%  { transform: translate(4px, -6px); }
-  50%  { transform: translate(-5px, -3px); }
-  75%  { transform: translate(-7px, -6px); }
-  100% { transform: translate(0, 0); }
+@keyframes island-idle-3 {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  55%      { transform: translateY(-2px) scaleY(1.014); }
 }
 
-@keyframes island-roam-4 {
-  0%   { transform: translate(0, 0); }
-  18%  { transform: translate(-4px, -5px); }
-  36%  { transform: translate(6px, -7px); }
-  54%  { transform: translate(3px, 0); }
-  72%  { transform: translate(-6px, -4px); }
-  100% { transform: translate(0, 0); }
+@keyframes island-idle-4 {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  35%      { transform: translateY(-1px) scaleY(1.01); }
+  65%      { transform: translateY(-2.5px) scaleY(1.016); }
 }
 
-@keyframes island-roam-5 {
-  0%   { transform: translate(0, 0); }
-  22%  { transform: translate(7px, -3px); }
-  44%  { transform: translate(-3px, -6px); }
-  66%  { transform: translate(-7px, -2px); }
-  88%  { transform: translate(4px, -5px); }
-  100% { transform: translate(0, 0); }
+@keyframes island-idle-5 {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  45%      { transform: translateY(-2px) scaleY(1.013); }
+  80%      { transform: translateY(-1px) scaleY(1.008); }
 }
 
-@keyframes island-roam-6 {
-  0%   { transform: translate(0, 0); }
-  16%  { transform: translate(-5px, -6px); }
-  33%  { transform: translate(3px, -2px); }
-  50%  { transform: translate(7px, -5px); }
-  66%  { transform: translate(-2px, -7px); }
-  83%  { transform: translate(-6px, 0); }
-  100% { transform: translate(0, 0); }
+@keyframes island-idle-6 {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  60%      { transform: translateY(-1.5px) scaleY(1.015); }
 }
 
-.island-monster-sprite-wrap.roam-0 { animation: island-roam-1 5s ease-in-out infinite; }
-.island-monster-sprite-wrap.roam-1 { animation: island-roam-2 6.5s ease-in-out infinite; }
-.island-monster-sprite-wrap.roam-2 { animation: island-roam-3 5.5s ease-in-out infinite; }
-.island-monster-sprite-wrap.roam-3 { animation: island-roam-4 7s ease-in-out infinite; }
-.island-monster-sprite-wrap.roam-4 { animation: island-roam-5 6s ease-in-out infinite; }
-.island-monster-sprite-wrap.roam-5 { animation: island-roam-6 5.8s ease-in-out infinite; }
+.island-monster-sprite-wrap.roam-0 { animation: island-idle-1 5s ease-in-out infinite; }
+.island-monster-sprite-wrap.roam-1 { animation: island-idle-2 6.5s ease-in-out infinite; }
+.island-monster-sprite-wrap.roam-2 { animation: island-idle-3 5.5s ease-in-out infinite; }
+.island-monster-sprite-wrap.roam-3 { animation: island-idle-4 7s ease-in-out infinite; }
+.island-monster-sprite-wrap.roam-4 { animation: island-idle-5 6s ease-in-out infinite; }
+.island-monster-sprite-wrap.roam-5 { animation: island-idle-6 5.8s ease-in-out infinite; }
+
+/* Shadow responds to breathing — shrinks/lightens when sprite bobs up */
+@keyframes shadow-breathe-1 {
+  0%, 100% { transform: scale(1, 1); opacity: 1; }
+  50%      { transform: scale(0.92, 0.85); opacity: 0.7; }
+}
+
+@keyframes shadow-breathe-2 {
+  0%, 100% { transform: scale(1, 1); opacity: 1; }
+  40%      { transform: scale(0.94, 0.88); opacity: 0.75; }
+  70%      { transform: scale(0.90, 0.82); opacity: 0.65; }
+}
+
+@keyframes shadow-breathe-3 {
+  0%, 100% { transform: scale(1, 1); opacity: 1; }
+  55%      { transform: scale(0.92, 0.85); opacity: 0.7; }
+}
+
+@keyframes shadow-breathe-4 {
+  0%, 100% { transform: scale(1, 1); opacity: 1; }
+  35%      { transform: scale(0.95, 0.90); opacity: 0.8; }
+  65%      { transform: scale(0.90, 0.82); opacity: 0.65; }
+}
+
+@keyframes shadow-breathe-5 {
+  0%, 100% { transform: scale(1, 1); opacity: 1; }
+  45%      { transform: scale(0.92, 0.85); opacity: 0.7; }
+  80%      { transform: scale(0.96, 0.92); opacity: 0.85; }
+}
+
+@keyframes shadow-breathe-6 {
+  0%, 100% { transform: scale(1, 1); opacity: 1; }
+  60%      { transform: scale(0.93, 0.86); opacity: 0.72; }
+}
+
+.shadow-breathe-0 { animation: shadow-breathe-1 5s ease-in-out infinite; }
+.shadow-breathe-1 { animation: shadow-breathe-2 6.5s ease-in-out infinite; }
+.shadow-breathe-2 { animation: shadow-breathe-3 5.5s ease-in-out infinite; }
+.shadow-breathe-3 { animation: shadow-breathe-4 7s ease-in-out infinite; }
+.shadow-breathe-4 { animation: shadow-breathe-5 6s ease-in-out infinite; }
+.shadow-breathe-5 { animation: shadow-breathe-6 5.8s ease-in-out infinite; }
