@@ -10,6 +10,7 @@ import * as evolutionService from '../services/evolution.service';
 import * as typeChangeService from '../services/type-change.service';
 import * as essenceMergeService from '../services/essence-merge.service';
 import * as heldItemService from '../services/held-item.service';
+import * as pcService from '../services/pc.service';
 import { regenerateEnergy } from '../services/energy.service';
 import { getUnclaimedMissionCount, getUnclaimedTrophyCount } from '../services/reward.service';
 import { getUnreadInboxCount, grantNewPlayerEnergyBonus } from '../services/inbox.service';
@@ -23,6 +24,8 @@ export interface OwnedPokemon {
 interface GameState {
   player: Player | null;
   collection: OwnedPokemon[];
+  pcBox: OwnedPokemon[];
+  pcAutoSend: boolean;
   heldItems: HeldItemInstance[];
   isLoading: boolean;
   unclaimedRewardCount: number;
@@ -34,6 +37,10 @@ interface GameState {
   refreshInbox: () => void;
   summon: (count: 1 | 10, type?: PokeballType) => OwnedPokemon[];
   loadCollection: () => void;
+  loadPcBox: () => void;
+  transferToPC: (instanceIds: string[]) => void;
+  transferFromPC: (instanceIds: string[]) => void;
+  togglePcAutoSend: () => void;
   mergePokemon: (baseId: string, fodderId: string) => void;
   altarFeed: (baseId: string, fodderIds: string[]) => void;
   evolvePokemon: (instanceId: string, targetTemplateId: number) => void;
@@ -55,6 +62,8 @@ let energyRegenInterval: ReturnType<typeof setInterval> | null = null;
 export const useGameStore = create<GameState>((set, get) => ({
   player: null,
   collection: [],
+  pcBox: [],
+  pcAutoSend: storage.loadPcAutoSend(),
   heldItems: [],
   isLoading: false,
   unclaimedRewardCount: 0,
@@ -143,10 +152,9 @@ export const useGameStore = create<GameState>((set, get) => ({
 
     // Reload player from storage (pokeballs were deducted)
     const updatedPlayer = storage.loadPlayer()!;
-    set(state => ({
-      player: updatedPlayer,
-      collection: [...state.collection, ...newPokemon],
-    }));
+    set({ player: updatedPlayer });
+    get().loadCollection();
+    get().loadPcBox();
 
     get().refreshRewards();
     return newPokemon;
@@ -169,6 +177,36 @@ export const useGameStore = create<GameState>((set, get) => ({
     set({ collection, isLoading: false });
   },
 
+  loadPcBox: () => {
+    const instances = storage.loadPcBox();
+    const pcBox: OwnedPokemon[] = instances
+      .map(inst => ({
+        instance: inst,
+        template: getTemplate(inst.templateId)!,
+      }))
+      .filter(item => item.template != null)
+      .sort((a, b) => b.instance.stars - a.instance.stars || b.instance.level - a.instance.level);
+    set({ pcBox });
+  },
+
+  transferToPC: (instanceIds: string[]) => {
+    pcService.transferToPC(instanceIds);
+    get().loadCollection();
+    get().loadPcBox();
+  },
+
+  transferFromPC: (instanceIds: string[]) => {
+    pcService.transferFromPC(instanceIds);
+    get().loadCollection();
+    get().loadPcBox();
+  },
+
+  togglePcAutoSend: () => {
+    const next = !get().pcAutoSend;
+    storage.savePcAutoSend(next);
+    set({ pcAutoSend: next });
+  },
+
   mergePokemon: (baseId: string, fodderId: string) => {
     mergeService.performMerge(baseId, fodderId);
     get().loadCollection();
@@ -178,6 +216,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   altarFeed: (baseId: string, fodderIds: string[]) => {
     altarService.performAltarFeed(baseId, fodderIds);
     get().loadCollection();
+    get().loadPcBox();
     get().refreshRewards();
   },
 

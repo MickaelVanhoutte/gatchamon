@@ -689,7 +689,7 @@ export function BattlePage() {
               <BattleMonSprite
                 key={mon.instanceId}
                 mon={mon}
-                isTargetable={isPlayerTurn && (selectedSkill !== null || isAutoOn)}
+                isTargetable={isAutoOn || (isPlayerTurn && selectedSkill !== null)}
                 isFocused={focusTargetId === mon.instanceId}
                 onClick={() => {
                   if (isAutoOn) {

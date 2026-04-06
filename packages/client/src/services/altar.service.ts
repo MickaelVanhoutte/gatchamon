@@ -9,7 +9,7 @@ import {
   DITTO_TEMPLATE_ID,
   getEvolutionLineage,
 } from '@gatchamon/shared';
-import { loadCollection, saveCollection } from './storage';
+import { loadCollection, saveCollection, loadPcBox, savePcBox } from './storage';
 import { trackStat, incrementMission, checkAndUpdateTrophies } from './reward.service';
 
 export interface AltarValidation {
@@ -106,13 +106,15 @@ export function performAltarFeed(
   fodderInstanceIds: string[],
 ): PokemonInstance {
   const collection = loadCollection();
+  const pcBox = loadPcBox();
   const baseIdx = collection.findIndex(p => p.instanceId === baseInstanceId);
   if (baseIdx === -1) throw new Error('Base monster not found');
 
   const base = collection[baseIdx];
+  const allMonsters = [...collection, ...pcBox];
   const fodder: PokemonInstance[] = [];
   for (const fid of fodderInstanceIds) {
-    const f = collection.find(p => p.instanceId === fid);
+    const f = allMonsters.find(p => p.instanceId === fid);
     if (!f) throw new Error(`Fodder monster ${fid} not found`);
     fodder.push(f);
   }
@@ -172,15 +174,17 @@ export function performAltarFeed(
     isShiny: base.isShiny || willBecomeShiny,
   };
 
-  // 7. Remove fodder (splice from highest index first to avoid shifting)
+  // 7. Remove fodder from both collection and PC box
   const fodderIdSet = new Set(fodderInstanceIds);
-  const remaining = collection.filter(p => !fodderIdSet.has(p.instanceId) || p.instanceId === baseInstanceId);
-  saveCollection(remaining);
+  const remainingCollection = collection.filter(p => !fodderIdSet.has(p.instanceId) || p.instanceId === baseInstanceId);
+  const remainingPC = pcBox.filter(p => !fodderIdSet.has(p.instanceId));
+  saveCollection(remainingCollection);
+  savePcBox(remainingPC);
 
   // 8. Track rewards
   trackStat('totalMerges', fodder.length);
   incrementMission('merge_monster', fodder.length);
   checkAndUpdateTrophies();
 
-  return remaining.find(p => p.instanceId === baseInstanceId)!;
+  return remainingCollection.find(p => p.instanceId === baseInstanceId)!;
 }

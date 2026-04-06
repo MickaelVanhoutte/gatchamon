@@ -375,6 +375,7 @@
 .player-field {
   align-items: flex-start;
   padding-bottom: 24px;
+  padding-top: 16px;
 }
 
 /* Sprite effect elements created by EffectPool */

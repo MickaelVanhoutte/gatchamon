@@ -7,6 +7,20 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.3.0',
+    date: '2026-04-06',
+    changes: [
+      'PC Box: new storage system for bulk monster management — accessible from Collection page',
+      'Monsters in PC are stacked by species/stars/shiny with x count badges',
+      'Transfer monsters between Collection and PC Box freely',
+      'Bulk Store mode in Collection: multi-select monsters to send to PC at once',
+      'Auto PC toggle on Summon page: automatically sends 1-3 star summons to PC',
+      'Power-Up Circle now shows PC monsters as fodder (toggle "+ PC" in header)',
+      'Quick "★1-3→PC" button in Collection: one-click stores all Lv.1 ★1-3 monsters without held items',
+      'Fodder XP significantly buffed: base multiplier 50 → 150, star multipliers increased (1★ lv1 = 150 XP, 3★ lv1 = 600 XP)',
+    ],
+  },
+  {
     version: '0.2.21',
     date: '2026-04-06',
     changes: [

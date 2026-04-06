@@ -1,0 +1,146 @@
+/* ========== PC Box Page ========== */
+.pc-box-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0 !important;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Stack count badge */
+.pc-stack-badge {
+  position: absolute;
+  bottom: 1px;
+  right: 2px;
+  font-size: 0.5rem;
+  font-weight: 800;
+  color: #fff;
+  background: rgba(99, 102, 241, 0.85);
+  padding: 0 4px;
+  border-radius: 4px;
+  z-index: 2;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  line-height: 1.4;
+}
+
+/* Transfer bar at bottom of detail panel */
+.pc-transfer-bar {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-panel-alt);
+}
+
+.pc-transfer-btn {
+  width: 100%;
+  padding: 10px 8px;
+  background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.2),
+    0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.pc-transfer-btn:active {
+  transform: scale(0.96) translateY(1px);
+}
+
+/* Quantity picker */
+.pc-qty-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pc-qty-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--bg-panel);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pc-qty-btn:active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.pc-qty-value {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  min-width: 30px;
+  text-align: center;
+}
+
+.pc-qty-label {
+  font-size: 0.65rem;
+  color: #94a3b8;
+  text-align: center;
+}
+
+/* Grid overrides for PC — slightly larger cells to show badge */
+.pc-box-page .box-cell {
+  height: 72px;
+}
+
+/* Filters */
+.pc-filters {
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--card-border);
+  align-items: center;
+}
+
+.pc-search {
+  flex: 1;
+  padding: 6px 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  outline: none;
+}
+
+.pc-search::placeholder {
+  color: var(--text-secondary);
+}
+
+.pc-search:focus {
+  border-color: var(--accent);
+}
+
+/* PC total count */
+.pc-total-count {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  margin-left: 4px;
+}
+
+/* Responsive */
+@media (orientation: portrait) {
+  .pc-box-page .box-cell {
+    height: 60px;
+  }
+}

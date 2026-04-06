@@ -11,6 +11,8 @@ const LOGIN_CALENDAR_KEY = 'gatchamon_login_calendar';
 const ROULETTE_KEY = 'gatchamon_roulette';
 const GRANTED_FLAGS_KEY = 'gatchamon_granted_flags';
 const DUNGEON_RECORDS_KEY = 'gatchamon_dungeon_records';
+const PC_BOX_KEY = 'gatchamon_pc';
+const PC_AUTO_SEND_KEY = 'gatchamon_pc_auto';
 
 function safeParse<T>(raw: string | null, fallback: T): T {
   if (!raw) return fallback;
@@ -382,7 +384,48 @@ export function saveDungeonRecord(key: string, floor: number, timeSec: number): 
   }
 }
 
-// ── Reset ───────────────────────────────────────────��──────────────────
+// ── PC Box ──────────────────────────────────────────────────────────────
+
+export function loadPcBox(): PokemonInstance[] {
+  const raw = localStorage.getItem(PC_BOX_KEY);
+  if (!raw) return [];
+  const box = safeParse<PokemonInstance[]>(raw, []);
+  let needsSave = false;
+  for (const inst of box) {
+    if (!inst.skillLevels) {
+      inst.skillLevels = [1, 1, 1];
+      needsSave = true;
+    }
+  }
+  if (needsSave) savePcBox(box);
+  return box;
+}
+
+export function savePcBox(box: PokemonInstance[]): void {
+  localStorage.setItem(PC_BOX_KEY, JSON.stringify(box));
+}
+
+export function addToPcBox(instances: PokemonInstance[]): void {
+  const current = loadPcBox();
+  savePcBox([...current, ...instances]);
+}
+
+export function removeFromPcBox(instanceIds: string[]): void {
+  const idSet = new Set(instanceIds);
+  const box = loadPcBox();
+  savePcBox(box.filter(p => !idSet.has(p.instanceId)));
+}
+
+export function loadPcAutoSend(): boolean {
+  const raw = localStorage.getItem(PC_AUTO_SEND_KEY);
+  return raw === 'true';
+}
+
+export function savePcAutoSend(enabled: boolean): void {
+  localStorage.setItem(PC_AUTO_SEND_KEY, String(enabled));
+}
+
+// ── Reset ────────────────────────────────────────────────────────────────
 
 export function checkAndResetTower(): void {
   const player = loadPlayer();
@@ -408,6 +451,8 @@ export function clearAll(): void {
   localStorage.removeItem(GRANTED_FLAGS_KEY);
   localStorage.removeItem(STORY_DIFFICULTY_KEY);
   localStorage.removeItem(DUNGEON_RECORDS_KEY);
+  localStorage.removeItem(PC_BOX_KEY);
+  localStorage.removeItem(PC_AUTO_SEND_KEY);
   // Clear all per-dungeon team keys
   for (let i = localStorage.length - 1; i >= 0; i--) {
     const key = localStorage.key(i);

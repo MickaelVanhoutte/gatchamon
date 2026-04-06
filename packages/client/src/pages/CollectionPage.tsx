@@ -53,13 +53,15 @@ const STAT_LABELS: Record<keyof BaseStats, string> = {
 
 export function CollectionPage() {
   const navigate = useNavigate();
-  const { collection, loadCollection, evolvePokemon, changeType, player, heldItems, loadHeldItems, updateInstance, isLoading } = useGameStore();
+  const { collection, loadCollection, evolvePokemon, changeType, player, heldItems, loadHeldItems, updateInstance, isLoading, transferToPC } = useGameStore();
   const [typeFilter, setTypeFilter] = useState<PokemonType | null>(null);
   const [shinyFilter, setShinyFilter] = useState<'all' | 'shiny'>('all');
   const [sortBy, setSortBy] = useState<SortBy>('stars');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<DetailTab>('info');
   const lastSelectedRef = useRef<string | null>(null);
+  const [storeMode, setStoreMode] = useState(false);
+  const [storeSelection, setStoreSelection] = useState<Set<string>>(new Set());
   const [evoAnim, setEvoAnim] = useState<{
     fromSprite: string;
     toSprite: string;
@@ -173,9 +175,38 @@ export function CollectionPage() {
           <button className="pdex-nav-btn" onClick={() => navigate('/pokedex')}>
             Pokedex
           </button>
+          <button className="pdex-nav-btn" onClick={() => navigate('/pc')}>
+            PC
+          </button>
           <button className="pdex-nav-btn" onClick={() => navigate('/inventory')}>
             Items
           </button>
+          {!storeMode ? (
+            <>
+              <button className="pdex-nav-btn" onClick={() => { setStoreMode(true); setStoreSelection(new Set()); }}>
+                Store
+              </button>
+              <button className="pdex-nav-btn" style={{ color: '#818cf8' }} onClick={() => {
+                const equippedIds = new Set(heldItems.filter(i => i.equippedTo).map(i => i.equippedTo!));
+                const eligible = visibleCollection.filter(m =>
+                  m.instance.stars <= 3 &&
+                  m.instance.level === 1 &&
+                  !m.instance.isLocked &&
+                  !equippedIds.has(m.instance.instanceId)
+                );
+                if (eligible.length === 0) { alert('No eligible monsters (★1-3, Lv.1, no items, unlocked)'); return; }
+                if (confirm(`Store ${eligible.length} monsters (★1-3, Lv.1) to PC?`)) {
+                  transferToPC(eligible.map(m => m.instance.instanceId));
+                }
+              }}>
+                ★1-3→PC
+              </button>
+            </>
+          ) : (
+            <button className="pdex-nav-btn" style={{ color: '#f87171' }} onClick={() => { setStoreMode(false); setStoreSelection(new Set()); }}>
+              Cancel
+            </button>
+          )}
           <button className="box-close" onClick={() => { history.back(); }}><GameIcon id="close" size={18} /></button>
         </div>
       </div>
@@ -187,14 +218,26 @@ export function CollectionPage() {
           <div className="box-grid">
             {filtered.map((mon, idx) => {
               const starColor = STAR_COLORS[mon.instance.stars] ?? STAR_COLORS[1];
-              const isSelected = mon.instance.instanceId === selectedId;
+              const isSelected = storeMode
+                ? storeSelection.has(mon.instance.instanceId)
+                : mon.instance.instanceId === selectedId;
               const isTutorialTarget = idx === 0 && tutorialStep === 13;
               return (
                 <div
                   key={mon.instance.instanceId}
-                  className={`box-cell ${isSelected ? 'box-cell--selected' : ''} ${isTutorialTarget ? 'tutorial-target' : ''}`}
+                  className={`box-cell ${isSelected ? 'box-cell--selected' : ''} ${isTutorialTarget ? 'tutorial-target' : ''} ${storeMode ? 'box-cell--merge-mode' : ''}`}
                   data-tutorial-id={idx === 0 ? 'collection-first-mon' : undefined}
                   onClick={() => {
+                    if (storeMode) {
+                      if (mon.instance.isLocked) return;
+                      setStoreSelection(prev => {
+                        const next = new Set(prev);
+                        if (next.has(mon.instance.instanceId)) next.delete(mon.instance.instanceId);
+                        else next.add(mon.instance.instanceId);
+                        return next;
+                      });
+                      return;
+                    }
                     setSelectedId(mon.instance.instanceId);
                     lastSelectedRef.current = mon.instance.instanceId;
                     if (tutorialStep === 13) advanceTutorial(); // step 13 → 14
@@ -508,6 +551,23 @@ export function CollectionPage() {
           )}
         </div>
       </div>
+
+      {/* Store to PC floating bar */}
+      {storeMode && storeSelection.size > 0 && (
+        <div className="store-mode-bar">
+          <button
+            className="store-mode-confirm"
+            onClick={() => {
+              transferToPC(Array.from(storeSelection));
+              setStoreMode(false);
+              setStoreSelection(new Set());
+              setSelectedId(null);
+            }}
+          >
+            Store {storeSelection.size} to PC
+          </button>
+        </div>
+      )}
 
       {/* Evolution animation overlay */}
       {evoAnim && (

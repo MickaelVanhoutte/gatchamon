@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
 import { performRetrySummonRoll } from '../services/retry-summon.service';
 import { getInboxItems, claimInboxReward } from '../services/inbox.service';
-import { addToCollection } from '../services/storage';
+import { commitSummonedInstances } from '../services/gacha.service';
 import {
   loadRetrySummonState,
   saveRetrySummonState,
@@ -202,7 +202,7 @@ export function RetrySummonPage() {
 
     // Add to collection
     const instances = chosen.map(o => o.instance);
-    addToCollection(instances);
+    commitSummonedInstances(instances);
 
     // Track stats
     trackStat('totalSummons', 10);

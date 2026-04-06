@@ -5,13 +5,19 @@
       "name": "gatchamon-server",
       "runtimeExecutable": "/opt/homebrew/bin/npx",
       "runtimeArgs": ["tsx", "--env-file=.env", "packages/server/src/index.ts"],
-      "port": 3001
+      "port": 3001,
+      "env": {
+        "PATH": "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
+      }
     },
     {
       "name": "gatchamon-client",
       "runtimeExecutable": "/opt/homebrew/bin/node",
       "runtimeArgs": ["/Users/20017225/PERSO/gatchamon/node_modules/.bin/vite", "--config", "packages/client/vite.config.ts", "packages/client"],
-      "port": 5173
+      "port": 5173,
+      "env": {
+        "PATH": "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
+      }
     }
   ]
 }

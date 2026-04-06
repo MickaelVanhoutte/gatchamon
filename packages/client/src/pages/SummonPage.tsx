@@ -14,7 +14,7 @@ import './SummonPage.css';
 type Phase = 'idle' | 'summoning' | 'revealing' | 'done';
 
 export function SummonPage() {
-  const { player, summon } = useGameStore();
+  const { player, summon, pcAutoSend, togglePcAutoSend } = useGameStore();
   const tutorialStep = useTutorialStore(s => s.step);
   const advanceStep = useTutorialStore(s => s.advanceStep);
   const inTutorial = tutorialStep === 4 || tutorialStep === 5;
@@ -136,6 +136,13 @@ export function SummonPage() {
                   <span>Pieces</span>
                 </button>
               </div>
+              {selectedBall !== 'pieces' && (
+                <label className="pc-auto-toggle">
+                  <input type="checkbox" checked={pcAutoSend} onChange={togglePcAutoSend} />
+                  <span className="pc-auto-toggle-slider" />
+                  <span className="pc-auto-toggle-label">Auto PC &#9733;1-3</span>
+                </label>
+              )}
               {selectedBall === 'pieces' && <PieceSummonTab />}
               {selectedBall !== 'pieces' && selectedBall === 'premium' && (
                 <div className="summon-pity">

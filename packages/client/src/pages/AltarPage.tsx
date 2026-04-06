@@ -35,16 +35,18 @@ function getSpriteScale(heightMeters: number): number {
 export function AltarPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { collection, loadCollection, altarFeed } = useGameStore();
+  const { collection, loadCollection, altarFeed, pcBox, loadPcBox } = useGameStore();
   const [baseId, setBaseId] = useState<string | null>(searchParams.get('baseId'));
   const [fodderIds, setFodderIds] = useState<string[]>([]);
   const [showConfirm, setShowConfirm] = useState(false);
   const [sortBy, setSortBy] = useState<SortBy>('stars');
   const [typeFilter, setTypeFilter] = useState<PokemonType | null>(null);
+  const [showPC, setShowPC] = useState(false);
 
   useEffect(() => {
     loadCollection();
-  }, [loadCollection]);
+    loadPcBox();
+  }, [loadCollection, loadPcBox]);
 
   // If arriving with a baseId that doesn't exist in collection, clear it
   useEffect(() => {
@@ -76,9 +78,11 @@ export function AltarPage() {
     return baseLineageSet.has(mon.instance.templateId);
   }
 
+  const allMonsters = useMemo(() => [...collection, ...pcBox], [collection, pcBox]);
+
   const fodder = useMemo(
-    () => fodderIds.map(id => collection.find(m => m.instance.instanceId === id)).filter(Boolean) as OwnedPokemon[],
-    [collection, fodderIds],
+    () => fodderIds.map(id => allMonsters.find(m => m.instance.instanceId === id)).filter(Boolean) as OwnedPokemon[],
+    [allMonsters, fodderIds],
   );
 
   const maxSlots = 5;
@@ -93,9 +97,12 @@ export function AltarPage() {
     );
   }, [base, fodder]);
 
+  const pcInstanceIds = useMemo(() => new Set(pcBox.map(m => m.instance.instanceId)), [pcBox]);
+
   // Grid: filter, partition skill-ups to top, then sort by user preference
   const sortedCollection = useMemo(() => {
-    let filtered = collection.filter(m => isActivePokemon(m.instance.templateId));
+    const source = showPC ? [...collection, ...pcBox] : collection;
+    let filtered = source.filter(m => isActivePokemon(m.instance.templateId));
     if (typeFilter) {
       filtered = filtered.filter(m => m.template.types.includes(typeFilter));
     }
@@ -128,7 +135,7 @@ export function AltarPage() {
 
     filtered.sort(comparator);
     return filtered;
-  }, [collection, typeFilter, sortBy, base, baseId, baseLineageSet]);
+  }, [collection, pcBox, showPC, typeFilter, sortBy, base, baseId, baseLineageSet]);
 
   function handleGridClick(mon: OwnedPokemon) {
     // If no base selected, select as base
@@ -200,6 +207,12 @@ export function AltarPage() {
               <option key={t} value={t}>{t}</option>
             ))}
           </select>
+          <button
+            className={`altar-pc-toggle ${showPC ? 'altar-pc-toggle--active' : ''}`}
+            onClick={() => setShowPC(v => !v)}
+          >
+            + PC
+          </button>
         </div>
       </div>
 
@@ -246,6 +259,9 @@ export function AltarPage() {
                   )}
                   {isLockedFodder && (
                     <div className="altar-cell-lock-badge"><GameIcon id="lock" size={12} /></div>
+                  )}
+                  {pcInstanceIds.has(mon.instance.instanceId) && (
+                    <div className="altar-cell-pc-badge">PC</div>
                   )}
                   <div className="altar-cell-level">Lv.{mon.instance.level}</div>
                 </div>

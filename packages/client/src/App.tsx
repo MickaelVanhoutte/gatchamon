@@ -13,6 +13,7 @@ import { DungeonPage } from './pages/DungeonPage';
 import { MissionsPage } from './pages/MissionsPage';
 import { TrainerPage } from './pages/TrainerPage';
 import { PokedexPage } from './pages/PokedexPage';
+import { PCBoxPage } from './pages/PCBoxPage';
 import { AltarPage } from './pages/AltarPage';
 import { InboxPage } from './pages/InboxPage';
 import { RetrySummonPage } from './pages/RetrySummonPage';
@@ -117,6 +118,7 @@ export function App() {
           <Route path="/shop" element={<ShopPage />} />
           <Route path="/collection" element={<CollectionPage />} />
           <Route path="/pokedex" element={<PokedexPage />} />
+          <Route path="/pc" element={<PCBoxPage />} />
           <Route path="/collection/:instanceId" element={<MonsterDetail />} />
           <Route path="/missions" element={<MissionsPage />} />
           <Route path="/story" element={<StoryModePage />} />

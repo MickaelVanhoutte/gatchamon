@@ -1,8 +1,20 @@
 import { POKEDEX, ACTIVE_POKEDEX } from '@gatchamon/shared';
 import type { PokemonTemplate, PokemonInstance, PokeballType } from '@gatchamon/shared';
-import { loadPlayer, savePlayer, addToCollection, loadCollection } from './storage';
+import { loadPlayer, savePlayer, addToCollection, loadCollection, loadPcAutoSend, addToPcBox, loadPcBox } from './storage';
 import { trackStat, incrementMission, checkAndUpdateTrophies } from './reward.service';
 import { loadRewardState, saveRewardState } from './storage';
+
+export function commitSummonedInstances(instances: PokemonInstance[]): void {
+  if (loadPcAutoSend()) {
+    const toPC = instances.filter(i => i.stars <= 3);
+    const toCollection = instances.filter(i => i.stars > 3);
+    if (toPC.length > 0) addToPcBox(toPC);
+    if (toCollection.length > 0) addToCollection(toCollection);
+    if (toPC.length === 0 && toCollection.length === 0) addToCollection([]);
+  } else {
+    addToCollection(instances);
+  }
+}
 
 const REGULAR_SINGLE_COST = 5;
 const REGULAR_MULTI_COST = 45;
@@ -88,7 +100,7 @@ export function summonSingleRegular(forcedTemplateId?: number): SummonResult {
     ? POKEDEX.find(p => p.id === forcedTemplateId)!
     : pickFromPool(rollRegularStarRating());
   const pokemon = createInstance(template, player.id);
-  addToCollection([pokemon]);
+  commitSummonedInstances([pokemon]);
   trackSummons(1);
 
   return { pokemon, template };
@@ -113,7 +125,7 @@ export function summonMultiRegular(): SummonResult[] {
     results.push({ pokemon, template });
   }
 
-  addToCollection(instances);
+  commitSummonedInstances(instances);
   trackSummons(MULTI_COUNT);
 
   return results;
@@ -146,7 +158,7 @@ export function summonSinglePremium(forcedTemplateId?: number): SummonResult {
   });
 
   const pokemon = createInstance(template, player.id);
-  addToCollection([pokemon]);
+  commitSummonedInstances([pokemon]);
   trackSummons(1);
 
   return { pokemon, template };
@@ -179,7 +191,7 @@ export function summonMultiPremium(): SummonResult[] {
     premiumPityCounter: pity,
   });
 
-  addToCollection(instances);
+  commitSummonedInstances(instances);
   trackSummons(MULTI_COUNT);
 
   return results;
@@ -201,7 +213,7 @@ export function summonSingleLegendary(): SummonResult {
 
   const template = pickFromPool(5);
   const pokemon = createInstance(template, player.id);
-  addToCollection([pokemon]);
+  commitSummonedInstances([pokemon]);
   trackSummons(1);
 
   return { pokemon, template };
@@ -234,7 +246,7 @@ export function summonSingleGlowing(): SummonResult {
     skillLevels: [1, 1, 1],
   };
 
-  addToCollection([pokemon]);
+  commitSummonedInstances([pokemon]);
   trackSummons(1);
 
   return { pokemon, template };
@@ -272,7 +284,7 @@ export function summonMultiGlowing(): SummonResult[] {
     instances.push(pokemon);
   }
 
-  addToCollection(instances);
+  commitSummonedInstances(instances);
   trackSummons(MULTI_COUNT);
 
   return results;
@@ -305,7 +317,7 @@ export function shopSummonMultiPremium(): SummonResult[] {
     premiumPityCounter: pity,
   });
 
-  addToCollection(instances);
+  commitSummonedInstances(instances);
   trackSummons(MULTI_COUNT);
 
   return results;
@@ -317,7 +329,7 @@ export function shopSummonSingleLegendary(): SummonResult {
 
   const template = pickFromPool(5);
   const pokemon = createInstance(template, player.id);
-  addToCollection([pokemon]);
+  commitSummonedInstances([pokemon]);
   trackSummons(1);
 
   return { pokemon, template };
@@ -325,7 +337,8 @@ export function shopSummonSingleLegendary(): SummonResult {
 
 function updateUniqueCount(): void {
   const collection = loadCollection();
-  const uniqueIds = new Set(collection.map(c => c.templateId));
+  const pcBox = loadPcBox();
+  const uniqueIds = new Set([...collection, ...pcBox].map(c => c.templateId));
   const state = loadRewardState();
   if (state) {
     state.stats.uniqueMonstersOwned = uniqueIds.size;

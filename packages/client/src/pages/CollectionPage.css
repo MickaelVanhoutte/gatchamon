@@ -1018,6 +1018,46 @@
   transform: translateX(18px);
 }
 
+/* ========== Store to PC floating bar ========== */
+.store-mode-bar {
+  position: absolute;
+  bottom: 52px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  padding: 8px 16px;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.store-mode-confirm {
+  pointer-events: auto;
+  padding: 10px 24px;
+  background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow:
+    0 4px 16px rgba(99, 102, 241, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  animation: store-bar-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes store-bar-pulse {
+  0%, 100% { box-shadow: 0 4px 16px rgba(99, 102, 241, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
+  50% { box-shadow: 0 4px 24px rgba(99, 102, 241, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
+}
+
+.store-mode-confirm:active {
+  transform: scale(0.96);
+}
+
 /* ========== Trainer skill pip ========== */
 .trainer-skill-pip.filled {
   background: var(--accent);
