@@ -5,29 +5,46 @@
 }
 
 :root {
-  /* ─── Dark Fantasy Game Theme — Blue & Gold ─── */
-  --bg-primary: #1e3050;
-  --bg-secondary: #273d62;
-  --bg-card: #314a74;
+  /* ─── Forge: Painterly Adventure — Meadow-to-Sky ─── */
+  --bg-primary: #2B98D1;
+  --bg-secondary: rgba(11, 77, 83, 0.5);
+  --bg-card: rgba(11, 77, 83, 0.4);
+  --bg-dark: #074044;
+  --bg-panel: rgba(11, 77, 83, 0.55);
+  --bg-panel-alt: rgba(11, 77, 83, 0.65);
   --bg-surface: rgba(255, 255, 255, 0.08);
-  --text-primary: #e2e8f0;
-  --text-secondary: #a0aec0;
-  --text-muted: #718096;
-  --accent: #facc15;
-  --accent-hover: #fde047;
+  --text-primary: #F2F9F0;
+  --text-secondary: #c0ddd8;
+  --text-muted: #4A6D8C;
+  --accent: #F7D117;
+  --accent-hover: #F9DC4D;
   --accent-light: rgba(255, 255, 255, 0.12);
-  --star-gold: #facc15;
+  --star-gold: #F7D117;
   --star-silver: #94a3b8;
   --top-hud-height: 44px;
   --bottom-nav-height: 56px;
 
+  /* Radius tokens */
+  --radius-panel: 24px;
+  --radius-btn: 24px;
+  --radius-sm: 12px;
+
   /* Card styling */
-  --card-border: rgba(255, 255, 255, 0.08);
+  --card-border: rgba(242, 249, 240, 0.08);
   --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
 
   /* Glass effect */
-  --glass-bg: rgba(30, 42, 72, 0.85);
-  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-bg: rgba(11, 77, 83, 0.40);
+  --glass-bg-rgb: 11, 77, 83;
+  --glass-border: rgba(242, 249, 240, 0.15);
+
+  /* Button gradients */
+  --btn-grad-top: #1A8A7A;
+  --btn-grad-mid: #147065;
+  --btn-grad-bot: #0E5850;
+
+  /* Heading font */
+  --font-heading: 'Montserrat', 'Exo 2', sans-serif;
 
   /* Rarity glow colors */
   --rarity-1: #9ca3af;
@@ -74,6 +91,28 @@ body {
   min-height: 100dvh;
   overflow: hidden;
   overscroll-behavior: none;
+}
+
+/* Heading typography — Montserrat for titles */
+h1, h2, h3, h4,
+.game-section-header {
+  font-family: var(--font-heading);
+  letter-spacing: -0.5px;
+  text-shadow: 0 0 2px #0B4D53;
+}
+
+/* Canvas texture overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 128px 128px;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
 }
 
 .app {
@@ -169,12 +208,12 @@ select option {
   justify-content: center;
   gap: 6px;
   padding: 10px 20px;
-  background: linear-gradient(180deg, #4a5f94 0%, #3b5080 40%, #2d416c 100%);
+  background: linear-gradient(180deg, var(--btn-grad-top) 0%, var(--btn-grad-mid) 40%, var(--btn-grad-bot) 100%);
   border: none;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   border-bottom: 2px solid rgba(0, 0, 0, 0.3);
-  border-radius: 12px;
-  color: #facc15;
+  border-radius: var(--radius-btn);
+  color: var(--accent);
   font-family: inherit;
   font-weight: 700;
   font-size: 0.85rem;
@@ -212,8 +251,16 @@ select option {
   transform: translateY(1px) scale(0.98);
   border-bottom-width: 1px;
   box-shadow:
+    0 0 16px rgba(247, 209, 23, 0.5),
     0 1px 2px rgba(0, 0, 0, 0.15),
     inset 0 1px 2px rgba(0, 0, 0, 0.15);
+  animation: btn-press-glow 0.3s ease-out;
+}
+
+@keyframes btn-press-glow {
+  0% { box-shadow: 0 0 0px rgba(255, 255, 255, 0.8), 0 1px 2px rgba(0, 0, 0, 0.15); }
+  50% { box-shadow: 0 0 20px rgba(247, 209, 23, 0.6), 0 1px 2px rgba(0, 0, 0, 0.15); }
+  100% { box-shadow: 0 0 16px rgba(247, 209, 23, 0.5), 0 1px 2px rgba(0, 0, 0, 0.15); }
 }
 
 .game-btn:disabled {
@@ -227,7 +274,7 @@ select option {
 /* Gold variant — premium/evolve actions */
 .game-btn-gold {
   background: linear-gradient(180deg, #5a7ab0 0%, #4a6898 40%, #3a5680 100%);
-  color: #fde047;
+  color: var(--accent-hover);
   border-top-color: rgba(255, 255, 255, 0.25);
   box-shadow:
     0 2px 6px rgba(0, 0, 0, 0.2),
@@ -280,13 +327,13 @@ select option {
 /* ─── Game Panel (glass-morphism with ornamental border) ─────── */
 .game-panel {
   background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: 12px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 2px solid rgba(242, 249, 240, 0.20);
+  border-radius: var(--radius-panel);
   box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
   position: relative;
 }
 
@@ -298,15 +345,15 @@ select option {
   left: 10%;
   right: 10%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(250, 204, 21, 0.35), transparent);
+  background: linear-gradient(90deg, transparent, rgba(247, 209, 23, 0.35), transparent);
   border-radius: 1px;
   pointer-events: none;
 }
 
 /* Fallback for browsers without backdrop-filter */
-@supports not (backdrop-filter: blur(12px)) {
+@supports not (backdrop-filter: blur(18px)) {
   .game-panel {
-    background: rgba(30, 42, 72, 0.95);
+    background: rgba(var(--glass-bg-rgb), 0.95);
   }
 }
 
@@ -342,7 +389,7 @@ select option {
   content: '';
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(250, 204, 21, 0.35), transparent);
+  background: linear-gradient(90deg, transparent, rgba(247, 209, 23, 0.35), transparent);
 }
 
 /* ─── Resource Pill (compact game-style) ───────────────────────── */
@@ -374,7 +421,7 @@ select option {
 .onboarding h1 {
   font-size: 3rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #facc15, #fde047);
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -418,8 +465,8 @@ select option {
 
 .onboarding button {
   padding: 12px 24px;
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
-  color: #facc15;
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
+  color: var(--accent);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 10px;
   font-size: 1.1rem;
@@ -468,4 +515,21 @@ input, textarea, select {
   font-size: 16px;
   -webkit-appearance: none;
   appearance: none;
+}
+
+/* ─── Cloud Wipe Page Transition ──────────────────────────────── */
+.cloud-wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  background: radial-gradient(ellipse 120% 80% at 50% 110%, rgba(242, 249, 240, 0.9) 0%, rgba(242, 249, 240, 0.6) 30%, transparent 70%);
+  animation: cloud-wipe-anim 0.4s ease-out forwards;
+  will-change: opacity, transform;
+}
+
+@keyframes cloud-wipe-anim {
+  0% { opacity: 0; transform: translateY(30%); }
+  30% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-40%); }
 }

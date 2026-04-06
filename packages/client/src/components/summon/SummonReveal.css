@@ -56,9 +56,9 @@
   position: absolute;
   width: 6px;
   height: 6px;
-  background: #facc15;
+  background: var(--accent);
   border-radius: 50%;
-  box-shadow: 0 0 10px #facc15, 0 0 5px rgba(226, 232, 240, 0.6);
+  box-shadow: 0 0 10px var(--accent), 0 0 5px rgba(226, 232, 240, 0.6);
   top: 50%;
   left: 50%;
   transform: rotate(var(--sparkle-angle)) translateY(-50px);
@@ -81,8 +81,8 @@
   position: absolute;
   top: -8px;
   right: -20px;
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
-  color: #1a2342;
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
+  color: var(--bg-dark);
   font-size: 0.6rem;
   font-weight: 800;
   padding: 2px 6px;
@@ -120,7 +120,7 @@
 }
 
 .reveal-shiny-icon {
-  color: #facc15;
+  color: var(--accent);
   margin-left: 6px;
   font-size: 1rem;
 }

@@ -254,7 +254,7 @@
   color: #e2e8f0;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.7);
   white-space: nowrap;
-  background: rgba(30, 42, 72, 0.85);
+  background: var(--glass-bg);
   padding: 1px 6px;
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -357,7 +357,7 @@
   display: flex;
   flex-wrap: nowrap;
   gap: 3px;
-  background: rgba(30, 42, 72, 0.85);
+  background: var(--glass-bg);
   backdrop-filter: blur(12px);
   padding: 3px;
   border-radius: 12px;
@@ -399,7 +399,7 @@
   display: flex;
   flex-wrap: nowrap;
   gap: 3px;
-  background: rgba(30, 42, 72, 0.85);
+  background: var(--glass-bg);
   backdrop-filter: blur(12px);
   padding: 3px;
   border-radius: 12px;
@@ -442,7 +442,7 @@
    ======================================== */
 .floor-panel {
   width: 320px;
-  background: #2a3560;
+  background: var(--bg-panel);
   border-left: 2px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
@@ -461,7 +461,7 @@
   justify-content: space-between;
   padding: 12px 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: #212b52;
+  background: var(--bg-panel-alt);
 }
 
 .floor-panel-header h3 {
@@ -489,7 +489,7 @@
 
 .floor-panel-close:hover {
   background: rgba(255, 255, 255, 0.12);
-  color: #facc15;
+  color: var(--accent);
 }
 
 .floor-panel-difficulty {
@@ -527,7 +527,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 12px;
-  background: #2a3560;
+  background: var(--bg-panel);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   transition: all 0.2s;
@@ -535,7 +535,7 @@
 }
 
 .floor-entry.current {
-  border-color: #facc15;
+  border-color: var(--accent);
   background: rgba(255, 255, 255, 0.08);
   box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
 }
@@ -563,7 +563,7 @@
 }
 
 .floor-entry.current .floor-entry-number {
-  color: #facc15;
+  color: var(--accent);
 }
 
 /* Enemy portraits row */
@@ -576,7 +576,7 @@
   width: 36px;
   height: 36px;
   border-radius: 6px;
-  background: #212b52;
+  background: var(--bg-panel-alt);
   border: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
@@ -597,7 +597,7 @@
   height: 56px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
   color: #fff;
   cursor: pointer;
   display: flex;
@@ -614,13 +614,13 @@
 }
 
 .floor-go-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
   border-color: rgba(255, 255, 255, 0.25);
   transform: scale(1.05);
 }
 
 .floor-go-btn:disabled {
-  background: #212b52;
+  background: var(--bg-panel-alt);
   border-color: rgba(255, 255, 255, 0.08);
   color: #64748b;
   cursor: not-allowed;
@@ -660,7 +660,7 @@
 
 .reward-tag.first-clear {
   background: rgba(255, 255, 255, 0.12);
-  color: #facc15;
+  color: var(--accent);
   border: 1px solid rgba(250, 204, 21, 0.35);
 }
 

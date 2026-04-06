@@ -93,7 +93,7 @@
 .held-item-card-level {
   font-size: 0.7rem;
   font-weight: 700;
-  color: #facc15;
+  color: var(--accent);
   margin-left: auto;
 }
 
@@ -108,7 +108,7 @@
 }
 
 .held-item-card-main-value {
-  color: #facc15;
+  color: var(--accent);
 }
 
 .held-item-card-subs {
@@ -126,7 +126,7 @@
 
 .held-item-card-equipped {
   font-size: 0.6rem;
-  color: #facc15;
+  color: var(--accent);
   margin-top: 4px;
   font-style: italic;
 }

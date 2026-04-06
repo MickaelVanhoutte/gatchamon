@@ -23,7 +23,7 @@
 }
 
 .rb-fab-running {
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 20px rgba(250, 204, 21, 0.35);
   animation: rb-fab-pulse 1.5s ease-in-out infinite;
 }
@@ -50,7 +50,7 @@
   inset: -4px;
   border-radius: 50%;
   border: 2px solid transparent;
-  border-top-color: #facc15;
+  border-top-color: var(--accent);
   animation: rb-ring-spin 2s linear infinite;
   pointer-events: none;
 }
@@ -351,13 +351,13 @@
 
 .rb-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4a5f94, #3b5080);
+  background: linear-gradient(90deg, var(--btn-grad-top), var(--btn-grad-mid));
   border-radius: 3px;
   transition: width 0.3s ease;
 }
 
 .rb-progress-animated {
-  background: linear-gradient(90deg, #4a5f94, #3b5080, #2d416c);
+  background: linear-gradient(90deg, var(--btn-grad-top), var(--btn-grad-mid), var(--btn-grad-bot));
   background-size: 200% 100%;
   animation: rb-shimmer 1.5s ease-in-out infinite;
 }
@@ -408,12 +408,12 @@
 }
 
 .rb-btn-ok {
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
   color: white;
 }
 
 .rb-btn-again {
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
   color: white;
 }
 

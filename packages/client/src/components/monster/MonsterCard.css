@@ -4,9 +4,9 @@
   align-items: center;
   gap: 8px;
   padding: 12px;
-  background: rgba(30, 42, 72, 0.85);
-  border-radius: 12px;
-  border: 1.5px solid var(--rarity-color, rgba(255, 255, 255, 0.08));
+  background: var(--glass-bg);
+  border-radius: var(--radius-sm, 12px);
+  border: 2px solid rgba(242, 249, 240, 0.20);
   cursor: pointer;
   transition: all 0.2s;
   position: relative;
@@ -22,7 +22,7 @@
   content: '';
   position: absolute;
   inset: 3px;
-  border-radius: 9px;
+  border-radius: calc(var(--radius-sm, 12px) - 3px);
   border: 1px solid rgba(255, 255, 255, 0.04);
   pointer-events: none;
 }
@@ -62,7 +62,7 @@
   content: '';
   position: absolute;
   inset: -1px;
-  border-radius: 12px;
+  border-radius: var(--radius-sm, 12px);
   padding: 1.5px;
   background: linear-gradient(
     135deg,
@@ -91,7 +91,7 @@
 
 /* Selected state — indigo accent ring */
 .monster-card.selected {
-  border-color: #facc15;
+  border-color: var(--accent);
   box-shadow:
     0 0 0 3px rgba(250, 204, 21, 0.5),
     0 0 16px rgba(250, 204, 21, 0.4),
@@ -158,13 +158,13 @@
   font-weight: 600;
   font-size: 0.9rem;
   color: #e2e8f0;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 0 2px #0B4D53;
 }
 
 .card-stars {
   font-size: 0.85rem;
   letter-spacing: 1px;
-  filter: drop-shadow(0 0 4px currentColor);
+  filter: drop-shadow(0 0 5px currentColor);
 }
 
 .card-meta {

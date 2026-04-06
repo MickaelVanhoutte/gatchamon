@@ -11,7 +11,7 @@
 
 .lcm-modal {
   position: relative;
-  background: rgba(30, 42, 72, 0.85);
+  background: var(--glass-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 14px;
@@ -90,7 +90,7 @@
 }
 
 .lcm-cell--today {
-  border-color: #facc15;
+  border-color: var(--accent);
   box-shadow: 0 0 8px rgba(250, 204, 21, 0.4);
   background: rgba(255, 255, 255, 0.08);
 }
@@ -116,7 +116,7 @@
 }
 
 .lcm-cell--today .lcm-day-number {
-  color: #facc15;
+  color: var(--accent);
 }
 
 .lcm-reward-icon {
@@ -139,7 +139,7 @@
   position: absolute;
   top: 1px;
   right: 2px;
-  color: #facc15;
+  color: var(--accent);
 }
 
 /* Claim banner */
@@ -154,7 +154,7 @@
 
 .lcm-banner-text {
   font-size: 0.75rem;
-  color: #facc15;
+  color: var(--accent);
   font-weight: 600;
   margin: 0;
 }

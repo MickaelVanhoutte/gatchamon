@@ -40,6 +40,18 @@ export function App() {
   const inputRef = useRef<HTMLInputElement>(null);
   useRotatedScroll(scrollRef);
 
+  // Cloud wipe transition on route change
+  const [cloudWipe, setCloudWipe] = useState(false);
+  const prevPath = useRef(location.pathname);
+  useEffect(() => {
+    if (location.pathname !== prevPath.current) {
+      prevPath.current = location.pathname;
+      setCloudWipe(true);
+      const t = setTimeout(() => setCloudWipe(false), 400);
+      return () => clearTimeout(t);
+    }
+  }, [location.pathname]);
+
   useEffect(() => {
     loadPlayer();
     useTutorialStore.getState().loadTutorial();
@@ -124,6 +136,7 @@ export function App() {
       <AutoBattleFloatingIcon />
       <RepeatBattleModal />
       <UpdateBanner />
+      {cloudWipe && <div className="cloud-wipe" />}
     </div>
   );
 }

@@ -123,7 +123,7 @@
 .held-item-equip-btn {
   background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(250, 204, 21, 0.35);
-  color: #facc15;
+  color: var(--accent);
   padding: 8px;
   border-radius: 8px;
   font-size: 0.8rem;

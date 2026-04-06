@@ -5,7 +5,7 @@
   transform: translate(-50%, -50%);
   z-index: 9999;
   max-width: 70%;
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
   color: #fff;
   font-weight: 700;
   font-size: 0.85rem;

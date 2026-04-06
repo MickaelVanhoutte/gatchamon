@@ -7,6 +7,29 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.2.17',
+    date: '2026-04-06',
+    changes: [
+      'Restyled dungeon navigation tabs as pill-shaped buttons with accent active state',
+      'Made dungeon floor selector buttons circular with inset shadow and golden glow when active',
+      'Redesigned dungeon enter button with gold gradient, sparkle sweep animation, and dark text',
+      'Updated bottom nav expanded bar to painterly frosted glass background',
+      'Replaced bottom nav active tab bar indicator with radial sun-spot glow pulse',
+      'Updated collapsed FAB button to use accent gold background',
+    ],
+  },
+  {
+    version: '0.2.16',
+    date: '2026-04-06',
+    changes: [
+      'Restyled Collection page grid cells with glassmorphism blur and larger border-radius',
+      'Rewrote selected-cell pulse animation to a wider yellow aura glow',
+      'Added star bloom drop-shadow effect to rarity stars in grid and detail panel',
+      'Applied glassmorphism border-radius to detail panel, header, and merge dialog',
+      'Updated MonsterCard border, name text-shadow, and star bloom to match Forge design system',
+    ],
+  },
+  {
     version: '0.2.15',
     date: '2026-04-06',
     changes: [

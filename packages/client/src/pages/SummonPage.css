@@ -22,30 +22,30 @@
 .summon-page::before {
   width: 4px;
   height: 4px;
-  background: #facc15;
+  background: var(--accent);
   top: 20%;
   left: 15%;
   box-shadow:
-    120px 60px 0 #facc15,
-    250px -20px 0 #facc15,
-    380px 80px 0 #facc15,
-    500px -40px 0 #facc15,
-    60px 120px 0 #facc15,
-    350px 140px 0 #facc15;
+    120px 60px 0 var(--accent),
+    250px -20px 0 var(--accent),
+    380px 80px 0 var(--accent),
+    500px -40px 0 var(--accent),
+    60px 120px 0 var(--accent),
+    350px 140px 0 var(--accent);
   animation: summon-float-1 8s ease-in-out infinite;
 }
 
 .summon-page::after {
   width: 3px;
   height: 3px;
-  background: #facc15;
+  background: var(--accent);
   top: 40%;
   right: 20%;
   box-shadow:
-    -80px -30px 0 #facc15,
-    -200px 50px 0 #facc15,
-    -320px -10px 0 #facc15,
-    -100px 80px 0 #facc15;
+    -80px -30px 0 var(--accent),
+    -200px 50px 0 var(--accent),
+    -320px -10px 0 var(--accent),
+    -100px 80px 0 var(--accent);
   animation: summon-float-2 10s ease-in-out infinite;
 }
 
@@ -244,7 +244,7 @@
 }
 
 .rate-item.rate-shiny {
-  color: #facc15;
+  color: var(--accent);
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.15);
 }
@@ -271,7 +271,7 @@
 
 .summon-pity-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4a5f94, #3b5080, #2d416c);
+  background: linear-gradient(90deg, var(--btn-grad-top), var(--btn-grad-mid), var(--btn-grad-bot));
   border-radius: 4px;
   transition: width 0.3s ease;
   box-shadow:
@@ -436,7 +436,7 @@
 }
 
 .idle-pokeball.premium .idle-pokeball-button-inner {
-  background: radial-gradient(circle at 35% 35%, #fde68a, #facc15, #facc15);
+  background: radial-gradient(circle at 35% 35%, #fde68a, var(--accent), var(--accent));
   box-shadow: 0 0 8px rgba(250, 204, 21, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.8);
   animation: button-glow-premium 2.5s ease-in-out infinite;
 }
@@ -468,7 +468,7 @@
 }
 
 .idle-pokeball.legendary .idle-pokeball-top {
-  background: linear-gradient(145deg, #facc15 0%, #eab308 30%, #ca8a04 60%, #a16207 100%);
+  background: linear-gradient(145deg, var(--accent) 0%, #eab308 30%, #ca8a04 60%, #a16207 100%);
 }
 
 .idle-pokeball.legendary .idle-pokeball-button-inner {
@@ -569,7 +569,7 @@
   border-bottom: 2px solid rgba(0, 0, 0, 0.3);
   border-left: 1px solid rgba(255, 255, 255, 0.1);
   border-right: 1px solid rgba(0, 0, 0, 0.15);
-  background: linear-gradient(180deg, #f5b830 0%, #facc15 40%, #facc15 100%);
+  background: linear-gradient(180deg, #f5b830 0%, var(--accent) 40%, var(--accent) 100%);
   color: #ffffff;
   cursor: pointer;
   font-family: inherit;
@@ -655,7 +655,7 @@
 
 /* x10 multi button — gold/red variant */
 .summon-multi {
-  background: linear-gradient(180deg, #facc15 0%, #facc15 40%, #facc15 100%);
+  background: linear-gradient(180deg, var(--accent) 0%, var(--accent) 40%, var(--accent) 100%);
   box-shadow:
     0 2px 6px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -674,7 +674,7 @@
   height: 30px;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(30, 42, 72, 0.8);
+  background: rgba(var(--glass-bg-rgb), 0.8);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   color: #94a3b8;
@@ -701,7 +701,7 @@
   position: absolute;
   top: 36px;
   left: 0;
-  background: rgba(30, 42, 72, 0.95);
+  background: rgba(var(--glass-bg-rgb), 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);

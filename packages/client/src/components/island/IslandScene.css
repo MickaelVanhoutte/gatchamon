@@ -218,7 +218,7 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid var(--glass-border);
-  color: #facc15;
+  color: var(--accent);
   padding: 8px 16px;
   border-radius: 14px;
   font-size: 0.75rem;

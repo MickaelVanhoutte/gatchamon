@@ -40,17 +40,19 @@
   padding: 8px;
   font-size: 0.8rem;
   font-weight: 600;
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--text-secondary);
+  background: transparent;
+  border: 1.5px solid rgba(242, 249, 240, 0.3);
+  border-radius: 999px;
+  color: var(--text-primary);
   cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
 }
 
 .dungeon-tab-btn--active {
-  color: #facc15;
-  border-bottom-color: var(--accent);
+  background: var(--accent, #F7D117);
+  color: #0B4D53;
+  font-weight: 700;
+  border-color: var(--accent, #F7D117);
 }
 
 .dungeon-layout {
@@ -173,25 +175,32 @@
 }
 
 .dungeon-floor-btn {
-  padding: 6px 12px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--glass-border);
-  border-radius: 6px;
+  border-radius: 50%;
   color: var(--text-secondary);
   font-size: 0.7rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .dungeon-floor-btn:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .dungeon-floor-btn--active {
   background: rgba(255, 255, 255, 0.12);
   border-color: var(--accent);
-  color: #facc15;
+  color: var(--accent);
+  box-shadow: 0 0 12px 3px rgba(247, 209, 23, 0.5);
 }
 
 /* Floor info */
@@ -265,23 +274,40 @@
 
 /* Enter button */
 .dungeon-enter-btn {
+  position: relative;
   padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  color: white;
+  border: none;
+  border-radius: var(--radius-btn, 24px);
+  color: #0B4D53;
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
   margin-top: auto;
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
-  box-shadow: 0 2px 8px rgba(250, 204, 21, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(180deg, #F7D117 0%, #D9B510 100%);
+  box-shadow: 0 4px 16px rgba(247, 209, 23, 0.4);
+  text-shadow: none;
+  overflow: hidden;
+}
+
+.dungeon-enter-btn::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
+  background-size: 200% 200%;
+  animation: sparkle-sweep 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes sparkle-sweep {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .dungeon-enter-btn:hover {
-  opacity: 0.85;
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  opacity: 0.9;
 }
 
 .dungeon-enter-btn:active {
@@ -325,7 +351,7 @@
 .tower-reset-timer {
   font-size: 0.65rem;
   font-weight: 600;
-  color: #facc15;
+  color: var(--accent);
   background: rgba(255, 255, 255, 0.1);
   padding: 2px 8px;
   border-radius: 4px;
@@ -337,7 +363,7 @@
   align-items: center;
   gap: 8px;
   padding: 20px;
-  color: #facc15;
+  color: var(--accent);
   font-size: 1.1rem;
   font-weight: 700;
 }
@@ -450,7 +476,7 @@
 }
 
 .tower-node--current .tower-node-floor {
-  color: #facc15;
+  color: var(--accent);
   font-size: 0.82rem;
 }
 
@@ -483,7 +509,7 @@
 .tower-node-badge {
   font-size: 0.6rem;
   font-weight: 700;
-  color: #facc15;
+  color: var(--accent);
   background: rgba(255, 255, 255, 0.12);
   padding: 2px 8px;
   border-radius: 4px;
@@ -499,7 +525,7 @@
   padding: 8px 20px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 10px;
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
   color: white;
   font-size: 0.78rem;
   font-weight: 700;
@@ -696,6 +722,6 @@
   gap: 6px;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #facc15;
+  color: var(--accent);
   padding: 4px 0;
 }

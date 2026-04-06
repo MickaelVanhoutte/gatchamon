@@ -38,7 +38,7 @@
 }
 
 .inventory-capacity--warning {
-  color: #facc15;
+  color: var(--accent);
   border-color: rgba(250, 204, 21, 0.4);
   background: rgba(255, 255, 255, 0.06);
 }
@@ -135,7 +135,7 @@
 .inventory-sidebar-item--active {
   background: rgba(255, 255, 255, 0.08);
   border-color: var(--accent);
-  color: #facc15;
+  color: var(--accent);
 }
 
 .inventory-sidebar-item-name {
@@ -157,7 +157,7 @@
 }
 
 .inventory-sidebar-item--active .inventory-sidebar-item-count {
-  color: #facc15;
+  color: var(--accent);
   background: rgba(255, 255, 255, 0.12);
 }
 
@@ -192,7 +192,7 @@
 .inventory-slot-tab--active {
   background: rgba(255, 255, 255, 0.08);
   border-color: var(--accent);
-  color: #facc15;
+  color: var(--accent);
 }
 
 /* Main content area */

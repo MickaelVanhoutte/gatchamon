@@ -172,7 +172,7 @@
 
 .auto-toggle.active {
   border-color: var(--accent, #facc15);
-  color: #facc15;
+  color: var(--accent);
   background: rgba(255, 255, 255, 0.1);
   box-shadow: 0 0 12px rgba(250, 204, 21, 0.4), 0 0 24px rgba(255, 255, 255, 0.12);
 }
@@ -252,7 +252,7 @@
 }
 
 .float-endure {
-  color: #facc15;
+  color: var(--accent);
   font-size: 0.85rem;
   text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
 }
@@ -499,7 +499,7 @@
 .mon-atb-bar {
   height: 100%;
   border-radius: 2px;
-  background: linear-gradient(90deg, var(--accent, #facc15), #facc15);
+  background: linear-gradient(90deg, var(--accent, #facc15), var(--accent));
   transition: width 0.3s ease;
   box-shadow: 0 0 4px rgba(250, 204, 21, 0.5);
 }
@@ -662,7 +662,7 @@
   justify-content: center;
   gap: 2px;
   padding: 4px;
-  background: linear-gradient(135deg, var(--accent, #facc15), #facc15);
+  background: linear-gradient(135deg, var(--accent, #facc15), var(--accent));
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 10px;
   color: #ffffff;
@@ -673,7 +673,7 @@
 }
 
 .skill-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
   transform: scale(1.1);
   box-shadow: 0 4px 12px rgba(250, 204, 21, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
@@ -687,7 +687,7 @@
   border-color: rgba(255, 255, 255, 0.04);
   opacity: 0.5;
   cursor: not-allowed;
-  background: rgba(30, 42, 72, 0.7);
+  background: rgba(var(--glass-bg-rgb), 0.7);
   box-shadow: none;
 }
 
@@ -713,13 +713,13 @@
   justify-content: center;
   font-size: 0.65rem;
   font-weight: 700;
-  color: #facc15;
+  color: var(--accent);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
   animation: cd-pulse 1.5s ease-in-out infinite;
 }
 
 @keyframes cd-pulse {
-  0%, 100% { transform: scale(1); color: #facc15; }
+  0%, 100% { transform: scale(1); color: var(--accent); }
   50% { transform: scale(1.1); color: #c7d2fe; }
 }
 
@@ -952,7 +952,7 @@
 
 /* Victory — gold gradient title */
 .overlay-content h2.victory {
-  background: linear-gradient(135deg, #facc15, #facc15, #fde047, #facc15, #facc15);
+  background: linear-gradient(135deg, var(--accent), var(--accent), var(--accent-hover), var(--accent), var(--accent));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1002,7 +1002,7 @@
 
 .essence-item {
   font-size: 0.85rem;
-  color: #facc15;
+  color: var(--accent);
 }
 
 .first-clear-banner {
@@ -1054,7 +1054,7 @@
 /* ── Return button — game-btn pattern ─────────────────────────────── */
 .return-btn {
   padding: 12px 48px;
-  background: linear-gradient(135deg, var(--accent, #facc15), #facc15);
+  background: linear-gradient(135deg, var(--accent, #facc15), var(--accent));
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 10px;
@@ -1067,7 +1067,7 @@
 }
 
 .return-btn:hover {
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
   box-shadow: 0 4px 12px rgba(250, 204, 21, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
@@ -1175,8 +1175,8 @@
   position: absolute;
   width: 3px;
   height: 10px;
-  background: #facc15;
-  box-shadow: 0 0 6px #facc15, 0 0 12px #fde047;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent), 0 0 12px var(--accent-hover);
   animation: spark-flash 0.5s linear infinite;
   border-radius: 1px;
 }
@@ -1192,7 +1192,7 @@
 /* ── Sleep: floating Z-z-z text ───────────────────────────────────── */
 .status-sleep > span {
   position: absolute;
-  color: #facc15;
+  color: var(--accent);
   font-weight: 700;
   text-shadow: 0 0 4px rgba(129, 140, 248, 0.6);
   animation: sleep-float 2s ease-in-out infinite;

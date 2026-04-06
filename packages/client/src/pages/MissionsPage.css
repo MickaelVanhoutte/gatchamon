@@ -140,7 +140,7 @@
 
 .mission-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4a5f94, #3b5080);
+  background: linear-gradient(90deg, var(--btn-grad-top), var(--btn-grad-mid));
   border-radius: 3px;
   transition: width 0.3s;
 }
@@ -164,7 +164,7 @@
 }
 
 .reward-pokeballs {
-  color: #facc15;
+  color: var(--accent);
   display: flex;
   align-items: center;
   gap: 3px;
@@ -181,7 +181,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
   color: white;
   transition: all 0.15s;
   flex-shrink: 0;
@@ -217,7 +217,7 @@
 }
 
 .all-dailies-bonus.ready {
-  border-color: #facc15;
+  border-color: var(--accent);
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));
   animation: bonus-pulse 1.5s ease-in-out infinite;
 }
@@ -255,19 +255,19 @@
 
 .bonus-reward {
   font-size: 0.8rem;
-  color: #facc15;
+  color: var(--accent);
   flex-shrink: 0;
 }
 
 .bonus-claim {
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
-  color: #1a2342;
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
+  color: var(--bg-dark);
   border: 1px solid rgba(255, 255, 255, 0.15);
   font-weight: 700;
 }
 
 .bonus-claim:not(:disabled):hover {
-  background: linear-gradient(135deg, #fde047, #facc15);
+  background: linear-gradient(135deg, var(--accent-hover), var(--accent));
 }
 
 /* ─── Trophies ─── */
@@ -318,7 +318,7 @@
 .trophy-current {
   font-size: 1rem;
   font-weight: 700;
-  color: #facc15;
+  color: var(--accent);
   flex-shrink: 0;
 }
 
@@ -365,7 +365,7 @@
 
 .tier-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4a5f94, #3b5080);
+  background: linear-gradient(90deg, var(--btn-grad-top), var(--btn-grad-mid));
   border-radius: 2px;
   transition: width 0.3s;
 }
@@ -375,7 +375,7 @@
 }
 
 .tier-reward {
-  color: #facc15;
+  color: var(--accent);
   font-size: 0.7rem;
   width: 50px;
   text-align: right;
@@ -393,7 +393,7 @@
   font-size: 0.7rem;
   font-weight: 600;
   cursor: pointer;
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
   color: white;
   flex-shrink: 0;
   transition: all 0.15s;

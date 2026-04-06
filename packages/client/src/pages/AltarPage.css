@@ -397,7 +397,7 @@
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
   color: white;
   transition: all 0.15s;
   box-shadow: 0 2px 8px rgba(250, 204, 21, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
@@ -490,7 +490,7 @@
   padding: 8px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 6px;
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
   color: white;
   font-size: 0.75rem;
   font-weight: 700;

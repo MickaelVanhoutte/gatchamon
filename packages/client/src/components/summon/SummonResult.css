@@ -15,7 +15,7 @@
 
 .result-title {
   font-size: 1.4rem;
-  color: #facc15;
+  color: var(--accent);
   text-shadow: 0 0 12px rgba(250, 204, 21, 0.4);
 }
 
@@ -50,7 +50,7 @@
 
 .done-btn {
   padding: 12px 48px;
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
   color: #e2e8f0;
   border: none;
   border-radius: 8px;
@@ -62,7 +62,7 @@
 }
 
 .done-btn:hover {
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
   box-shadow: 0 0 24px rgba(250, 204, 21, 0.5);
 }
 

@@ -133,7 +133,7 @@
   height: 0;
   border-top: 7px solid transparent;
   border-bottom: 7px solid transparent;
-  border-right: 9px solid rgba(30, 42, 72, 0.85);
+  border-right: 9px solid var(--glass-bg);
 }
 
 .speech-bubble-text {

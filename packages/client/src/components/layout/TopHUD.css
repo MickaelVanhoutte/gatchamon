@@ -3,7 +3,7 @@
   flex-shrink: 0;
   padding: 0 10px;
   padding-top: env(safe-area-inset-top);
-  background: rgba(30, 42, 72, 0.85);
+  background: var(--glass-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   display: flex;
@@ -15,7 +15,7 @@
 
 @supports not (backdrop-filter: blur(12px)) {
   .top-hud {
-    background: rgba(30, 42, 72, 0.97);
+    background: rgba(var(--glass-bg-rgb), 0.97);
   }
 }
 
@@ -42,7 +42,7 @@
   font-size: 0.55rem;
   font-weight: 900;
   color: #ffffff;
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
   padding: 0 5px;
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
@@ -73,7 +73,7 @@
 
 .hud-xp-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4a5f94, #3b5080);
+  background: linear-gradient(90deg, var(--btn-grad-top), var(--btn-grad-mid));
   border-radius: 2px;
   transition: width 0.3s ease;
   box-shadow: none;
@@ -124,7 +124,7 @@
 
 /* Resource type colored left-borders */
 .hud-resource--energy {
-  border-left-color: #facc15;
+  border-left-color: var(--accent);
 }
 
 /* Icon inside resource pill */
@@ -138,7 +138,7 @@
 }
 
 .hud-energy-icon {
-  color: #facc15;
+  color: var(--accent);
 }
 
 .hud-pokedollar-icon {
@@ -161,7 +161,7 @@
   background: rgba(230, 126, 0, 0.2);
   border: 1.5px solid rgba(230, 126, 0, 0.5);
   border-radius: 50%;
-  color: #facc15;
+  color: var(--accent);
   cursor: pointer;
   animation: hud-update-pulse 2s ease-in-out infinite;
 }
@@ -221,7 +221,7 @@
   align-items: center;
   justify-content: center;
   padding: 0 2px;
-  border: 1.5px solid rgba(30, 42, 72, 0.85);
+  border: 1.5px solid var(--glass-bg);
   box-shadow: 0 0 4px rgba(239, 68, 68, 0.4);
 }
 
@@ -237,7 +237,7 @@
   background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 50%;
-  color: #facc15;
+  color: var(--accent);
   cursor: pointer;
   transition: background 0.15s, box-shadow 0.15s;
 }
@@ -260,7 +260,7 @@
   display: flex;
   align-items: center;
   gap: 3px;
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
   color: #fff;
   font-size: 0.55rem;
   font-weight: 700;
@@ -305,7 +305,7 @@
   position: absolute;
   inset: 0;
   border-radius: 8px;
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
   z-index: -1;
 }
 
@@ -333,7 +333,7 @@
   left: 0;
   z-index: 100;
   min-width: 220px;
-  background: rgba(30, 42, 72, 0.92);
+  background: rgba(var(--glass-bg-rgb), 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -351,7 +351,7 @@
 .hud-beginner-tooltip-title {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #facc15;
+  color: var(--accent);
   margin-bottom: 2px;
 }
 
@@ -419,7 +419,7 @@
   right: 0;
   z-index: 100;
   min-width: 200px;
-  background: rgba(30, 42, 72, 0.92);
+  background: rgba(var(--glass-bg-rgb), 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.18);

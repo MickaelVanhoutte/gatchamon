@@ -101,12 +101,12 @@
 
 .essence-tier-badge--mid {
   background: rgba(255, 255, 255, 0.12);
-  color: #facc15;
+  color: var(--accent);
 }
 
 .essence-tier-badge--high {
   background: rgba(255, 255, 255, 0.12);
-  color: #facc15;
+  color: var(--accent);
 }
 
 .essence-row-chevron {
@@ -149,7 +149,7 @@
 .essence-merge-tier-btn.active {
   border-color: var(--accent, #facc15);
   background: rgba(255, 255, 255, 0.12);
-  color: #facc15;
+  color: var(--accent);
 }
 
 .essence-merge-tier-btn:disabled {
@@ -182,7 +182,7 @@
   border-radius: 50%;
   border: 1px solid var(--accent, #facc15);
   background: rgba(255, 255, 255, 0.08);
-  color: #facc15;
+  color: var(--accent);
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
@@ -237,7 +237,7 @@
   padding: 6px 12px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 6px;
-  background: linear-gradient(135deg, #4a5f94, #3b5080);
+  background: linear-gradient(135deg, var(--btn-grad-top), var(--btn-grad-mid));
   color: white;
   font-size: 0.75rem;
   font-weight: 600;

@@ -143,12 +143,12 @@
 
 /* 3-star sparkle tier */
 .tier-sparkle .lightning-spark {
-  background: #facc15;
+  background: var(--accent);
   box-shadow: 0 0 10px rgba(129, 140, 248, 0.8), 0 0 20px rgba(129, 140, 248, 0.4);
 }
 
 .tier-sparkle .lightning-shimmer-ring {
-  border-color: #facc15;
+  border-color: var(--accent);
   box-shadow:
     0 0 24px rgba(129, 140, 248, 0.6),
     0 0 48px rgba(129, 140, 248, 0.35),

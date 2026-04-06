@@ -6,7 +6,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #1a2342;
+  background: var(--bg-dark);
   opacity: 0;
   animation: evo-fade-in 1s ease forwards;
 }
