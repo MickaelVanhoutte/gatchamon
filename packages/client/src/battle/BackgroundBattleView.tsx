@@ -4,6 +4,7 @@ import {
   deleteBattle,
   startDungeonBattle,
   startItemDungeonBattle,
+  startMysteryDungeonBattle,
 } from '../services/battle.service';
 import type { BattleRewards } from '@gatchamon/shared';
 import { useGameStore } from '../stores/gameStore';
@@ -15,6 +16,7 @@ import {
   EFFECT_REGISTRY,
   getDungeon,
   getItemDungeon,
+  getMysteryDungeonDef,
 } from '@gatchamon/shared';
 import type { BattleState, BattleMon, BattleLogEntry, EffectId, ActiveEffect } from '@gatchamon/shared';
 import { assetUrl } from '../utils/asset-url';
@@ -50,7 +52,6 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
   const isActingRef = useRef(false);
   const battleIdRef = useRef<string | null>(null);
   const hasStartedRef = useRef(false);
-
   battleIdRef.current = battleId;
 
   // Force x2 speed
@@ -125,11 +126,19 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
     }
 
     const player = loadPlayer();
-    const dungeonDef = config.mode === 'dungeon'
-      ? getDungeon(config.dungeonId)
-      : getItemDungeon(config.dungeonId);
+    let energyCost: number;
+    if (config.mode === 'mystery-dungeon') {
+      const md = getMysteryDungeonDef();
+      energyCost = md.energyCosts[config.floorIndex] ?? 0;
+    } else {
+      const dungeonDef = config.mode === 'dungeon'
+        ? getDungeon(config.dungeonId)
+        : getItemDungeon(config.dungeonId);
+      if (!dungeonDef) { store.setStatus('stopped_no_energy'); return; }
+      energyCost = dungeonDef.energyCost;
+    }
 
-    if (!player || !dungeonDef || player.energy < dungeonDef.energyCost) {
+    if (!player || player.energy < energyCost) {
       store.setStatus('stopped_no_energy');
       return;
     }
@@ -137,9 +146,11 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
     store.incrementRun();
 
     try {
-      const result = config.mode === 'item-dungeon'
-        ? startItemDungeonBattle(config.teamIds, config.dungeonId, config.floorIndex)
-        : startDungeonBattle(config.teamIds, config.dungeonId, config.floorIndex);
+      const result = config.mode === 'mystery-dungeon'
+        ? startMysteryDungeonBattle(config.teamIds, config.floorIndex)
+        : config.mode === 'item-dungeon'
+          ? startItemDungeonBattle(config.teamIds, config.dungeonId, config.floorIndex)
+          : startDungeonBattle(config.teamIds, config.dungeonId, config.floorIndex);
 
       const newBattleId = result.state.battleId;
       setBattleId(newBattleId);
@@ -156,11 +167,16 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
     }
   }, [config]);
 
-  // ── Start first battle on mount ──
+  // ── Start first battle on mount (StrictMode-safe) ──
   useEffect(() => {
     if (hasStartedRef.current) return;
     hasStartedRef.current = true;
     startNextBattle();
+    return () => {
+      const bid = battleIdRef.current;
+      if (bid) deleteBattle(bid);
+      hasStartedRef.current = false;
+    };
   }, [startNextBattle]);
 
   // ── Restart when "Again" is pressed ──
@@ -316,10 +332,18 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
     }
 
     const player = loadPlayer();
-    const dungeonDef = config.mode === 'dungeon'
-      ? getDungeon(config.dungeonId)
-      : getItemDungeon(config.dungeonId);
-    if (!player || !dungeonDef || player.energy < dungeonDef.energyCost) {
+    let chainEnergyCost: number;
+    if (config.mode === 'mystery-dungeon') {
+      const md = getMysteryDungeonDef();
+      chainEnergyCost = md.energyCosts[config.floorIndex] ?? 0;
+    } else {
+      const dungeonDef = config.mode === 'dungeon'
+        ? getDungeon(config.dungeonId)
+        : getItemDungeon(config.dungeonId);
+      if (!dungeonDef) { store.setStatus('stopped_no_energy'); if (bid) deleteBattle(bid); return; }
+      chainEnergyCost = dungeonDef.energyCost;
+    }
+    if (!player || player.energy < chainEnergyCost) {
       store.setStatus('stopped_no_energy');
       if (bid) deleteBattle(bid);
       return;
@@ -348,13 +372,6 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
     });
   }, []);
 
-  // ── Cleanup on unmount ──
-  useEffect(() => {
-    return () => {
-      const bid = battleIdRef.current;
-      if (bid) deleteBattle(bid);
-    };
-  }, []);
 
   const backgroundUrl = assetUrl('backgrounds/forest-arena.png');
 
