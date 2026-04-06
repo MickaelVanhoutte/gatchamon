@@ -7,6 +7,13 @@ export interface ChangelogEntry {
 // Newest first. Only the first entry is shown on the loading screen.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.2.2',
+    date: '2026-04-06',
+    changes: [
+      'Added Glowing Pack to Shop: 3x Glowing Summons (guaranteed shiny, 3-5★) for 500 Stardust',
+    ],
+  },
+  {
     version: '0.2.1',
     date: '2026-04-06',
     changes: [

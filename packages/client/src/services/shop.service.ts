@@ -1,5 +1,5 @@
 import type { SummonResult } from './gacha.service';
-import { shopSummonMultiPremium, shopSummonSingleLegendary } from './gacha.service';
+import { shopSummonMultiPremium, shopSummonSingleLegendary, shopSummonMultiGlowing } from './gacha.service';
 import { spendStardust } from './player.service';
 import { loadPlayer, savePlayer, setGrantedFlag, hasGrantedFlag } from './storage';
 
@@ -25,6 +25,13 @@ export const SHOP_ITEMS: ShopItemDef[] = [
     description: '100 Energy',
     icon: 'energy',
     cost: 50,
+  },
+  {
+    id: 'glowing_pack_3',
+    name: 'Glowing Pack',
+    description: '3x Glowing Summons (3-5★ Shiny)',
+    icon: 'glowingPokeball',
+    cost: 500,
   },
   {
     id: 'premium_pack_10',
@@ -68,7 +75,9 @@ export function purchaseShopItem(itemId: string): ShopPurchaseResult {
     return { results };
   }
 
-  if (itemId === 'premium_pack_10') {
+  if (itemId === 'glowing_pack_3') {
+    results.push(...shopSummonMultiGlowing(3));
+  } else if (itemId === 'premium_pack_10') {
     results.push(...shopSummonMultiPremium());
   } else if (itemId === 'legendary_bundle') {
     // 1 legendary + 3 premium multi packs

@@ -54,7 +54,7 @@ export function scoreEffects(
         if (meta.cc === 'stun') score += 300 * proc;
         else if (meta.cc === 'conditional') score += 200 * proc;
         // DoTs
-        if (meta.dot) score += target.maxHp * (meta.dot.percentHp / 100) * eff.duration * proc;
+        if (meta.dot?.percentHp) score += target.maxHp * (meta.dot.percentHp / 100) * eff.duration * proc;
         break;
       case 'debuff':
         // Stat debuffs
