@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { assetUrl } from '../utils/asset-url';
 import { tryLockLandscape } from '../utils/orientation-lock';
 import { changelog } from '../data/changelog';
 import './LoadingScreen.css';
@@ -28,7 +29,7 @@ export function LoadingScreen({ onStart, swReady = true }: LoadingScreenProps) {
     <div className="loading-screen" onClick={() => { if (!canStart || changelogOpen) return; tryLockLandscape(); onStart(); }}>
       {/* Full-screen background image */}
       <div className="ls-bg">
-        <img src="/splash/pikachu-4.jpg" alt="" className="ls-bg-img" />
+        <img src={assetUrl('splash/pikachu-4.jpg')} alt="" className="ls-bg-img" />
       </div>
 
       {/* Dark gradient overlay */}
