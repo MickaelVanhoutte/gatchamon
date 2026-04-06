@@ -717,7 +717,7 @@
   height: 30px;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(15, 23, 42, 0.8);
+  background: rgba(30, 42, 72, 0.8);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   color: #94a3b8;
@@ -744,7 +744,7 @@
   position: absolute;
   top: 36px;
   left: 0;
-  background: rgba(15, 23, 42, 0.95);
+  background: rgba(30, 42, 72, 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);

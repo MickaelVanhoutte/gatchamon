@@ -7,7 +7,7 @@
   justify-content: center;
   gap: 16px;
   padding: 16px;
-  background: var(--bg-primary, #0a0e1a);
+  background: var(--bg-primary, #1a2342);
   z-index: 100;
   animation: result-fade-in 0.4s ease-out;
   overflow-y: auto;

@@ -35,7 +35,7 @@
 
 /* --- Element row --- */
 .essence-row {
-  background: var(--bg-card, #1a1f35);
+  background: var(--bg-card, #2a3560);
   border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.08));
   border-radius: 8px;
   overflow: hidden;
@@ -124,7 +124,7 @@
 .essence-merge-panel {
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   padding: 8px 10px;
-  background: var(--bg-secondary, #111827);
+  background: var(--bg-secondary, #212b52);
 }
 
 .essence-merge-tier-toggle {
@@ -138,7 +138,7 @@
   padding: 4px 8px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 6px;
-  background: var(--bg-card, #1a1f35);
+  background: var(--bg-card, #2a3560);
   color: var(--text-secondary, #94a3b8);
   font-size: 0.7rem;
   font-weight: 600;

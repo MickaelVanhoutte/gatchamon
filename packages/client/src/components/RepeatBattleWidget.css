@@ -69,7 +69,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--bg-primary, #0a0e1a);
+  border: 2px solid var(--bg-primary, #1a2342);
 }
 
 .rb-fab-alert {
@@ -86,7 +86,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--bg-primary, #0a0e1a);
+  border: 2px solid var(--bg-primary, #1a2342);
 }
 
 @keyframes rb-fab-pulse {
@@ -133,7 +133,7 @@
 
 /* -- Panel -- */
 .rb-panel {
-  background: var(--glass-bg, rgba(15, 23, 42, 0.85));
+  background: var(--glass-bg, rgba(30, 42, 72, 0.85));
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 16px;
@@ -217,7 +217,7 @@
   min-height: 200px;
   overflow: hidden;
   position: relative;
-  background: var(--bg-primary, #0a0e1a);
+  background: var(--bg-primary, #1a2342);
   border-radius: 0;
 }
 

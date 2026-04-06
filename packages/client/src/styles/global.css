@@ -6,13 +6,13 @@
 
 :root {
   /* ─── Dark Fantasy Game Theme ─── */
-  --bg-primary: #0a0e1a;
-  --bg-secondary: #111827;
-  --bg-card: #1a1f35;
-  --bg-surface: rgba(255, 255, 255, 0.04);
+  --bg-primary: #1a2342;
+  --bg-secondary: #212b52;
+  --bg-card: #2a3560;
+  --bg-surface: rgba(255, 255, 255, 0.06);
   --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  --text-secondary: #a0aec0;
+  --text-muted: #718096;
   --accent: #6366f1;
   --accent-hover: #818cf8;
   --accent-light: rgba(99, 102, 241, 0.15);
@@ -26,8 +26,8 @@
   --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
 
   /* Glass effect */
-  --glass-bg: rgba(15, 23, 42, 0.85);
-  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(30, 42, 72, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.1);
 
   /* Rarity glow colors */
   --rarity-1: #9ca3af;
@@ -309,7 +309,7 @@ select option {
 /* Fallback for browsers without backdrop-filter */
 @supports not (backdrop-filter: blur(12px)) {
   .game-panel {
-    background: rgba(15, 23, 42, 0.95);
+    background: rgba(30, 42, 72, 0.95);
   }
 }
 
