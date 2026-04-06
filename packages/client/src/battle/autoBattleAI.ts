@@ -90,7 +90,7 @@ export function scoreEffects(
   return score;
 }
 
-export function pickBestAction(actor: BattleMon, state: BattleState): AutoAction | null {
+export function pickBestAction(actor: BattleMon, state: BattleState, focusTargetId?: string | null): AutoAction | null {
   const template = getTemplate(actor.templateId);
   if (!template) return null;
 
@@ -106,7 +106,8 @@ export function pickBestAction(actor: BattleMon, state: BattleState): AutoAction
     const fallbackSkill = template.skillIds
       .map(id => SKILLS[id])
       .find(s => s && s.category !== 'passive');
-    const firstEnemy = state.enemyTeam.find(e => e.isAlive);
+    const firstEnemy = (focusTargetId && state.enemyTeam.find(e => e.instanceId === focusTargetId && e.isAlive))
+      ?? state.enemyTeam.find(e => e.isAlive);
     if (fallbackSkill && firstEnemy) {
       return { skillId: fallbackSkill.id, targetId: firstEnemy.instanceId };
     }
@@ -135,7 +136,11 @@ export function pickBestAction(actor: BattleMon, state: BattleState): AutoAction
         bestAction = { skillId: skill.id, targetId: actor.instanceId };
       }
     } else if (skill.target === 'single_enemy') {
-      for (const enemy of state.enemyTeam.filter(e => e.isAlive)) {
+      const aliveEnemies = state.enemyTeam.filter(e => e.isAlive);
+      const candidates = focusTargetId && aliveEnemies.some(e => e.instanceId === focusTargetId)
+        ? aliveEnemies.filter(e => e.instanceId === focusTargetId)
+        : aliveEnemies;
+      for (const enemy of candidates) {
         const enemyTemplate = getTemplate(enemy.templateId);
         if (!enemyTemplate) continue;
         const defenderTypes = enemyTemplate.types as PokemonType[];

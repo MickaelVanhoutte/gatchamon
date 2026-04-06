@@ -10,6 +10,7 @@ const RETRY_SUMMON_KEY = 'gatchamon_retry_summon';
 const LOGIN_CALENDAR_KEY = 'gatchamon_login_calendar';
 const ROULETTE_KEY = 'gatchamon_roulette';
 const GRANTED_FLAGS_KEY = 'gatchamon_granted_flags';
+const DUNGEON_RECORDS_KEY = 'gatchamon_dungeon_records';
 
 function safeParse<T>(raw: string | null, fallback: T): T {
   if (!raw) return fallback;
@@ -358,7 +359,30 @@ export function saveStoryDifficulty(diff: string): void {
   localStorage.setItem(STORY_DIFFICULTY_KEY, diff);
 }
 
-// ── Reset ──────────────────────────────────────────────────────────────
+// ── Dungeon Records ──────────────────────────────────────────────────
+
+export interface DungeonRecord {
+  maxFloor: number;
+  bestTimeSec: number;
+}
+
+export type DungeonRecords = Record<string, DungeonRecord>;
+
+export function loadDungeonRecords(): DungeonRecords {
+  const raw = localStorage.getItem(DUNGEON_RECORDS_KEY);
+  return safeParse<DungeonRecords>(raw, {});
+}
+
+export function saveDungeonRecord(key: string, floor: number, timeSec: number): void {
+  const records = loadDungeonRecords();
+  const existing = records[key];
+  if (!existing || floor > existing.maxFloor || (floor === existing.maxFloor && timeSec < existing.bestTimeSec)) {
+    records[key] = { maxFloor: floor, bestTimeSec: timeSec };
+    localStorage.setItem(DUNGEON_RECORDS_KEY, JSON.stringify(records));
+  }
+}
+
+// ── Reset ───────────────────────────────────────────��──────────────────
 
 export function checkAndResetTower(): void {
   const player = loadPlayer();
@@ -383,6 +407,7 @@ export function clearAll(): void {
   localStorage.removeItem(LEGACY_TEAM_KEY);
   localStorage.removeItem(GRANTED_FLAGS_KEY);
   localStorage.removeItem(STORY_DIFFICULTY_KEY);
+  localStorage.removeItem(DUNGEON_RECORDS_KEY);
   // Clear all per-dungeon team keys
   for (let i = localStorage.length - 1; i >= 0; i--) {
     const key = localStorage.key(i);

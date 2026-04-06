@@ -247,15 +247,33 @@
   50% { opacity: 0.3; }
 }
 
+.ls-changelog {
+  max-height: 30vh;
+  overflow-y: auto;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 12px;
+  padding: 10px 16px;
+  max-width: 320px;
+  animation: updated-fade-in 0.6s ease-out both;
+  cursor: default;
+}
+
+.ls-changelog-list {
+  list-style: disc;
+  padding-left: 18px;
+  margin: 6px 0 0;
+  text-align: left;
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
 .ls-updated-text {
   font-size: 0.85rem;
   color: #818cf8;
   letter-spacing: 2px;
   text-transform: uppercase;
-  background: rgba(99, 102, 241, 0.15);
-  padding: 4px 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(99, 102, 241, 0.2);
   animation: updated-fade-in 0.6s ease-out both;
 }
 

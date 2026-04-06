@@ -16,7 +16,8 @@ export interface EffectMeta {
     perStack?: boolean;   // If true, percent is multiplied by stack count
   };
   dot?: {                 // Damage over time
-    percentHp: number;    // % of max HP per turn
+    percentHp?: number;   // % of max HP per turn
+    percentAtk?: number;  // % of source ATK per turn (snapshotted)
   };
   hot?: {                 // Heal over time
     percentHp: number;    // % of max HP per turn
@@ -212,9 +213,9 @@ export const EFFECT_REGISTRY: Record<EffectId, EffectMeta> = {
     icon: 'poison', color: '#a855f7',
   },
   burn: {
-    category: 'status', name: 'Burn', description: 'Takes 3% max HP damage each turn and ATK reduced by 3% per stack (stackable)',
+    category: 'status', name: 'Burn', description: 'Takes 5% of applier ATK as damage each turn and ATK reduced by 3% per stack (stackable)',
     unique: false, maxStacks: 10,
-    dot: { percentHp: 3 },
+    dot: { percentAtk: 5 },
     statMod: { stat: 'atk', percent: -3, perStack: true },
     icon: 'burn', color: '#f97316',
   },

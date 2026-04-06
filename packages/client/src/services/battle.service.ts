@@ -1,4 +1,4 @@
-import { getTemplate as getTemplateShared, computeStats, computeStatsWithItems, getActiveSetEffects, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel, BEGINNER_BONUS, isBeginnerBonusActive, getTowerFloor, STORY_ENERGY_COST, getMysteryDungeonDef, getMysteryDungeonDateKey } from '@gatchamon/shared';
+import { getTemplate as getTemplateShared, computeStats, computeStatsWithItems, getActiveSetEffects, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel, BEGINNER_BONUS, isBeginnerBonusActive, getTowerFloor, getTowerEnemyPool, getCurrentTowerResetDate, STORY_ENERGY_COST, getMysteryDungeonDef, getMysteryDungeonDateKey } from '@gatchamon/shared';
 import { getSkillsForPokemon, SKILLS } from '@gatchamon/shared';
 import { TOTAL_REGIONS, getFloorCount, isLeagueRegion, getArcForRegion, getNextRegionInArc, STORY_ARCS } from '@gatchamon/shared';
 import {
@@ -862,9 +862,11 @@ export function startTowerBattle(
   if (playerTeam.length === 0) throw new Error('Team cannot be empty');
 
   // Build enemy team from tower floor def
+  const resetDate = getCurrentTowerResetDate();
+  const enemyPool = getTowerEnemyPool(towerFloor, resetDate);
   const enemyTeam: BattleMon[] = [];
   for (let i = 0; i < floorDef.enemyCount; i++) {
-    const templateId = floorDef.enemyPool[i % floorDef.enemyPool.length];
+    const templateId = enemyPool[i];
     const id = `tower_enemy_${crypto.randomUUID()}`;
     const mon = makeBattleMon(id, templateId, floorDef.enemyLevel, floorDef.enemyStars, false);
     if (floorDef.statBoost) {

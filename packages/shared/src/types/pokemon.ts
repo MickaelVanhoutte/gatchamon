@@ -99,7 +99,7 @@ export type DebuffEffectId =
 // Pokemon Status Effects (all debuffs)
 export type StatusEffectId =
   | 'poison'           // 5% max HP DoT, stackable
-  | 'burn'             // 3% max HP DoT + 3% ATK reduction per stack, stackable
+  | 'burn'             // 5% source ATK DoT + 3% ATK reduction per stack, stackable
   | 'freeze'           // Cannot act (full stun)
   | 'paralysis'        // 50% skip turn / 50% all CDs +1
   | 'confusion'        // 50% hits random ally (AOE: hits own team)

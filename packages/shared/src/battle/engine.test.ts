@@ -799,14 +799,15 @@ describe('processStartOfTurn', () => {
     expect(mon.currentHp).toBe(1000 - Math.floor(1000 * 0.05 * 3));
   });
 
-  it('burn deals 3% max HP per stack', () => {
+  it('burn deals 5% of snapshotted source ATK per stack', () => {
+    const sourceAtk = 200;
     const mon = makeMon({
       currentHp: 1000,
-      debuffs: [makeDebuff('burn'), makeDebuff('burn')],
+      debuffs: [makeDebuff('burn', 3, sourceAtk), makeDebuff('burn', 3, sourceAtk)],
     });
     const state = makeState({ playerTeam: [mon] });
     processStartOfTurn(mon, state);
-    expect(mon.currentHp).toBe(1000 - Math.floor(1000 * 0.03 * 2));
+    expect(mon.currentHp).toBe(1000 - Math.floor(sourceAtk * 0.05) * 2);
   });
 
   it('bleed deals 4% max HP per stack', () => {

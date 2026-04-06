@@ -13,7 +13,7 @@ import { BattleLoadingScreen } from '../components/BattleLoadingScreen';
 import { GymLeaderDialogue } from '../components/GymLeaderDialogue';
 import { useTutorialStore } from '../stores/tutorialStore';
 import gsap from 'gsap';
-import { loadBattleSettings, saveBattleSettings, loadPlayer, hasGrantedFlag } from '../services/storage';
+import { loadBattleSettings, saveBattleSettings, loadPlayer, hasGrantedFlag, saveDungeonRecord } from '../services/storage';
 import './BattlePage.css';
 
 type Phase = 'player_turn' | 'animating' | 'victory' | 'defeat';
@@ -53,6 +53,22 @@ function computeBattleRecap(state: BattleState) {
       hpHealed: state.recap?.[mon.instanceId]?.hpHealed ?? 0,
     };
   });
+}
+
+function formatBattleTime(sec: number): string {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function getDungeonRecordKey(state: BattleState): string {
+  switch (state.mode) {
+    case 'tower': return 'tower';
+    case 'dungeon': return `dungeon:${state.dungeonId}`;
+    case 'item-dungeon': return `item-dungeon:${state.dungeonId}`;
+    case 'mystery-dungeon': return 'mystery-dungeon';
+    default: return `story:${state.floor.region}:${state.floor.difficulty}`;
+  }
 }
 
 function SkillDetailModal({ skill, onClose }: { skill: SkillDefinition; onClose: () => void }) {
@@ -176,6 +192,7 @@ export function BattlePage() {
   const [state, setState] = useState<BattleState | null>(null);
   const [phase, setPhase] = useState<Phase>('animating');
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
+  const [focusTargetId, setFocusTargetId] = useState<string | null>(null);
   const [logEntries, setLogEntries] = useState<BattleLogEntry[]>([]);
   const [rewards, setRewards] = useState<BattleResult['rewards']>(undefined);
   const [assetsReady, setAssetsReady] = useState(false);
@@ -193,6 +210,8 @@ export function BattlePage() {
   const isActingRef = useRef(false);
   const lastActedRef = useRef<string | null>(null);
   const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
+  const battleStartRef = useRef<number>(0);
+  const [battleDuration, setBattleDuration] = useState(0);
 
   const { playLogEntry, playMultiTargetEntries } = useBattleAnimation(arenaEl, monRefs);
 
@@ -289,6 +308,13 @@ export function BattlePage() {
   useEffect(() => {
     loadBattle();
   }, [loadBattle]);
+
+  // Start the battle timer when the first player_turn begins
+  useEffect(() => {
+    if (phase === 'player_turn' && battleStartRef.current === 0) {
+      battleStartRef.current = Date.now();
+    }
+  }, [phase]);
 
   // Recompute turn order only when phase transitions away from 'animating'.
   // This prevents the timeline from jumping during enemy turn animations.
@@ -443,6 +469,16 @@ export function BattlePage() {
         await new Promise(r => setTimeout(r, 800));
       }
 
+      if (result.state.status === 'victory' || result.state.status === 'defeat') {
+        const elapsed = battleStartRef.current > 0
+          ? Math.round((Date.now() - battleStartRef.current) / 1000)
+          : 0;
+        setBattleDuration(elapsed);
+        if (result.state.status === 'victory' && elapsed > 0) {
+          saveDungeonRecord(getDungeonRecordKey(result.state), result.state.floor.floor, elapsed);
+        }
+      }
+
       if (result.state.status === 'victory') {
         setRewards(result.rewards);
         setPhase('victory');
@@ -459,7 +495,26 @@ export function BattlePage() {
     }
   };
 
-  const { isAutoOn, toggleAuto } = useAutoBattle(state, phase, handleAction, isPaused, battleSpeedRef, savedSettings.current.auto);
+  const { isAutoOn, toggleAuto } = useAutoBattle(state, phase, handleAction, isPaused, battleSpeedRef, savedSettings.current.auto, focusTargetId);
+
+  // Clear focus when target dies, battle ends, or auto is turned off
+  useEffect(() => {
+    if (!focusTargetId || !state) return;
+    const target = state.enemyTeam.find(m => m.instanceId === focusTargetId);
+    if (!target || !target.isAlive) setFocusTargetId(null);
+  }, [state, focusTargetId]);
+
+  useEffect(() => {
+    if (phase === 'victory' || phase === 'defeat') setFocusTargetId(null);
+  }, [phase]);
+
+  useEffect(() => {
+    if (!isAutoOn) setFocusTargetId(null);
+  }, [isAutoOn]);
+
+  const handleFocusClick = useCallback((instanceId: string) => {
+    setFocusTargetId(prev => prev === instanceId ? null : instanceId);
+  }, []);
 
   const navigateAway = useCallback(() => {
     refreshPlayer();
@@ -629,8 +684,15 @@ export function BattlePage() {
               <BattleMonSprite
                 key={mon.instanceId}
                 mon={mon}
-                isTargetable={isPlayerTurn && selectedSkill !== null}
-                onClick={() => selectedSkill && handleAction(selectedSkill, mon.instanceId)}
+                isTargetable={isPlayerTurn && (selectedSkill !== null || isAutoOn)}
+                isFocused={focusTargetId === mon.instanceId}
+                onClick={() => {
+                  if (isAutoOn) {
+                    handleFocusClick(mon.instanceId);
+                  } else if (selectedSkill) {
+                    handleAction(selectedSkill, mon.instanceId);
+                  }
+                }}
                 skillType={skill?.type}
                 onEffectClick={handleEffectClick}
                 registerRef={(el) => {
@@ -767,6 +829,9 @@ export function BattlePage() {
               {battleRecap && (
                 <div className="battle-recap">
                   <p className="recap-title">Battle Performance</p>
+                  {battleDuration > 0 && (
+                    <p className="recap-time">⏱ {formatBattleTime(battleDuration)}</p>
+                  )}
                   <div className="recap-list">
                     {battleRecap.map(mon => (
                       <div key={mon.instanceId} className="recap-mon">
@@ -952,6 +1017,7 @@ function BattleMonSprite({
   mon,
   isTargetable,
   isActive,
+  isFocused,
   onClick,
   skillType,
   registerRef,
@@ -960,6 +1026,7 @@ function BattleMonSprite({
   mon: BattleMon;
   isTargetable?: boolean;
   isActive?: boolean;
+  isFocused?: boolean;
   onClick?: () => void;
   skillType?: PokemonType;
   registerRef?: (el: HTMLDivElement | null) => void;
@@ -1014,7 +1081,7 @@ function BattleMonSprite({
   return (
     <div
       ref={registerRef}
-      className={`battle-mon ${!mon.isAlive ? 'dead' : ''} ${isTargetable ? 'targetable' : ''} ${isActive ? 'active-mon' : ''} ${mon.isBoss ? 'boss-mon' : ''}`}
+      className={`battle-mon ${!mon.isAlive ? 'dead' : ''} ${isTargetable ? 'targetable' : ''} ${isActive ? 'active-mon' : ''} ${mon.isBoss ? 'boss-mon' : ''} ${isFocused ? 'focused' : ''}`}
       onClick={mon.isAlive && isTargetable ? onClick : undefined}
     >
       {mon.isPlayerOwned ? (

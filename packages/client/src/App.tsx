@@ -64,7 +64,7 @@ export function App() {
     return (
       <div className="app app--onboarding">
         <div className="onboarding">
-          <h1>Gatchamon</h1>
+          <h1>Forge : Monster Vault</h1>
           <p>Choose your trainer name</p>
           <form onSubmit={async (e) => {
             e.preventDefault();

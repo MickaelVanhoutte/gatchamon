@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
-import { REGIONS, DUNGEONS, ITEM_DUNGEONS, getTemplate, getTowerFloor, getFloorCount, getGymLeader, getLeagueChampion, isLeagueRegion, isActivePokemon, STORY_ENERGY_COST, getMysteryDungeonDef } from '@gatchamon/shared';
+import { REGIONS, DUNGEONS, ITEM_DUNGEONS, getTemplate, getTowerFloor, getTowerEnemyPool, getCurrentTowerResetDate, getFloorCount, getGymLeader, getLeagueChampion, isLeagueRegion, isActivePokemon, STORY_ENERGY_COST, getMysteryDungeonDef } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
 import { startBattle, startDungeonBattle, startItemDungeonBattle, startTowerBattle, startMysteryDungeonBattle } from '../services/battle.service';
 import { buildFloorEnemies } from '../services/floor.service';
@@ -137,9 +137,11 @@ export function TeamSelectPage() {
       const towerFloor = Number(searchParams.get('floor') ?? 1);
       const towerDef = getTowerFloor(towerFloor);
       if (towerDef) {
+        const resetDate = getCurrentTowerResetDate();
+        const pool = getTowerEnemyPool(towerFloor, resetDate);
         const previews: EnemyPreview[] = [];
         for (let i = 0; i < towerDef.enemyCount; i++) {
-          const tid = towerDef.enemyPool[i % towerDef.enemyPool.length];
+          const tid = pool[i];
           const tmpl = getTemplate(tid);
           previews.push({
             templateId: tid,

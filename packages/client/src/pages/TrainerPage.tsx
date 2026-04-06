@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { useGameStore } from '../stores/gameStore';
-import { trainerXpToNextLevel, MAX_TRAINER_LEVEL, TRAINER_SKILL_MAX } from '@gatchamon/shared';
-import type { TrainerSkills } from '@gatchamon/shared';
-import { clearAll } from '../services/storage';
+import { trainerXpToNextLevel, MAX_TRAINER_LEVEL, TRAINER_SKILL_MAX, DUNGEONS, ITEM_DUNGEONS, REGIONS, getFloorCount } from '@gatchamon/shared';
+import type { TrainerSkills, Difficulty } from '@gatchamon/shared';
+import { clearAll, loadDungeonRecords } from '../services/storage';
+import type { DungeonRecords } from '../services/storage';
 import { EssenceBag } from '../components/EssenceBag';
 import './TrainerPage.css';
 
@@ -37,8 +39,111 @@ const CATEGORIES = [
   { title: 'Economy', skills: ECONOMY_SKILLS },
 ];
 
+function formatTime(sec: number): string {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+const DIFFICULTIES: Difficulty[] = ['normal', 'hard', 'hell'];
+
+function DungeonRecordsModal({ onClose }: { onClose: () => void }) {
+  const records: DungeonRecords = loadDungeonRecords();
+
+  const sections: { title: string; rows: { label: string; floor: string; time: string }[] }[] = [];
+
+  // Battle Tower
+  const towerRec = records['tower'];
+  if (towerRec) {
+    sections.push({
+      title: 'Battle Tower',
+      rows: [{ label: 'Tower', floor: `${towerRec.maxFloor} / 100`, time: formatTime(towerRec.bestTimeSec) }],
+    });
+  }
+
+  // Story
+  const storyRows: { label: string; floor: string; time: string }[] = [];
+  for (const diff of DIFFICULTIES) {
+    for (const region of REGIONS) {
+      const rec = records[`story:${region.id}:${diff}`];
+      if (!rec) continue;
+      const total = getFloorCount(region.id);
+      storyRows.push({
+        label: `${region.name} (${diff})`,
+        floor: `${rec.maxFloor} / ${total}`,
+        time: formatTime(rec.bestTimeSec),
+      });
+    }
+  }
+  if (storyRows.length > 0) sections.push({ title: 'Story', rows: storyRows });
+
+  // Essence Dungeons
+  const essenceRows: { label: string; floor: string; time: string }[] = [];
+  for (const d of DUNGEONS) {
+    const rec = records[`dungeon:${d.id}`];
+    if (!rec) continue;
+    essenceRows.push({
+      label: d.name,
+      floor: `${rec.maxFloor} / ${d.floors.length}`,
+      time: formatTime(rec.bestTimeSec),
+    });
+  }
+  if (essenceRows.length > 0) sections.push({ title: 'Essence Dungeons', rows: essenceRows });
+
+  // Item Dungeons
+  const itemRows: { label: string; floor: string; time: string }[] = [];
+  for (const d of ITEM_DUNGEONS) {
+    const rec = records[`item-dungeon:${d.id}`];
+    if (!rec) continue;
+    itemRows.push({
+      label: d.name,
+      floor: `${rec.maxFloor} / ${d.floors.length}`,
+      time: formatTime(rec.bestTimeSec),
+    });
+  }
+  if (itemRows.length > 0) sections.push({ title: 'Item Dungeons', rows: itemRows });
+
+  // Mystery Dungeon
+  const mysteryRec = records['mystery-dungeon'];
+  if (mysteryRec) {
+    sections.push({
+      title: 'Mystery Dungeon',
+      rows: [{ label: 'Mystery', floor: `${mysteryRec.maxFloor}`, time: formatTime(mysteryRec.bestTimeSec) }],
+    });
+  }
+
+  return (
+    <div className="records-overlay-backdrop" onClick={onClose}>
+      <div className="records-overlay" onClick={e => e.stopPropagation()}>
+        <div className="records-overlay-header">
+          <h3 className="records-heading">Dungeon Records</h3>
+          <button className="records-close-btn" onClick={onClose}>&times;</button>
+        </div>
+        <div className="records-overlay-body">
+          {sections.length === 0 && (
+            <p className="records-empty">No records yet. Win some battles!</p>
+          )}
+          {sections.map(sec => (
+            <div key={sec.title} className="records-category">
+              <h4 className="trainer-category-title">{sec.title}</h4>
+              {sec.rows.map((row, i) => (
+                <div key={i} className="records-row">
+                  <span className="records-label">{row.label}</span>
+                  <span className="records-floor">{row.floor}</span>
+                  <span className="records-time">⏱ {row.time}</span>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function TrainerPage() {
   const { player, allocateTrainerSkill } = useGameStore();
+  const [showRecords, setShowRecords] = useState(false);
   if (!player) return null;
 
   const { trainerLevel, trainerExp, trainerSkillPoints, trainerSkills } = player;
@@ -51,8 +156,13 @@ export function TrainerPage() {
       <div className="trainer-left-panel" data-nested-scroll>
         {/* Header */}
         <div className="trainer-header">
-          <div className="trainer-level-badge">
-            Trainer Lv.{trainerLevel}
+          <div className="trainer-level-row">
+            <div className="trainer-level-badge">
+              Trainer Lv.{trainerLevel}
+            </div>
+            <button className="records-btn" onClick={() => setShowRecords(true)}>
+              ⏱ Records
+            </button>
           </div>
           {!isMaxLevel && (
             <div className="trainer-xp-info">
@@ -126,6 +236,8 @@ export function TrainerPage() {
       <div className="trainer-right-panel" data-nested-scroll>
         <EssenceBag />
       </div>
+
+      {showRecords && <DungeonRecordsModal onClose={() => setShowRecords(false)} />}
     </div>
   );
 }

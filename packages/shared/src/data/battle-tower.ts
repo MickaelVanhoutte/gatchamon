@@ -1,52 +1,116 @@
 import type { MissionReward } from '../types/rewards.js';
+import { ACTIVE_POKEDEX } from './gen-filter.js';
 
 export interface TowerFloorDef {
   floor: number;
   enemyLevel: number;
   enemyStars: 1 | 2 | 3 | 4 | 5 | 6;
   enemyCount: number;
-  enemyPool: number[];
   reward: MissionReward;
   energyCost: number;
   statBoost?: number;
   speedBonus?: number;
 }
 
-// Enemy pools — Gen 1 + Gen 2, difficulty through team composition & type coverage
-const TOWER_POOLS: Record<string, number[]> = {
-  // Floors 1-10: weak unevolved basics
-  early: [16, 19, 21, 161, 163, 165],
-  // Floors 11-20: 2-star basics with diverse types
-  earlyMid: [25, 37, 41, 66, 179, 187, 175],
-  // Floors 21-30: evolved 2-star forms
-  mid: [26, 34, 38, 42, 162, 164, 180],
-  // Floors 31-40: strong 3-star final evolutions
-  midLate: [6, 9, 65, 94, 130, 181, 214, 229],
-  // Floors 41-50: best 3-star finals + 4-star
-  late: [59, 94, 131, 143, 142, 212, 230, 208],
-  // Floors 51-60: 4-star powerhouses
-  lateTough: [142, 143, 149, 130, 131, 248, 212, 214],
-  // Floors 61-70: best of Gen 1+2 mix
-  elite: [149, 143, 65, 94, 130, 248, 230, 181],
-  // Floors 71-80: legendary birds + beasts + Dragonite
-  champion: [144, 145, 146, 149, 143, 243, 244, 245],
-  // Floors 81-90: Mewtwo + birds + Lugia + Ho-Oh
-  legendary: [150, 144, 145, 146, 130, 249, 250],
-  // Floors 91-100: Mewtwo, Mew + Lugia + Ho-Oh + Celebi + top Gen 1+2
-  ultimate: [150, 151, 149, 143, 130, 249, 250, 251],
-};
+// ---------------------------------------------------------------------------
+// Star-based pool config per floor range
+// ---------------------------------------------------------------------------
 
-function getEnemyPool(floor: number): number[] {
-  if (floor <= 10) return TOWER_POOLS.early;
-  if (floor <= 20) return TOWER_POOLS.earlyMid;
-  if (floor <= 30) return TOWER_POOLS.mid;
-  if (floor <= 40) return TOWER_POOLS.midLate;
-  if (floor <= 50) return TOWER_POOLS.late;
-  if (floor <= 60) return TOWER_POOLS.lateTough;
-  if (floor <= 70) return TOWER_POOLS.elite;
-  if (floor <= 80) return TOWER_POOLS.champion;
-  if (floor <= 90) return TOWER_POOLS.legendary;
-  return TOWER_POOLS.ultimate;
+interface FloorStarConfig {
+  starRange: [number, number]; // inclusive [min, max] naturalStars
+  bossStars?: number;          // forced minimum star for boss slot
+}
+
+function getFloorStarConfig(floor: number): FloorStarConfig {
+  if (floor <= 10)  return { starRange: [1, 2] };
+  if (floor <= 20)  return { starRange: [1, 2] };
+  if (floor <= 30)  return { starRange: [2, 3] };
+  if (floor <= 40)  return { starRange: [2, 3], bossStars: 3 };
+  if (floor <= 50)  return { starRange: [3, 4], bossStars: 4 };
+  if (floor <= 60)  return { starRange: [3, 4], bossStars: 4 };
+  if (floor <= 70)  return { starRange: [3, 5], bossStars: 5 };
+  if (floor <= 80)  return { starRange: [4, 5], bossStars: 5 };
+  return { starRange: [4, 5], bossStars: 5 }; // floors 81-100
+}
+
+// ---------------------------------------------------------------------------
+// Seeded PRNG (DJB2 hash + mulberry32)
+// ---------------------------------------------------------------------------
+
+function hashSeed(str: string): number {
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) + hash) + str.charCodeAt(i);
+  }
+  return Math.abs(hash) >>> 0;
+}
+
+function mulberry32(seed: number): () => number {
+  let s = seed | 0;
+  return () => {
+    s = (s + 0x6D2B79F5) | 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Generate enemy team for a tower floor
+// ---------------------------------------------------------------------------
+
+// Pre-sorted for deterministic iteration
+const SORTED_POKEDEX = [...ACTIVE_POKEDEX].sort((a, b) => a.id - b.id);
+
+export function getTowerEnemyPool(floor: number, resetDate: string): number[] {
+  const config = getFloorStarConfig(floor);
+  const enemyCount = getEnemyCount(floor);
+  const isBossFloor = floor % 10 === 0;
+
+  const candidates = SORTED_POKEDEX.filter(
+    p => p.naturalStars >= config.starRange[0] && p.naturalStars <= config.starRange[1],
+  );
+  if (candidates.length === 0) return [];
+
+  const rng = mulberry32(hashSeed(`${resetDate}:tower:${floor}`));
+
+  const picked: number[] = [];
+  const usedTypes = new Map<string, number>();
+
+  // Boss floors: first slot from highest eligible stars
+  if (isBossFloor && config.bossStars) {
+    const bossPool = candidates.filter(p => p.naturalStars >= config.bossStars!);
+    if (bossPool.length > 0) {
+      const boss = bossPool[Math.floor(rng() * bossPool.length)];
+      picked.push(boss.id);
+      boss.types.forEach(t => usedTypes.set(t, (usedTypes.get(t) ?? 0) + 1));
+    }
+  }
+
+  // Fill remaining slots with type diversity (max 2 of same primary type)
+  let attempts = 0;
+  while (picked.length < enemyCount && attempts < 200) {
+    const candidate = candidates[Math.floor(rng() * candidates.length)];
+    attempts++;
+
+    if (picked.includes(candidate.id)) continue;
+
+    const primaryType = candidate.types[0];
+    if ((usedTypes.get(primaryType) ?? 0) >= 2) continue;
+
+    picked.push(candidate.id);
+    candidate.types.forEach(t => usedTypes.set(t, (usedTypes.get(t) ?? 0) + 1));
+  }
+
+  // Fallback if constraints too tight
+  while (picked.length < enemyCount) {
+    const candidate = candidates[Math.floor(rng() * candidates.length)];
+    if (!picked.includes(candidate.id)) {
+      picked.push(candidate.id);
+    }
+  }
+
+  return picked;
 }
 
 function getEnemyLevel(floor: number): number {
@@ -174,7 +238,6 @@ function buildTowerFloors(): TowerFloorDef[] {
       enemyLevel: getEnemyLevel(floor),
       enemyStars: getEnemyStars(floor),
       enemyCount: getEnemyCount(floor),
-      enemyPool: getEnemyPool(floor),
       reward: getFloorReward(floor),
       energyCost: floor <= 50 ? 3 : 4,
       ...(statBoost != null ? { statBoost } : {}),

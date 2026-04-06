@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { assetUrl } from '../utils/asset-url';
 import { tryLockLandscape } from '../utils/orientation-lock';
+import { changelog } from '../data/changelog';
 import './LoadingScreen.css';
 
 interface LoadingScreenProps {
@@ -58,8 +59,8 @@ export function LoadingScreen({ onStart, swReady = true }: LoadingScreenProps) {
             <div className="ls-pokeball-bottom" />
           </div>
           <h1 className="ls-title">
-            <span className="ls-title-gatcha">Gatcha</span>
-            <span className="ls-title-mon">mon</span>
+            <span className="ls-title-gatcha">Forge</span>
+            <span className="ls-title-mon"> : Monster Vault</span>
           </h1>
           <p className="ls-subtitle">Gotta Catch &apos;Em All</p>
         </div>
@@ -67,7 +68,16 @@ export function LoadingScreen({ onStart, swReady = true }: LoadingScreenProps) {
 
       {/* Bottom */}
       <div className="ls-bottom">
-        {justUpdated && <p className="ls-updated-text">Updated!</p>}
+        {justUpdated && changelog[0] && (
+          <div className="ls-changelog" onClick={e => e.stopPropagation()}>
+            <p className="ls-updated-text">Updated to {changelog[0].version}!</p>
+            <ul className="ls-changelog-list">
+              {changelog[0].changes.map((c, i) => (
+                <li key={i}>{c}</li>
+              ))}
+            </ul>
+          </div>
+        )}
         {canStart ? (
           <p className="ls-tap-text">Touch to Start</p>
         ) : minTimeElapsed ? (

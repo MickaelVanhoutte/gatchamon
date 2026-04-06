@@ -469,11 +469,12 @@ export function processStartOfTurn(mon: BattleMon, state: BattleState): string[]
     }
   }
 
-  // 4. Process Burn DoT (blocked by invincibility)
+  // 4. Process Burn DoT (blocked by invincibility) — 5% of source ATK per stack
   if (!hasInvincibility) {
-    const burnStacks = mon.debuffs.filter(d => d.id === 'burn' && d.remainingTurns > 0).length;
+    const burnDebuffs = mon.debuffs.filter(d => d.id === 'burn' && d.remainingTurns > 0);
+    const burnStacks = burnDebuffs.length;
     if (burnStacks > 0) {
-      const dotDmg = Math.floor(mon.maxHp * 0.03 * burnStacks);
+      const dotDmg = burnDebuffs.reduce((sum, d) => sum + Math.floor(d.value * 0.05), 0);
       mon.currentHp = Math.max(0, mon.currentHp - dotDmg);
       effects.push(`${template.name} takes ${dotDmg} burn damage (${burnStacks} stacks)`);
       if (mon.currentHp <= 0) {
@@ -677,7 +678,8 @@ export function applyPassives(state: BattleState): void {
         for (const target of targets) {
           // For 'always' passives, use duration 999
           const duration = trigger === 'always' ? 999 : effect.duration;
-          applyEffectToTarget(effect.id, target, duration, effect.value, mon.instanceId);
+          const effectValue = effect.id === 'burn' ? getEffectiveStats(mon).atk : effect.value;
+          applyEffectToTarget(effect.id, target, duration, effectValue, mon.instanceId);
         }
       }
     }
@@ -745,7 +747,9 @@ function applySingleEffect(
       return `${targetTemplate.name} resisted ${meta.name}!`;
     }
 
-    const success = applyDebuff(target, effect.id, effect.duration, effect.value, actor.instanceId);
+    // Snapshot source ATK for burn so DOT works even if source dies
+    const debuffValue = effect.id === 'burn' ? getEffectiveStats(actor).atk : effect.value;
+    const success = applyDebuff(target, effect.id, effect.duration, debuffValue, actor.instanceId);
     if (success) {
       return `${targetTemplate.name} got ${meta.name} (${effect.duration} turns)`;
     }

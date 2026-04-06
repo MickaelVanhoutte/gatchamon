@@ -12,6 +12,7 @@ export function useAutoBattle(
   isPaused: boolean,
   battleSpeedRef?: React.RefObject<number>,
   initialAuto?: boolean,
+  focusTargetId?: string | null,
 ): { isAutoOn: boolean; toggleAuto: () => void } {
   const [isAutoOn, setIsAutoOn] = useState(initialAuto ?? false);
   const handleActionRef = useRef(handleAction);
@@ -30,7 +31,7 @@ export function useAutoBattle(
     const actor = state.playerTeam.find(m => m.instanceId === state.currentActorId);
     if (!actor || !actor.isAlive || !actor.isPlayerOwned) return;
 
-    const best = pickBestAction(actor, state);
+    const best = pickBestAction(actor, state, focusTargetId);
     if (!best) return;
 
     const spd = battleSpeedRef?.current ?? 1;
@@ -41,7 +42,7 @@ export function useAutoBattle(
     }, firstDelay + 300 / spd);
 
     return () => clearTimeout(timer);
-  }, [isAutoOn, phase, state, isPaused]);
+  }, [isAutoOn, phase, state, isPaused, focusTargetId]);
 
   return { isAutoOn, toggleAuto };
 }

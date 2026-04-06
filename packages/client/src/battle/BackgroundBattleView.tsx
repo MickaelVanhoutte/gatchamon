@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import {
   resolvePlayerAction,
   deleteBattle,
+  getBattleState,
   startDungeonBattle,
   startItemDungeonBattle,
   startMysteryDungeonBattle,
@@ -52,6 +53,7 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
   const isActingRef = useRef(false);
   const battleIdRef = useRef<string | null>(null);
   const hasStartedRef = useRef(false);
+  const retryCountRef = useRef(0);
   battleIdRef.current = battleId;
 
   // Force x2 speed
@@ -143,8 +145,6 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
       return;
     }
 
-    store.incrementRun();
-
     try {
       const result = config.mode === 'mystery-dungeon'
         ? startMysteryDungeonBattle(config.teamIds, config.floorIndex)
@@ -152,6 +152,7 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
           ? startItemDungeonBattle(config.teamIds, config.dungeonId, config.floorIndex)
           : startDungeonBattle(config.teamIds, config.dungeonId, config.floorIndex);
 
+      store.incrementRun();
       const newBattleId = result.state.battleId;
       setBattleId(newBattleId);
       setState(result.state);
@@ -204,6 +205,15 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
     const bid = battleIdRef.current;
     if (!bid || !state || isActingRef.current) return;
     if (useRepeatBattleStore.getState().status !== 'running') return;
+
+    // Verify battle still exists (may have been deleted by a concurrent manual battle)
+    if (!getBattleState(bid)) {
+      console.warn('[BG Battle] battle gone before action, chaining next');
+      setPhase('loading');
+      setTimeout(() => startNextBattle(), 100);
+      return;
+    }
+
     isActingRef.current = true;
     setPhase('animating');
 
@@ -278,6 +288,7 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
       }
       setState({ ...result.state });
       setLogEntries([...result.state.log]);
+      retryCountRef.current = 0;
 
       if (result.state.status === 'victory' || result.state.status === 'defeat') {
         await new Promise(r => setTimeout(r, 800));
@@ -296,11 +307,26 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
       }
     } catch (err: any) {
       console.error('[BG Battle error]', err.message);
-      setPhase('player_turn');
+      const bid = battleIdRef.current;
+      if (bid && !getBattleState(bid)) {
+        // Battle was deleted — chain to next instead of looping forever
+        console.warn('[BG Battle] battle deleted during action, chaining next');
+        setPhase('loading');
+        setTimeout(() => startNextBattle(), 100);
+      } else {
+        retryCountRef.current++;
+        if (retryCountRef.current > 3) {
+          console.error('[BG Battle] too many retries, stopping');
+          useRepeatBattleStore.getState().setStatus('stopped_defeat');
+          if (bid) deleteBattle(bid);
+        } else {
+          setPhase('player_turn');
+        }
+      }
     } finally {
       isActingRef.current = false;
     }
-  }, [state, logEntries, playLogEntry, playMultiTargetEntries, spawnFloatingNumber]);
+  }, [state, logEntries, playLogEntry, playMultiTargetEntries, spawnFloatingNumber, startNextBattle]);
 
   // Auto-battle always on
   useAutoBattle(state, phase as any, handleAction, false, battleSpeedRef, true);
@@ -358,14 +384,17 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
 
     // Chain to next battle after brief delay
     const chainTimer = setTimeout(() => {
+      // Guard against stale timer firing after stop/restart
+      if (battleIdRef.current !== bid) return;
+      if (useRepeatBattleStore.getState().status !== 'running') return;
+
       if (bid) deleteBattle(bid);
       setPhase('loading');
-      // Small delay then start next
       setTimeout(() => startNextBattle(), 100);
     }, 1500 / battleSpeedRef.current);
 
     return () => clearTimeout(chainTimer);
-  }, [phase, lastRewards]);
+  }, [phase, lastRewards, startNextBattle, config, refreshPlayer, loadCollection]);
 
   // ── Immediate stop: clean up battle when stopNow is called ──
   useEffect(() => {
