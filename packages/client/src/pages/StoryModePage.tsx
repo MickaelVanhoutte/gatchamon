@@ -36,8 +36,8 @@ const DIFFICULTIES: { key: Difficulty; label: string; color: string }[] = [
   { key: 'hell', label: 'Hell', color: '#e94560' },
 ];
 
-const MAP_W = 1800;
-const MAP_H = 600;
+const MAP_W = 2192;
+const MAP_H = 480;
 
 function buildSmoothPath(points: { x: number; y: number }[]): string {
   if (points.length < 2) return '';
@@ -331,8 +331,15 @@ export function StoryModePage() {
       {/* World Map — horizontal scroll */}
       <div className="world-map" ref={worldMapRef} data-horizontal-scroll>
         <div className="map-scroll">
-          {/* SVG Map background */}
-          <svg className="map-svg" viewBox={`0 0 ${MAP_W} ${MAP_H}`} preserveAspectRatio="xMidYMid slice">
+          {/* Map background image */}
+          <img
+            className="map-bg-img"
+            src={assetUrl('backgrounds/story-path.png')}
+            alt=""
+            draggable={false}
+          />
+          {/* REMOVED: old SVG map — keeping this comment as a landmark */}
+          {false && <svg className="map-svg" viewBox={`0 0 ${MAP_W} ${MAP_H}`} preserveAspectRatio="xMidYMid slice">
             <defs>
               <radialGradient id="treeShadow">
                 <stop offset="0%" stopColor="rgba(0,0,0,0.15)" />
@@ -1673,7 +1680,7 @@ export function StoryModePage() {
             <path d={smoothPath} fill="none" stroke="rgba(0,0,0,0.12)" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" filter="url(#pathGlow)" />
             <path d={smoothPath} fill="none" stroke="rgba(0,0,0,0.08)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
             <path d={smoothPath} fill="none" stroke="#3a3020" strokeWidth="3" strokeDasharray="10,8" strokeLinecap="round" strokeLinejoin="round" opacity={0.55} />
-          </svg>
+          </svg>}
 
           {/* Atmospheric overlays */}
           <div className="map-vignette" />

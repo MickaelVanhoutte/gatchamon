@@ -26,7 +26,6 @@
 .city-scroll {
   position: relative;
   height: 100%;
-  min-height: 400px;
   aspect-ratio: 2208 / 480;
   overflow: hidden;
 }

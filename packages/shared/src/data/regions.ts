@@ -39,7 +39,7 @@ export const REGIONS: RegionDef[] = [
       'Stone Corridor', 'Pebble Creek', 'Slate Ridge', 'Granite Hall',
       'Bedrock Depths', 'Pewter Gym',
     ],
-    mapPosition: { x: 100, y: 380 },
+    mapPosition: { x: 80, y: 270 },
   },
   {
     id: 2,
@@ -57,7 +57,7 @@ export const REGIONS: RegionDef[] = [
       'Cascade Falls', 'Sea Grotto', 'Whirlpool Bay', 'Kelp Forest',
       'Abyssal Trench', 'Cerulean Gym',
     ],
-    mapPosition: { x: 280, y: 220 },
+    mapPosition: { x: 257, y: 250 },
   },
   {
     id: 3,
@@ -75,7 +75,7 @@ export const REGIONS: RegionDef[] = [
       'Spark Alley', 'Thunder Corridor', 'Power Grid', 'Volt Chamber',
       'Lightning Field', 'Vermilion Gym',
     ],
-    mapPosition: { x: 460, y: 420 },
+    mapPosition: { x: 434, y: 320 },
   },
   {
     id: 4,
@@ -93,7 +93,7 @@ export const REGIONS: RegionDef[] = [
       'Mushroom Glade', 'Moss Bridge', 'Fern Hollow', 'Canopy Walk',
       'Blossom Peak', 'Celadon Gym',
     ],
-    mapPosition: { x: 650, y: 250 },
+    mapPosition: { x: 611, y: 390 },
   },
   {
     id: 5,
@@ -111,7 +111,7 @@ export const REGIONS: RegionDef[] = [
       'Miasma Pit', 'Sludge Banks', 'Gas Vents', 'Fungus Cavern',
       'Venom Falls', 'Fuchsia Gym',
     ],
-    mapPosition: { x: 840, y: 440 },
+    mapPosition: { x: 788, y: 350 },
   },
   {
     id: 6,
@@ -129,7 +129,7 @@ export const REGIONS: RegionDef[] = [
       'Teleport Chamber', 'Psychic Ward', 'Dream Corridor', 'Illusion Room',
       'Spirit Sanctum', 'Saffron Gym',
     ],
-    mapPosition: { x: 1020, y: 200 },
+    mapPosition: { x: 965, y: 310 },
   },
   {
     id: 7,
@@ -147,7 +147,7 @@ export const REGIONS: RegionDef[] = [
       'Magma Pools', 'Flame Geysers', 'Inferno Pass', 'Obsidian Cliff',
       'Eruption Site', 'Cinnabar Gym',
     ],
-    mapPosition: { x: 1180, y: 380 },
+    mapPosition: { x: 1142, y: 310 },
   },
   {
     id: 8,
@@ -165,7 +165,7 @@ export const REGIONS: RegionDef[] = [
       'Earthquake Hall', 'Fossil Vault', 'Tremor Ridge', 'Crumbling Bridge',
       'Bedrock Throne', 'Viridian Gym',
     ],
-    mapPosition: { x: 1340, y: 180 },
+    mapPosition: { x: 1319, y: 345 },
   },
   {
     id: 9,
@@ -183,7 +183,7 @@ export const REGIONS: RegionDef[] = [
       'Dark Passage', 'Ledge Walk', 'Rock Climb', 'Final Ascent',
       'Summit Gate', 'Victory Peak',
     ],
-    mapPosition: { x: 1500, y: 350 },
+    mapPosition: { x: 1496, y: 360 },
   },
   {
     id: 10,
@@ -198,7 +198,7 @@ export const REGIONS: RegionDef[] = [
       'Lorelei - Ice Master', 'Bruno - Fighting Master', 'Agatha - Ghost Master',
       'Lance - Dragon Master', 'Blue - Champion',
     ],
-    mapPosition: { x: 1680, y: 260 },
+    mapPosition: { x: 1685, y: 260 },
   },
 
   // ── Gen 2 story: Johto regions ──
@@ -215,7 +215,7 @@ export const REGIONS: RegionDef[] = [
       'Cloud Passage', 'Roost Ledge', 'Updraft Hall', 'Talon Pass',
       'Aviary Gate', 'Violet Gym',
     ],
-    mapPosition: { x: 100, y: 300 },
+    mapPosition: { x: 80, y: 270 },
   },
   {
     id: 12,
@@ -230,7 +230,7 @@ export const REGIONS: RegionDef[] = [
       'Hive Chamber', 'Web Maze', 'Chrysalis Hall', 'Bark Trail',
       'Canopy Depths', 'Azalea Gym',
     ],
-    mapPosition: { x: 280, y: 440 },
+    mapPosition: { x: 257, y: 250 },
   },
   {
     id: 13,
@@ -245,7 +245,7 @@ export const REGIONS: RegionDef[] = [
       'Train Station', 'Department Floor', 'Flower Shop', 'Contest Hall',
       'Golden Arch', 'Goldenrod Gym',
     ],
-    mapPosition: { x: 460, y: 260 },
+    mapPosition: { x: 434, y: 320 },
   },
   {
     id: 14,
@@ -260,7 +260,7 @@ export const REGIONS: RegionDef[] = [
       'Incense Hall', 'Fog Bridge', 'Dance Theatre', 'Kimono Room',
       'Sacred Peak', 'Ecruteak Gym',
     ],
-    mapPosition: { x: 640, y: 380 },
+    mapPosition: { x: 611, y: 390 },
   },
   {
     id: 15,
@@ -275,7 +275,7 @@ export const REGIONS: RegionDef[] = [
       'Dojo Trail', 'Storm Cliff', 'Coral Bridge', 'Waterfall Pass',
       'Surf Chamber', 'Cianwood Gym',
     ],
-    mapPosition: { x: 820, y: 460 },
+    mapPosition: { x: 788, y: 350 },
   },
   {
     id: 16,
@@ -290,7 +290,7 @@ export const REGIONS: RegionDef[] = [
       'Steel Forge', 'Anchor Bay', 'Mast Walk', 'Hull Chamber',
       'Compass Room', 'Olivine Gym',
     ],
-    mapPosition: { x: 1000, y: 300 },
+    mapPosition: { x: 965, y: 310 },
   },
   {
     id: 17,
@@ -305,7 +305,7 @@ export const REGIONS: RegionDef[] = [
       'Glacier Path', 'Hail Ridge', 'Icicle Cavern', 'Sleet Bridge',
       'Permafrost Hall', 'Mahogany Gym',
     ],
-    mapPosition: { x: 1180, y: 420 },
+    mapPosition: { x: 1142, y: 310 },
   },
   {
     id: 18,
@@ -320,7 +320,7 @@ export const REGIONS: RegionDef[] = [
       'Wyvern Pass', 'Drake Bridge', 'Claw Peak', 'Dragonlair',
       'Summit Gate', 'Blackthorn Gym',
     ],
-    mapPosition: { x: 1360, y: 250 },
+    mapPosition: { x: 1319, y: 345 },
   },
   {
     id: 19,
@@ -335,7 +335,7 @@ export const REGIONS: RegionDef[] = [
       'Lantern Passage', 'Ledge Walk', 'Rock Climb', 'Waterfall Chamber',
       'Final Approach', 'Victory Summit',
     ],
-    mapPosition: { x: 1520, y: 380 },
+    mapPosition: { x: 1496, y: 360 },
   },
   {
     id: 20,
@@ -350,7 +350,7 @@ export const REGIONS: RegionDef[] = [
       'Will - Psychic Master', 'Koga - Poison Master', 'Bruno - Fighting Master',
       'Karen - Dark Master', 'Lance - Champion',
     ],
-    mapPosition: { x: 1680, y: 260 },
+    mapPosition: { x: 1685, y: 260 },
   },
 ];
 
