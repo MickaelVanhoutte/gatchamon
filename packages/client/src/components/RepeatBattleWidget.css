@@ -1,4 +1,4 @@
-/* ── Floating Auto-Battle Icon ── */
+/* -- Floating Auto-Battle Icon -- */
 .rb-fab {
   position: fixed;
   bottom: 70px;
@@ -6,7 +6,7 @@
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,7 +14,7 @@
   gap: 1px;
   cursor: pointer;
   z-index: 200;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   transition: transform 0.15s;
 }
 
@@ -24,15 +24,18 @@
 
 .rb-fab-running {
   background: linear-gradient(135deg, #d97706, #f59e0b);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 20px rgba(245, 158, 11, 0.3);
   animation: rb-fab-pulse 1.5s ease-in-out infinite;
 }
 
 .rb-fab-done {
   background: linear-gradient(135deg, #15803d, #22c55e);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 12px rgba(34, 197, 94, 0.2);
 }
 
 .rb-fab-stopped {
   background: linear-gradient(135deg, #b91c1c, #ef4444);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 12px rgba(239, 68, 68, 0.2);
 }
 
 .rb-fab-progress {
@@ -47,7 +50,7 @@
   inset: -4px;
   border-radius: 50%;
   border: 2px solid transparent;
-  border-top-color: #f59e0b;
+  border-top-color: #fbbf24;
   animation: rb-ring-spin 2s linear infinite;
   pointer-events: none;
 }
@@ -66,7 +69,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid white;
+  border: 2px solid var(--bg-primary, #0a0e1a);
 }
 
 .rb-fab-alert {
@@ -83,12 +86,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid white;
+  border: 2px solid var(--bg-primary, #0a0e1a);
 }
 
 @keyframes rb-fab-pulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25); }
-  50% { transform: scale(1.08); box-shadow: 0 4px 24px rgba(245, 158, 11, 0.4); }
+  0%, 100% { transform: scale(1); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 20px rgba(245, 158, 11, 0.3); }
+  50% { transform: scale(1.08); box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 28px rgba(245, 158, 11, 0.5); }
 }
 
 @keyframes rb-ring-spin {
@@ -96,7 +99,7 @@
   100% { transform: rotate(360deg); }
 }
 
-/* ── Always-mounted container ── */
+/* -- Always-mounted container -- */
 .rb-container-hidden {
   position: fixed;
   inset: 0;
@@ -111,11 +114,11 @@
   pointer-events: auto;
 }
 
-/* ── Modal Overlay ── */
+/* -- Modal Overlay -- */
 .rb-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -128,12 +131,14 @@
   to { opacity: 1; }
 }
 
-/* ── Panel ── */
+/* -- Panel -- */
 .rb-panel {
-  background: var(--bg-card, #ffffff);
+  background: var(--glass-bg, rgba(15, 23, 42, 0.85));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: 16px;
-  border: 1px solid var(--card-border, #d0e4ea);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.08));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   width: 94vw;
   max-height: 90vh;
   max-width: none;
@@ -148,13 +153,13 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Header ── */
+/* -- Header -- */
 .rb-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px 8px;
-  border-bottom: 1px solid var(--card-border, #e5e7eb);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .rb-header-left {
@@ -166,18 +171,18 @@
 .rb-title {
   font-weight: 700;
   font-size: 0.95rem;
-  color: var(--text-primary, #1e293b);
+  color: var(--text-primary, #e2e8f0);
 }
 
 .rb-floor {
   font-size: 0.75rem;
-  color: var(--text-secondary, #64748b);
+  color: var(--text-secondary, #94a3b8);
 }
 
 .rb-close {
   background: none;
   border: none;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-muted, #64748b);
   font-size: 1.2rem;
   cursor: pointer;
   padding: 4px 8px;
@@ -186,10 +191,10 @@
 }
 
 .rb-close:active {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.06);
 }
 
-/* ── Body: battle left, info right ── */
+/* -- Body: battle left, info right -- */
 .rb-modal-body {
   display: flex;
   min-height: 0;
@@ -197,12 +202,12 @@
   overflow: hidden;
 }
 
-/* ── Left — Battle viewport ── */
+/* -- Left - Battle viewport -- */
 .rb-battle-col {
   flex: 1;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--card-border, #e5e7eb);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
   overflow: hidden;
   min-width: 0;
 }
@@ -212,7 +217,7 @@
   min-height: 200px;
   overflow: hidden;
   position: relative;
-  background: #1a1a2e;
+  background: var(--bg-primary, #0a0e1a);
   border-radius: 0;
 }
 
@@ -300,12 +305,12 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #94a3b8;
+  color: var(--text-muted, #64748b);
   font-size: 0.8rem;
   font-style: italic;
 }
 
-/* ── Right column — Progress + Rewards ── */
+/* -- Right column - Progress + Rewards -- */
 .rb-rewards-col {
   flex: 0 0 45%;
   display: flex;
@@ -315,20 +320,20 @@
   overflow-y: auto;
 }
 
-/* ── Progress section ── */
+/* -- Progress section -- */
 .rb-progress-section {
   display: flex;
   flex-direction: column;
   gap: 4px;
   padding-bottom: 6px;
-  border-bottom: 1px solid var(--card-border, #e5e7eb);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .rb-progress-text {
   display: flex;
   justify-content: space-between;
   font-size: 0.8rem;
-  color: var(--text-primary, #334155);
+  color: var(--text-primary, #e2e8f0);
   font-weight: 600;
 }
 
@@ -339,20 +344,20 @@
 
 .rb-progress-bar {
   height: 6px;
-  background: var(--bg-secondary, #e2e8f0);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 3px;
   overflow: hidden;
 }
 
 .rb-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #0d9488, #14b8a6);
+  background: linear-gradient(90deg, #6366f1, #818cf8);
   border-radius: 3px;
   transition: width 0.3s ease;
 }
 
 .rb-progress-animated {
-  background: linear-gradient(90deg, #0d9488, #14b8a6, #0d9488);
+  background: linear-gradient(90deg, #6366f1, #818cf8, #6366f1);
   background-size: 200% 100%;
   animation: rb-shimmer 1.5s ease-in-out infinite;
 }
@@ -364,10 +369,10 @@
 
 .rb-completed {
   font-size: 0.7rem;
-  color: var(--text-secondary, #64748b);
+  color: var(--text-secondary, #94a3b8);
 }
 
-/* ── Actions ── */
+/* -- Actions -- */
 .rb-actions {
   margin-top: auto;
   padding: 10px 0 4px;
@@ -379,7 +384,7 @@
 .rb-btn {
   padding: 7px 24px;
   border-radius: 10px;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   font-weight: 700;
   font-size: 0.8rem;
   cursor: pointer;
@@ -391,33 +396,34 @@
 }
 
 .rb-btn-stop {
-  background: #ef4444;
+  background: linear-gradient(135deg, #dc2626, #ef4444);
   color: white;
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .rb-btn-stop-soft {
-  background: transparent;
-  color: #ef4444;
-  border: 1.5px solid #ef4444;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
 }
 
 .rb-btn-ok {
-  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
 }
 
 .rb-btn-again {
-  background: linear-gradient(135deg, #d97706, #f59e0b);
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
   color: white;
 }
 
-/* ── Rewards ── */
+/* -- Rewards -- */
 .rb-rewards-title {
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: var(--text-secondary, #64748b);
+  color: var(--text-muted, #64748b);
   margin: 0;
 }
 
@@ -436,7 +442,7 @@
 .rb-reward-value {
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--text-primary, #1e293b);
+  color: var(--text-primary, #e2e8f0);
 }
 
 .rb-reward-label {
@@ -455,11 +461,11 @@
   align-items: center;
   gap: 4px;
   font-size: 0.8rem;
-  color: var(--text-secondary, #5a6a7a);
+  color: var(--text-secondary, #94a3b8);
 }
 
 .rb-loot-item {
-  color: #16a34a;
+  color: #22c55e;
   font-weight: 600;
 }
 
@@ -471,12 +477,12 @@
 
 .rb-no-rewards {
   font-size: 0.8rem;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-muted, #64748b);
   font-style: italic;
   margin: 0;
 }
 
-/* ── Portrait device (app is rotated to landscape) — swap vw/vh ── */
+/* -- Portrait device (app is rotated to landscape) - swap vw/vh -- */
 @media (orientation: portrait) {
   .rb-panel {
     width: 94vh;
@@ -501,7 +507,7 @@
   }
 }
 
-/* ── Landscape: shorter viewport ── */
+/* -- Landscape: shorter viewport -- */
 @media (max-height: 500px) {
   .rb-battle-viewport {
     min-height: 150px;
@@ -512,7 +518,7 @@
   }
 }
 
-/* ── Narrow screens ── */
+/* -- Narrow screens -- */
 @media (max-width: 480px) {
   .rb-rewards-col {
     flex: 0 0 40%;

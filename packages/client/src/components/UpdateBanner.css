@@ -5,14 +5,15 @@
   transform: translate(-50%, -50%);
   z-index: 9999;
   max-width: 70%;
-  background: #e67e00;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: #fff;
   font-weight: 700;
   font-size: 0.85rem;
   text-align: center;
   padding: 12px 24px;
   border-radius: 12px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5), 0 0 16px rgba(99, 102, 241, 0.3);
   pointer-events: none;
   animation: update-banner-in 0.4s ease-out, update-banner-out 0.5s ease-in 2.5s forwards;
 }

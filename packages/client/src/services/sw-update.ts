@@ -1,8 +1,16 @@
 let appReady = false;
+let registration: ServiceWorkerRegistration | null = null;
+
+const CHECK_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
 /** Call once the loading screen is dismissed so future SW updates notify instead of reloading. */
 export function setAppReady() {
   appReady = true;
+  if (registration) {
+    setInterval(() => {
+      registration?.update().catch(() => {});
+    }, CHECK_INTERVAL);
+  }
 }
 
 /** Register a callback to be notified when a new version is available (in-game only). */
@@ -24,53 +32,60 @@ function registerSW(): Promise<void> {
       resolve();
     };
 
-    let notified = false;
-    if (navigator.serviceWorker.controller) {
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (notified) return;
-        notified = true;
-        if (!appReady) {
-          // Still on loading screen — reload to apply update immediately
-          sessionStorage.setItem('sw-just-updated', '1');
-          location.reload();
-        } else {
-          // Already in-game — notify UI components
-          window.dispatchEvent(new Event('sw-update-available'));
-        }
-      });
-    }
+    // Absolute failsafe — never block longer than 8 seconds
+    const failsafe = setTimeout(resolveOnce, 8_000);
 
-    const failsafe = setTimeout(resolveOnce, 10_000);
+    // Listen for controller change (new SW took over)
+    let reloading = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!appReady) {
+        // Still on loading screen — reload to apply update immediately
+        if (reloading) return;
+        reloading = true;
+        sessionStorage.setItem('sw-just-updated', '1');
+        location.reload();
+      } else {
+        // Already in-game — notify UI
+        window.dispatchEvent(new Event('sw-update-available'));
+      }
+    });
 
     navigator.serviceWorker
       .register('./sw.js', { updateViaCache: 'none' })
       .then((reg) => {
-        // First install — page was loaded from network, assets are fresh
+        registration = reg;
+
+        // First-ever install — page loaded from network, assets are fresh
         if (!navigator.serviceWorker.controller) {
           clearTimeout(failsafe);
           resolveOnce();
           return;
         }
 
-        // Update already in flight — let the loading screen show briefly,
-        // controllerchange will reload when the new SW activates
-        if (reg.installing || reg.waiting) {
+        // Update already in flight — wait for controllerchange to reload
+        if (reg.waiting || reg.installing) {
           setTimeout(resolveOnce, 5_000);
           return;
         }
 
-        // No pending update — listen for one, with a fast-path timeout
-        const noUpdateTimeout = setTimeout(() => {
+        // No pending update — explicitly check for one
+        reg.update().catch(() => {});
+
+        const onUpdateFound = () => {
+          reg.removeEventListener('updatefound', onUpdateFound);
+          // Update detected — controllerchange will reload the page.
+          // Give it up to 5s; resolve anyway if it doesn't happen.
+          setTimeout(resolveOnce, 5_000);
+        };
+        reg.addEventListener('updatefound', onUpdateFound);
+
+        // If no update found, reg.update() resolves without firing updatefound.
+        // 3s is generous for the byte-check of sw.js.
+        setTimeout(() => {
+          reg.removeEventListener('updatefound', onUpdateFound);
           clearTimeout(failsafe);
           resolveOnce();
-        }, 1500);
-
-        reg.addEventListener('updatefound', () => {
-          clearTimeout(noUpdateTimeout);
-          // Update detected — give it time to activate,
-          // controllerchange will reload the page
-          setTimeout(resolveOnce, 5_000);
-        });
+        }, 3_000);
       })
       .catch(() => {
         clearTimeout(failsafe);

@@ -17,7 +17,7 @@ export function LoadingScreen({ onStart, swReady = true }: LoadingScreenProps) {
   });
 
   useEffect(() => {
-    const timer = setTimeout(() => setMinTimeElapsed(true), 1500);
+    const timer = setTimeout(() => setMinTimeElapsed(true), 3000);
     return () => clearTimeout(timer);
   }, []);
 

@@ -6,15 +6,15 @@
 }
 
 .spinner {
-  border: 3px solid rgba(255, 255, 255, 0.15);
-  border-top-color: #60a5fa;
+  border: 3px solid rgba(255, 255, 255, 0.08);
+  border-top-color: var(--accent, #6366f1);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
 
 .spinner-label {
   font-size: 0.7rem;
-  color: var(--text-secondary, #888);
+  color: var(--text-secondary, #94a3b8);
 }
 
 @keyframes spin {

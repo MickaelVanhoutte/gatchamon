@@ -10,14 +10,14 @@
 .portal-backdrop {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at center, rgba(10, 20, 30, 0.85) 0%, rgba(0, 0, 0, 0.92) 100%);
+  background: radial-gradient(ellipse at center, rgba(10, 14, 26, 0.88) 0%, rgba(0, 0, 0, 0.95) 100%);
   opacity: 0;
 }
 
 .portal-flash {
   position: absolute;
   inset: 0;
-  background: white;
+  background: rgba(99, 102, 241, 0.6);
   opacity: 0;
   pointer-events: none;
   z-index: 20;
@@ -46,10 +46,10 @@
 .portal-wisp {
   position: absolute;
   border-radius: 50%;
-  background: hsl(var(--wisp-hue, 220), 80%, 75%);
+  background: hsl(var(--wisp-hue, 235), 80%, 75%);
   box-shadow:
-    0 0 8px hsl(var(--wisp-hue, 220), 80%, 65%),
-    0 0 16px hsl(var(--wisp-hue, 220), 70%, 55%);
+    0 0 10px hsl(var(--wisp-hue, 235), 80%, 65%),
+    0 0 20px hsl(var(--wisp-hue, 235), 70%, 55%);
   opacity: 0;
   animation: wisp-orbit var(--wisp-orbit-speed, 2s) linear infinite;
 }
@@ -72,10 +72,11 @@
   border-radius: 50%;
   position: relative;
   overflow: hidden;
-  border: 3px solid #2a2a2a;
+  border: 3px solid #1e1e2e;
   box-shadow:
-    0 0 40px rgba(220, 40, 40, 0.5),
-    0 0 80px rgba(220, 40, 40, 0.25);
+    0 0 40px rgba(220, 40, 40, 0.6),
+    0 0 80px rgba(220, 40, 40, 0.3),
+    0 0 4px rgba(99, 102, 241, 0.3);
   animation: portal-pokeball-glow 1.5s ease-in-out infinite;
 }
 
@@ -115,7 +116,7 @@
   right: 0;
   transform: translateY(-50%);
   height: 12%;
-  background: #2a2a2a;
+  background: #1a1a2a;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -126,30 +127,32 @@
   width: 22%;
   height: 170%;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #ffffff, #e0e0e0, #bbb);
-  border: 3px solid #3a3a3a;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+  background: radial-gradient(circle at 35% 35%, #e2e8f0, #94a3b8, #64748b);
+  border: 3px solid #2a2a3a;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
 }
 
 @keyframes portal-pokeball-glow {
   0%, 100% {
     box-shadow:
-      0 0 40px rgba(220, 40, 40, 0.5),
-      0 0 80px rgba(220, 40, 40, 0.25);
+      0 0 40px rgba(220, 40, 40, 0.6),
+      0 0 80px rgba(220, 40, 40, 0.3),
+      0 0 4px rgba(99, 102, 241, 0.3);
   }
   50% {
     box-shadow:
-      0 0 60px rgba(220, 40, 40, 0.7),
-      0 0 120px rgba(220, 40, 40, 0.35),
-      0 0 160px rgba(255, 255, 255, 0.1);
+      0 0 60px rgba(220, 40, 40, 0.8),
+      0 0 120px rgba(220, 40, 40, 0.4),
+      0 0 160px rgba(99, 102, 241, 0.15);
   }
 }
 
 /* Premium pokeball variant */
 .portal-pokeball.premium {
   box-shadow:
-    0 0 40px rgba(147, 51, 234, 0.5),
-    0 0 80px rgba(147, 51, 234, 0.25);
+    0 0 40px rgba(147, 51, 234, 0.6),
+    0 0 80px rgba(147, 51, 234, 0.3),
+    0 0 4px rgba(99, 102, 241, 0.3);
   animation: portal-pokeball-glow-premium 1.5s ease-in-out infinite;
 }
 
@@ -159,20 +162,21 @@
 
 .portal-pokeball.premium .portal-pokeball-button {
   background: radial-gradient(circle at 35% 35%, #fde68a, #f59e0b, #d97706);
-  box-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
 }
 
 @keyframes portal-pokeball-glow-premium {
   0%, 100% {
     box-shadow:
-      0 0 40px rgba(147, 51, 234, 0.5),
-      0 0 80px rgba(147, 51, 234, 0.25);
+      0 0 40px rgba(147, 51, 234, 0.6),
+      0 0 80px rgba(147, 51, 234, 0.3),
+      0 0 4px rgba(99, 102, 241, 0.3);
   }
   50% {
     box-shadow:
-      0 0 60px rgba(147, 51, 234, 0.7),
-      0 0 120px rgba(147, 51, 234, 0.35),
-      0 0 160px rgba(255, 255, 255, 0.1);
+      0 0 60px rgba(147, 51, 234, 0.8),
+      0 0 120px rgba(147, 51, 234, 0.4),
+      0 0 160px rgba(99, 102, 241, 0.15);
   }
 }
 
@@ -189,8 +193,8 @@
 .portal-particle {
   position: absolute;
   border-radius: 50%;
-  background: hsl(var(--hue, 220), 80%, 70%);
-  box-shadow: 0 0 6px hsl(var(--hue, 220), 80%, 60%);
+  background: hsl(var(--hue, 235), 80%, 72%);
+  box-shadow: 0 0 8px hsl(var(--hue, 235), 80%, 62%);
   opacity: 0;
 }
 

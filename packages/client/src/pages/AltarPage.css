@@ -23,6 +23,11 @@
   padding: 4px;
   display: flex;
   align-items: center;
+  transition: color 0.15s;
+}
+
+.altar-back-btn:hover {
+  color: var(--text-primary);
 }
 
 .altar-title {
@@ -41,7 +46,7 @@
 .altar-sort-select,
 .altar-type-select {
   padding: 4px 6px;
-  background: var(--bg-card);
+  background: var(--bg-secondary);
   border: 1px solid var(--card-border);
   border-radius: 6px;
   color: var(--text-primary);
@@ -86,12 +91,12 @@
 
 .altar-cell:hover {
   border-color: var(--accent);
-  box-shadow: 0 0 6px rgba(13, 148, 136, 0.3);
+  box-shadow: 0 0 6px rgba(99, 102, 241, 0.3);
 }
 
 .altar-cell--selected {
   border-color: var(--accent);
-  box-shadow: 0 0 8px rgba(13, 148, 136, 0.5);
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
 }
 
 .altar-cell--fodder {
@@ -190,6 +195,7 @@
   padding: 10px;
   background: var(--bg-secondary);
   border-radius: 8px;
+  border: 1px solid var(--glass-border);
 }
 
 .altar-base-sprite {
@@ -220,6 +226,7 @@
   padding: 20px;
   background: var(--bg-secondary);
   border-radius: 8px;
+  border: 1px solid var(--glass-border);
   color: var(--text-secondary);
   font-size: 0.75rem;
 }
@@ -271,7 +278,7 @@
 .altar-slot--active {
   border-color: var(--accent);
   border-style: solid;
-  box-shadow: 0 0 8px rgba(13, 148, 136, 0.5);
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
 }
 
 .altar-slot-sprite {
@@ -312,6 +319,7 @@
   padding: 10px;
   background: var(--bg-secondary);
   border-radius: 8px;
+  border: 1px solid var(--glass-border);
 }
 
 .altar-preview-title {
@@ -362,14 +370,16 @@
 /* Confirm button */
 .altar-confirm-btn {
   padding: 10px;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
-  transition: opacity 0.15s;
+  transition: all 0.15s;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .altar-confirm-btn:disabled {
@@ -381,11 +391,16 @@
   opacity: 0.9;
 }
 
+.altar-confirm-btn:not(:disabled):active {
+  transform: scale(0.96);
+}
+
 /* Confirmation overlay */
 .altar-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -394,11 +409,12 @@
 
 .altar-dialog {
   background: var(--bg-card);
+  border: 1px solid var(--glass-border);
   border-radius: 12px;
   padding: 20px;
   max-width: 340px;
   width: 90%;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .altar-dialog h3 {
@@ -422,6 +438,7 @@
   background: var(--bg-secondary);
   border-radius: 6px;
   font-size: 0.72rem;
+  border: 1px solid var(--glass-border);
 }
 
 .altar-dialog-actions {
@@ -435,22 +452,28 @@
   padding: 8px;
   border: 1px solid var(--card-border);
   border-radius: 6px;
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.06);
   font-size: 0.75rem;
   cursor: pointer;
   color: var(--text-secondary);
+  transition: all 0.15s;
+}
+
+.altar-dialog-cancel:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .altar-dialog-confirm {
   flex: 1;
   padding: 8px;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 6px;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
   font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
 }
 
 .altar-dialog-warning {

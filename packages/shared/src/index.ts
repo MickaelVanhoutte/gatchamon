@@ -28,6 +28,8 @@ export * from './types/type-change.js';
 export * from './types/inbox.js';
 export { TYPE_CHANGE_DEFS, getTypeChangeDef, getCurrentFormType, getAvailableTypeChanges, getTypeChangeCost } from './data/type-changes.js';
 export { LOGIN_CALENDAR_REWARDS, LOGIN_CALENDAR_DAYS } from './data/login-calendar.js';
+export { ROULETTE_SLOTS } from './data/daily-roulette.js';
+export type { RouletteSlot } from './data/daily-roulette.js';
 export { BEGINNER_BONUS, isBeginnerBonusActive } from './constants/beginner-bonus.js';
 export { GEN_RESTRICTION_ENABLED, isActivePokemon, ACTIVE_POKEDEX, ACTIVE_POKEDEX_MAP, getActiveEvolutionsFrom, canActiveEvolve, resolveActiveId, isGen2Pokemon } from './data/gen-filter.js';
 export { getMysteryDungeonDef, getMysteryDungeonDateKey, getMysteryDungeonResetTime, PIECE_COST } from './data/mystery-dungeon.js';

@@ -14,16 +14,19 @@
 .shop-header h2 {
   margin: 0;
   font-size: 1.3rem;
+  color: var(--text-primary);
 }
 
 .shop-balance {
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  background: rgba(196, 181, 253, 0.15);
+  background: rgba(139, 92, 246, 0.15);
   padding: 0.3rem 0.6rem;
   border-radius: 8px;
   font-weight: 600;
+  color: #c4b5fd;
+  border: 1px solid rgba(139, 92, 246, 0.2);
 }
 
 .shop-stardust-icon {
@@ -38,6 +41,7 @@
   margin-bottom: 0.75rem;
   font-size: 0.85rem;
   text-align: center;
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .shop-items {
@@ -47,19 +51,22 @@
 }
 
 .shop-card {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
   border-radius: 12px;
   padding: 1rem;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.75rem;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: var(--card-shadow);
 }
 
 .shop-card:not(.shop-card-disabled):hover {
-  border-color: rgba(196, 181, 253, 0.4);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.15);
 }
 
 .shop-card-disabled {
@@ -72,9 +79,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(196, 181, 253, 0.1);
+  background: rgba(139, 92, 246, 0.1);
   border-radius: 10px;
   flex-shrink: 0;
+  border: 1px solid rgba(139, 92, 246, 0.15);
 }
 
 .shop-card-info {
@@ -85,12 +93,13 @@
 .shop-card-info h3 {
   margin: 0 0 0.2rem;
   font-size: 1rem;
+  color: var(--text-primary);
 }
 
 .shop-card-desc {
   margin: 0;
   font-size: 0.8rem;
-  opacity: 0.7;
+  color: var(--text-secondary);
 }
 
 .shop-card-footer {
@@ -111,15 +120,17 @@
 }
 
 .shop-buy-btn {
-  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   padding: 0.5rem 1.2rem;
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .shop-buy-btn:disabled {
@@ -127,13 +138,17 @@
   cursor: default;
 }
 
+.shop-buy-btn:not(:disabled):hover {
+  opacity: 0.85;
+}
+
 .shop-buy-btn:not(:disabled):active {
-  opacity: 0.8;
+  transform: scale(0.96);
 }
 
 .shop-coming-soon {
   text-align: center;
-  opacity: 0.4;
+  color: var(--text-muted);
   font-size: 0.85rem;
   padding: 1rem;
 }
@@ -142,7 +157,8 @@
 .shop-confirm-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -151,16 +167,19 @@
 }
 
 .shop-confirm-modal {
-  background: #1e1e2e;
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
   border-radius: 14px;
   padding: 1.5rem;
   max-width: 320px;
   width: 100%;
   text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .shop-confirm-modal h3 {
   margin: 0 0 0.75rem;
+  color: var(--text-primary);
 }
 
 .shop-confirm-item {
@@ -171,11 +190,12 @@
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
+  color: var(--text-primary);
 }
 
 .shop-confirm-desc {
   font-size: 0.85rem;
-  opacity: 0.7;
+  color: var(--text-secondary);
   margin: 0 0 0.75rem;
 }
 
@@ -197,23 +217,32 @@
 }
 
 .shop-confirm-yes {
-  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.shop-confirm-yes:active {
+  transform: scale(0.96);
+}
+
+.shop-confirm-no {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
   padding: 0.5rem 1.5rem;
   font-weight: 600;
   cursor: pointer;
 }
 
-.shop-confirm-no {
+.shop-confirm-no:hover {
   background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 0.5rem 1.5rem;
-  font-weight: 600;
-  cursor: pointer;
 }
 
 /* Results */
@@ -223,6 +252,7 @@
 
 .shop-results h3 {
   margin-bottom: 0.75rem;
+  color: var(--text-primary);
 }
 
 .shop-results-grid {
@@ -234,6 +264,7 @@
 
 .shop-result-card {
   background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--glass-border);
   border-radius: 8px;
   padding: 0.4rem;
   text-align: center;
@@ -264,6 +295,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+  color: var(--text-primary);
 }
 
 .shop-result-shiny {
@@ -273,12 +305,18 @@
 }
 
 .shop-back-btn {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
   padding: 0.6rem 1.5rem;
   font-weight: 600;
   cursor: pointer;
   margin-top: 0.5rem;
+  transition: all 0.15s;
+}
+
+.shop-back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
 }

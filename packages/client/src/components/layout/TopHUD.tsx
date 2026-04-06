@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useGameStore } from '../../stores/gameStore';
 import { getMaxEnergy, trainerXpToNextLevel, TOTAL_REGIONS, BEGINNER_BONUS } from '@gatchamon/shared';
 import { onUpdateAvailable } from '../../services/sw-update';
+import { canSpinToday, getRemainingSpins } from '../../services/roulette.service';
+import { DailyRouletteModal } from '../DailyRouletteModal';
 import { GameIcon } from '../icons';
 import './TopHUD.css';
 
@@ -48,6 +50,8 @@ export function TopHUD() {
   const navigate = useNavigate();
   const [showBonusTooltip, setShowBonusTooltip] = useState(false);
   const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [showRoulette, setShowRoulette] = useState(false);
+  const [rouletteAvailable, setRouletteAvailable] = useState(canSpinToday());
   const { active: beginnerActive, remaining } = useBeginnerCountdown(player?.createdAt);
 
   useEffect(() => {
@@ -63,6 +67,7 @@ export function TopHUD() {
   const xpPct = Math.min(100, Math.floor((player.trainerExp / xpNeeded) * 100));
 
   return (
+    <>
     <header className="top-hud">
       <div className="hud-left">
         <div className="hud-trainer-row">
@@ -114,33 +119,43 @@ export function TopHUD() {
             </svg>
           </button>
         )}
-        <button className="hud-inbox-btn" onClick={() => navigate('/inbox')}>
-          <GameIcon id="gift" size={14} />
+        <button className={`hud-roulette-btn${rouletteAvailable ? ' hud-roulette-btn--available' : ''}`} onClick={() => { setShowRoulette(true); }} title="Daily Roulette">
+          <GameIcon id="roulette" size={13} />
+          {rouletteAvailable && (
+            <span className="hud-inbox-badge">{getRemainingSpins()}</span>
+          )}
+        </button>
+        <button className={`hud-inbox-btn${inboxUnreadCount > 0 ? ' hud-inbox-btn--unread' : ''}`} onClick={() => navigate('/inbox')}>
+          <GameIcon id="gift" size={13} />
           {inboxUnreadCount > 0 && (
             <span className="hud-inbox-badge">{inboxUnreadCount}</span>
           )}
         </button>
-        <div className="hud-resource">
-          <GameIcon id="energy" size={14} className="hud-energy-icon" />
+        <div className="hud-resource hud-resource--energy">
+          <GameIcon id="energy" size={12} className="hud-energy-icon" />
           <span>{player.energy}/{maxEnergy}</span>
         </div>
-        <div className="hud-resource">
-          <GameIcon id="pokedollar" size={14} className="hud-pokedollar-icon" />
+        <div className="hud-resource hud-resource--pokedollar">
+          <GameIcon id="pokedollar" size={12} className="hud-pokedollar-icon" />
           <span>{(player.pokedollars ?? 0).toLocaleString()}</span>
         </div>
-        <div className="hud-resource">
-          <GameIcon id="stardust" size={14} className="hud-stardust-icon" />
+        <div className="hud-resource hud-resource--stardust">
+          <GameIcon id="stardust" size={12} className="hud-stardust-icon" />
           <span>{(player.stardust ?? 0).toLocaleString()}</span>
         </div>
-        <div className="hud-resource">
-          <GameIcon id="pokeball" size={14} />
+        <div className="hud-resource hud-resource--pokeball">
+          <GameIcon id="pokeball" size={12} />
           <span>{player.regularPokeballs}</span>
         </div>
-        <div className="hud-resource">
-          <GameIcon id="premiumPokeball" size={14} />
+        <div className="hud-resource hud-resource--premium">
+          <GameIcon id="premiumPokeball" size={12} />
           <span>{player.premiumPokeballs}</span>
         </div>
       </div>
     </header>
+    {showRoulette && (
+      <DailyRouletteModal onClose={() => { setShowRoulette(false); setRouletteAvailable(canSpinToday()); }} />
+    )}
+    </>
   );
 }

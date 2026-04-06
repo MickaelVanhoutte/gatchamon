@@ -16,6 +16,8 @@
   cursor: pointer;
   border-radius: 8px;
   transition: background 0.15s;
+  height: 64px;
+  overflow: hidden;
 }
 
 .held-item-slot:hover {
@@ -26,10 +28,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 60px;
+  height: 100%;
   border: 2px dashed rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   color: var(--text-secondary);
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+
+.held-item-slot-empty:hover {
+  border-color: rgba(99, 102, 241, 0.4);
 }
 
 .held-item-slot-num {
@@ -50,7 +58,7 @@
   align-items: center;
   gap: 6px;
   padding: 4px 8px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bg-surface);
   border-left: 3px solid rgba(255, 255, 255, 0.2);
   border-radius: 4px;
   font-size: 0.7rem;
@@ -109,17 +117,102 @@
 
 /* Manage button */
 .held-item-equip-btn {
-  background: rgba(96, 165, 250, 0.2);
-  border: 1px solid rgba(96, 165, 250, 0.4);
-  color: #60a5fa;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: #818cf8;
   padding: 8px;
   border-radius: 8px;
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.15s;
 }
 
 .held-item-equip-btn:hover {
-  background: rgba(96, 165, 250, 0.3);
+  background: rgba(99, 102, 241, 0.25);
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.2);
+}
+
+/* ===== Expanded layout: sidebar + main ===== */
+.held-item-equip-panel--expanded {
+  flex-direction: row;
+  padding: 0;
+  gap: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.held-item-expanded-sidebar {
+  width: 140px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  overflow-y: auto;
+}
+
+.held-item-expanded-sidebar .held-item-slots-grid {
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.held-item-expanded-sidebar .held-item-slot {
+  height: 48px;
+}
+
+.held-item-expanded-sidebar .held-item-slot-num {
+  font-size: 0.8rem;
+}
+
+.held-item-slot--active {
+  outline: 2px solid #6366f1;
+  outline-offset: -2px;
+  border-radius: 8px;
+  background: rgba(99, 102, 241, 0.1);
+}
+
+/* Stat diffs in sidebar */
+.held-item-sidebar-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.held-item-sidebar-stat {
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.held-item-sidebar-stat.stat-up {
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.12);
+}
+
+.held-item-sidebar-stat.stat-down {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.12);
+}
+
+.held-item-expanded-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.held-item-expanded-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
 }

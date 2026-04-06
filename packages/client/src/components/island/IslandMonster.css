@@ -16,7 +16,7 @@
 .island-monster-sprite-wrap img {
   object-fit: contain;
   image-rendering: pixelated;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.08));
 }
 
 .island-monster-shadow {
@@ -31,8 +31,11 @@
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.65);
-  color: white;
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
+  color: #e2e8f0;
   padding: 2px 8px;
   border-radius: 8px;
   font-size: 0.6rem;

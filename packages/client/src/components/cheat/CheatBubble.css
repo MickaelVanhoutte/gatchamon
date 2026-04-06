@@ -5,9 +5,9 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.35);
-  color: rgba(255, 255, 255, 0.7);
-  border: none;
+  background: var(--glass-bg, rgba(15, 23, 42, 0.85));
+  color: var(--text-muted, #64748b);
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.08));
   cursor: pointer;
   font-size: 0.7rem;
   font-weight: 700;
@@ -16,8 +16,8 @@
   align-items: center;
   justify-content: center;
   z-index: 49;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   transition: transform 0.15s, opacity 0.15s;
 }
 
@@ -30,12 +30,13 @@
   bottom: 16px;
   right: 68px;
   width: 220px;
-  background: rgba(26, 35, 50, 0.92);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: var(--glass-bg, rgba(15, 23, 42, 0.85));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.08));
   border-radius: 12px;
   padding: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   z-index: 49;
   animation: cheat-panel-in 0.2s ease-out;
 }
@@ -43,10 +44,10 @@
 .cheat-panel-input {
   width: 100%;
   padding: 8px 10px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 6px;
-  color: #fff;
+  color: var(--text-primary, #e2e8f0);
   font-size: 0.8rem;
   font-family: monospace;
   outline: none;
@@ -54,7 +55,8 @@
 }
 
 .cheat-panel-input:focus {
-  border-color: var(--accent);
+  border-color: var(--accent, #6366f1);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
 }
 
 .cheat-feedback {

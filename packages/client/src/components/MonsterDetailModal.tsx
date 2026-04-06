@@ -17,7 +17,7 @@ const STAT_MAX: Record<keyof BaseStats, number> = {
 };
 
 const STAR_COLORS: Record<number, string> = {
-  1: '#aaa', 2: '#4ade80', 3: '#60a5fa', 4: '#c084fc', 5: '#ff4444', 6: '#ff6b6b',
+  1: '#9ca3af', 2: '#4ade80', 3: '#60a5fa', 4: '#a78bfa', 5: '#f87171', 6: '#fbbf24',
 };
 
 const CATEGORY_LABELS: Record<string, string> = {

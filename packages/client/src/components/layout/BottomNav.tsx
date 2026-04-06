@@ -76,6 +76,7 @@ export function BottomNav() {
 
   const handleTabClick = (path: string) => {
     if (tutorialActive && allowedTab && path !== allowedTab) return;
+    window.dispatchEvent(new CustomEvent('nav-change'));
     navigate(path);
     if (tutorialActive && allowedTab && path === allowedTab) {
       advanceStep();

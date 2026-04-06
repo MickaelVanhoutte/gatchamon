@@ -1,7 +1,8 @@
 .held-item-upgrade-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
   z-index: 100;
   display: flex;
   align-items: center;
@@ -18,7 +19,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: var(--card-shadow);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .held-item-upgrade-header {
@@ -41,6 +42,11 @@
   color: var(--text-secondary);
   font-size: 1.2rem;
   cursor: pointer;
+  transition: color 0.15s;
+}
+
+.held-item-upgrade-close:hover {
+  color: var(--text-primary);
 }
 
 .held-item-upgrade-content {
@@ -164,11 +170,13 @@
 .result-success {
   background: rgba(74, 222, 128, 0.15);
   color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.2);
 }
 
 .result-fail {
   background: rgba(255, 107, 107, 0.15);
   color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.2);
 }
 
 /* Upgrade info */
@@ -200,7 +208,7 @@
 
 .held-item-upgrade-swap-btn {
   flex: 1;
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--card-border);
   color: var(--text-secondary);
   padding: 10px;
@@ -208,10 +216,11 @@
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.15s;
 }
 
 .held-item-upgrade-swap-btn:hover {
-  background: var(--bg-primary);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .held-item-upgrade-btn {
@@ -224,11 +233,12 @@
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.15s;
 }
 
 .held-item-upgrade-btn:hover:not(:disabled) {
   background: rgba(74, 222, 128, 0.3);
+  box-shadow: 0 0 8px rgba(74, 222, 128, 0.2);
 }
 
 .held-item-upgrade-btn:disabled {
@@ -245,6 +255,7 @@
   color: #fbbf24;
   font-weight: 700;
   font-size: 0.85rem;
+  border: 1px solid rgba(251, 191, 36, 0.2);
 }
 
 /* Sell */
@@ -262,6 +273,11 @@
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.15s;
+}
+
+.held-item-sell-btn:hover {
+  background: rgba(255, 107, 107, 0.2);
 }
 
 .held-item-sell-btn:disabled {
@@ -292,7 +308,7 @@
 }
 
 .held-item-sell-no {
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--text-secondary);
   border: 1px solid var(--card-border);
   padding: 6px 14px;

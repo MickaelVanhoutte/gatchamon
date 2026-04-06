@@ -56,11 +56,13 @@ export interface SummonResult {
 }
 
 const LEGENDARY_SINGLE_COST = 1;
+const GLOWING_SINGLE_COST = 1;
 
 export const SUMMON_COSTS = {
   regular: { single: REGULAR_SINGLE_COST, multi: REGULAR_MULTI_COST },
   premium: { single: PREMIUM_SINGLE_COST, multi: PREMIUM_MULTI_COST },
   legendary: { single: LEGENDARY_SINGLE_COST },
+  glowing: { single: GLOWING_SINGLE_COST },
 };
 
 function trackSummons(count: number): void {
@@ -198,6 +200,39 @@ export function summonSingleLegendary(): SummonResult {
 
   const template = pickFromPool(5);
   const pokemon = createInstance(template, player.id);
+  addToCollection([pokemon]);
+  trackSummons(1);
+
+  return { pokemon, template };
+}
+
+// ── Glowing Pokeball (3-5★, guaranteed shiny) ──
+
+export function summonSingleGlowing(): SummonResult {
+  const player = loadPlayer();
+  if (!player) throw new Error('Player not found');
+  if ((player.glowingPokeballs ?? 0) < GLOWING_SINGLE_COST) {
+    throw new Error('Not enough glowing pokeballs');
+  }
+
+  savePlayer({
+    ...player,
+    glowingPokeballs: (player.glowingPokeballs ?? 0) - GLOWING_SINGLE_COST,
+  });
+
+  const stars = rollPremiumStarRating();
+  const template = pickFromPool(stars);
+  const pokemon: PokemonInstance = {
+    instanceId: crypto.randomUUID(),
+    templateId: template.id,
+    ownerId: player.id,
+    level: 1,
+    stars: template.naturalStars,
+    exp: 0,
+    isShiny: true,
+    skillLevels: [1, 1, 1],
+  };
+
   addToCollection([pokemon]);
   trackSummons(1);
 

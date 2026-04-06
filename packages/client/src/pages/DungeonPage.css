@@ -31,8 +31,8 @@
 
 .dungeon-tab-toggle {
   display: flex;
-  background: var(--bg-primary, #e8f4f8);
-  border-bottom: 1px solid var(--card-border, #d0e4ea);
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--glass-border);
 }
 
 .dungeon-tab-btn {
@@ -49,8 +49,8 @@
 }
 
 .dungeon-tab-btn--active {
-  color: var(--accent, #0d9488);
-  border-bottom-color: var(--accent, #0d9488);
+  color: #818cf8;
+  border-bottom-color: var(--accent);
 }
 
 .dungeon-layout {
@@ -68,7 +68,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  background: var(--bg-secondary, #d1ecf1);
+  background: var(--bg-secondary);
 }
 
 .dungeon-card {
@@ -76,22 +76,25 @@
   align-items: center;
   gap: 8px;
   padding: 10px;
-  background: var(--bg-card, #ffffff);
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
   border-radius: 8px;
   border-left: 4px solid;
   cursor: pointer;
   transition: all 0.15s;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--glass-border);
+  border-left: 4px solid;
 }
 
 .dungeon-card:hover {
-  background: var(--bg-primary, #e8f4f8);
+  background: rgba(99, 102, 241, 0.08);
 }
 
 .dungeon-card--selected {
-  background: var(--bg-primary, #e8f4f8);
-  box-shadow: 0 0 8px rgba(13, 148, 136, 0.25);
-  border-left-color: var(--accent, #0d9488);
+  background: rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.25);
+  border-left-color: var(--accent);
 }
 
 .dungeon-card-icon {
@@ -123,7 +126,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: var(--bg-card, #ffffff);
+  background: var(--bg-card);
 }
 
 .dungeon-detail-header {
@@ -141,7 +144,7 @@
 .dungeon-detail-header h3 {
   margin: 0;
   font-size: 1rem;
-  color: var(--text-primary, #1a2332);
+  color: var(--text-primary);
 }
 
 .dungeon-desc {
@@ -171,25 +174,30 @@
 
 .dungeon-floor-btn {
   padding: 6px 12px;
-  background: var(--bg-primary, #e8f4f8);
-  border: 1px solid var(--card-border, #d0e4ea);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--glass-border);
   border-radius: 6px;
   color: var(--text-secondary);
   font-size: 0.7rem;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.15s;
+}
+
+.dungeon-floor-btn:hover {
+  background: rgba(99, 102, 241, 0.08);
 }
 
 .dungeon-floor-btn--active {
-  background: rgba(13, 148, 136, 0.12);
-  border-color: var(--accent, #0d9488);
-  color: var(--accent, #0d9488);
+  background: rgba(99, 102, 241, 0.15);
+  border-color: var(--accent);
+  color: #818cf8;
 }
 
 /* Floor info */
 .dungeon-floor-info {
-  background: var(--bg-primary, #e8f4f8);
-  border: 1px solid var(--card-border, #d0e4ea);
+  background: var(--bg-surface);
+  border: 1px solid var(--glass-border);
   border-radius: 8px;
   padding: 8px 12px;
 }
@@ -231,8 +239,8 @@
   align-items: center;
   gap: 4px;
   padding: 3px 8px;
-  background: var(--bg-primary, #e8f4f8);
-  border: 1px solid var(--card-border, #d0e4ea);
+  background: var(--bg-surface);
+  border: 1px solid var(--glass-border);
   border-radius: 6px;
   font-size: 0.6rem;
 }
@@ -258,25 +266,32 @@
 /* Enter button */
 .dungeon-enter-btn {
   padding: 12px;
-  border: none;
-  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
   color: white;
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: all 0.15s;
   margin-top: auto;
-  background: var(--accent, #0d9488);
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .dungeon-enter-btn:hover {
   opacity: 0.85;
-  background: var(--accent-hover, #14b8a6);
+  background: linear-gradient(135deg, #818cf8, #a78bfa);
+}
+
+.dungeon-enter-btn:active {
+  transform: scale(0.96);
 }
 
 .dungeon-enter-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+  transform: none;
 }
 
 /* ─── Battle Tower ─── */
@@ -294,8 +309,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 12px;
-  background: var(--bg-primary, #e8f4f8);
-  border-bottom: 1px solid var(--card-border, #d0e4ea);
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--glass-border);
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -310,8 +325,8 @@
 .tower-reset-timer {
   font-size: 0.65rem;
   font-weight: 600;
-  color: var(--accent, #0d9488);
-  background: rgba(13, 148, 136, 0.1);
+  color: #818cf8;
+  background: rgba(99, 102, 241, 0.12);
   padding: 2px 8px;
   border-radius: 4px;
 }
@@ -322,7 +337,7 @@
   align-items: center;
   gap: 8px;
   padding: 20px;
-  color: #f59e0b;
+  color: #fbbf24;
   font-size: 1.1rem;
   font-weight: 700;
 }
@@ -361,7 +376,7 @@
   left: 50%;
   transform: translateX(-50%);
   width: 2px;
-  background: var(--card-border, #d0e4ea);
+  background: var(--glass-border);
 }
 
 .tower-node:first-child .tower-node-spine::before {
@@ -380,7 +395,7 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: var(--card-border, #d0e4ea);
+  background: rgba(255, 255, 255, 0.12);
   position: relative;
   z-index: 1;
   margin-top: 8px;
@@ -398,8 +413,8 @@
 .tower-node--current .tower-node-dot {
   width: 16px;
   height: 16px;
-  background: var(--accent, #0d9488);
-  box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.2);
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
   margin-top: 6px;
 }
 
@@ -418,8 +433,8 @@
 }
 
 .tower-node--current .tower-node-body {
-  background: rgba(13, 148, 136, 0.06);
-  border: 1px solid rgba(13, 148, 136, 0.2);
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.2);
   border-radius: 8px;
   padding: 8px 10px;
   margin: 4px 0 4px 4px;
@@ -435,12 +450,12 @@
 }
 
 .tower-node--current .tower-node-floor {
-  color: var(--accent, #0d9488);
+  color: #818cf8;
   font-size: 0.82rem;
 }
 
 .tower-node--locked .tower-node-floor {
-  color: var(--text-secondary);
+  color: var(--text-muted);
   opacity: 0.4;
 }
 
@@ -468,8 +483,8 @@
 .tower-node-badge {
   font-size: 0.6rem;
   font-weight: 700;
-  color: var(--accent, #0d9488);
-  background: rgba(13, 148, 136, 0.12);
+  color: #818cf8;
+  background: rgba(99, 102, 241, 0.15);
   padding: 2px 8px;
   border-radius: 4px;
   align-self: flex-start;
@@ -482,23 +497,30 @@
   justify-content: center;
   gap: 4px;
   padding: 8px 20px;
-  border: none;
-  border-radius: 6px;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
   color: white;
   font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: all 0.15s;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .tower-go-btn:hover {
   opacity: 0.85;
 }
 
+.tower-go-btn:active {
+  transform: scale(0.96);
+}
+
 .tower-go-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+  transform: none;
 }
 
 /* ─── Mystery Dungeon ─── */
@@ -517,10 +539,11 @@
   align-items: center;
   gap: 12px;
   padding: 12px;
-  background: var(--bg-card, #ffffff);
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
   border-radius: 10px;
   border: 2px solid;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--card-shadow);
   position: relative;
 }
 
@@ -550,7 +573,7 @@
   margin: 0;
   font-size: 1.1rem;
   font-weight: 800;
-  color: var(--text-primary, #1a2332);
+  color: var(--text-primary);
 }
 
 .mystery-featured-type {
@@ -571,7 +594,7 @@
   font-size: 0.65rem;
   font-weight: 600;
   color: var(--text-secondary);
-  background: var(--bg-primary, #e8f4f8);
+  background: rgba(255, 255, 255, 0.06);
   padding: 2px 8px;
   border-radius: 4px;
 }
@@ -582,7 +605,7 @@
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background: var(--bg-primary, #e8f4f8);
+  background: var(--bg-surface);
   border-radius: 8px;
 }
 
@@ -596,7 +619,7 @@
 .mystery-pieces-bar-container {
   flex: 1;
   height: 8px;
-  background: var(--card-border, #d0e4ea);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -620,8 +643,8 @@
   flex-direction: column;
   gap: 8px;
   padding: 10px;
-  background: var(--bg-card, #ffffff);
-  border: 1px solid var(--card-border, #d0e4ea);
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
   border-radius: 8px;
 }
 
@@ -673,6 +696,6 @@
   gap: 6px;
   font-size: 0.75rem;
   font-weight: 700;
-  color: var(--accent, #0d9488);
+  color: #818cf8;
   padding: 4px 0;
 }

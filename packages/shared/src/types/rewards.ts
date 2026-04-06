@@ -29,6 +29,7 @@ export interface MissionReward {
   heldItem?: HeldItemReward;
   dittos?: number;
   legendaryPokeballs?: number;
+  glowingPokeballs?: number;
   stardust?: number;
   pokedollars?: number;
 }

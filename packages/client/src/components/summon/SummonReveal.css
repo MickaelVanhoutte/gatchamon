@@ -31,17 +31,19 @@
   max-width: 120px;
   max-height: 120px;
   object-fit: contain;
-  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
+  filter: drop-shadow(0 0 16px rgba(99, 102, 241, 0.5))
+    drop-shadow(0 0 6px rgba(226, 232, 240, 0.3));
 }
 
 /* Shiny sprite effect */
 .reveal-sprite.shiny img {
   filter:
-    drop-shadow(0 0 12px rgba(255, 215, 0, 0.6))
-    drop-shadow(0 0 24px rgba(255, 215, 0, 0.3));
+    drop-shadow(0 0 16px rgba(255, 215, 0, 0.7))
+    drop-shadow(0 0 32px rgba(255, 215, 0, 0.4))
+    drop-shadow(0 0 4px rgba(251, 191, 36, 0.5));
 }
 
-/* Silhouette class removed — GSAP manages the filter transition on the img directly */
+/* Silhouette class removed -- GSAP manages the filter transition on the img directly */
 
 /* Shiny sparkle particles orbiting the sprite */
 .reveal-shiny-sparkles {
@@ -54,9 +56,9 @@
   position: absolute;
   width: 6px;
   height: 6px;
-  background: #ffd700;
+  background: #fbbf24;
   border-radius: 50%;
-  box-shadow: 0 0 8px #ffd700, 0 0 4px #fff;
+  box-shadow: 0 0 10px #fbbf24, 0 0 5px rgba(226, 232, 240, 0.6);
   top: 50%;
   left: 50%;
   transform: rotate(var(--sparkle-angle)) translateY(-50px);
@@ -79,20 +81,20 @@
   position: absolute;
   top: -8px;
   right: -20px;
-  background: linear-gradient(135deg, #ffd700, #ffaa00);
-  color: #1a2332;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #0a0e1a;
   font-size: 0.6rem;
   font-weight: 800;
   padding: 2px 6px;
   border-radius: 4px;
   letter-spacing: 1px;
-  box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.6);
   animation: badge-glow 1.5s ease-in-out infinite;
 }
 
 @keyframes badge-glow {
-  0%, 100% { box-shadow: 0 0 8px rgba(255, 215, 0, 0.5); }
-  50% { box-shadow: 0 0 16px rgba(255, 215, 0, 0.8); }
+  0%, 100% { box-shadow: 0 0 10px rgba(251, 191, 36, 0.6); }
+  50% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.9); }
 }
 
 /* Stars */
@@ -105,20 +107,20 @@
 .reveal-star {
   opacity: 0;
   display: inline-block;
-  filter: drop-shadow(0 0 4px currentColor);
+  filter: drop-shadow(0 0 6px currentColor);
 }
 
-/* Name - always white since reveal happens on dark background */
+/* Name - always light since reveal happens on dark background */
 .reveal-name {
   font-size: 1.3rem;
   font-weight: 700;
-  color: #ffffff;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  color: #e2e8f0;
+  text-shadow: 0 2px 12px rgba(99, 102, 241, 0.4), 0 2px 8px rgba(0, 0, 0, 0.6);
   opacity: 0;
 }
 
 .reveal-shiny-icon {
-  color: #ffd700;
+  color: #fbbf24;
   margin-left: 6px;
   font-size: 1rem;
 }

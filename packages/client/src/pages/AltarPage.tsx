@@ -11,12 +11,12 @@ import { assetUrl } from '../utils/asset-url';
 import './AltarPage.css';
 
 const STAR_COLORS: Record<number, string> = {
-  1: '#aaa',
+  1: '#9ca3af',
   2: '#4ade80',
   3: '#60a5fa',
-  4: '#c084fc',
-  5: '#ff4444',
-  6: '#ff6b6b',
+  4: '#a78bfa',
+  5: '#f87171',
+  6: '#fbbf24',
 };
 
 const ALL_TYPES: PokemonType[] = [
@@ -346,7 +346,7 @@ export function AltarPage() {
               {!preview.willStarEvolve && base.instance.stars < 6 && (
                 <div className="altar-preview-row">
                   <span className="altar-preview-label">Star Evolve</span>
-                  <span className="altar-preview-value" style={{ color: '#999', fontSize: '0.65rem' }}>
+                  <span className="altar-preview-value" style={{ color: '#64748b', fontSize: '0.65rem' }}>
                     {!isMaxLevel(base.instance.level, base.instance.stars)
                       ? 'Base must be max level'
                       : `Need ${base.instance.stars}x ${base.instance.stars}-star fodder`

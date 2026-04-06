@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { HeldItemInstance, HeldItemSlot, BaseStats } from '@gatchamon/shared';
 import { ITEM_SETS, GRADE_COLORS, ITEM_REMOVAL_COST, computeStatsWithItems, computeStats, getItemSellValue } from '@gatchamon/shared';
 import { POKEDEX } from '@gatchamon/shared';
@@ -18,6 +18,8 @@ const PCT_STATS: Array<keyof BaseStats> = ['critRate', 'critDmg', 'acc', 'res'];
 
 type SortOption = 'stars' | 'level' | 'grade' | 'mainValue';
 
+export type StatsDiff = { key: keyof BaseStats; label: string; diff: number; isPct: boolean }[];
+
 interface HeldItemSelectModalProps {
   pokemon: OwnedPokemon;
   slot: HeldItemSlot;
@@ -25,9 +27,11 @@ interface HeldItemSelectModalProps {
   equippedItems: HeldItemInstance[];
   playerPokedollars: number;
   onClose: () => void;
+  inline?: boolean;
+  onStatsPreview?: (diffs: StatsDiff) => void;
 }
 
-export function HeldItemSelectModal({ pokemon, slot, heldItems, equippedItems, playerPokedollars, onClose }: HeldItemSelectModalProps) {
+export function HeldItemSelectModal({ pokemon, slot, heldItems, equippedItems, playerPokedollars, onClose, inline, onStatsPreview }: HeldItemSelectModalProps) {
   const { equipItem, unequipItem, sellItems: storeSellItems, refreshPlayer } = useGameStore();
   const [setFilter, setSetFilter] = useState<string>('');
   const [sortBy, setSortBy] = useState<SortOption>('stars');
@@ -66,6 +70,18 @@ export function HeldItemSelectModal({ pokemon, slot, heldItems, equippedItems, p
     : equippedItems;
   const previewStats = computeStatsWithItems(pokemon.template, pokemon.instance.level, pokemon.instance.stars, previewItems);
 
+  // Report stat diffs to parent when inline
+  useEffect(() => {
+    if (!onStatsPreview) return;
+    const diffs: StatsDiff = (Object.keys(STAT_LABELS) as Array<keyof BaseStats>).map(key => ({
+      key,
+      label: STAT_LABELS[key],
+      diff: previewStats[key] - currentStats[key],
+      isPct: PCT_STATS.includes(key),
+    })).filter(d => d.diff !== 0);
+    onStatsPreview(diffs);
+  }, [previewStats, currentStats, onStatsPreview]);
+
   function getEquippedPokemonName(item: HeldItemInstance): string | null {
     if (!item.equippedTo || item.equippedTo === pokemon.instance.instanceId) return null;
     const collection = useGameStore.getState().collection;
@@ -100,27 +116,28 @@ export function HeldItemSelectModal({ pokemon, slot, heldItems, equippedItems, p
     return counts;
   }, [slotItems]);
 
-  return (
-    <div className="held-item-select-overlay" onClick={onClose}>
-      <div className="held-item-select-modal" onClick={e => e.stopPropagation()}>
-        <div className="held-item-select-header">
-          <h3>Select Item for Slot {slot}</h3>
-          <div className="held-item-select-header-actions">
-            <select value={sortBy} onChange={e => setSortBy(e.target.value as SortOption)}>
-              <option value="stars">Stars</option>
-              <option value="level">Level</option>
-              <option value="grade">Grade</option>
-              <option value="mainValue">Main Stat</option>
-            </select>
-            <button
-              className={`held-item-sell-mode-btn ${sellMode ? 'active' : ''}`}
-              onClick={() => { setSellMode(!sellMode); setSellSelection(new Set()); setConfirmBulkSell(false); }}
-            >
-              {sellMode ? 'Cancel' : 'Sell'}
-            </button>
-            <button className="held-item-select-close" onClick={onClose}><GameIcon id="close" size={18} /></button>
+  const content = (
+      <div className={`held-item-select-modal ${inline ? 'held-item-select-modal--inline' : ''}`} onClick={e => e.stopPropagation()}>
+        {!inline && (
+          <div className="held-item-select-header">
+            <h3>Select Item for Slot {slot}</h3>
+            <div className="held-item-select-header-actions">
+              <select value={sortBy} onChange={e => setSortBy(e.target.value as SortOption)}>
+                <option value="stars">Stars</option>
+                <option value="level">Level</option>
+                <option value="grade">Grade</option>
+                <option value="mainValue">Main Stat</option>
+              </select>
+              <button
+                className={`held-item-sell-mode-btn ${sellMode ? 'active' : ''}`}
+                onClick={() => { setSellMode(!sellMode); setSellSelection(new Set()); setConfirmBulkSell(false); }}
+              >
+                {sellMode ? 'Cancel' : 'Sell'}
+              </button>
+              <button className="held-item-select-close" onClick={onClose}><GameIcon id="close" size={18} /></button>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="held-item-select-body">
           {/* Set sidebar */}
@@ -198,35 +215,37 @@ export function HeldItemSelectModal({ pokemon, slot, heldItems, equippedItems, p
             </div>
           </div>
 
-          {/* Stat preview – full (desktop) */}
-          <div className="held-item-select-preview held-item-preview-full">
-            <h4>Stat Preview</h4>
-            <div className="held-item-preview-stats">
-              {(Object.keys(STAT_LABELS) as Array<keyof BaseStats>).map(key => {
-                const current = currentStats[key];
-                const preview = previewStats[key];
-                const diff = preview - current;
-                const isPct = PCT_STATS.includes(key);
-                return (
-                  <div key={key} className="held-item-preview-row">
-                    <span className="held-item-preview-label">{STAT_LABELS[key]}</span>
-                    <span className="held-item-preview-current">{current}{isPct ? '%' : ''}</span>
-                    <span className="held-item-preview-arrow">&rarr;</span>
-                    <span className={`held-item-preview-new ${diff > 0 ? 'stat-up' : diff < 0 ? 'stat-down' : ''}`}>
-                      {preview}{isPct ? '%' : ''}
-                    </span>
-                    {diff !== 0 && (
-                      <span className={diff > 0 ? 'stat-up' : 'stat-down'}>
-                        ({diff > 0 ? '+' : ''}{diff})
+          {/* Stat preview – full (desktop) — hidden when inline (shown in sidebar instead) */}
+          {!inline && (
+            <div className="held-item-select-preview held-item-preview-full">
+              <h4>Stat Preview</h4>
+              <div className="held-item-preview-stats">
+                {(Object.keys(STAT_LABELS) as Array<keyof BaseStats>).map(key => {
+                  const current = currentStats[key];
+                  const preview = previewStats[key];
+                  const diff = preview - current;
+                  const isPct = PCT_STATS.includes(key);
+                  return (
+                    <div key={key} className="held-item-preview-row">
+                      <span className="held-item-preview-label">{STAT_LABELS[key]}</span>
+                      <span className="held-item-preview-current">{current}{isPct ? '%' : ''}</span>
+                      <span className="held-item-preview-arrow">&rarr;</span>
+                      <span className={`held-item-preview-new ${diff > 0 ? 'stat-up' : diff < 0 ? 'stat-down' : ''}`}>
+                        {preview}{isPct ? '%' : ''}
                       </span>
-                    )}
-                  </div>
-                );
-              })}
+                      {diff !== 0 && (
+                        <span className={diff > 0 ? 'stat-up' : 'stat-down'}>
+                          ({diff > 0 ? '+' : ''}{diff})
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
           {/* Stat preview – compact (mobile): only changed stats, single row */}
-          <div className="held-item-preview-compact">
+          {!inline && <div className="held-item-preview-compact">
             {(Object.keys(STAT_LABELS) as Array<keyof BaseStats>).map(key => {
               const diff = previewStats[key] - currentStats[key];
               if (diff === 0) return null;
@@ -237,7 +256,7 @@ export function HeldItemSelectModal({ pokemon, slot, heldItems, equippedItems, p
                 </span>
               );
             })}
-          </div>
+          </div>}
         </div>
 
         {/* Actions */}
@@ -262,18 +281,42 @@ export function HeldItemSelectModal({ pokemon, slot, heldItems, equippedItems, p
                     <button className="held-item-sell-no" onClick={() => setConfirmBulkSell(false)}>No</button>
                   </div>
                 ) : (
-                  <button
-                    className="held-item-sell-bulk-btn"
-                    disabled={sellSelection.size === 0}
-                    onClick={() => setConfirmBulkSell(true)}
-                  >
-                    Sell {sellSelection.size} items ({totalValue.toLocaleString()} <GameIcon id="pokedollar" size={12} />)
-                  </button>
+                  <>
+                    <button
+                      className="held-item-sell-mode-btn active"
+                      onClick={() => { setSellMode(false); setSellSelection(new Set()); setConfirmBulkSell(false); }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="held-item-sell-bulk-btn"
+                      disabled={sellSelection.size === 0}
+                      onClick={() => setConfirmBulkSell(true)}
+                    >
+                      Sell {sellSelection.size} ({totalValue.toLocaleString()} <GameIcon id="pokedollar" size={12} />)
+                    </button>
+                  </>
                 );
               })()}
             </>
           ) : (
             <>
+              {inline && (
+                <select className="held-item-inline-sort" value={sortBy} onChange={e => setSortBy(e.target.value as SortOption)}>
+                  <option value="stars">Stars</option>
+                  <option value="level">Level</option>
+                  <option value="grade">Grade</option>
+                  <option value="mainValue">Main Stat</option>
+                </select>
+              )}
+              {inline && (
+                <button
+                  className="held-item-sell-mode-btn"
+                  onClick={() => { setSellMode(true); setSellSelection(new Set()); setConfirmBulkSell(false); }}
+                >
+                  Sell
+                </button>
+              )}
               {currentEquipped && (
                 <button
                   className="held-item-remove-btn"
@@ -294,6 +337,13 @@ export function HeldItemSelectModal({ pokemon, slot, heldItems, equippedItems, p
           )}
         </div>
       </div>
+  );
+
+  if (inline) return content;
+
+  return (
+    <div className="held-item-select-overlay" onClick={onClose}>
+      {content}
     </div>
   );
 }

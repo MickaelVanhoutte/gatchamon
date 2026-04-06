@@ -1,0 +1,275 @@
+.roulette-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.roulette-modal {
+  position: relative;
+  background: var(--glass-bg, rgba(15, 23, 42, 0.85));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 14px;
+  max-width: 380px;
+  width: 100%;
+  padding: 16px;
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.08));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.roulette-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--text-muted, #64748b);
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.roulette-title {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  color: var(--text-primary, #e2e8f0);
+  font-weight: 700;
+  text-align: center;
+}
+
+/* 4x3 grid */
+.roulette-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 4px;
+  width: 100%;
+  max-width: 340px;
+}
+
+/* Reward cells */
+.roulette-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  gap: 2px;
+  border: 2px solid transparent;
+  transition: border-color 0.08s, box-shadow 0.08s, transform 0.08s;
+  position: relative;
+}
+
+.roulette-cell--common {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.roulette-cell--uncommon {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.roulette-cell--rare {
+  background: rgba(168, 85, 247, 0.1);
+  border-color: rgba(168, 85, 247, 0.2);
+}
+
+.roulette-cell--ultra-rare {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(251, 191, 36, 0.18));
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+/* Highlight animation (cycling through cells) */
+.roulette-cell--highlight {
+  transform: scale(1.05);
+  z-index: 2;
+}
+
+.roulette-cell--highlight.roulette-cell--common {
+  border-color: #3b82f6;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.5), inset 0 0 8px rgba(59, 130, 246, 0.15);
+}
+
+.roulette-cell--highlight.roulette-cell--uncommon {
+  border-color: #22c55e;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.5), inset 0 0 8px rgba(34, 197, 94, 0.15);
+}
+
+.roulette-cell--highlight.roulette-cell--rare {
+  border-color: #a855f7;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.5), inset 0 0 8px rgba(168, 85, 247, 0.15);
+}
+
+.roulette-cell--highlight.roulette-cell--ultra-rare {
+  border-color: #f59e0b;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.6), inset 0 0 8px rgba(245, 158, 11, 0.2);
+}
+
+/* Winner glow */
+.roulette-cell--winner {
+  transform: scale(1.08);
+  z-index: 3;
+  animation: roulette-winner-pulse 1s ease-in-out infinite;
+}
+
+.roulette-cell--winner.roulette-cell--common {
+  border-color: #3b82f6;
+  box-shadow: 0 0 16px rgba(59, 130, 246, 0.6);
+}
+
+.roulette-cell--winner.roulette-cell--uncommon {
+  border-color: #22c55e;
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.6);
+}
+
+.roulette-cell--winner.roulette-cell--rare {
+  border-color: #a855f7;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.6);
+}
+
+.roulette-cell--winner.roulette-cell--ultra-rare {
+  border-color: #f59e0b;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.7);
+}
+
+@keyframes roulette-winner-pulse {
+  0%, 100% { transform: scale(1.08); }
+  50% { transform: scale(1.12); }
+}
+
+.roulette-cell-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary, #e2e8f0);
+}
+
+.roulette-cell-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-secondary, #94a3b8);
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* Spin button in center (spans 2 columns) */
+.roulette-spin-cell {
+  grid-column: 2 / 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  color: var(--text-primary, #e2e8f0);
+}
+
+.roulette-spin-cell--active {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  animation: roulette-btn-pulse 2s ease-in-out infinite;
+}
+
+.roulette-spin-cell--active:hover {
+  transform: scale(1.03);
+}
+
+.roulette-spin-cell:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+@keyframes roulette-btn-pulse {
+  0%, 100% { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 2px 8px rgba(99, 102, 241, 0.3); }
+  50% { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 2px 16px rgba(99, 102, 241, 0.6); }
+}
+
+.roulette-spin-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* Result banner */
+.roulette-result {
+  text-align: center;
+  padding: 10px 16px;
+  margin-top: 10px;
+  background: var(--glass-bg, rgba(15, 23, 42, 0.85));
+  border-radius: 10px;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  width: 100%;
+}
+
+.roulette-result-text {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #818cf8;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.roulette-result--ultra-rare .roulette-result-text {
+  color: #fbbf24;
+}
+
+.roulette-result--rare .roulette-result-text {
+  color: #a855f7;
+}
+
+.roulette-again-btn {
+  margin-top: 8px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.roulette-again-btn:hover {
+  transform: scale(1.03);
+}
+
+.roulette-again-btn:active {
+  transform: scale(0.96);
+}
+
+.roulette-already-spun {
+  text-align: center;
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.8rem;
+  padding: 8px;
+  margin-top: 8px;
+}
+
+/* Portrait rotation — .app is rotated 90deg, so fixed positioning
+   uses the rotated coordinate space. Constrain to fit. */
+@media (orientation: portrait) {
+  .roulette-modal {
+    max-width: min(380px, 55vh);
+    max-height: 90vw;
+  }
+}

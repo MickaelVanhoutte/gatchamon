@@ -10,7 +10,7 @@ import {
   IconWind, IconMuscle, IconTarget, IconCrown, IconBlade, IconMusic, IconMartialArts,
   IconGlasses, IconPaw, IconSandwich,
   IconTree, IconWheat, IconWave, IconMountain, IconShrine,
-  IconPokedollar, IconShop,
+  IconPokedollar, IconShop, IconGlowingPokeball, IconRoulette,
 } from './Icons';
 
 type IconComponent = ComponentType<{ size?: number } & SVGProps<SVGSVGElement>>;
@@ -85,6 +85,8 @@ const ICON_MAP: Record<string, IconComponent> = {
   // Currency & Shop
   pokedollar: IconPokedollar,
   shop: IconShop,
+  glowingPokeball: IconGlowingPokeball,
+  roulette: IconRoulette,
 
   // Regions
   tree: IconTree,

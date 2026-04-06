@@ -8,6 +8,7 @@ const TUTORIAL_KEY = 'gatchamon_tutorial';
 const INBOX_KEY = 'gatchamon_inbox';
 const RETRY_SUMMON_KEY = 'gatchamon_retry_summon';
 const LOGIN_CALENDAR_KEY = 'gatchamon_login_calendar';
+const ROULETTE_KEY = 'gatchamon_roulette';
 const GRANTED_FLAGS_KEY = 'gatchamon_granted_flags';
 
 function safeParse<T>(raw: string | null, fallback: T): T {
@@ -90,6 +91,10 @@ export function loadPlayer(): Player | null {
   // Migration: add mysteryPieces for existing players
   if ((player as any).mysteryPieces === undefined) {
     player.mysteryPieces = {};
+  }
+  // Migration: add glowingPokeballs for existing players
+  if ((player as any).glowingPokeballs === undefined) {
+    player.glowingPokeballs = 0;
   }
   return player;
 }
@@ -284,6 +289,23 @@ export function loadLoginCalendar(): LoginCalendarData | null {
 
 export function saveLoginCalendar(state: LoginCalendarData): void {
   localStorage.setItem(LOGIN_CALENDAR_KEY, JSON.stringify(state));
+}
+
+// ── Daily Roulette ──────────────────────────────────────────────────
+
+export interface RouletteData {
+  lastSpinDate: string;  // "YYYY-MM-DD"
+  spinsToday: number;    // how many spins used today
+}
+
+export function loadRoulette(): RouletteData | null {
+  const raw = localStorage.getItem(ROULETTE_KEY);
+  if (!raw) return null;
+  return safeParse<RouletteData | null>(raw, null);
+}
+
+export function saveRoulette(state: RouletteData): void {
+  localStorage.setItem(ROULETTE_KEY, JSON.stringify(state));
 }
 
 // ── Battle Settings ──────────────────────────────────────────────────

@@ -60,7 +60,7 @@
 .claim-all-btn {
   width: 100%;
   padding: 10px 16px;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 700;
@@ -69,11 +69,17 @@
   color: white;
   transition: all 0.15s;
   letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .claim-all-btn:hover {
   background: linear-gradient(135deg, #22c55e, #16a34a);
-  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 2px 12px rgba(34, 197, 94, 0.4);
+}
+
+.claim-all-btn:active {
+  transform: scale(0.96);
 }
 
 /* ─── Daily Missions ─── */
@@ -92,6 +98,7 @@
   border-radius: 8px;
   border-left: 3px solid var(--card-border);
   transition: all 0.2s;
+  box-shadow: var(--card-shadow);
 }
 
 .mission-card.ready {
@@ -119,12 +126,13 @@
 .mission-desc {
   font-size: 0.82rem;
   font-weight: 500;
+  color: var(--text-primary);
   margin-bottom: 4px;
 }
 
 .mission-progress-bar {
   height: 6px;
-  background: rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 3px;
   overflow: hidden;
   margin-bottom: 2px;
@@ -132,7 +140,7 @@
 
 .mission-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
   border-radius: 3px;
   transition: width 0.3s;
 }
@@ -168,25 +176,32 @@
 
 .mission-claim-btn {
   padding: 6px 14px;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
-  background: var(--accent);
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
   transition: all 0.15s;
   flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
 }
 
 .mission-claim-btn:disabled {
   background: var(--bg-secondary);
   color: var(--text-secondary);
   cursor: default;
+  box-shadow: none;
+  border-color: var(--card-border);
 }
 
 .mission-claim-btn:not(:disabled):hover {
-  background: var(--accent-hover);
+  opacity: 0.85;
+}
+
+.mission-claim-btn:not(:disabled):active {
+  transform: scale(0.96);
 }
 
 /* ─── All Dailies Bonus ─── */
@@ -196,14 +211,14 @@
   gap: 10px;
   padding: 12px;
   margin-top: 4px;
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.08), rgba(13, 148, 136, 0.08));
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.08), rgba(99, 102, 241, 0.08));
   border: 1px solid rgba(251, 191, 36, 0.2);
   border-radius: 10px;
 }
 
 .all-dailies-bonus.ready {
   border-color: #fbbf24;
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.12), rgba(13, 148, 136, 0.12));
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.12), rgba(99, 102, 241, 0.12));
   animation: bonus-pulse 1.5s ease-in-out infinite;
 }
 
@@ -230,6 +245,7 @@
 .bonus-text {
   font-size: 0.85rem;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .bonus-progress {
@@ -245,7 +261,9 @@
 
 .bonus-claim {
   background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  color: var(--text-primary);
+  color: #0a0e1a;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-weight: 700;
 }
 
 .bonus-claim:not(:disabled):hover {
@@ -264,6 +282,7 @@
   border-radius: 10px;
   padding: 12px;
   border-left: 4px solid var(--card-border);
+  box-shadow: var(--card-shadow);
 }
 
 .trophy-header {
@@ -288,6 +307,7 @@
   font-size: 0.9rem;
   font-weight: 600;
   display: block;
+  color: var(--text-primary);
 }
 
 .trophy-desc {
@@ -316,6 +336,7 @@
   border-radius: 6px;
   background: var(--bg-primary);
   font-size: 0.75rem;
+  color: var(--text-primary);
 }
 
 .trophy-tier.ready {
@@ -337,14 +358,14 @@
 .tier-progress-bar {
   flex: 1;
   height: 4px;
-  background: rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 2px;
   overflow: hidden;
 }
 
 .tier-progress-fill {
   height: 100%;
-  background: var(--accent);
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
   border-radius: 2px;
   transition: width 0.3s;
 }
@@ -367,25 +388,32 @@
 
 .tier-claim-btn {
   padding: 3px 10px;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 4px;
   font-size: 0.7rem;
   font-weight: 600;
   cursor: pointer;
-  background: var(--accent);
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
   flex-shrink: 0;
   transition: all 0.15s;
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
 }
 
 .tier-claim-btn:disabled {
   background: var(--bg-secondary);
   color: var(--text-secondary);
   cursor: default;
+  box-shadow: none;
+  border-color: var(--card-border);
 }
 
 .tier-claim-btn:not(:disabled):hover {
-  background: var(--accent-hover);
+  opacity: 0.85;
+}
+
+.tier-claim-btn:not(:disabled):active {
+  transform: scale(0.96);
 }
 
 /* ─── Claim Toast ─── */
@@ -400,7 +428,7 @@
   border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 600;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   animation: toast-in 0.3s ease-out;
   z-index: 100;
 }
@@ -415,4 +443,3 @@
     transform: translateX(-50%) translateY(0);
   }
 }
-

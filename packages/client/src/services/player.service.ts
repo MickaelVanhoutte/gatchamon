@@ -35,6 +35,7 @@ export function createPlayer(name: string): Player {
     trainerSkillPoints: 0,
     trainerSkills: defaultTrainerSkills(),
     legendaryPokeballs: 0,
+    glowingPokeballs: 0,
     towerProgress: 0,
     premiumPityCounter: 0,
     mysteryPieces: {},

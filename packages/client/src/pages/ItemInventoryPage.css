@@ -71,6 +71,11 @@
   font-size: 1.2rem;
   cursor: pointer;
   padding: 4px 8px;
+  transition: color 0.15s;
+}
+
+.inventory-close-btn:hover {
+  color: var(--text-primary);
 }
 
 /* Main split layout */
@@ -124,12 +129,13 @@
 
 .inventory-sidebar-item:hover {
   background: var(--bg-primary);
+  border-color: rgba(99, 102, 241, 0.2);
 }
 
 .inventory-sidebar-item--active {
-  background: rgba(13, 148, 136, 0.1);
+  background: rgba(99, 102, 241, 0.1);
   border-color: var(--accent);
-  color: var(--accent);
+  color: #818cf8;
 }
 
 .inventory-sidebar-item-name {
@@ -151,8 +157,8 @@
 }
 
 .inventory-sidebar-item--active .inventory-sidebar-item-count {
-  color: var(--accent);
-  background: rgba(13, 148, 136, 0.15);
+  color: #818cf8;
+  background: rgba(99, 102, 241, 0.15);
 }
 
 /* Slot filter tabs */
@@ -184,9 +190,9 @@
 }
 
 .inventory-slot-tab--active {
-  background: rgba(13, 148, 136, 0.1);
+  background: rgba(99, 102, 241, 0.1);
   border-color: var(--accent);
-  color: var(--accent);
+  color: #818cf8;
 }
 
 /* Main content area */

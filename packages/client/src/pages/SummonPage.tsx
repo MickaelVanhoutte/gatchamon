@@ -24,6 +24,7 @@ export function SummonPage() {
   const [resultsReady, setResultsReady] = useState(false);
   const [error, setError] = useState('');
   const [selectedBall, setSelectedBall] = useState<PokeballType | 'pieces'>('regular');
+  const [showRates, setShowRates] = useState(false);
 
   // Tutorial step 5: auto-switch to premium
   useEffect(() => {
@@ -34,12 +35,16 @@ export function SummonPage() {
 
   const activeBall = selectedBall === 'pieces' ? 'regular' : selectedBall;
   const costs = SUMMON_COSTS[activeBall];
-  const currency = activeBall === 'legendary'
+  const currency = activeBall === 'glowing'
+    ? player?.glowingPokeballs ?? 0
+    : activeBall === 'legendary'
     ? player?.legendaryPokeballs ?? 0
     : activeBall === 'premium'
     ? player?.premiumPokeballs ?? 0
     : player?.regularPokeballs ?? 0;
-  const iconId = activeBall === 'legendary'
+  const iconId = activeBall === 'glowing'
+    ? 'glowingPokeball'
+    : activeBall === 'legendary'
     ? 'legendaryPokeball'
     : activeBall === 'premium'
     ? 'premiumPokeball'
@@ -117,6 +122,13 @@ export function SummonPage() {
                   <span>Legendary</span>
                 </button>
                 <button
+                  className={`pokeball-type-tab glowing ${selectedBall === 'glowing' ? 'active' : ''}`}
+                  onClick={() => setSelectedBall('glowing')}
+                >
+                  <GameIcon id="glowingPokeball" size={16} />
+                  <span>Glowing</span>
+                </button>
+                <button
                   className={`pokeball-type-tab ${selectedBall === 'pieces' ? 'active' : ''}`}
                   onClick={() => setSelectedBall('pieces')}
                 >
@@ -125,28 +137,7 @@ export function SummonPage() {
                 </button>
               </div>
               {selectedBall === 'pieces' && <PieceSummonTab />}
-              {selectedBall !== 'pieces' && <>
-              <div className="summon-rates">
-                {selectedBall === 'regular' && (
-                  <>
-                    <span className="rate-item"><GameIcon id="star" size={12} /> 57%</span>
-                    <span className="rate-item"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 38%</span>
-                    <span className="rate-item rate-rare"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 5%</span>
-                  </>
-                )}
-                {selectedBall === 'premium' && (
-                  <>
-                    <span className="rate-item"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 75%</span>
-                    <span className="rate-item rate-rare"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 20%</span>
-                    <span className="rate-item rate-legendary"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 5%</span>
-                  </>
-                )}
-                {selectedBall === 'legendary' && (
-                  <span className="rate-item rate-legendary"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 100%</span>
-                )}
-                <span className="rate-item rate-shiny"><GameIcon id="shiny" size={12} /> 0.1%</span>
-              </div>
-              {selectedBall === 'premium' && (
+              {selectedBall !== 'pieces' && selectedBall === 'premium' && (
                 <div className="summon-pity">
                   <div className="summon-pity-bar">
                     <div
@@ -157,7 +148,6 @@ export function SummonPage() {
                   <span className="summon-pity-label">{player.premiumPityCounter ?? 0}/200 — 5★ guaranteed</span>
                 </div>
               )}
-              </>}
             </div>
           )}
 
@@ -173,17 +163,7 @@ export function SummonPage() {
           )}
 
           {selectedBall !== 'pieces' && <div className="summon-center-row">
-            <button
-              className={`summon-btn summon-single ${inTutorial ? 'tutorial-target' : ''}`}
-              data-tutorial-id="summon-btn-single"
-              onClick={() => handleSummon(1)}
-              disabled={currency < costs.single}
-            >
-              <span className="btn-label">Summon x1</span>
-              <span className="btn-cost">{costs.single} <GameIcon id={iconId} size={14} /></span>
-            </button>
-
-            <div className={`idle-pokeball ${selectedBall === 'premium' ? 'premium' : selectedBall === 'legendary' ? 'legendary' : ''}`}>
+            <div className={`idle-pokeball ${selectedBall === 'premium' ? 'premium' : selectedBall === 'legendary' ? 'legendary' : selectedBall === 'glowing' ? 'glowing' : ''}`}>
               <div className="idle-pokeball-top" />
               <div className="idle-pokeball-bottom" />
               <div className="idle-pokeball-band">
@@ -193,18 +173,81 @@ export function SummonPage() {
               </div>
             </div>
 
-            {/* Hide x10 during tutorial */}
-            {!inTutorial && selectedBall !== 'legendary' && 'multi' in costs && (
+            <div className="summon-buttons-row">
               <button
-                className="summon-btn summon-multi"
-                onClick={() => handleSummon(10)}
-                disabled={currency < (costs as any).multi}
+                className={`summon-btn summon-single ${inTutorial ? 'tutorial-target' : ''}`}
+                data-tutorial-id="summon-btn-single"
+                onClick={() => handleSummon(1)}
+                disabled={currency < costs.single}
               >
-                <span className="btn-label">Summon x10</span>
-                <span className="btn-cost">{(costs as any).multi} <GameIcon id={iconId} size={14} /></span>
+                <GameIcon id={iconId} size={18} />
+                <span className="btn-label">Summon x1</span>
+                <span className="btn-cost">{costs.single} <GameIcon id={iconId} size={12} /></span>
               </button>
-            )}
+
+              {/* Hide x10 during tutorial */}
+              {!inTutorial && selectedBall !== 'legendary' && selectedBall !== 'glowing' && 'multi' in costs && (
+                <button
+                  className="summon-btn summon-multi"
+                  onClick={() => handleSummon(10)}
+                  disabled={currency < (costs as any).multi}
+                >
+                  <GameIcon id={iconId} size={18} />
+                  <span className="btn-label">Summon x10</span>
+                  <span className="btn-cost">{(costs as any).multi} <GameIcon id={iconId} size={12} /></span>
+                </button>
+              )}
+            </div>
           </div>}
+
+          {/* Rates info button — top-left floating */}
+          {!inTutorial && selectedBall !== 'pieces' && (
+            <div className="summon-rates-wrapper">
+              <button className="summon-rates-btn" onClick={() => setShowRates(v => !v)} title="Drop rates">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 16v-4" />
+                  <path d="M12 8h.01" />
+                </svg>
+              </button>
+              {showRates && (
+                <>
+                  <div className="summon-rates-overlay" onClick={() => setShowRates(false)} />
+                  <div className="summon-rates-popover">
+                    <div className="summon-rates-title">Drop Rates</div>
+                    <div className="summon-rates">
+                      {selectedBall === 'regular' && (
+                        <>
+                          <span className="rate-item"><GameIcon id="star" size={12} /> 57%</span>
+                          <span className="rate-item"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 38%</span>
+                          <span className="rate-item rate-rare"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 5%</span>
+                        </>
+                      )}
+                      {selectedBall === 'premium' && (
+                        <>
+                          <span className="rate-item"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 75%</span>
+                          <span className="rate-item rate-rare"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 20%</span>
+                          <span className="rate-item rate-legendary"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 5%</span>
+                        </>
+                      )}
+                      {selectedBall === 'legendary' && (
+                        <span className="rate-item rate-legendary"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 100%</span>
+                      )}
+                      {selectedBall === 'glowing' && (
+                        <>
+                          <span className="rate-item"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 75%</span>
+                          <span className="rate-item rate-rare"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 20%</span>
+                          <span className="rate-item rate-legendary"><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /><GameIcon id="star" size={12} /> 5%</span>
+                        </>
+                      )}
+                      {selectedBall !== 'glowing' && <span className="rate-item rate-shiny"><GameIcon id="shiny" size={12} /> 0.1%</span>}
+                      {selectedBall === 'glowing' && <span className="rate-item rate-shiny"><GameIcon id="shiny" size={12} /> 100%</span>}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
 
           {error && <p className="summon-error">{error}</p>}
         </div>

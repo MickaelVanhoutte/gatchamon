@@ -297,3 +297,19 @@ export const IconShop = makeMultiPathIcon([
   'M18.36 9l.6-3H5.04l.6 3h12.72zM20 4H4l-1 5v2h1v6h10v-6h4v6h2v-6h1v-2h-1V4z',
   'M6 18v2h8v-2H6z',
 ]);
+
+// Glowing Pokeball — pokeball with sparkle rays
+export const IconGlowingPokeball = makeMultiPathIcon([
+  'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z',
+  'M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z',
+  'M12 10a2 2 0 100 4 2 2 0 000-4z',
+  // Sparkle rays
+  'M12 0v2M12 22v2M0 12h2M22 12h2M3.5 3.5l1.4 1.4M19.1 19.1l1.4 1.4M3.5 20.5l1.4-1.4M19.1 4.9l1.4-1.4',
+]);
+
+// Roulette wheel icon
+export const IconRoulette = makeMultiPathIcon([
+  'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z',
+  'M12 6v6l4.24 4.24',
+  'M12 2v3M12 19v3M2 12h3M19 12h3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12',
+]);

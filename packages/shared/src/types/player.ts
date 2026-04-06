@@ -1,5 +1,5 @@
 export type Difficulty = 'normal' | 'hard' | 'hell';
-export type PokeballType = 'regular' | 'premium' | 'legendary';
+export type PokeballType = 'regular' | 'premium' | 'legendary' | 'glowing';
 
 export interface TrainerSkills {
   energyRegenSpeed: number;    // 0-10, -10% regen interval per level
@@ -20,6 +20,7 @@ export interface Player {
   regularPokeballs: number;
   premiumPokeballs: number;
   legendaryPokeballs: number;
+  glowingPokeballs: number;
   energy: number;
   stardust: number;
   pokedollars: number;

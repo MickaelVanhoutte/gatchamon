@@ -4,7 +4,7 @@ import type { HeldItemInstance, HeldItemSlot, BaseStats } from '@gatchamon/share
 import { getItemSet, computeStatsWithItems, computeStats, getActiveSetEffects, ITEM_SETS } from '@gatchamon/shared';
 import type { OwnedPokemon } from '../stores/gameStore';
 import { HeldItemCard } from '../components/held-item/HeldItemCard';
-import { HeldItemSelectModal } from './HeldItemSelectModal';
+import { HeldItemSelectModal, type StatsDiff } from './HeldItemSelectModal';
 import { HeldItemUpgradeModal } from './HeldItemUpgradeModal';
 import { useTutorialStore } from '../stores/tutorialStore';
 import './HeldItemEquipPanel.css';
@@ -20,12 +20,15 @@ interface HeldItemEquipPanelProps {
   pokemon: OwnedPokemon;
   heldItems: HeldItemInstance[];
   player: { pokedollars: number };
+  expanded?: boolean;
+  onToggleExpand?: () => void;
 }
 
-export function HeldItemEquipPanel({ pokemon, heldItems, player }: HeldItemEquipPanelProps) {
+export function HeldItemEquipPanel({ pokemon, heldItems, player, expanded, onToggleExpand }: HeldItemEquipPanelProps) {
   const navigate = useNavigate();
   const [selectSlot, setSelectSlot] = useState<HeldItemSlot | null>(null);
   const [upgradeItem, setUpgradeItem] = useState<HeldItemInstance | null>(null);
+  const [statsDiff, setStatsDiff] = useState<StatsDiff>([]);
 
   const tutorialStep = useTutorialStore(s => s.step);
   const prevSelectSlot = useRef(selectSlot);
@@ -75,40 +78,94 @@ export function HeldItemEquipPanel({ pokemon, heldItems, player }: HeldItemEquip
   const activeSetIds = new Set(activeEffects.map(e => e.setId));
 
   function handleSlotClick(slot: HeldItemSlot) {
-    const equipped = equippedBySlot[slot];
-    if (equipped) {
-      setUpgradeItem(equipped);
-    } else {
+    if (onToggleExpand) {
+      onToggleExpand();
       setSelectSlot(slot);
+    } else {
+      const equipped = equippedBySlot[slot];
+      if (equipped) {
+        setUpgradeItem(equipped);
+      } else {
+        setSelectSlot(slot);
+      }
     }
   }
 
+  const slotsGrid = (
+    <div className="held-item-slots-grid">
+      {([1, 2, 3, 4, 5, 6] as HeldItemSlot[]).map(s => {
+        const equipped = equippedBySlot[s];
+        const modalOpen = selectSlot !== null || upgradeItem !== null;
+        const isTutorialTarget = s === 1 && (tutorialStep === 15 || tutorialStep === 16) && !modalOpen;
+        return (
+          <div
+            key={s}
+            className={`held-item-slot ${selectSlot === s ? 'held-item-slot--active' : ''} ${isTutorialTarget ? 'tutorial-target' : ''}`}
+            data-tutorial-id={s === 1 && !modalOpen ? 'held-item-slot-1' : undefined}
+            onClick={() => { if (expanded) setSelectSlot(s); else handleSlotClick(s); }}
+          >
+            {equipped ? (
+              <HeldItemCard item={equipped} compact />
+            ) : (
+              <div className="held-item-slot-empty">
+                <span className="held-item-slot-num">{s}</span>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+
+  // ===== Expanded layout: slots sidebar | inline item selection =====
+  if (expanded) {
+    return (
+      <div className="held-item-equip-panel held-item-equip-panel--expanded">
+        <div className="held-item-expanded-sidebar">
+          {slotsGrid}
+          {statsDiff.length > 0 && (
+            <div className="held-item-sidebar-stats">
+              {statsDiff.map(d => (
+                <span key={d.key} className={`held-item-sidebar-stat ${d.diff > 0 ? 'stat-up' : 'stat-down'}`}>
+                  {d.label} {d.diff > 0 ? '+' : ''}{d.diff}{d.isPct ? '%' : ''}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="held-item-expanded-main">
+          {selectSlot !== null ? (
+            <HeldItemSelectModal
+              pokemon={pokemon}
+              slot={selectSlot}
+              heldItems={heldItems}
+              equippedItems={equippedItems}
+              playerPokedollars={player.pokedollars ?? 0}
+              onClose={() => setSelectSlot(null)}
+              onStatsPreview={setStatsDiff}
+              inline
+            />
+          ) : (
+            <div className="held-item-expanded-empty">Select a slot to manage items</div>
+          )}
+        </div>
+
+        {upgradeItem && (
+          <HeldItemUpgradeModal
+            item={upgradeItem}
+            playerPokedollars={player.pokedollars ?? 0}
+            onClose={() => setUpgradeItem(null)}
+            onEquipSlot={(s) => { setUpgradeItem(null); setSelectSlot(s); }}
+          />
+        )}
+      </div>
+    );
+  }
+
+  // ===== Normal (collapsed) layout =====
   return (
     <div className="held-item-equip-panel">
-      {/* 6-slot grid */}
-      <div className="held-item-slots-grid">
-        {([1, 2, 3, 4, 5, 6] as HeldItemSlot[]).map(slot => {
-          const equipped = equippedBySlot[slot];
-          const modalOpen = selectSlot !== null || upgradeItem !== null;
-          const isTutorialTarget = slot === 1 && (tutorialStep === 15 || tutorialStep === 16) && !modalOpen;
-          return (
-            <div
-              key={slot}
-              className={`held-item-slot ${isTutorialTarget ? 'tutorial-target' : ''}`}
-              data-tutorial-id={slot === 1 && !modalOpen ? 'held-item-slot-1' : undefined}
-              onClick={() => handleSlotClick(slot)}
-            >
-              {equipped ? (
-                <HeldItemCard item={equipped} compact />
-              ) : (
-                <div className="held-item-slot-empty">
-                  <span className="held-item-slot-num">{slot}</span>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+      {slotsGrid}
 
       {/* Set bonuses */}
       {Object.keys(setCounts).length > 0 && (
@@ -154,9 +211,16 @@ export function HeldItemEquipPanel({ pokemon, heldItems, player }: HeldItemEquip
         })}
       </div>
 
-      {/* Equip button for empty slots */}
+      {/* Action buttons */}
       <div style={{ display: 'flex', gap: '6px' }}>
-        <button className="held-item-equip-btn" onClick={() => setSelectSlot(1)} style={{ flex: 1 }}>
+        <button className="held-item-equip-btn" onClick={() => {
+          if (onToggleExpand) {
+            onToggleExpand();
+            setSelectSlot(1);
+          } else {
+            setSelectSlot(1);
+          }
+        }} style={{ flex: 1 }}>
           Manage Items
         </button>
         <button className="held-item-equip-btn" onClick={() => navigate('/inventory')} style={{ flex: 1 }}>
@@ -164,7 +228,7 @@ export function HeldItemEquipPanel({ pokemon, heldItems, player }: HeldItemEquip
         </button>
       </div>
 
-      {/* Modals */}
+      {/* Modal item selection when NOT expanded */}
       {selectSlot !== null && (
         <HeldItemSelectModal
           pokemon={pokemon}

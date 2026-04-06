@@ -110,7 +110,7 @@ export function TrainerPage() {
         ))}
         <div style={{ marginTop: 40, textAlign: 'center' }}>
           <button
-            style={{ fontSize: '0.65rem', color: '#555', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.4 }}
+            style={{ fontSize: '0.65rem', color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.4 }}
             onClick={() => {
               if (window.confirm('Reset ALL data? This cannot be undone.')) {
                 clearAll();
