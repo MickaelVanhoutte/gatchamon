@@ -21,6 +21,7 @@ export interface AltarPreview {
   totalXpGain: number;
   skillUps: number;
   willStarEvolve: boolean;
+  willBecomeShiny: boolean;
   newStars: number;
   newLevel: number;
   newExp: number;
@@ -64,6 +65,9 @@ export function previewAltarFeed(
   const upgradableSlots = currentSkills.filter(l => l < MAX_SKILL_LEVEL).length;
   const skillUps = Math.min(sameSpeciesCount, upgradableSlots);
 
+  // Shiny transfer: if any same-lineage fodder is shiny, base becomes shiny
+  const willBecomeShiny = !base.isShiny && fodder.some(f => f.isShiny && baseLineage.has(f.templateId));
+
   // Calculate total XP
   let totalXpGain = 0;
   for (const f of fodder) {
@@ -89,6 +93,7 @@ export function previewAltarFeed(
     totalXpGain,
     skillUps,
     willStarEvolve,
+    willBecomeShiny,
     newStars,
     newLevel: level,
     newExp: exp,
@@ -134,12 +139,15 @@ export function performAltarFeed(
     skillLevels[pick.idx]++;
   }
 
-  // 3. Star evolution
+  // 3. Shiny transfer: if any same-lineage fodder is shiny, base becomes shiny
+  const willBecomeShiny = !base.isShiny && fodder.some(f => f.isShiny && baseLineage.has(f.templateId));
+
+  // 4. Star evolution
   const fodderStars = fodder.map(f => f.stars);
   const willStarEvolve = canStarEvolve(base.level, base.stars, fodderStars);
   const newStars = willStarEvolve ? (base.stars + 1) as PokemonInstance['stars'] : base.stars;
 
-  // 4. Apply XP
+  // 5. Apply XP
   let level = base.level;
   let exp = base.exp;
   const maxLevel = MAX_LEVEL_BY_STARS[newStars] ?? 99;
@@ -154,21 +162,22 @@ export function performAltarFeed(
     exp = 0;
   }
 
-  // 5. Update base monster
+  // 6. Update base monster
   collection[baseIdx] = {
     ...base,
     stars: newStars,
     level,
     exp,
     skillLevels,
+    isShiny: base.isShiny || willBecomeShiny,
   };
 
-  // 6. Remove fodder (splice from highest index first to avoid shifting)
+  // 7. Remove fodder (splice from highest index first to avoid shifting)
   const fodderIdSet = new Set(fodderInstanceIds);
   const remaining = collection.filter(p => !fodderIdSet.has(p.instanceId) || p.instanceId === baseInstanceId);
   saveCollection(remaining);
 
-  // 7. Track rewards
+  // 8. Track rewards
   trackStat('totalMerges', fodder.length);
   incrementMission('merge_monster', fodder.length);
   checkAndUpdateTrophies();

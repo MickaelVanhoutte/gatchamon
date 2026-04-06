@@ -7,7 +7,7 @@ import { computeStats, computeStatsWithItems, getSkillsForPokemon, MAX_LEVEL_BY_
 import { canEvolveInstance } from '../services/evolution.service';
 import { canChangeType } from '../services/type-change.service';
 import type { PokemonType, BaseStats } from '@gatchamon/shared';
-import { assetUrl } from '../utils/asset-url';
+import { assetUrl, staticSpriteUrl } from '../utils/asset-url';
 
 import { HeldItemEquipPanel } from './HeldItemEquipPanel';
 import { SkillCard } from '../components/monster/SkillCard';
@@ -55,6 +55,7 @@ export function CollectionPage() {
   const navigate = useNavigate();
   const { collection, loadCollection, evolvePokemon, changeType, player, heldItems, loadHeldItems, updateInstance, isLoading } = useGameStore();
   const [typeFilter, setTypeFilter] = useState<PokemonType | null>(null);
+  const [shinyFilter, setShinyFilter] = useState<'all' | 'shiny'>('all');
   const [sortBy, setSortBy] = useState<SortBy>('stars');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<DetailTab>('info');
@@ -105,7 +106,9 @@ export function CollectionPage() {
 
   const filtered = visibleCollection
     .filter(mon => {
-      return !typeFilter || mon.template.types.includes(typeFilter);
+      if (typeFilter && !mon.template.types.includes(typeFilter)) return false;
+      if (shinyFilter === 'shiny' && !mon.instance.isShiny) return false;
+      return true;
     })
     .sort((a, b) => {
       if (sortBy === 'stars') return b.instance.stars - a.instance.stars;
@@ -167,6 +170,14 @@ export function CollectionPage() {
               <option key={t} value={t}>{t}</option>
             ))}
           </select>
+          <select
+            className="box-sort-select"
+            value={shinyFilter}
+            onChange={e => setShinyFilter(e.target.value as 'all' | 'shiny')}
+          >
+            <option value="all">All</option>
+            <option value="shiny">Shiny</option>
+          </select>
           <button className="pdex-nav-btn" onClick={() => navigate('/pokedex')}>
             Pokedex
           </button>
@@ -203,8 +214,8 @@ export function CollectionPage() {
                   <img
                     className="box-cell-sprite"
                     src={mon.instance.isShiny
-                      ? assetUrl(`monsters/ani-shiny/${mon.template.name.toLowerCase()}.gif`)
-                      : assetUrl(mon.template.spriteUrl)}
+                      ? staticSpriteUrl(`monsters/ani-shiny/${mon.template.name.toLowerCase()}.gif`)
+                      : staticSpriteUrl(mon.template.spriteUrl)}
                     alt={mon.template.name}
                     style={{ width: `${getSpriteScale(mon.template.height) * 80}%` }}
                   />

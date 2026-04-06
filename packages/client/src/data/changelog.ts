@@ -7,6 +7,41 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.2.9',
+    date: '2026-04-06',
+    changes: [
+      'Skill ups now matter for passives: +5% effect proc chance per level',
+      'Active skill (S2) at max level (Lv.5) reduces its cooldown by 1 turn',
+      'Skill cards now display passive trigger conditions (On Hit, Start of Turn, etc.)',
+    ],
+  },
+  {
+    version: '0.2.8',
+    date: '2026-04-06',
+    changes: [
+      'Collection & Pokedex: grid cells now use static PNG sprites instead of animated GIFs for much better performance',
+    ],
+  },
+  {
+    version: '0.2.7',
+    date: '2026-04-06',
+    changes: [
+      'Collection: added Shiny filter alongside grade and type filters',
+      'Pokedex: effect filter is now instant (no more 3s lag)',
+      'Summoning: Glowing pokeball now supports x10 summon',
+      'Summoning: portal animation uses matching pokeball colors (legendary/glowing)',
+      'Loading screen: changelog modal is now scrollable on all devices',
+    ],
+  },
+  {
+    version: '0.2.6',
+    date: '2026-04-06',
+    changes: [
+      'Shiny Transfer: feeding a shiny monster from the same evolution line transfers its shiny status to the base monster',
+      'Power-Up Circle: shiny-transferable monsters now show a "Shiny" badge on their card, and the preview panel shows a "Shiny Transfer" line',
+    ],
+  },
+  {
     version: '0.2.5',
     date: '2026-04-06',
     changes: [

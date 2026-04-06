@@ -1,5 +1,5 @@
 import type { SkillDefinition, SkillEffect } from '@gatchamon/shared';
-import { getSkillMultiplierBonus, MAX_SKILL_LEVEL, EFFECT_REGISTRY } from '@gatchamon/shared';
+import { getSkillMultiplierBonus, getSkillCooldownReduction, getSkillChanceBonus, MAX_SKILL_LEVEL, EFFECT_REGISTRY } from '@gatchamon/shared';
 
 const EFFECT_LABELS: Record<string, string> = {
   buff: 'Buff',
@@ -33,12 +33,28 @@ const TARGET_LABELS: Record<string, string> = {
   all_allies: 'All Allies',
 };
 
+const PASSIVE_TRIGGER_LABELS: Record<string, string> = {
+  battle_start: 'Battle Start',
+  turn_start: 'Start of Turn',
+  on_attack: 'On Attack',
+  on_hit: 'On Hit',
+  on_hit_received: 'On Hit Received',
+  on_crit: 'On Critical Hit',
+  on_kill: 'On Kill',
+  on_ally_death: 'On Ally Death',
+  hp_threshold: 'HP Threshold',
+  always: 'Always Active',
+};
+
 export function SkillCard({ skill, index, skillLevel = 1, isAbility = false }: { skill: SkillDefinition; index: number; skillLevel?: number; isAbility?: boolean }) {
   const bonus = getSkillMultiplierBonus(skillLevel);
   const effectiveMultiplier = skill.multiplier > 0
     ? Math.round(skill.multiplier * bonus * 100) / 100
     : 0;
   const hasBonus = skillLevel > 1 && skill.multiplier > 0;
+  const cdReduction = getSkillCooldownReduction(skillLevel, skill.category);
+  const effectiveCooldown = Math.max(1, skill.cooldown - cdReduction);
+  const chanceBonus = skill.category === 'passive' ? getSkillChanceBonus(skillLevel) : 0;
 
   return (
     <div className="skill-card">
@@ -60,6 +76,15 @@ export function SkillCard({ skill, index, skillLevel = 1, isAbility = false }: {
           <span className="skill-meta-label">Category</span>
           <span className="skill-meta-value">{isAbility ? 'Ability' : CATEGORY_LABELS[skill.category]}</span>
         </div>
+        {skill.passiveTrigger && (
+          <div className="skill-meta-row">
+            <span className="skill-meta-label">Trigger</span>
+            <span className="skill-meta-value">
+              {PASSIVE_TRIGGER_LABELS[skill.passiveTrigger] ?? skill.passiveTrigger}
+              {skill.passiveCondition?.hpBelow && ` (<${skill.passiveCondition.hpBelow}% HP)`}
+            </span>
+          </div>
+        )}
         <div className="skill-meta-row">
           <span className="skill-meta-label">Multiplier</span>
           <span className="skill-meta-value">
@@ -70,7 +95,11 @@ export function SkillCard({ skill, index, skillLevel = 1, isAbility = false }: {
         </div>
         <div className="skill-meta-row">
           <span className="skill-meta-label">Cooldown</span>
-          <span className="skill-meta-value">{skill.cooldown > 0 ? `${skill.cooldown} turns` : 'None'}</span>
+          <span className="skill-meta-value">
+            {skill.cooldown > 0
+              ? <>{effectiveCooldown} turns{cdReduction > 0 && <span className="skill-bonus"> (-{cdReduction})</span>}</>
+              : 'None'}
+          </span>
         </div>
         <div className="skill-meta-row">
           <span className="skill-meta-label">Target</span>
@@ -87,7 +116,7 @@ export function SkillCard({ skill, index, skillLevel = 1, isAbility = false }: {
               </span>
               <span className="skill-effect-detail">
                 {eff.value !== 0 && <>{eff.value > 0 ? '+' : ''}{eff.value} · </>}
-                {eff.duration}t · {eff.chance}%
+                {eff.duration}t · {Math.min(100, eff.chance + chanceBonus)}%{chanceBonus > 0 && eff.chance < 100 && <span className="skill-bonus"> (+{chanceBonus}%)</span>}
               </span>
             </div>
           ))}

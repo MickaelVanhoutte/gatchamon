@@ -290,8 +290,9 @@
   padding: 24px;
   max-width: 400px;
   width: 100%;
-  max-height: 70vh;
+  max-height: min(70vh, calc(100% - 48px));
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   position: relative;
   animation: modal-pop 0.25s ease-out;
 }

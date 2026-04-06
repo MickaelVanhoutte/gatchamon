@@ -34,7 +34,7 @@ import {
 } from '../constants/effects.js';
 import { getTemplate as getTemplateShared } from '../data/pokedex/index.js';
 import { getSkillsForPokemon, SKILLS } from '../data/skills/index.js';
-import { getSkillMultiplierBonus } from '../constants/formulas.js';
+import { getSkillMultiplierBonus, getSkillCooldownReduction, getSkillChanceBonus } from '../constants/formulas.js';
 
 // ---------------------------------------------------------------------------
 // Legacy compatibility — map old skill effects to new EffectId system
@@ -598,11 +598,16 @@ export function processPassiveTrigger(
       mon.hpThresholdTriggered = true;
     }
 
-    // Resolve passive effects
+    // Resolve passive effects (skill level boosts proc chance)
+    const passiveSkillIndex = template.skillIds.indexOf(skill.id);
+    const passiveSkillLevel = mon.skillLevels?.[passiveSkillIndex] ?? 1;
+    const chanceBonus = getSkillChanceBonus(passiveSkillLevel);
+
     for (const rawEffect of skill.effects) {
       const effect = normalizeEffect(rawEffect);
+      const effectiveChance = Math.min(100, effect.chance + chanceBonus);
       const roll = Math.random() * 100;
-      if (roll >= effect.chance) continue;
+      if (roll >= effectiveChance) continue;
 
       // Determine targets for this effect
       const effectTarget = effect.target || inferEffectTarget(effect.id, skill.target);
@@ -1317,7 +1322,8 @@ export function resolveSkill(
     if (hasBuff(actor, 'skill_refresh')) {
       actor.buffs = actor.buffs.filter(b => b.id !== 'skill_refresh');
     } else {
-      actor.skillCooldowns[skill.id] = skill.cooldown;
+      const cdReduction = getSkillCooldownReduction(skillLevel, skill.category);
+      actor.skillCooldowns[skill.id] = Math.max(1, skill.cooldown - cdReduction);
     }
   }
 

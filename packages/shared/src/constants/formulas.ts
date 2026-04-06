@@ -149,6 +149,23 @@ export function getSkillMultiplierBonus(skillLevel: number): number {
   return 1 + (Math.max(1, skillLevel) - 1) * SKILL_LEVEL_MULTIPLIER_BONUS;
 }
 
+/**
+ * Active skills at max level get -1 cooldown.
+ */
+export function getSkillCooldownReduction(skillLevel: number, category: string): number {
+  if (category === 'active' && skillLevel >= MAX_SKILL_LEVEL) return 1;
+  return 0;
+}
+
+/**
+ * Passive effect proc chance bonus: +5% per skill level beyond 1.
+ */
+export const SKILL_LEVEL_CHANCE_BONUS = 5;
+
+export function getSkillChanceBonus(skillLevel: number): number {
+  return (Math.max(1, skillLevel) - 1) * SKILL_LEVEL_CHANCE_BONUS;
+}
+
 export function getRequiredFodderCount(baseStars: number): number {
   return baseStars;
 }

@@ -38,11 +38,12 @@ export function performMerge(baseInstanceId: string, fodderInstanceId: string): 
   const validation = canMerge(base, fodder);
   if (!validation.valid) throw new Error(validation.reason);
 
-  // Upgrade the base monster
+  // Upgrade the base monster (shiny transfers from fodder to base)
   const newStars = (base.stars + 1) as PokemonInstance['stars'];
   collection[baseIdx] = {
     ...base,
     stars: newStars,
+    isShiny: base.isShiny || fodder.isShiny,
   };
 
   // Remove the fodder

@@ -180,6 +180,72 @@
   }
 }
 
+/* Legendary pokeball variant */
+.portal-pokeball.legendary {
+  box-shadow:
+    0 0 40px rgba(234, 179, 8, 0.6),
+    0 0 80px rgba(234, 179, 8, 0.3),
+    0 0 4px rgba(99, 102, 241, 0.3);
+  animation: portal-pokeball-glow-legendary 1.5s ease-in-out infinite;
+}
+
+.portal-pokeball.legendary .portal-pokeball-top {
+  background: linear-gradient(145deg, #fbbf24, #eab308 40%, #ca8a04);
+}
+
+.portal-pokeball.legendary .portal-pokeball-button {
+  background: radial-gradient(circle at 35% 35%, #ffffff, #fef3c7, #fde68a);
+  box-shadow: 0 0 12px rgba(234, 179, 8, 0.5);
+}
+
+@keyframes portal-pokeball-glow-legendary {
+  0%, 100% {
+    box-shadow:
+      0 0 40px rgba(234, 179, 8, 0.6),
+      0 0 80px rgba(234, 179, 8, 0.3),
+      0 0 4px rgba(99, 102, 241, 0.3);
+  }
+  50% {
+    box-shadow:
+      0 0 60px rgba(234, 179, 8, 0.8),
+      0 0 120px rgba(234, 179, 8, 0.4),
+      0 0 160px rgba(99, 102, 241, 0.15);
+  }
+}
+
+/* Glowing pokeball variant */
+.portal-pokeball.glowing {
+  box-shadow:
+    0 0 40px rgba(45, 212, 191, 0.6),
+    0 0 80px rgba(45, 212, 191, 0.3),
+    0 0 4px rgba(99, 102, 241, 0.3);
+  animation: portal-pokeball-glow-glowing 1.5s ease-in-out infinite;
+}
+
+.portal-pokeball.glowing .portal-pokeball-top {
+  background: linear-gradient(145deg, #5eead4, #2dd4bf 40%, #14b8a6);
+}
+
+.portal-pokeball.glowing .portal-pokeball-button {
+  background: radial-gradient(circle at 35% 35%, #ffffff, #ccfbf1, #99f6e4);
+  box-shadow: 0 0 12px rgba(45, 212, 191, 0.5);
+}
+
+@keyframes portal-pokeball-glow-glowing {
+  0%, 100% {
+    box-shadow:
+      0 0 40px rgba(45, 212, 191, 0.6),
+      0 0 80px rgba(45, 212, 191, 0.3),
+      0 0 4px rgba(99, 102, 241, 0.3);
+  }
+  50% {
+    box-shadow:
+      0 0 60px rgba(45, 212, 191, 0.8),
+      0 0 120px rgba(45, 212, 191, 0.4),
+      0 0 160px rgba(99, 102, 241, 0.15);
+  }
+}
+
 /* Particles */
 .portal-particles {
   position: absolute;

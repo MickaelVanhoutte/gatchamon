@@ -186,7 +186,7 @@ export function SummonPage() {
               </button>
 
               {/* Hide x10 during tutorial */}
-              {!inTutorial && selectedBall !== 'legendary' && selectedBall !== 'glowing' && 'multi' in costs && (
+              {!inTutorial && selectedBall !== 'legendary' && 'multi' in costs && (
                 <button
                   className="summon-btn summon-multi"
                   onClick={() => handleSummon(10)}

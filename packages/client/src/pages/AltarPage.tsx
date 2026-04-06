@@ -69,6 +69,13 @@ export function AltarPage() {
     return baseLineageSet.has(mon.instance.templateId) || mon.instance.templateId === DITTO_TEMPLATE_ID;
   }
 
+  function isShinyTransferEligible(mon: OwnedPokemon): boolean {
+    if (!base || !baseLineageSet) return false;
+    if (base.instance.isShiny) return false;
+    if (!mon.instance.isShiny) return false;
+    return baseLineageSet.has(mon.instance.templateId);
+  }
+
   const fodder = useMemo(
     () => fodderIds.map(id => collection.find(m => m.instance.instanceId === id)).filter(Boolean) as OwnedPokemon[],
     [collection, fodderIds],
@@ -204,6 +211,7 @@ export function AltarPage() {
               const isBase = mon.instance.instanceId === baseId;
               const isFodder = fodderIdSet.has(mon.instance.instanceId);
               const isSkillUp = isSkillUpEligible(mon);
+              const isShinyTransfer = isShinyTransferEligible(mon);
               const isLockedFodder = !!mon.instance.isLocked && !!baseId && !isBase;
               const starColor = STAR_COLORS[mon.instance.stars] ?? STAR_COLORS[1];
 
@@ -230,8 +238,11 @@ export function AltarPage() {
                     alt={mon.template.name}
                     style={{ width: `${getSpriteScale(mon.template.height) * 80}%` }}
                   />
+                  {isShinyTransfer && !isFodder && (
+                    <div className="altar-cell-shiny-badge">Shiny</div>
+                  )}
                   {isSkillUp && !isFodder && (
-                    <div className="altar-cell-skillup-badge">Skill</div>
+                    <div className={`altar-cell-skillup-badge ${isShinyTransfer ? 'altar-cell-skillup-badge--shifted' : ''}`}>Skill</div>
                   )}
                   {isLockedFodder && (
                     <div className="altar-cell-lock-badge"><GameIcon id="lock" size={12} /></div>
@@ -343,6 +354,15 @@ export function AltarPage() {
                 </div>
               )}
 
+              {preview.willBecomeShiny && (
+                <div className="altar-preview-row">
+                  <span className="altar-preview-label">Shiny</span>
+                  <span className="altar-preview-value altar-preview-value--shiny">
+                    ✦ Transfer
+                  </span>
+                </div>
+              )}
+
               {!preview.willStarEvolve && base.instance.stars < 6 && (
                 <div className="altar-preview-row">
                   <span className="altar-preview-label">Star Evolve</span>
@@ -380,6 +400,14 @@ export function AltarPage() {
               <strong>{base.template.name}</strong>?
             </p>
             <div className="altar-dialog-results">
+              {preview.willBecomeShiny && (
+                <div className="altar-preview-row">
+                  <span>Shiny Transfer</span>
+                  <span style={{ color: '#fc5c7d', fontWeight: 700 }}>
+                    ✦ Becomes Shiny!
+                  </span>
+                </div>
+              )}
               {preview.willStarEvolve && (
                 <div className="altar-preview-row">
                   <span>Star Evolution</span>

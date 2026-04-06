@@ -121,7 +121,9 @@ export const useGameStore = create<GameState>((set, get) => ({
       // Tutorial step 5: always summon Eevee (normal 3★)
       results = [gachaService.summonSinglePremium(133)];
     } else if (type === 'glowing') {
-      results = [gachaService.summonSingleGlowing()];
+      results = count === 10
+        ? gachaService.summonMultiGlowing()
+        : [gachaService.summonSingleGlowing()];
     } else if (type === 'legendary') {
       results = [gachaService.summonSingleLegendary()];
     } else if (type === 'premium') {

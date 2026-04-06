@@ -15,7 +15,7 @@ const WISP_COUNT = 7;
 const MIN_DURATION = 1.8;
 
 export function SummonPortal({ resultsReady, onComplete, pokeballType = 'regular' }: Props) {
-  const isPremium = pokeballType === 'premium';
+  const variantClass = pokeballType !== 'regular' ? pokeballType : '';
   const containerRef = useRef<HTMLDivElement>(null);
   const orbRef = useRef<HTMLDivElement>(null);
   const animDoneRef = useRef(false);
@@ -161,7 +161,7 @@ export function SummonPortal({ resultsReady, onComplete, pokeballType = 'regular
 
       <div className="portal-center">
         <div className="portal-orb-main" ref={orbRef}>
-          <div className={`portal-pokeball ${isPremium ? 'premium' : ''}`}>
+          <div className={`portal-pokeball ${variantClass}`}>
             <div className="portal-pokeball-top" />
             <div className="portal-pokeball-bottom" />
             <div className="portal-pokeball-band">

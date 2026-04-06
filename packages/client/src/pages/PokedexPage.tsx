@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useTransition, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { GameIcon, StarRating } from '../components/icons';
@@ -11,7 +11,7 @@ import {
   getActiveEvolutionsFrom,
 } from '@gatchamon/shared';
 import type { PokemonType, PokemonTemplate, BaseStats, EffectId } from '@gatchamon/shared';
-import { assetUrl } from '../utils/asset-url';
+import { assetUrl, staticSpriteUrl } from '../utils/asset-url';
 import { SkillCard } from '../components/monster/SkillCard';
 import { EffectFilterDropdown } from '../components/EffectFilterDropdown';
 import './CollectionPage.css';
@@ -57,6 +57,13 @@ export function PokedexPage() {
   const [activeTab, setActiveTab] = useState<DetailTab>('info');
   const [showForms, setShowForms] = useState(false);
   const [effectFilters, setEffectFilters] = useState<Set<EffectId>>(new Set());
+  const [, startTransition] = useTransition();
+
+  const handleEffectChange = useCallback((next: Set<EffectId>) => {
+    startTransition(() => {
+      setEffectFilters(next);
+    });
+  }, []);
 
   // Pre-compute effect set per template for fast filtering
   const templateEffectsMap = useMemo(() => {
@@ -187,7 +194,7 @@ export function PokedexPage() {
               </button>
               <EffectFilterDropdown
                 selected={effectFilters}
-                onChange={setEffectFilters}
+                onChange={handleEffectChange}
               />
             </div>
           </div>
@@ -210,7 +217,7 @@ export function PokedexPage() {
                   </div>
                   <img
                     className="box-cell-sprite"
-                    src={assetUrl(template.spriteUrl)}
+                    src={staticSpriteUrl(template.spriteUrl)}
                     alt={template.name}
                     loading="lazy"
                   />
