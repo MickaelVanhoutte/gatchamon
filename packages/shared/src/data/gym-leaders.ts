@@ -37,7 +37,7 @@ export const GYM_LEADERS: GymLeaderDef[] = [
   {
     regionId: 1,
     name: 'Brock',
-    icon: '🪨',
+    icon: 'brock.png',
     team: [
       [74, 75, 76],     // Geodude → Graveler → Golem
       [95, 95, 95],     // Onix
@@ -49,7 +49,7 @@ export const GYM_LEADERS: GymLeaderDef[] = [
   {
     regionId: 2,
     name: 'Misty',
-    icon: '💧',
+    icon: 'misty.png',
     team: [
       [120, 120, 121],  // Staryu → Staryu → Starmie
       [60, 61, 62],     // Poliwag → Poliwhirl → Poliwrath
@@ -61,7 +61,7 @@ export const GYM_LEADERS: GymLeaderDef[] = [
   {
     regionId: 3,
     name: 'Lt. Surge',
-    icon: '⚡',
+    icon: 'lt-surge.png',
     team: [
       [100, 100, 101],  // Voltorb → Voltorb → Electrode
       [25, 25, 26],     // Pikachu → Pikachu → Raichu
@@ -73,7 +73,7 @@ export const GYM_LEADERS: GymLeaderDef[] = [
   {
     regionId: 4,
     name: 'Erika',
-    icon: '🌿',
+    icon: 'erika.png',
     team: [
       [114, 114, 114],  // Tangela
       [69, 70, 71],     // Bellsprout → Weepinbell → Victreebel
@@ -85,7 +85,7 @@ export const GYM_LEADERS: GymLeaderDef[] = [
   {
     regionId: 5,
     name: 'Koga',
-    icon: '🥷',
+    icon: 'koga.png',
     team: [
       [109, 109, 110],  // Koffing → Koffing → Weezing
       [48, 48, 49],     // Venonat → Venonat → Venomoth
@@ -97,7 +97,7 @@ export const GYM_LEADERS: GymLeaderDef[] = [
   {
     regionId: 6,
     name: 'Sabrina',
-    icon: '🔮',
+    icon: 'sabrina.png',
     team: [
       [122, 122, 122],  // Mr. Mime
       [63, 64, 65],     // Abra → Kadabra → Alakazam
@@ -109,7 +109,7 @@ export const GYM_LEADERS: GymLeaderDef[] = [
   {
     regionId: 7,
     name: 'Blaine',
-    icon: '🔥',
+    icon: 'blaine.png',
     team: [
       [77, 77, 78],     // Ponyta → Ponyta → Rapidash
       [58, 58, 59],     // Growlithe → Growlithe → Arcanine
@@ -121,7 +121,7 @@ export const GYM_LEADERS: GymLeaderDef[] = [
   {
     regionId: 8,
     name: 'Giovanni',
-    icon: '🏴',
+    icon: 'giovanni.png',
     team: [
       [50, 51, 51],     // Diglett → Dugtrio → Dugtrio
       [104, 105, 105],  // Cubone → Marowak → Marowak
@@ -136,7 +136,7 @@ export const GYM_LEADERS: GymLeaderDef[] = [
   {
     regionId: 11,
     name: 'Falkner',
-    icon: '🐦',
+    icon: 'falkner.png',
     team: [
       [163, 164, 164],   // Hoothoot → Noctowl → Noctowl
       [16, 17, 18],       // Pidgey → Pidgeotto → Pidgeot
@@ -148,7 +148,7 @@ export const GYM_LEADERS: GymLeaderDef[] = [
   {
     regionId: 12,
     name: 'Bugsy',
-    icon: '🐛',
+    icon: 'bugsy.png',
     team: [
       [11, 12, 12],       // Metapod → Butterfree → Butterfree
       [14, 15, 15],       // Kakuna → Beedrill → Beedrill
@@ -160,7 +160,7 @@ export const GYM_LEADERS: GymLeaderDef[] = [
   {
     regionId: 13,
     name: 'Whitney',
-    icon: '⭐',
+    icon: 'whitney.png',
     team: [
       [35, 36, 36],       // Clefairy → Clefable → Clefable
       [161, 162, 162],    // Sentret → Furret → Furret
@@ -172,7 +172,7 @@ export const GYM_LEADERS: GymLeaderDef[] = [
   {
     regionId: 14,
     name: 'Morty',
-    icon: '👻',
+    icon: 'morty.png',
     team: [
       [92, 93, 93],       // Gastly → Haunter → Haunter
       [200, 200, 200],    // Misdreavus → Misdreavus → Misdreavus
@@ -184,7 +184,7 @@ export const GYM_LEADERS: GymLeaderDef[] = [
   {
     regionId: 15,
     name: 'Chuck',
-    icon: '👊',
+    icon: 'chuck.png',
     team: [
       [57, 57, 57],       // Primeape → Primeape → Primeape
       [236, 237, 237],    // Tyrogue → Hitmontop → Hitmontop
@@ -196,7 +196,7 @@ export const GYM_LEADERS: GymLeaderDef[] = [
   {
     regionId: 16,
     name: 'Jasmine',
-    icon: '🛡️',
+    icon: 'jasmine.png',
     team: [
       [81, 82, 82],       // Magnemite → Magneton → Magneton
       [204, 205, 205],    // Pineco → Forretress → Forretress
@@ -208,7 +208,7 @@ export const GYM_LEADERS: GymLeaderDef[] = [
   {
     regionId: 17,
     name: 'Pryce',
-    icon: '❄️',
+    icon: 'pryce.png',
     team: [
       [86, 87, 87],       // Seel → Dewgong → Dewgong
       [215, 215, 215],    // Sneasel → Sneasel → Sneasel
@@ -220,7 +220,7 @@ export const GYM_LEADERS: GymLeaderDef[] = [
   {
     regionId: 18,
     name: 'Clair',
-    icon: '🐉',
+    icon: 'clair.png',
     team: [
       [148, 148, 149],    // Dragonair → Dragonair → Dragonite
       [130, 130, 130],    // Gyarados → Gyarados → Gyarados
@@ -241,7 +241,7 @@ export const LEAGUE_CHAMPIONS: LeagueChampionDef[] = [
     regionId: 10,
     floor: 1,
     name: 'Lorelei',
-    icon: '❄️',
+    icon: 'lorelei.png',
     team: [87, 91, 124, 131], // Dewgong, Cloyster, Jynx, Lapras
     bossIndex: 3,
     dialogue: "No one can best me when it comes to icy Pokemon! Freeze them!",
@@ -251,7 +251,7 @@ export const LEAGUE_CHAMPIONS: LeagueChampionDef[] = [
     regionId: 10,
     floor: 2,
     name: 'Bruno',
-    icon: '💪',
+    icon: 'bruno.png',
     team: [95, 107, 106, 68], // Onix, Hitmonchan, Hitmonlee, Machamp
     bossIndex: 3,
     dialogue: "Through rigorous training, people and Pokemon can become stronger without limit!",
@@ -261,7 +261,7 @@ export const LEAGUE_CHAMPIONS: LeagueChampionDef[] = [
     regionId: 10,
     floor: 3,
     name: 'Agatha',
-    icon: '👻',
+    icon: 'agatha.png',
     team: [42, 93, 24, 94], // Golbat, Haunter, Arbok, Gengar
     bossIndex: 3,
     dialogue: "I see you have no fear... The Gengar line has been my Pokemon of choice for decades!",
@@ -271,7 +271,7 @@ export const LEAGUE_CHAMPIONS: LeagueChampionDef[] = [
     regionId: 10,
     floor: 4,
     name: 'Lance',
-    icon: '🐉',
+    icon: 'lance.png',
     team: [148, 130, 142, 149], // Dragonair, Gyarados, Aerodactyl, Dragonite
     bossIndex: 3,
     dialogue: "I am the last of the Elite Four! I have been waiting for a truly powerful challenger!",
@@ -281,7 +281,7 @@ export const LEAGUE_CHAMPIONS: LeagueChampionDef[] = [
     regionId: 10,
     floor: 5,
     name: 'Blue',
-    icon: '👑',
+    icon: 'blue.png',
     team: [18, 65, 112, 59, 103, 9], // Pidgeot, Alakazam, Rhydon, Arcanine, Exeggutor, Blastoise
     bossIndex: 5,
     dialogue: "Hey! I heard you beat the Elite Four! Well, I'm the Champion! You'll need more than that to beat me!",
@@ -293,7 +293,7 @@ export const LEAGUE_CHAMPIONS: LeagueChampionDef[] = [
     regionId: 20,
     floor: 1,
     name: 'Will',
-    icon: '🔮',
+    icon: 'will.png',
     team: [178, 124, 80, 103],  // Xatu, Jynx, Slowbro, Exeggutor
     bossIndex: 0,
     dialogue: "I have trained all around the world, making my Psychic-type Pokemon powerful.",
@@ -303,7 +303,7 @@ export const LEAGUE_CHAMPIONS: LeagueChampionDef[] = [
     regionId: 20,
     floor: 2,
     name: 'Koga',
-    icon: '🥷',
+    icon: 'koga.png',
     team: [168, 205, 89, 169],  // Ariados, Forretress, Muk, Crobat
     bossIndex: 3,
     dialogue: "Pokemon is not merely about brute force — you shall see soon enough!",
@@ -313,7 +313,7 @@ export const LEAGUE_CHAMPIONS: LeagueChampionDef[] = [
     regionId: 20,
     floor: 3,
     name: 'Bruno',
-    icon: '💪',
+    icon: 'bruno.png',
     team: [237, 106, 107, 68],  // Hitmontop, Hitmonlee, Hitmonchan, Machamp
     bossIndex: 3,
     dialogue: "We will grind you down with our superior power! Hoo hah!",
@@ -323,7 +323,7 @@ export const LEAGUE_CHAMPIONS: LeagueChampionDef[] = [
     regionId: 20,
     floor: 4,
     name: 'Karen',
-    icon: '🌑',
+    icon: 'karen.png',
     team: [197, 198, 94, 229],  // Umbreon, Murkrow, Gengar, Houndoom
     bossIndex: 3,
     dialogue: "Strong Pokemon. Weak Pokemon. That is only the selfish perception of people. Truly skilled trainers should try to win with their favorites.",
@@ -333,7 +333,7 @@ export const LEAGUE_CHAMPIONS: LeagueChampionDef[] = [
     regionId: 20,
     floor: 5,
     name: 'Lance',
-    icon: '🐉',
+    icon: 'lance.png',
     team: [149, 149, 149, 142, 6, 130],  // 3x Dragonite, Aerodactyl, Charizard, Gyarados
     bossIndex: 0,
     dialogue: "I've been Pokemon Champion for too long now... You are the first trainer in a long while who has given me a Pokemon. Let me test your true power!",

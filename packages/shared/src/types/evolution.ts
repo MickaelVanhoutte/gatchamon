@@ -41,6 +41,8 @@ export interface DungeonFloor {
   statBoost?: number;
   /** Flat speed bonus added to enemy speed (simulates held item speed) */
   speedBonus?: number;
+  /** Rare stardust drop (chance-based, scaling with floor level) */
+  stardustDrop?: { chance: number; min: number; max: number };
 }
 
 export interface DungeonDef {
@@ -56,6 +58,7 @@ export interface DungeonDef {
 export interface DungeonRewards {
   essences: Record<string, number>;
   xpPerMon: number;
+  stardust?: number;
 }
 
 // ---------------------------------------------------------------------------

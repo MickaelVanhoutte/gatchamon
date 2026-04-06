@@ -4,7 +4,7 @@ import { useGameStore } from '../stores/gameStore';
 const TUTORIAL_DIALOG: Record<number, string[]> = {
   1: [
     'Welcome to the world of Gatchamon, {name}!',
-    "I'm Professor Cypress. I study these incredible creatures.",
+    "I'm Professor Oak. I study these incredible creatures.",
     'Your journey as a trainer begins today!',
     "First, let me show you how to summon your first companion.",
   ],

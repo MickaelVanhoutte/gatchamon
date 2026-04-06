@@ -87,6 +87,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'magic_mid', quantity: [4, 8], chance: 1.0 },
           { essenceId: 'magic_high', quantity: [1, 3], chance: 0.6 },
         ],
+        stardustDrop: { chance: 0.05, min: 1, max: 2 },
       },
       {
         enemyLevel: 60,
@@ -97,6 +98,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'magic_high', quantity: [2, 4], chance: 0.8 },
           { essenceId: 'magic_mid', quantity: [5, 8], chance: 1.0 },
         ],
+        stardustDrop: { chance: 0.10, min: 2, max: 4 },
       },
       {
         enemyLevel: 70,
@@ -107,6 +109,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'magic_high', quantity: [3, 5], chance: 0.9 },
           { essenceId: 'magic_mid', quantity: [5, 9], chance: 1.0 },
         ],
+        stardustDrop: { chance: 0.15, min: 3, max: 6 },
       },
     ],
   },
@@ -208,6 +211,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'grass_high', quantity: [1, 4], chance: 0.55 },
           { essenceId: 'poison_high', quantity: [0, 2], chance: 0.3 },
         ],
+        stardustDrop: { chance: 0.05, min: 1, max: 2 },
       },
       {
         enemyLevel: 60,
@@ -220,6 +224,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'bug_high', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'grass_mid', quantity: [3, 6], chance: 1.0 },
         ],
+        stardustDrop: { chance: 0.10, min: 2, max: 4 },
       },
       {
         enemyLevel: 70,
@@ -232,6 +237,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'bug_high', quantity: [1, 3], chance: 0.6 },
           { essenceId: 'grass_mid', quantity: [4, 7], chance: 1.0 },
         ],
+        stardustDrop: { chance: 0.15, min: 3, max: 6 },
       },
     ],
   },
@@ -333,6 +339,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'fire_high', quantity: [1, 4], chance: 0.55 },
           { essenceId: 'rock_high', quantity: [0, 2], chance: 0.3 },
         ],
+        stardustDrop: { chance: 0.05, min: 1, max: 2 },
       },
       {
         enemyLevel: 60,
@@ -345,6 +352,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'ground_high', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'fire_mid', quantity: [3, 6], chance: 1.0 },
         ],
+        stardustDrop: { chance: 0.10, min: 2, max: 4 },
       },
       {
         enemyLevel: 70,
@@ -357,6 +365,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'ground_high', quantity: [1, 3], chance: 0.6 },
           { essenceId: 'fire_mid', quantity: [4, 7], chance: 1.0 },
         ],
+        stardustDrop: { chance: 0.15, min: 3, max: 6 },
       },
     ],
   },
@@ -458,6 +467,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'water_high', quantity: [1, 4], chance: 0.55 },
           { essenceId: 'dragon_high', quantity: [0, 1], chance: 0.3 },
         ],
+        stardustDrop: { chance: 0.05, min: 1, max: 2 },
       },
       {
         enemyLevel: 60,
@@ -470,6 +480,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'dragon_high', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'water_mid', quantity: [3, 6], chance: 1.0 },
         ],
+        stardustDrop: { chance: 0.10, min: 2, max: 4 },
       },
       {
         enemyLevel: 70,
@@ -482,6 +493,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'dragon_high', quantity: [1, 3], chance: 0.6 },
           { essenceId: 'water_mid', quantity: [4, 7], chance: 1.0 },
         ],
+        stardustDrop: { chance: 0.15, min: 3, max: 6 },
       },
     ],
   },
@@ -585,6 +597,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'psychic_high', quantity: [0, 1], chance: 0.3 },
           { essenceId: 'electric_high', quantity: [1, 3], chance: 0.45 },
         ],
+        stardustDrop: { chance: 0.05, min: 1, max: 2 },
       },
       {
         enemyLevel: 60,
@@ -597,6 +610,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'psychic_high', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'electric_mid', quantity: [3, 6], chance: 1.0 },
         ],
+        stardustDrop: { chance: 0.10, min: 2, max: 4 },
       },
       {
         enemyLevel: 70,
@@ -610,6 +624,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'psychic_high', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'electric_mid', quantity: [4, 7], chance: 1.0 },
         ],
+        stardustDrop: { chance: 0.15, min: 3, max: 6 },
       },
     ],
   },
@@ -710,6 +725,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'ghost_high', quantity: [1, 3], chance: 0.5 },
           { essenceId: 'poison_high', quantity: [1, 2], chance: 0.4 },
         ],
+        stardustDrop: { chance: 0.05, min: 1, max: 2 },
       },
       {
         enemyLevel: 60,
@@ -722,6 +738,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'poison_high', quantity: [1, 2], chance: 0.5 },
           { essenceId: 'ghost_mid', quantity: [3, 6], chance: 1.0 },
         ],
+        stardustDrop: { chance: 0.10, min: 2, max: 4 },
       },
       {
         enemyLevel: 70,
@@ -734,6 +751,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'poison_high', quantity: [1, 3], chance: 0.6 },
           { essenceId: 'ghost_mid', quantity: [4, 7], chance: 1.0 },
         ],
+        stardustDrop: { chance: 0.15, min: 3, max: 6 },
       },
     ],
   },
@@ -836,6 +854,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'normal_high', quantity: [1, 2], chance: 0.4 },
           { essenceId: 'grass_high', quantity: [0, 1], chance: 0.3 },
         ],
+        stardustDrop: { chance: 0.05, min: 1, max: 2 },
       },
       {
         enemyLevel: 60,
@@ -848,6 +867,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'fairy_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'grass_high', quantity: [1, 2], chance: 0.5 },
         ],
+        stardustDrop: { chance: 0.10, min: 2, max: 4 },
       },
       {
         enemyLevel: 70,
@@ -860,6 +880,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'fairy_mid', quantity: [4, 7], chance: 1.0 },
           { essenceId: 'grass_high', quantity: [1, 2], chance: 0.5 },
         ],
+        stardustDrop: { chance: 0.15, min: 3, max: 6 },
       },
     ],
   },
@@ -959,6 +980,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'ghost_high', quantity: [1, 2], chance: 0.4 },
           { essenceId: 'psychic_high', quantity: [0, 1], chance: 0.3 },
         ],
+        stardustDrop: { chance: 0.05, min: 1, max: 2 },
       },
       {
         enemyLevel: 60,
@@ -971,6 +993,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'dark_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'psychic_high', quantity: [1, 2], chance: 0.5 },
         ],
+        stardustDrop: { chance: 0.10, min: 2, max: 4 },
       },
       {
         enemyLevel: 70,
@@ -983,6 +1006,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'dark_mid', quantity: [4, 7], chance: 1.0 },
           { essenceId: 'psychic_high', quantity: [1, 2], chance: 0.5 },
         ],
+        stardustDrop: { chance: 0.15, min: 3, max: 6 },
       },
     ],
   },
@@ -1080,6 +1104,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'steel_high', quantity: [1, 4], chance: 0.55 },
           { essenceId: 'electric_high', quantity: [0, 1], chance: 0.3 },
         ],
+        stardustDrop: { chance: 0.05, min: 1, max: 2 },
       },
       {
         enemyLevel: 60,
@@ -1092,6 +1117,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'steel_mid', quantity: [3, 6], chance: 1.0 },
           { essenceId: 'electric_high', quantity: [1, 2], chance: 0.5 },
         ],
+        stardustDrop: { chance: 0.10, min: 2, max: 4 },
       },
       {
         enemyLevel: 70,
@@ -1104,6 +1130,7 @@ export const DUNGEONS: DungeonDef[] = [
           { essenceId: 'steel_mid', quantity: [4, 7], chance: 1.0 },
           { essenceId: 'electric_high', quantity: [1, 2], chance: 0.5 },
         ],
+        stardustDrop: { chance: 0.15, min: 3, max: 6 },
       },
     ],
   },

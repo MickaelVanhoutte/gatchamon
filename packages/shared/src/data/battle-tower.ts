@@ -153,7 +153,7 @@ function getEnemyCount(floor: number): number {
 function getFloorReward(floor: number): MissionReward {
   // Floor 100: legendary pokeball + stardust milestone
   if (floor === 100) {
-    return { legendaryPokeballs: 1, premiumPokeballs: 5, pokedollars: 1000, stardust: 300 };
+    return { legendaryPokeballs: 1, premiumPokeballs: 5, pokedollars: 1000, stardust: 500 };
   }
 
   // Milestone floors with held items + Ditto (checked before generic 10th-floor)
@@ -169,7 +169,7 @@ function getFloorReward(floor: number): MissionReward {
       premiumPokeballs: 4,
       pokedollars: 400,
       dittos: 1,
-      stardust: 100,
+      stardust: 150,
       heldItem: { setId: 'swift_wing', stars: 3 as 1 | 2 | 3 | 4 | 5 | 6, grade: 'hero' },
     };
   }
@@ -177,6 +177,7 @@ function getFloorReward(floor: number): MissionReward {
     return {
       regularPokeballs: 10,
       pokedollars: 600,
+      stardust: 100,
       heldItem: { setId: 'kings_rock', stars: 4 as 1 | 2 | 3 | 4 | 5 | 6, grade: 'hero' },
     };
   }
@@ -184,7 +185,7 @@ function getFloorReward(floor: number): MissionReward {
   // Floor 80: stardust milestone
   if (floor === 80) {
     const premiumCount = 3 + Math.floor(floor / 30);
-    return { premiumPokeballs: premiumCount, pokedollars: 100 + floor * 5, stardust: 200 };
+    return { premiumPokeballs: premiumCount, pokedollars: 100 + floor * 5, stardust: 300 };
   }
 
   // Floor 90: premium pokeballs + Ditto
@@ -195,7 +196,7 @@ function getFloorReward(floor: number): MissionReward {
   // Floor 30: stardust milestone (checked before generic 10th-floor)
   if (floor === 30) {
     const premiumCount = 3 + Math.floor(floor / 30);
-    return { premiumPokeballs: premiumCount, pokedollars: 100 + floor * 5, stardust: 50 };
+    return { premiumPokeballs: premiumCount, pokedollars: 100 + floor * 5, stardust: 75 };
   }
 
   // Every 10th floor: premium pokeballs (premium scroll)

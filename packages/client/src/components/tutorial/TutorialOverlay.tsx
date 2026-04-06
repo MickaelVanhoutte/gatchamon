@@ -4,6 +4,7 @@ import { useTutorial } from '../../hooks/useTutorial';
 import { useTutorialStore } from '../../stores/tutorialStore';
 import { useGameStore } from '../../stores/gameStore';
 import { sendRetrySummonGift } from '../../services/inbox.service';
+import { assetUrl } from '../../utils/asset-url';
 import './TutorialOverlay.css';
 
 /** Which page each step expects */
@@ -227,7 +228,7 @@ export function TutorialOverlay() {
           return (
             <div className="tutorial-dialog tutorial-dialog--compact" style={{ pointerEvents: 'none' }}>
               <div className="professor-avatar">
-                <span role="img" aria-label="Professor">👨‍🔬</span>
+                <img src={assetUrl('portraits/professor-oak.png')} alt="Professor" className="portrait-img" />
               </div>
             </div>
           );
@@ -238,7 +239,7 @@ export function TutorialOverlay() {
             onClick={handleDialogTap}
           >
             <div className="professor-avatar">
-              <span role="img" aria-label="Professor">👨‍🔬</span>
+              <img src={assetUrl('portraits/professor-oak.png')} alt="Professor" className="portrait-img" />
             </div>
             <div className="speech-bubble">
               <p className="speech-bubble-text">{dialogLines[lineIndex]}</p>

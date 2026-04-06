@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
+import { assetUrl } from '../utils/asset-url';
 import './tutorial/TutorialOverlay.css';
 
 interface GymLeaderDialogueProps {
@@ -37,7 +38,7 @@ export function GymLeaderDialogue({ name, icon, dialogue, onComplete }: GymLeade
         }}
       >
         <div className="professor-avatar">
-          <span role="img" aria-label={name}>{icon}</span>
+          <img src={assetUrl(`portraits/${icon}`)} alt={name} className="portrait-img" />
         </div>
         <div className="speech-bubble">
           <p style={{ fontWeight: 'bold', fontSize: '0.8rem', color: 'var(--text-secondary)', margin: 0 }}>

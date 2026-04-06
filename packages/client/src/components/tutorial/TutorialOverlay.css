@@ -76,8 +76,17 @@
   justify-content: center;
   font-size: 28px;
   line-height: 1;
+  overflow: hidden;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4), 0 0 8px rgba(99, 102, 241, 0.2);
   animation: professor-bob 2.5s ease-in-out infinite;
+}
+
+.professor-avatar .portrait-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  display: block;
 }
 
 @keyframes professor-bob {

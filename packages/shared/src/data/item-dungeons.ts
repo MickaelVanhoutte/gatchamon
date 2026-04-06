@@ -37,19 +37,19 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
       { enemyLevel: 54, enemies: [208, 232, 111], enemyStars: 4, statBoost: 1.4, drops: [  // Steelix, Donphan, Rhyhorn
         { setId: 'choice_band', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 40, hero: 40, legend: 5 } },
         { setId: 'power_band', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 40, hero: 40, legend: 5 } },
-      ], pokedollarReward: [60, 80] },
+      ], pokedollarReward: [60, 80], stardustDrop: { chance: 0.05, min: 1, max: 3 } },
       { enemyLevel: 64, enemies: [112, 208, 232], enemyStars: 5, statBoost: 1.6, drops: [  // Rhydon, Steelix, Donphan
         { setId: 'choice_band', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 35, hero: 47, legend: 8 } },
         { setId: 'power_band', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 35, hero: 47, legend: 8 } },
-      ], pokedollarReward: [70, 90] },
+      ], pokedollarReward: [70, 90], stardustDrop: { chance: 0.10, min: 2, max: 4 } },
       { enemyLevel: 74, enemies: [112, 208, 232], enemyStars: 5, statBoost: 1.8, drops: [  // Rhydon, Steelix, Donphan
         { setId: 'choice_band', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 30, hero: 55, legend: 10 } },
         { setId: 'power_band', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 30, hero: 55, legend: 10 } },
-      ], pokedollarReward: [80, 100], stardustDrop: { chance: 0.10, min: 3, max: 5 } },
+      ], pokedollarReward: [80, 100], stardustDrop: { chance: 0.15, min: 3, max: 6 } },
       { enemyLevel: 85, enemies: [112, 208, 232], enemyStars: 6, statBoost: 2.1, drops: [  // Rhydon, Steelix, Donphan
         { setId: 'choice_band', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 30, hero: 55, legend: 15 } },
         { setId: 'power_band', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 30, hero: 55, legend: 15 } },
-      ], pokedollarReward: [90, 120], stardustDrop: { chance: 0.10, min: 3, max: 5 } },
+      ], pokedollarReward: [90, 120], stardustDrop: { chance: 0.20, min: 5, max: 10 } },
     ],
   },
   {
@@ -88,19 +88,19 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
       { enemyLevel: 54, enemies: [154, 182, 44], enemyStars: 4, statBoost: 1.4, drops: [  // Meganium, Bellossom, Gloom
         { setId: 'leftovers', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 40, hero: 40, legend: 5 } },
         { setId: 'razor_fang', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 40, hero: 40, legend: 5 } },
-      ], pokedollarReward: [60, 80] },
+      ], pokedollarReward: [60, 80], stardustDrop: { chance: 0.05, min: 1, max: 3 } },
       { enemyLevel: 64, enemies: [154, 45, 71], enemyStars: 5, statBoost: 1.6, drops: [  // Meganium, Vileplume, Victreebel
         { setId: 'leftovers', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 35, hero: 47, legend: 8 } },
         { setId: 'razor_fang', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 35, hero: 47, legend: 8 } },
-      ], pokedollarReward: [70, 90] },
+      ], pokedollarReward: [70, 90], stardustDrop: { chance: 0.10, min: 2, max: 4 } },
       { enemyLevel: 74, enemies: [154, 182, 71], enemyStars: 5, statBoost: 1.8, drops: [  // Meganium, Bellossom, Victreebel
         { setId: 'leftovers', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 30, hero: 55, legend: 10 } },
         { setId: 'razor_fang', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 30, hero: 55, legend: 10 } },
-      ], pokedollarReward: [80, 100], stardustDrop: { chance: 0.10, min: 3, max: 5 } },
+      ], pokedollarReward: [80, 100], stardustDrop: { chance: 0.15, min: 3, max: 6 } },
       { enemyLevel: 85, enemies: [154, 182, 71], enemyStars: 6, statBoost: 2.1, drops: [  // Meganium, Bellossom, Victreebel
         { setId: 'leftovers', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 30, hero: 55, legend: 15 } },
         { setId: 'razor_fang', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 30, hero: 55, legend: 15 } },
-      ], pokedollarReward: [90, 120], stardustDrop: { chance: 0.10, min: 3, max: 5 } },
+      ], pokedollarReward: [90, 120], stardustDrop: { chance: 0.20, min: 5, max: 10 } },
     ],
   },
   {
@@ -139,19 +139,19 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
       { enemyLevel: 54, enemies: [181, 82, 239], enemyStars: 4, statBoost: 1.4, drops: [  // Ampharos, Magneton, Elekid
         { setId: 'swift_wing', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 40, hero: 40, legend: 5 } },
         { setId: 'quick_claw', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 40, hero: 40, legend: 5 } },
-      ], pokedollarReward: [60, 80] },
+      ], pokedollarReward: [60, 80], stardustDrop: { chance: 0.05, min: 1, max: 3 } },
       { enemyLevel: 64, enemies: [181, 82, 101], enemyStars: 5, statBoost: 1.6, drops: [  // Ampharos, Magneton, Electrode
         { setId: 'swift_wing', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 35, hero: 47, legend: 8 } },
         { setId: 'quick_claw', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 35, hero: 47, legend: 8 } },
-      ], pokedollarReward: [70, 90] },
+      ], pokedollarReward: [70, 90], stardustDrop: { chance: 0.10, min: 2, max: 4 } },
       { enemyLevel: 74, enemies: [181, 239, 101], enemyStars: 5, statBoost: 1.8, drops: [  // Ampharos, Elekid, Electrode
         { setId: 'swift_wing', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 30, hero: 55, legend: 10 } },
         { setId: 'quick_claw', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 30, hero: 55, legend: 10 } },
-      ], pokedollarReward: [80, 100], stardustDrop: { chance: 0.10, min: 3, max: 5 } },
+      ], pokedollarReward: [80, 100], stardustDrop: { chance: 0.15, min: 3, max: 6 } },
       { enemyLevel: 85, enemies: [181, 239, 101], enemyStars: 6, statBoost: 2.1, drops: [  // Ampharos, Elekid, Electrode
         { setId: 'swift_wing', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 30, hero: 55, legend: 15 } },
         { setId: 'quick_claw', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 30, hero: 55, legend: 15 } },
-      ], pokedollarReward: [90, 120], stardustDrop: { chance: 0.10, min: 3, max: 5 } },
+      ], pokedollarReward: [90, 120], stardustDrop: { chance: 0.20, min: 5, max: 10 } },
     ],
   },
   {
@@ -190,19 +190,19 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
       { enemyLevel: 54, enemies: [144, 221, 215], enemyStars: 4, statBoost: 1.4, drops: [  // Articuno, Piloswine, Sneasel
         { setId: 'scope_lens', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 40, hero: 40, legend: 5 } },
         { setId: 'wise_glasses', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 40, hero: 40, legend: 5 } },
-      ], pokedollarReward: [65, 85] },
+      ], pokedollarReward: [65, 85], stardustDrop: { chance: 0.05, min: 1, max: 3 } },
       { enemyLevel: 64, enemies: [144, 221, 215], enemyStars: 5, statBoost: 1.6, drops: [  // Articuno, Piloswine, Sneasel
         { setId: 'scope_lens', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 35, hero: 47, legend: 8 } },
         { setId: 'wise_glasses', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 35, hero: 47, legend: 8 } },
-      ], pokedollarReward: [75, 95] },
+      ], pokedollarReward: [75, 95], stardustDrop: { chance: 0.10, min: 2, max: 4 } },
       { enemyLevel: 74, enemies: [144, 221, 225], enemyStars: 5, statBoost: 1.8, drops: [  // Articuno, Piloswine, Delibird
         { setId: 'scope_lens', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 30, hero: 55, legend: 10 } },
         { setId: 'wise_glasses', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 30, hero: 55, legend: 10 } },
-      ], pokedollarReward: [85, 110], stardustDrop: { chance: 0.10, min: 3, max: 5 } },
+      ], pokedollarReward: [85, 110], stardustDrop: { chance: 0.15, min: 3, max: 6 } },
       { enemyLevel: 85, enemies: [144, 221, 215], enemyStars: 6, statBoost: 2.1, drops: [  // Articuno, Piloswine, Sneasel
         { setId: 'scope_lens', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 30, hero: 55, legend: 15 } },
         { setId: 'wise_glasses', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 30, hero: 55, legend: 15 } },
-      ], pokedollarReward: [95, 130], stardustDrop: { chance: 0.10, min: 3, max: 5 } },
+      ], pokedollarReward: [95, 130], stardustDrop: { chance: 0.20, min: 5, max: 10 } },
     ],
   },
   {
@@ -241,19 +241,19 @@ export const ITEM_DUNGEONS: ItemDungeonDef[] = [
       { enemyLevel: 54, enemies: [149, 148, 142], enemyStars: 4, statBoost: 1.4, drops: [
         { setId: 'focus_sash', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 40, hero: 40, legend: 5 } },
         { setId: 'kings_rock', minStars: 3, maxStars: 5, gradeWeights: { common: 15, rare: 40, hero: 40, legend: 5 } },
-      ], pokedollarReward: [65, 85] },
+      ], pokedollarReward: [65, 85], stardustDrop: { chance: 0.05, min: 1, max: 3 } },
       { enemyLevel: 64, enemies: [149, 130, 142], enemyStars: 5, statBoost: 1.6, drops: [  // Dragonite, Gyarados, Aerodactyl
         { setId: 'focus_sash', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 35, hero: 47, legend: 8 } },
         { setId: 'kings_rock', minStars: 3, maxStars: 5, gradeWeights: { common: 10, rare: 35, hero: 47, legend: 8 } },
-      ], pokedollarReward: [75, 95] },
+      ], pokedollarReward: [75, 95], stardustDrop: { chance: 0.10, min: 2, max: 4 } },
       { enemyLevel: 74, enemies: [149, 142, 130], enemyStars: 5, statBoost: 1.8, drops: [  // Dragonite, Aerodactyl, Gyarados
         { setId: 'focus_sash', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 30, hero: 55, legend: 10 } },
         { setId: 'kings_rock', minStars: 3, maxStars: 5, gradeWeights: { common: 5, rare: 30, hero: 55, legend: 10 } },
-      ], pokedollarReward: [85, 110], stardustDrop: { chance: 0.10, min: 3, max: 5 } },
+      ], pokedollarReward: [85, 110], stardustDrop: { chance: 0.15, min: 3, max: 6 } },
       { enemyLevel: 85, enemies: [149, 142, 149], enemyStars: 6, statBoost: 2.1, drops: [  // Dragonite, Aerodactyl, Dragonite
         { setId: 'focus_sash', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 30, hero: 55, legend: 15 } },
         { setId: 'kings_rock', minStars: 4, maxStars: 6, gradeWeights: { common: 0, rare: 30, hero: 55, legend: 15 } },
-      ], pokedollarReward: [95, 130], stardustDrop: { chance: 0.10, min: 3, max: 5 } },
+      ], pokedollarReward: [95, 130], stardustDrop: { chance: 0.20, min: 5, max: 10 } },
     ],
   },
 ];

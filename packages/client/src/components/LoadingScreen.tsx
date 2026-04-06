@@ -11,6 +11,7 @@ interface LoadingScreenProps {
 
 export function LoadingScreen({ onStart, swReady = true }: LoadingScreenProps) {
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
+  const [changelogOpen, setChangelogOpen] = useState(false);
   const [justUpdated] = useState(() => {
     const flag = sessionStorage.getItem('sw-just-updated');
     if (flag) sessionStorage.removeItem('sw-just-updated');
@@ -25,7 +26,7 @@ export function LoadingScreen({ onStart, swReady = true }: LoadingScreenProps) {
   const canStart = minTimeElapsed && swReady;
 
   return (
-    <div className="loading-screen" onClick={() => { if (!canStart) return; tryLockLandscape(); onStart(); }}>
+    <div className="loading-screen" onClick={() => { if (!canStart || changelogOpen) return; tryLockLandscape(); onStart(); }}>
       {/* Animated particles */}
       <div className="ls-particles">
         {Array.from({ length: 20 }).map((_, i) => (
@@ -69,14 +70,9 @@ export function LoadingScreen({ onStart, swReady = true }: LoadingScreenProps) {
       {/* Bottom */}
       <div className="ls-bottom">
         {justUpdated && changelog[0] && (
-          <div className="ls-changelog" onClick={e => e.stopPropagation()}>
-            <p className="ls-updated-text">Updated to {changelog[0].version}!</p>
-            <ul className="ls-changelog-list">
-              {changelog[0].changes.map((c, i) => (
-                <li key={i}>{c}</li>
-              ))}
-            </ul>
-          </div>
+          <button className="ls-changelog-btn" onClick={e => { e.stopPropagation(); setChangelogOpen(true); }}>
+            Updated to {changelog[0].version} — What&apos;s New?
+          </button>
         )}
         {canStart ? (
           <p className="ls-tap-text">Touch to Start</p>
@@ -89,6 +85,26 @@ export function LoadingScreen({ onStart, swReady = true }: LoadingScreenProps) {
         )}
         <p className="ls-copyright">Fan Project - Not affiliated with Nintendo or The Pok&eacute;mon Company</p>
       </div>
+
+      {/* Changelog modal */}
+      {changelogOpen && (
+        <div className="ls-changelog-overlay" onClick={() => setChangelogOpen(false)}>
+          <div className="ls-changelog-modal" onClick={e => e.stopPropagation()}>
+            <button className="ls-changelog-close" onClick={() => setChangelogOpen(false)}>&times;</button>
+            <h2 className="ls-changelog-title">What&apos;s New</h2>
+            {changelog.map((entry, idx) => (
+              <div key={idx} className="ls-changelog-entry">
+                <p className="ls-changelog-version">{entry.version} <span className="ls-changelog-date">{entry.date}</span></p>
+                <ul className="ls-changelog-list">
+                  {entry.changes.map((c, i) => (
+                    <li key={i}>{c}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

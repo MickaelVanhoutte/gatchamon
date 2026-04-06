@@ -183,13 +183,25 @@ function calculateDungeonRewards(state: BattleState): BattleRewards {
   // Pokedollar reward for dungeon
   const pokedollarReward = Math.floor((20 + floor.enemyLevel * 2) * pokedollarMult);
 
+  // Rare stardust drop on high-level floors
+  let stardustReward = 0;
+  if (floor.stardustDrop && Math.random() < floor.stardustDrop.chance) {
+    const { min, max } = floor.stardustDrop;
+    stardustReward = min + Math.floor(Math.random() * (max - min + 1));
+  }
+
   // Add essences and pokedollars to player inventory
   const player = loadPlayer()!;
   const materials = { ...(player.materials ?? {}) };
   for (const [essId, qty] of Object.entries(essences)) {
     materials[essId] = (materials[essId] ?? 0) + qty;
   }
-  savePlayer({ ...player, materials, pokedollars: (player.pokedollars ?? 0) + pokedollarReward });
+  savePlayer({
+    ...player,
+    materials,
+    pokedollars: (player.pokedollars ?? 0) + pokedollarReward,
+    stardust: (player.stardust ?? 0) + stardustReward,
+  });
 
   // Track stats & missions
   trackStat('totalBattlesDungeon', 1);
@@ -201,7 +213,7 @@ function calculateDungeonRewards(state: BattleState): BattleRewards {
   const trainerResult = grantTrainerXp(trainerXpBase);
 
   return {
-    regularPokeballs: 0, premiumPokeballs: 0, xpPerMon, levelUps, essences, pokedollars: pokedollarReward,
+    regularPokeballs: 0, premiumPokeballs: 0, xpPerMon, levelUps, essences, pokedollars: pokedollarReward, stardust: stardustReward || undefined,
     trainerXpGained: trainerXpBase,
     trainerLeveledUp: trainerResult.leveledUp,
     trainerNewLevel: trainerResult.newLevel,

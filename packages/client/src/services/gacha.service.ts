@@ -272,36 +272,6 @@ export function shopSummonMultiPremium(): SummonResult[] {
   return results;
 }
 
-export function shopSummonMultiGlowing(count: number): SummonResult[] {
-  const player = loadPlayer();
-  if (!player) throw new Error('Player not found');
-
-  const results: SummonResult[] = [];
-  const instances: PokemonInstance[] = [];
-
-  for (let i = 0; i < count; i++) {
-    const stars = rollPremiumStarRating();
-    const template = pickFromPool(stars);
-    const pokemon: PokemonInstance = {
-      instanceId: crypto.randomUUID(),
-      templateId: template.id,
-      ownerId: player.id,
-      level: 1,
-      stars: template.naturalStars,
-      exp: 0,
-      isShiny: true,
-      skillLevels: [1, 1, 1],
-    };
-    instances.push(pokemon);
-    results.push({ pokemon, template });
-  }
-
-  addToCollection(instances);
-  trackSummons(count);
-
-  return results;
-}
-
 export function shopSummonSingleLegendary(): SummonResult {
   const player = loadPlayer();
   if (!player) throw new Error('Player not found');
