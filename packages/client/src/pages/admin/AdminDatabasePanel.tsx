@@ -5,12 +5,12 @@ import type { MissionReward } from '@gatchamon/shared';
 interface DashboardStats {
   totalPlayers: number;
   totalPokemon: number;
-  recentPlayers: { id: string; trainer_name: string; trainer_level: number; created_at: string }[];
+  recentPlayers: { id: string; name: string; trainer_level: number; created_at: string }[];
 }
 
 interface PlayerSearchResult {
   id: string;
-  trainer_name: string;
+  name: string;
   trainer_level: number;
   energy: number;
   stardust: number;
@@ -183,7 +183,7 @@ export function AdminDatabasePanel() {
                 onClick={() => selectPlayer(p.id)}
               >
                 <div className="admin-db-result-name">
-                  {p.trainer_name || 'Unknown'}
+                  {p.name || 'Unknown'}
                   <span className="admin-db-result-level">Lv.{p.trainer_level}</span>
                 </div>
                 <div className="admin-db-result-id">{p.id.slice(0, 8)}...</div>

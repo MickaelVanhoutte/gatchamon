@@ -12,7 +12,7 @@ adminRouter.get('/stats', (_req, res) => {
     const totalPlayers = (db.prepare('SELECT COUNT(*) as count FROM players').get() as any).count;
     const totalPokemon = (db.prepare('SELECT COUNT(*) as count FROM pokemon_instances').get() as any).count;
     const recentPlayers = db.prepare(
-      "SELECT id, trainer_name, trainer_level, created_at FROM players ORDER BY created_at DESC LIMIT 10"
+      "SELECT id, name, trainer_level, created_at FROM players ORDER BY created_at DESC LIMIT 10"
     ).all();
     res.json({ totalPlayers, totalPokemon, recentPlayers });
   } catch (e: any) {
@@ -28,11 +28,11 @@ adminRouter.get('/players/search', (req, res) => {
     if (!q) { res.json({ players: [] }); return; }
     const db = getDb();
     const players = db.prepare(
-      `SELECT id, trainer_name, trainer_level, energy, stardust, pokedollars,
+      `SELECT id, name, trainer_level, energy, stardust, pokedollars,
               regular_pokeballs, premium_pokeballs, legendary_pokeballs, glowing_pokeballs,
               created_at
        FROM players
-       WHERE id LIKE ? OR trainer_name LIKE ?
+       WHERE id LIKE ? OR name LIKE ?
        LIMIT 20`
     ).all(`%${q}%`, `%${q}%`);
     res.json({ players });
@@ -60,7 +60,7 @@ adminRouter.get('/players/:id', (req, res) => {
     res.json({
       player: {
         id: player.id,
-        trainerName: player.trainer_name,
+        trainerName: player.name,
         trainerLevel: player.trainer_level,
         trainerExp: player.trainer_exp,
         energy: player.energy,
