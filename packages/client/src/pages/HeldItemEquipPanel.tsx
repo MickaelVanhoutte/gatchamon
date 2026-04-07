@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import type { HeldItemInstance, HeldItemSlot, BaseStats } from '@gatchamon/shared';
 import { computeStatsWithItems, computeStats, getActiveSetEffects, ITEM_SETS } from '@gatchamon/shared';
 import type { OwnedPokemon } from '../stores/gameStore';
+import { useTutorialStore } from '../stores/tutorialStore';
 import { HeldItemCard } from '../components/held-item/HeldItemCard';
 import './HeldItemEquipPanel.css';
 
@@ -20,6 +21,7 @@ interface HeldItemEquipPanelProps {
 
 export function HeldItemEquipPanel({ pokemon, heldItems, player }: HeldItemEquipPanelProps) {
   const navigate = useNavigate();
+  const tutorialStep = useTutorialStore(s => s.step);
 
   const equippedItems = heldItems.filter(i => i.equippedTo === pokemon.instance.instanceId);
   const equippedBySlot: Record<number, HeldItemInstance | undefined> = {};
@@ -49,7 +51,8 @@ export function HeldItemEquipPanel({ pokemon, heldItems, player }: HeldItemEquip
           return (
             <div
               key={s}
-              className="held-item-slot"
+              className={`held-item-slot ${s === 1 && (tutorialStep === 15 || tutorialStep === 16) ? 'tutorial-target' : ''}`}
+              data-tutorial-id={s === 1 ? 'held-item-slot-1' : undefined}
               onClick={() => navigate(`/items/${pokemon.instance.instanceId}?slot=${s}`)}
             >
               {equipped ? (

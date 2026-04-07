@@ -7,6 +7,14 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.3.8',
+    date: '2026-04-07',
+    changes: [
+      'Tutorial: first battle now features only 2 enemies (Oddish + Rattata) for an easier intro',
+      'Tutorial: fixed held item management steps getting stuck due to page redirect issue',
+    ],
+  },
+  {
     version: '0.3.7',
     date: '2026-04-07',
     changes: [

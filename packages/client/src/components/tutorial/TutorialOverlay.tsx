@@ -130,9 +130,11 @@ export function TutorialOverlay() {
   useEffect(() => {
     if (!isActive) return;
     const expected = STEP_ROUTE[step];
-    if (expected && location.pathname !== expected) {
-      navigate(expected);
-    }
+    if (!expected) return;
+    if (location.pathname === expected) return;
+    // Steps 15-16: allow /items/ pages (held item management)
+    if ((step === 15 || step === 16) && location.pathname.startsWith('/items/')) return;
+    navigate(expected);
   }, [step, isActive, location.pathname, navigate]);
 
   // Position spotlight over target element
