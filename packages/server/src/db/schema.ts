@@ -59,6 +59,22 @@ export function initDb(): void {
   // Add legendary pokeballs and tower progress
   migrateLegendaryAndTower(database);
 
+  // Add all remaining player fields (currencies, trainer, pity, energy, pc)
+  migratePlayerFullFields(database);
+
+  // Add location column to pokemon_instances (collection vs pc)
+  migratePokemonLocation(database);
+
+  // Create new tables for game systems
+  migrateCreateHeldItems(database);
+  migrateCreateRewardState(database);
+  migrateCreateInbox(database);
+  migrateCreateLoginCalendar(database);
+  migrateCreateDailyRoulette(database);
+  migrateCreateGrantedFlags(database);
+  migrateCreateDungeonRecords(database);
+  migrateCreateForagingState(database);
+
   console.log('Database initialized');
 }
 
@@ -100,6 +116,156 @@ function migrateLegendaryAndTower(database: Database.Database): void {
   } catch {
     // Column already exists
   }
+}
+
+function migratePlayerFullFields(database: Database.Database): void {
+  const cols: [string, string][] = [
+    ['glowing_pokeballs', 'INTEGER NOT NULL DEFAULT 0'],
+    ['stardust', 'INTEGER NOT NULL DEFAULT 0'],
+    ['pokedollars', 'INTEGER NOT NULL DEFAULT 0'],
+    ['materials', "TEXT NOT NULL DEFAULT '{}'"],
+    ['mystery_pieces', "TEXT NOT NULL DEFAULT '{}'"],
+    ['trainer_level', 'INTEGER NOT NULL DEFAULT 1'],
+    ['trainer_exp', 'INTEGER NOT NULL DEFAULT 0'],
+    ['trainer_skill_points', 'INTEGER NOT NULL DEFAULT 0'],
+    ['trainer_skills', `TEXT NOT NULL DEFAULT '${JSON.stringify({
+      energyRegenSpeed: 0, maxEnergyPool: 0,
+      globalAtkBonus: 0, globalDefBonus: 0, globalHpBonus: 0, globalSpdBonus: 0,
+      pokedollarBonus: 0, xpBonus: 0, pokeballBonus: 0, essenceBonus: 0,
+    })}'`],
+    ['premium_pity_counter', 'INTEGER NOT NULL DEFAULT 0'],
+    ['last_energy_update', "TEXT NOT NULL DEFAULT (datetime('now'))"],
+    ['pc_auto_send', 'INTEGER NOT NULL DEFAULT 0'],
+    ['tower_reset_date', "TEXT"],
+  ];
+  for (const [name, def] of cols) {
+    try {
+      database.exec(`ALTER TABLE players ADD COLUMN ${name} ${def}`);
+    } catch {
+      // Column already exists
+    }
+  }
+}
+
+function migratePokemonLocation(database: Database.Database): void {
+  try {
+    database.exec("ALTER TABLE pokemon_instances ADD COLUMN location TEXT NOT NULL DEFAULT 'collection'");
+  } catch {
+    // Column already exists
+  }
+}
+
+function migrateCreateHeldItems(database: Database.Database): void {
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS held_items (
+      item_id TEXT PRIMARY KEY,
+      owner_id TEXT NOT NULL,
+      set_id TEXT NOT NULL,
+      slot INTEGER NOT NULL,
+      stars INTEGER NOT NULL,
+      grade TEXT NOT NULL,
+      level INTEGER NOT NULL DEFAULT 0,
+      main_stat TEXT NOT NULL,
+      main_stat_value REAL NOT NULL,
+      sub_stats TEXT NOT NULL DEFAULT '[]',
+      equipped_to TEXT,
+      FOREIGN KEY (owner_id) REFERENCES players(id),
+      FOREIGN KEY (equipped_to) REFERENCES pokemon_instances(instance_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_items_owner ON held_items(owner_id);
+    CREATE INDEX IF NOT EXISTS idx_items_equipped ON held_items(equipped_to);
+  `);
+}
+
+function migrateCreateRewardState(database: Database.Database): void {
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS reward_state (
+      player_id TEXT PRIMARY KEY,
+      daily_missions TEXT NOT NULL DEFAULT '{}',
+      trophy_progress TEXT NOT NULL DEFAULT '[]',
+      first_clears TEXT NOT NULL DEFAULT '{}',
+      stats TEXT NOT NULL DEFAULT '{}',
+      FOREIGN KEY (player_id) REFERENCES players(id)
+    );
+  `);
+}
+
+function migrateCreateInbox(database: Database.Database): void {
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS inbox (
+      id TEXT PRIMARY KEY,
+      player_id TEXT NOT NULL,
+      title TEXT NOT NULL,
+      message TEXT NOT NULL,
+      reward TEXT,
+      special_item TEXT,
+      read INTEGER NOT NULL DEFAULT 0,
+      claimed INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      expires_at TEXT,
+      FOREIGN KEY (player_id) REFERENCES players(id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_inbox_player ON inbox(player_id);
+  `);
+}
+
+function migrateCreateLoginCalendar(database: Database.Database): void {
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS login_calendar (
+      player_id TEXT PRIMARY KEY,
+      month TEXT NOT NULL,
+      claimed_days TEXT NOT NULL DEFAULT '[]',
+      last_claim_date TEXT NOT NULL DEFAULT '',
+      FOREIGN KEY (player_id) REFERENCES players(id)
+    );
+  `);
+}
+
+function migrateCreateDailyRoulette(database: Database.Database): void {
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS daily_roulette (
+      player_id TEXT PRIMARY KEY,
+      last_spin_date TEXT NOT NULL DEFAULT '',
+      spins_today INTEGER NOT NULL DEFAULT 0,
+      FOREIGN KEY (player_id) REFERENCES players(id)
+    );
+  `);
+}
+
+function migrateCreateGrantedFlags(database: Database.Database): void {
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS granted_flags (
+      player_id TEXT NOT NULL,
+      flag TEXT NOT NULL,
+      PRIMARY KEY (player_id, flag),
+      FOREIGN KEY (player_id) REFERENCES players(id)
+    );
+  `);
+}
+
+function migrateCreateDungeonRecords(database: Database.Database): void {
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS dungeon_records (
+      player_id TEXT NOT NULL,
+      dungeon_key TEXT NOT NULL,
+      max_floor INTEGER NOT NULL DEFAULT 0,
+      best_time_sec REAL NOT NULL DEFAULT 0,
+      PRIMARY KEY (player_id, dungeon_key),
+      FOREIGN KEY (player_id) REFERENCES players(id)
+    );
+  `);
+}
+
+function migrateCreateForagingState(database: Database.Database): void {
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS foraging_state (
+      player_id TEXT PRIMARY KEY,
+      accumulated_ms INTEGER NOT NULL DEFAULT 0,
+      pending_finds TEXT NOT NULL DEFAULT '{}',
+      last_save_ts INTEGER NOT NULL DEFAULT 0,
+      FOREIGN KEY (player_id) REFERENCES players(id)
+    );
+  `);
 }
 
 function migrateStoryProgress(database: Database.Database): void {

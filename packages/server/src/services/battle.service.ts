@@ -2,6 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { getTemplate as getTemplateShared, computeStats, xpToNextLevel } from '@gatchamon/shared';
 import { getSkillsForPokemon, SKILLS } from '@gatchamon/shared';
 import { REGIONS, TOTAL_REGIONS, getFloorCount, getGymLeaderTeam, getLeagueChampion, isLeagueRegion, getArcForRegion, getNextRegionInArc, STORY_ARCS } from '@gatchamon/shared';
+import { STORY_ENERGY_COST, BEGINNER_BONUS, isBeginnerBonusActive } from '@gatchamon/shared';
+import { getDungeon, getItemDungeon, getTowerFloor, getTowerEnemyPool, getMysteryDungeonDef, getMysteryDungeonDateKey, PIECE_COST, shouldResetTower, getCurrentTowerResetDate } from '@gatchamon/shared';
 import {
   applyPassives,
   advanceToNextActor,
@@ -21,9 +23,12 @@ import type {
   BattleRewards,
   BattleResult,
   Difficulty,
+  TrainerSkills,
 } from '@gatchamon/shared';
 import type { PokemonTemplate, SkillDefinition, StoryProgress } from '@gatchamon/shared';
 import { getDb } from '../db/schema.js';
+import { spendEnergy, grantTrainerXp, earnPokedollars } from './player.service.js';
+import { defaultTrainerSkills } from '@gatchamon/shared';
 
 // ---------------------------------------------------------------------------
 // In-memory battle store
@@ -230,36 +235,31 @@ function getStatus(state: BattleState): BattleState['status'] {
 // Reward calculation and application
 // ---------------------------------------------------------------------------
 
-function calculateRewards(state: BattleState): BattleRewards {
-  const { region: regionId, floor: floorNum, difficulty } = state.floor;
-  const isBoss = isLeagueRegion(regionId) || floorNum === getFloorCount(regionId);
-  const diffMult = DIFFICULTY_REWARD_MULT[difficulty];
-  const bossMult = isBoss ? 3 : 1;
+function getPlayerSkills(playerId: string): TrainerSkills {
+  const row = getDb().prepare('SELECT trainer_skills FROM players WHERE id = ?').get(playerId) as any;
+  return row?.trainer_skills ? JSON.parse(row.trainer_skills) : defaultTrainerSkills();
+}
 
-  // Pokeballs: base scales with region and floor
-  const pokeballBase = 1 + Math.floor(regionId / 2) + Math.floor(floorNum / 4);
-  const pokeballs = Math.floor(pokeballBase * diffMult * bossMult);
+function getPlayerCreatedAt(playerId: string): string {
+  const row = getDb().prepare('SELECT created_at FROM players WHERE id = ?').get(playerId) as any;
+  return row?.created_at ?? new Date().toISOString();
+}
 
-  // XP: scales with region and floor
-  const xpBase = regionId * 10 + floorNum * 5;
-  const xpBossMult = isBoss ? 2 : 1;
-  const xpPerMon = Math.floor(xpBase * diffMult * xpBossMult);
-
+function applyXpToTeam(
+  state: BattleState,
+  xpPerMon: number,
+): Array<{ instanceId: string; newLevel: number }> {
   const db = getDb();
   const levelUps: Array<{ instanceId: string; newLevel: number }> = [];
 
-  // Apply XP to each alive player mon
   for (const mon of state.playerTeam) {
     const row = db.prepare(
-      'SELECT instance_id, level, exp FROM pokemon_instances WHERE instance_id = ?'
-    ).get(mon.instanceId) as { instance_id: string; level: number; exp: number } | undefined;
-
+      'SELECT instance_id, level, exp, stars FROM pokemon_instances WHERE instance_id = ?'
+    ).get(mon.instanceId) as any;
     if (!row) continue;
 
     let currentLevel = row.level;
     let currentExp = row.exp + xpPerMon;
-
-    // Handle level-ups
     let needed = xpToNextLevel(currentLevel);
     while (currentExp >= needed) {
       currentExp -= needed;
@@ -273,10 +273,63 @@ function calculateRewards(state: BattleState): BattleRewards {
     ).run(currentLevel, currentExp, mon.instanceId);
   }
 
-  // Award regular pokeballs
+  return levelUps;
+}
+
+function calcRewardsForMode(state: BattleState): BattleRewards {
+  return state.mode === 'story' ? calculateRewards(state) : calculateDungeonRewards(state);
+}
+
+function calculateRewards(state: BattleState): BattleRewards {
+  const { region: regionId, floor: floorNum, difficulty } = state.floor;
+  const isBoss = isLeagueRegion(regionId) || floorNum === getFloorCount(regionId);
+  const diffMult = DIFFICULTY_REWARD_MULT[difficulty];
+  const bossMult = isBoss ? 3 : 1;
+
+  const skills = getPlayerSkills(state.playerId);
+  const createdAt = getPlayerCreatedAt(state.playerId);
+  const isBeginner = isBeginnerBonusActive(createdAt);
+
+  const xpMult = (1 + skills.xpBonus * 0.1) * (isBeginner ? BEGINNER_BONUS.xpMult : 1);
+  const pokeballMult = 1 + skills.pokeballBonus * 0.1;
+  const pokedollarMult = (1 + skills.pokedollarBonus * 0.1) * (isBeginner ? BEGINNER_BONUS.pokedollarMult : 1);
+
+  // Pokeballs
+  const pokeballBase = 1 + Math.floor(regionId / 2) + Math.floor(floorNum / 4);
+  const pokeballs = Math.floor(pokeballBase * diffMult * bossMult * pokeballMult);
+
+  // XP with trainer skill and beginner multipliers
+  const xpBase = regionId * 10 + floorNum * 5;
+  const xpBossMult = isBoss ? 2 : 1;
+  const xpPerMon = Math.floor(xpBase * diffMult * xpBossMult * xpMult);
+
+  // Pokedollars
+  const pdBase = 10 + regionId * 5 + floorNum * 2;
+  const pokedollars = Math.floor(pdBase * diffMult * pokedollarMult);
+
+  const db = getDb();
+  const levelUps = applyXpToTeam(state, xpPerMon);
+
+  // Award pokeballs
   db.prepare(
     'UPDATE players SET regular_pokeballs = regular_pokeballs + ? WHERE id = ?'
   ).run(pokeballs, state.playerId);
+
+  // Award pokedollars
+  if (pokedollars > 0) {
+    db.prepare(
+      'UPDATE players SET pokedollars = pokedollars + ? WHERE id = ?'
+    ).run(pokedollars, state.playerId);
+  }
+
+  // Premium pokeball on boss first clear
+  let premiumPokeballs = 0;
+  if (isBoss) {
+    premiumPokeballs = 1;
+    db.prepare(
+      'UPDATE players SET premium_pokeballs = premium_pokeballs + 1 WHERE id = ?'
+    ).run(state.playerId);
+  }
 
   // Advance story progress
   const player = db.prepare('SELECT story_progress FROM players WHERE id = ?').get(state.playerId) as any;
@@ -287,7 +340,11 @@ function calculateRewards(state: BattleState): BattleRewards {
       .run(JSON.stringify(storyProgress), state.playerId);
   }
 
-  return { regularPokeballs: pokeballs, premiumPokeballs: 0, xpPerMon, levelUps };
+  // Trainer XP
+  const trainerXpAmount = regionId * 5 + floorNum * 2;
+  grantTrainerXp(state.playerId, trainerXpAmount);
+
+  return { regularPokeballs: pokeballs, premiumPokeballs, xpPerMon, levelUps, pokedollars };
 }
 
 function advanceStoryProgress(
@@ -352,6 +409,9 @@ export function startBattle(
   floor: { region: number; floor: number; difficulty: Difficulty },
 ): BattleResult {
   const db = getDb();
+
+  // Deduct energy
+  spendEnergy(playerId, STORY_ENERGY_COST);
 
   // Load player team from DB
   const playerTeam: BattleMon[] = [];
@@ -421,7 +481,7 @@ export function startBattle(
 
   const result: BattleResult = { state };
   if (getStatus(state) === 'victory') {
-    result.rewards = calculateRewards(state);
+    result.rewards = calcRewardsForMode(state);
   }
 
   return result;
@@ -484,7 +544,7 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
     state.log.push(...logs);
     activeBattles.set(battleId, state);
     const result: BattleResult = { state };
-    if (getStatus(state) === 'victory') result.rewards = calculateRewards(state);
+    if (getStatus(state) === 'victory') result.rewards = calcRewardsForMode(state);
     return result;
   }
 
@@ -524,7 +584,7 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
     state.log.push(...logs);
     activeBattles.set(battleId, state);
     const result: BattleResult = { state };
-    if (getStatus(state) === 'victory') result.rewards = calculateRewards(state);
+    if (getStatus(state) === 'victory') result.rewards = calcRewardsForMode(state);
     return result;
   }
 
@@ -577,7 +637,9 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
   const result: BattleResult = { state };
   const finalStatus = getStatus(state);
   if (finalStatus === 'victory') {
-    result.rewards = calculateRewards(state);
+    result.rewards = state.mode === 'story'
+      ? calculateRewards(state)
+      : calculateDungeonRewards(state);
     activeBattles.delete(battleId);
   } else if (finalStatus === 'defeat') {
     activeBattles.delete(battleId);
@@ -588,4 +650,339 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
 
 export function getBattleState(battleId: string): BattleState | null {
   return activeBattles.get(battleId) ?? null;
+}
+
+// ---------------------------------------------------------------------------
+// Dungeon battles
+// ---------------------------------------------------------------------------
+
+function initBattleFromTeams(
+  playerId: string,
+  playerTeam: BattleMon[],
+  enemyTeam: BattleMon[],
+  floor: { region: number; floor: number; difficulty: Difficulty },
+  mode: BattleState['mode'],
+): BattleResult {
+  const battleId = uuidv4();
+  const state: BattleState = {
+    battleId,
+    playerId,
+    playerTeam,
+    enemyTeam,
+    currentActorId: null,
+    turnNumber: 0,
+    status: 'active',
+    log: [],
+    floor,
+    mode,
+    recap: {},
+  };
+
+  applyPassives(state);
+  const firstActorId = advanceToNextActor(state);
+  const allMons = [...state.playerTeam, ...state.enemyTeam];
+  const firstActor = allMons.find(m => m.instanceId === firstActorId);
+
+  if (firstActor && !firstActor.isPlayerOwned) {
+    state.currentActorId = firstActorId;
+    const enemyLogs = autoResolveEnemyTurns(state);
+    state.log.push(...enemyLogs);
+  } else {
+    state.currentActorId = firstActorId;
+  }
+
+  activeBattles.set(battleId, state);
+
+  const result: BattleResult = { state };
+  if (getStatus(state) === 'victory') {
+    result.rewards = calculateDungeonRewards(state);
+  }
+  return result;
+}
+
+function loadPlayerTeam(playerId: string, teamInstanceIds: string[]): BattleMon[] {
+  const db = getDb();
+  const team: BattleMon[] = [];
+  for (const instId of teamInstanceIds) {
+    const row = db.prepare(
+      'SELECT instance_id, template_id, level, stars FROM pokemon_instances WHERE instance_id = ? AND owner_id = ?'
+    ).get(instId, playerId) as any;
+    if (!row) throw new Error(`Pokemon ${instId} not found`);
+    team.push(makeBattleMon(row.instance_id, row.template_id, row.level, row.stars, true));
+  }
+  if (team.length === 0) throw new Error('Team cannot be empty');
+  return team;
+}
+
+/** Start a material dungeon battle. */
+export function startDungeonBattle(
+  playerId: string,
+  teamInstanceIds: string[],
+  dungeonId: number,
+  floorIndex: number,
+): BattleResult {
+  const dungeon = getDungeon(dungeonId);
+  if (!dungeon) throw new Error('Unknown dungeon');
+  const floor = dungeon.floors[floorIndex];
+  if (!floor) throw new Error('Invalid floor');
+
+  spendEnergy(playerId, dungeon.energyCost);
+  const playerTeam = loadPlayerTeam(playerId, teamInstanceIds);
+
+  const enemyTeam: BattleMon[] = floor.enemies.map((tid: number) => {
+    const id = `enemy_${uuidv4()}`;
+    return makeBattleMon(id, tid, floor.enemyLevel, floor.enemyStars ?? 1, false);
+  });
+
+  return initBattleFromTeams(
+    playerId, playerTeam, enemyTeam,
+    { region: dungeonId, floor: floorIndex + 1, difficulty: 'normal' },
+    'dungeon' as any,
+  );
+}
+
+/** Start an item dungeon battle. */
+export function startItemDungeonBattle(
+  playerId: string,
+  teamInstanceIds: string[],
+  dungeonId: number,
+  floorIndex: number,
+): BattleResult {
+  const dungeon = getItemDungeon(dungeonId);
+  if (!dungeon) throw new Error('Unknown item dungeon');
+  const floor = dungeon.floors[floorIndex];
+  if (!floor) throw new Error('Invalid floor');
+
+  spendEnergy(playerId, dungeon.energyCost);
+  const playerTeam = loadPlayerTeam(playerId, teamInstanceIds);
+
+  const enemyTeam: BattleMon[] = floor.enemies.map((tid: number) => {
+    const id = `enemy_${uuidv4()}`;
+    return makeBattleMon(id, tid, floor.enemyLevel, floor.enemyStars ?? 1, false);
+  });
+
+  return initBattleFromTeams(
+    playerId, playerTeam, enemyTeam,
+    { region: dungeonId, floor: floorIndex + 1, difficulty: 'normal' },
+    'item-dungeon' as any,
+  );
+}
+
+/** Start a tower battle. */
+export function startTowerBattle(
+  playerId: string,
+  teamInstanceIds: string[],
+  towerFloor: number,
+): BattleResult {
+  const db = getDb();
+
+  // Check/reset tower
+  const playerRow = db.prepare('SELECT tower_progress, tower_reset_date FROM players WHERE id = ?').get(playerId) as any;
+  if (!playerRow) throw new Error('Player not found');
+  if (shouldResetTower(playerRow.tower_reset_date)) {
+    db.prepare('UPDATE players SET tower_progress = 0, tower_reset_date = ? WHERE id = ?')
+      .run(getCurrentTowerResetDate(), playerId);
+  }
+
+  const floorDef = getTowerFloor(towerFloor);
+  if (!floorDef) throw new Error('Invalid tower floor');
+
+  spendEnergy(playerId, floorDef.energyCost);
+  const playerTeam = loadPlayerTeam(playerId, teamInstanceIds);
+
+  // Get enemy template IDs from seeded pool
+  const resetDate = playerRow.tower_reset_date ?? getCurrentTowerResetDate();
+  const enemyTemplateIds = getTowerEnemyPool(towerFloor, resetDate);
+  const isBossFloor = towerFloor % 10 === 0;
+
+  const enemyTeam: BattleMon[] = enemyTemplateIds.map((tid, i) => {
+    const id = `enemy_${uuidv4()}`;
+    const mon = makeBattleMon(id, tid, floorDef.enemyLevel, floorDef.enemyStars, false);
+    if (floorDef.speedBonus) mon.stats.spd += floorDef.speedBonus;
+    if (isBossFloor && i === 0) mon.isBoss = true;
+    return mon;
+  });
+
+  return initBattleFromTeams(
+    playerId, playerTeam, enemyTeam,
+    { region: 0, floor: towerFloor, difficulty: 'normal' },
+    'tower' as any,
+  );
+}
+
+/** Start a mystery dungeon battle. */
+export function startMysteryDungeonBattle(
+  playerId: string,
+  teamInstanceIds: string[],
+  floorIndex: number,
+): BattleResult {
+  const dateKey = getMysteryDungeonDateKey();
+  const def = getMysteryDungeonDef(dateKey);
+  if (!def) throw new Error('No mystery dungeon available');
+  const floor = def.floors[floorIndex];
+  if (!floor) throw new Error('Invalid floor');
+
+  spendEnergy(playerId, def.energyCosts[floorIndex]);
+  const playerTeam = loadPlayerTeam(playerId, teamInstanceIds);
+
+  const enemyTeam: BattleMon[] = floor.enemies.map((tid: number) => {
+    const id = `enemy_${uuidv4()}`;
+    return makeBattleMon(id, tid, floor.enemyLevel, floor.enemyStars ?? 1, false);
+  });
+
+  return initBattleFromTeams(
+    playerId, playerTeam, enemyTeam,
+    { region: 0, floor: floorIndex + 1, difficulty: 'normal' },
+    'mystery' as any,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Dungeon / Tower reward calculation
+// ---------------------------------------------------------------------------
+
+function calculateDungeonRewards(state: BattleState): BattleRewards {
+  const skills = getPlayerSkills(state.playerId);
+  const createdAt = getPlayerCreatedAt(state.playerId);
+  const isBeginner = isBeginnerBonusActive(createdAt);
+  const xpMult = (1 + skills.xpBonus * 0.1) * (isBeginner ? BEGINNER_BONUS.xpMult : 1);
+  const pokedollarMult = (1 + skills.pokedollarBonus * 0.1) * (isBeginner ? BEGINNER_BONUS.pokedollarMult : 1);
+  const essenceMult = 1 + skills.essenceBonus * 0.1;
+
+  const db = getDb();
+  const mode = state.mode;
+  const floorIdx = state.floor.floor - 1;
+  const dungeonId = state.floor.region;
+
+  let xpPerMon = 0;
+  let pokedollars = 0;
+  let essences: Record<string, number> = {};
+  let trainerXpAmount = 0;
+
+  if (mode === 'tower' as any) {
+    const towerFloor = state.floor.floor;
+    const floorDef = getTowerFloor(towerFloor);
+    if (floorDef?.reward) {
+      const r = floorDef.reward as any;
+      if (r.regularPokeballs) {
+        db.prepare('UPDATE players SET regular_pokeballs = regular_pokeballs + ? WHERE id = ?')
+          .run(r.regularPokeballs, state.playerId);
+      }
+      if (r.premiumPokeballs) {
+        db.prepare('UPDATE players SET premium_pokeballs = premium_pokeballs + ? WHERE id = ?')
+          .run(r.premiumPokeballs, state.playerId);
+      }
+      if (r.legendaryPokeballs) {
+        db.prepare('UPDATE players SET legendary_pokeballs = legendary_pokeballs + ? WHERE id = ?')
+          .run(r.legendaryPokeballs, state.playerId);
+      }
+      if (r.pokedollars) {
+        pokedollars = Math.floor(r.pokedollars * pokedollarMult);
+        db.prepare('UPDATE players SET pokedollars = pokedollars + ? WHERE id = ?')
+          .run(pokedollars, state.playerId);
+      }
+      if (r.stardust) {
+        db.prepare('UPDATE players SET stardust = stardust + ? WHERE id = ?')
+          .run(r.stardust, state.playerId);
+      }
+    }
+    // Advance tower progress
+    const current = db.prepare('SELECT tower_progress FROM players WHERE id = ?').get(state.playerId) as any;
+    if (current && towerFloor > (current.tower_progress ?? 0)) {
+      db.prepare('UPDATE players SET tower_progress = ? WHERE id = ?')
+        .run(towerFloor, state.playerId);
+    }
+    trainerXpAmount = towerFloor * 3 + 10;
+    xpPerMon = Math.floor(towerFloor * 15 * xpMult);
+  } else if (mode === 'dungeon' as any) {
+    const dungeon = getDungeon(dungeonId);
+    if (dungeon) {
+      const floor = dungeon.floors[floorIdx];
+      if (floor) {
+        xpPerMon = Math.floor(floor.enemyLevel * 8 * xpMult);
+        // Roll essence drops
+        for (const drop of floor.drops) {
+          if (Math.random() < drop.chance) {
+            const qty = Math.floor(
+              (drop.quantity[0] + Math.random() * (drop.quantity[1] - drop.quantity[0] + 1)) * essenceMult
+            );
+            if (qty > 0) essences[drop.essenceId] = (essences[drop.essenceId] ?? 0) + qty;
+          }
+        }
+        // Award essences
+        if (Object.keys(essences).length > 0) {
+          const playerRow = db.prepare('SELECT materials FROM players WHERE id = ?').get(state.playerId) as any;
+          const materials = playerRow?.materials ? JSON.parse(playerRow.materials) : {};
+          for (const [key, qty] of Object.entries(essences)) {
+            materials[key] = (materials[key] ?? 0) + qty;
+          }
+          db.prepare('UPDATE players SET materials = ? WHERE id = ?')
+            .run(JSON.stringify(materials), state.playerId);
+        }
+        pokedollars = Math.floor((20 + floor.enemyLevel * 2) * pokedollarMult);
+        if (pokedollars > 0) {
+          db.prepare('UPDATE players SET pokedollars = pokedollars + ? WHERE id = ?')
+            .run(pokedollars, state.playerId);
+        }
+      }
+    }
+    trainerXpAmount = (floorIdx + 1) * 8 + 10;
+  } else if (mode === 'item-dungeon' as any) {
+    const dungeon = getItemDungeon(dungeonId);
+    if (dungeon) {
+      const floor = dungeon.floors[floorIdx];
+      if (floor) {
+        xpPerMon = Math.floor(floor.enemyLevel * 8 * xpMult);
+        const pdRange = floor.pokedollarReward ?? [20, 50];
+        pokedollars = Math.floor((pdRange[0] + Math.random() * (pdRange[1] - pdRange[0] + 1)) * pokedollarMult);
+        if (pokedollars > 0) {
+          db.prepare('UPDATE players SET pokedollars = pokedollars + ? WHERE id = ?')
+            .run(pokedollars, state.playerId);
+        }
+      }
+    }
+    trainerXpAmount = (floorIdx + 1) * 8 + 10;
+  } else if (mode === 'mystery' as any) {
+    const def = getMysteryDungeonDef();
+    if (def) {
+      const floor = def.floors[floorIdx];
+      if (floor) {
+        xpPerMon = Math.floor(floor.enemyLevel * 8 * xpMult);
+        pokedollars = Math.floor((20 + floor.enemyLevel * 2) * pokedollarMult);
+        if (pokedollars > 0) {
+          db.prepare('UPDATE players SET pokedollars = pokedollars + ? WHERE id = ?')
+            .run(pokedollars, state.playerId);
+        }
+        // Mystery pieces
+        if (floor.pieceReward && def.featuredTemplateId) {
+          const playerRow = db.prepare('SELECT mystery_pieces FROM players WHERE id = ?').get(state.playerId) as any;
+          const pieces = playerRow?.mystery_pieces ? JSON.parse(playerRow.mystery_pieces) : {};
+          pieces[def.featuredTemplateId] = (pieces[def.featuredTemplateId] ?? 0) + floor.pieceReward;
+          db.prepare('UPDATE players SET mystery_pieces = ? WHERE id = ?')
+            .run(JSON.stringify(pieces), state.playerId);
+        }
+      }
+    }
+    trainerXpAmount = (floorIdx + 1) * 8 + 10;
+  }
+
+  const levelUps = xpPerMon > 0 ? applyXpToTeam(state, xpPerMon) : [];
+
+  // Grant trainer XP
+  let trainerResult;
+  if (trainerXpAmount > 0) {
+    trainerResult = grantTrainerXp(state.playerId, trainerXpAmount);
+  }
+
+  return {
+    regularPokeballs: 0,
+    premiumPokeballs: 0,
+    xpPerMon,
+    levelUps,
+    essences: Object.keys(essences).length > 0 ? essences : undefined,
+    pokedollars: pokedollars > 0 ? pokedollars : undefined,
+    trainerXpGained: trainerXpAmount,
+    trainerLeveledUp: trainerResult?.leveledUp,
+    trainerNewLevel: trainerResult?.newLevel,
+  };
 }

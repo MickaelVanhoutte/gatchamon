@@ -1,5 +1,14 @@
 import { Router } from 'express';
-import { startBattle, resolvePlayerAction, getBattleState, getFloorDefsForRegion } from '../services/battle.service.js';
+import {
+  startBattle,
+  resolvePlayerAction,
+  getBattleState,
+  getFloorDefsForRegion,
+  startDungeonBattle,
+  startItemDungeonBattle,
+  startTowerBattle,
+  startMysteryDungeonBattle,
+} from '../services/battle.service.js';
 import type { Difficulty } from '@gatchamon/shared';
 
 export const battleRouter = Router();
@@ -24,6 +33,64 @@ battleRouter.post('/start', (req, res) => {
 
   try {
     const result = startBattle(playerId, teamInstanceIds, floor);
+    res.json(result);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// ── Dungeon battles ────────────────────────────────────────────────────
+
+battleRouter.post('/dungeon/start', (req, res) => {
+  const { playerId, teamInstanceIds, dungeonId, floorIndex } = req.body;
+  if (!playerId || !teamInstanceIds?.length || dungeonId == null || floorIndex == null) {
+    res.status(400).json({ error: 'playerId, teamInstanceIds, dungeonId, and floorIndex required' });
+    return;
+  }
+  try {
+    const result = startDungeonBattle(playerId, teamInstanceIds, dungeonId, floorIndex);
+    res.json(result);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+battleRouter.post('/item-dungeon/start', (req, res) => {
+  const { playerId, teamInstanceIds, dungeonId, floorIndex } = req.body;
+  if (!playerId || !teamInstanceIds?.length || dungeonId == null || floorIndex == null) {
+    res.status(400).json({ error: 'playerId, teamInstanceIds, dungeonId, and floorIndex required' });
+    return;
+  }
+  try {
+    const result = startItemDungeonBattle(playerId, teamInstanceIds, dungeonId, floorIndex);
+    res.json(result);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+battleRouter.post('/tower/start', (req, res) => {
+  const { playerId, teamInstanceIds, towerFloor } = req.body;
+  if (!playerId || !teamInstanceIds?.length || towerFloor == null) {
+    res.status(400).json({ error: 'playerId, teamInstanceIds, and towerFloor required' });
+    return;
+  }
+  try {
+    const result = startTowerBattle(playerId, teamInstanceIds, towerFloor);
+    res.json(result);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+battleRouter.post('/mystery-dungeon/start', (req, res) => {
+  const { playerId, teamInstanceIds, floorIndex } = req.body;
+  if (!playerId || !teamInstanceIds?.length || floorIndex == null) {
+    res.status(400).json({ error: 'playerId, teamInstanceIds, and floorIndex required' });
+    return;
+  }
+  try {
+    const result = startMysteryDungeonBattle(playerId, teamInstanceIds, floorIndex);
     res.json(result);
   } catch (err: any) {
     res.status(400).json({ error: err.message });

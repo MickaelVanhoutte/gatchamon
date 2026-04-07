@@ -7,6 +7,15 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.3.7',
+    date: '2026-04-07',
+    changes: [
+      'Server: daily missions, trophies, inbox, login calendar, roulette, foraging, shop, mystery summon, dungeon records endpoints',
+      'Server: daily route registered at /api/daily with full CRUD for all progression systems',
+      'Fixed type mismatches between server daily service and shared type definitions',
+    ],
+  },
+  {
     version: '0.3.6',
     date: '2026-04-07',
     changes: [

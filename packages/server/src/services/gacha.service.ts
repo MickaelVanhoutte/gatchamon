@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { POKEDEX, ACTIVE_POKEDEX, BEGINNER_BONUS, isBeginnerBonusActive } from '@gatchamon/shared';
+import { ACTIVE_POKEDEX, BEGINNER_BONUS, isBeginnerBonusActive } from '@gatchamon/shared';
 import type { PokemonTemplate, PokemonInstance, PokeballType } from '@gatchamon/shared';
 import { getDb } from '../db/schema.js';
 import { DEBUG_MODE } from '../config.js';
@@ -10,11 +10,16 @@ const PREMIUM_SINGLE_COST = 1;
 const PREMIUM_MULTI_COST = 10;
 const MULTI_COUNT = 10;
 const SHINY_RATE = DEBUG_MODE ? 0.5 : 0.001;
+const PREMIUM_PITY_THRESHOLD = 200;
+const GLOWING_SINGLE_COST = 1;
+const GLOWING_MULTI_COST = 10;
+const LEGENDARY_SINGLE_COST = 1;
 
-function getPlayerCreatedAt(playerId: string): string | null {
+function getPlayerRow(playerId: string): any {
   const db = getDb();
-  const row = db.prepare('SELECT created_at FROM players WHERE id = ?').get(playerId) as any;
-  return row?.created_at ?? null;
+  const row = db.prepare('SELECT * FROM players WHERE id = ?').get(playerId) as any;
+  if (!row) throw new Error('Player not found');
+  return row;
 }
 
 function rollRegularStarRating(guaranteeMinTwo = false): 1 | 2 | 3 {
@@ -43,8 +48,8 @@ function pickFromPool(stars: 1 | 2 | 3 | 4 | 5): PokemonTemplate {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-function createInstance(template: PokemonTemplate, ownerId: string): PokemonInstance {
-  const isShiny = rollShiny();
+function createInstance(template: PokemonTemplate, ownerId: string, forceShiny = false): PokemonInstance {
+  const isShiny = forceShiny || rollShiny();
   const instance: PokemonInstance = {
     instanceId: uuidv4(),
     templateId: template.id,
@@ -53,12 +58,13 @@ function createInstance(template: PokemonTemplate, ownerId: string): PokemonInst
     stars: template.naturalStars,
     exp: 0,
     isShiny,
+    skillLevels: [1, 1, 1],
   };
 
   const db = getDb();
   db.prepare(
-    'INSERT INTO pokemon_instances (instance_id, template_id, owner_id, level, stars, exp, is_shiny) VALUES (?, ?, ?, ?, ?, ?, ?)'
-  ).run(instance.instanceId, instance.templateId, instance.ownerId, instance.level, instance.stars, instance.exp, isShiny ? 1 : 0);
+    'INSERT INTO pokemon_instances (instance_id, template_id, owner_id, level, stars, exp, is_shiny, skill_levels) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+  ).run(instance.instanceId, instance.templateId, instance.ownerId, instance.level, instance.stars, instance.exp, isShiny ? 1 : 0, JSON.stringify(instance.skillLevels));
 
   return instance;
 }
@@ -68,21 +74,18 @@ export interface SummonResult {
   template: PokemonTemplate;
 }
 
-const LEGENDARY_SINGLE_COST = 1;
-
 export const SUMMON_COSTS = {
   regular: { single: REGULAR_SINGLE_COST, multi: REGULAR_MULTI_COST },
   premium: { single: PREMIUM_SINGLE_COST, multi: PREMIUM_MULTI_COST },
   legendary: { single: LEGENDARY_SINGLE_COST },
+  glowing: { single: GLOWING_SINGLE_COST, multi: GLOWING_MULTI_COST },
 };
 
 // ── Regular Pokeball (1-2★) ──
 
 export function summonSingleRegular(playerId: string): SummonResult {
   const db = getDb();
-  const player = db.prepare('SELECT regular_pokeballs FROM players WHERE id = ?').get(playerId) as any;
-
-  if (!player) throw new Error('Player not found');
+  const player = getPlayerRow(playerId);
   if (player.regular_pokeballs < REGULAR_SINGLE_COST) throw new Error('Not enough pokeballs');
 
   db.prepare('UPDATE players SET regular_pokeballs = regular_pokeballs - ? WHERE id = ?').run(REGULAR_SINGLE_COST, playerId);
@@ -96,9 +99,7 @@ export function summonSingleRegular(playerId: string): SummonResult {
 
 export function summonMultiRegular(playerId: string): SummonResult[] {
   const db = getDb();
-  const player = db.prepare('SELECT regular_pokeballs FROM players WHERE id = ?').get(playerId) as any;
-
-  if (!player) throw new Error('Player not found');
+  const player = getPlayerRow(playerId);
   if (player.regular_pokeballs < REGULAR_MULTI_COST) throw new Error('Not enough pokeballs');
 
   db.prepare('UPDATE players SET regular_pokeballs = regular_pokeballs - ? WHERE id = ?').run(REGULAR_MULTI_COST, playerId);
@@ -115,61 +116,132 @@ export function summonMultiRegular(playerId: string): SummonResult[] {
   return results;
 }
 
-// ── Premium Pokeball (3-5★) ──
+// ── Premium Pokeball (3-5★) with Pity ──
 
 export function summonSinglePremium(playerId: string): SummonResult {
   const db = getDb();
-  const player = db.prepare('SELECT premium_pokeballs FROM players WHERE id = ?').get(playerId) as any;
-
-  if (!player) throw new Error('Player not found');
+  const player = getPlayerRow(playerId);
   if (player.premium_pokeballs < PREMIUM_SINGLE_COST) throw new Error('Not enough premium pokeballs');
 
-  db.prepare('UPDATE players SET premium_pokeballs = premium_pokeballs - ? WHERE id = ?').run(PREMIUM_SINGLE_COST, playerId);
+  const pity = (player.premium_pity_counter ?? 0) + 1;
+  const isPityGuarantee = pity >= PREMIUM_PITY_THRESHOLD;
 
-  const createdAt = getPlayerCreatedAt(playerId);
+  const createdAt = player.created_at;
   const beginner = createdAt ? isBeginnerBonusActive(createdAt) : false;
-  const stars = rollPremiumStarRating(beginner);
+  const stars = isPityGuarantee ? 5 : rollPremiumStarRating(beginner);
   const template = pickFromPool(stars);
-  const pokemon = createInstance(template, playerId);
+  const isFiveStar = template.naturalStars === 5;
 
+  db.prepare(
+    'UPDATE players SET premium_pokeballs = premium_pokeballs - ?, premium_pity_counter = ? WHERE id = ?'
+  ).run(PREMIUM_SINGLE_COST, isFiveStar ? 0 : pity, playerId);
+
+  const pokemon = createInstance(template, playerId);
   return { pokemon, template };
+}
+
+export function summonMultiPremium(playerId: string): SummonResult[] {
+  const db = getDb();
+  const player = getPlayerRow(playerId);
+  if (player.premium_pokeballs < PREMIUM_MULTI_COST) throw new Error('Not enough premium pokeballs');
+
+  const createdAt = player.created_at;
+  const beginner = createdAt ? isBeginnerBonusActive(createdAt) : false;
+  let pity = player.premium_pity_counter ?? 0;
+
+  const results: SummonResult[] = [];
+  for (let i = 0; i < MULTI_COUNT; i++) {
+    pity++;
+    const isPityGuarantee = pity >= PREMIUM_PITY_THRESHOLD;
+    const stars = isPityGuarantee ? 5 : rollPremiumStarRating(beginner);
+    const template = pickFromPool(stars);
+    if (template.naturalStars === 5) pity = 0;
+    const pokemon = createInstance(template, playerId);
+    results.push({ pokemon, template });
+  }
+
+  db.prepare(
+    'UPDATE players SET premium_pokeballs = premium_pokeballs - ?, premium_pity_counter = ? WHERE id = ?'
+  ).run(PREMIUM_MULTI_COST, pity, playerId);
+
+  return results;
 }
 
 // ── Legendary Pokeball (guaranteed 5★) ──
 
 export function summonSingleLegendary(playerId: string): SummonResult {
   const db = getDb();
-  const player = db.prepare('SELECT legendary_pokeballs FROM players WHERE id = ?').get(playerId) as any;
-
-  if (!player) throw new Error('Player not found');
+  const player = getPlayerRow(playerId);
   if ((player.legendary_pokeballs ?? 0) < LEGENDARY_SINGLE_COST) throw new Error('Not enough legendary pokeballs');
 
   db.prepare('UPDATE players SET legendary_pokeballs = legendary_pokeballs - ? WHERE id = ?').run(LEGENDARY_SINGLE_COST, playerId);
 
   const template = pickFromPool(5);
   const pokemon = createInstance(template, playerId);
+  return { pokemon, template };
+}
+
+// ── Glowing Pokeball (3-5★, guaranteed shiny) ──
+
+export function summonSingleGlowing(playerId: string): SummonResult {
+  const db = getDb();
+  const player = getPlayerRow(playerId);
+  if ((player.glowing_pokeballs ?? 0) < GLOWING_SINGLE_COST) throw new Error('Not enough glowing pokeballs');
+
+  db.prepare('UPDATE players SET glowing_pokeballs = glowing_pokeballs - ? WHERE id = ?').run(GLOWING_SINGLE_COST, playerId);
+
+  const stars = rollPremiumStarRating();
+  const template = pickFromPool(stars);
+  const pokemon = createInstance(template, playerId, true); // force shiny
 
   return { pokemon, template };
 }
 
-export function summonMultiPremium(playerId: string): SummonResult[] {
+export function summonMultiGlowing(playerId: string): SummonResult[] {
   const db = getDb();
-  const player = db.prepare('SELECT premium_pokeballs FROM players WHERE id = ?').get(playerId) as any;
+  const player = getPlayerRow(playerId);
+  if ((player.glowing_pokeballs ?? 0) < GLOWING_MULTI_COST) throw new Error('Not enough glowing pokeballs');
 
-  if (!player) throw new Error('Player not found');
-  if (player.premium_pokeballs < PREMIUM_MULTI_COST) throw new Error('Not enough premium pokeballs');
+  db.prepare('UPDATE players SET glowing_pokeballs = glowing_pokeballs - ? WHERE id = ?').run(GLOWING_MULTI_COST, playerId);
 
-  db.prepare('UPDATE players SET premium_pokeballs = premium_pokeballs - ? WHERE id = ?').run(PREMIUM_MULTI_COST, playerId);
-
-  const createdAt = getPlayerCreatedAt(playerId);
-  const beginner = createdAt ? isBeginnerBonusActive(createdAt) : false;
   const results: SummonResult[] = [];
   for (let i = 0; i < MULTI_COUNT; i++) {
-    const stars = rollPremiumStarRating(beginner);
+    const stars = rollPremiumStarRating();
     const template = pickFromPool(stars);
-    const pokemon = createInstance(template, playerId);
+    const pokemon = createInstance(template, playerId, true); // force shiny
     results.push({ pokemon, template });
   }
 
   return results;
+}
+
+// ── Shop Summons (bypass pokeball costs) ──
+
+export function shopSummonMultiPremium(playerId: string): SummonResult[] {
+  const db = getDb();
+  const player = getPlayerRow(playerId);
+  const createdAt = player.created_at;
+  const beginner = createdAt ? isBeginnerBonusActive(createdAt) : false;
+  let pity = player.premium_pity_counter ?? 0;
+
+  const results: SummonResult[] = [];
+  for (let i = 0; i < MULTI_COUNT; i++) {
+    pity++;
+    const isPityGuarantee = pity >= PREMIUM_PITY_THRESHOLD;
+    const stars = isPityGuarantee ? 5 : rollPremiumStarRating(beginner);
+    const template = pickFromPool(stars);
+    if (template.naturalStars === 5) pity = 0;
+    const pokemon = createInstance(template, playerId);
+    results.push({ pokemon, template });
+  }
+
+  db.prepare('UPDATE players SET premium_pity_counter = ? WHERE id = ?').run(pity, playerId);
+  return results;
+}
+
+export function shopSummonSingleLegendary(playerId: string): SummonResult {
+  const player = getPlayerRow(playerId);
+  const template = pickFromPool(5);
+  const pokemon = createInstance(template, playerId);
+  return { pokemon, template };
 }

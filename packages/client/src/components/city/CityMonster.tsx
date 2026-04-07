@@ -97,7 +97,7 @@ export function CityMonster({ owned, positionIndex, pendingFind, onClaimFind }: 
         {/* Foraging indicator */}
         {pendingFind && !claimedFind && (
           <div className="city-monster-forage-indicator">
-            <span className="forage-indicator-icon">❗</span>
+            <span className="forage-indicator-icon">🎁</span>
           </div>
         )}
       </div>

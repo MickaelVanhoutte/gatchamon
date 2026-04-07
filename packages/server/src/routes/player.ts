@@ -1,10 +1,38 @@
 import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { getDb } from '../db/schema.js';
-import type { Player } from '@gatchamon/shared';
+import type { Player, TrainerSkills } from '@gatchamon/shared';
 import { defaultTrainerSkills } from '@gatchamon/shared';
+import { computeAndUpdateEnergy, allocateTrainerSkill } from '../services/player.service.js';
 
 export const playerRouter = Router();
+
+/** Convert a raw DB row to the Player shape the client expects. */
+function rowToPlayer(row: any): Player {
+  return {
+    id: row.id,
+    name: row.name,
+    regularPokeballs: row.regular_pokeballs,
+    premiumPokeballs: row.premium_pokeballs,
+    legendaryPokeballs: row.legendary_pokeballs ?? 0,
+    glowingPokeballs: row.glowing_pokeballs ?? 0,
+    energy: row.energy,
+    stardust: row.stardust ?? 0,
+    pokedollars: row.pokedollars ?? 0,
+    storyProgress: JSON.parse(row.story_progress),
+    materials: row.materials ? JSON.parse(row.materials) : {},
+    mysteryPieces: row.mystery_pieces ? JSON.parse(row.mystery_pieces) : {},
+    towerProgress: row.tower_progress ?? 0,
+    towerResetDate: row.tower_reset_date ?? undefined,
+    createdAt: row.created_at,
+    lastEnergyUpdate: row.last_energy_update ?? undefined,
+    trainerLevel: row.trainer_level ?? 1,
+    trainerExp: row.trainer_exp ?? 0,
+    trainerSkillPoints: row.trainer_skill_points ?? 0,
+    trainerSkills: row.trainer_skills ? JSON.parse(row.trainer_skills) : defaultTrainerSkills(),
+    premiumPityCounter: row.premium_pity_counter ?? 0,
+  };
+}
 
 playerRouter.post('/', (req, res) => {
   const { name } = req.body;
@@ -22,34 +50,19 @@ playerRouter.post('/', (req, res) => {
   ).run(id, name.trim(), storyProgress);
 
   const player = db.prepare('SELECT * FROM players WHERE id = ?').get(id) as any;
-
-  const result: Player = {
-    id: player.id,
-    name: player.name,
-    regularPokeballs: player.regular_pokeballs,
-    premiumPokeballs: player.premium_pokeballs,
-    energy: player.energy,
-    storyProgress: JSON.parse(player.story_progress),
-    materials: {},
-    createdAt: player.created_at,
-    stardust: 0,
-    pokedollars: 0,
-    trainerLevel: 1,
-    trainerExp: 0,
-    trainerSkillPoints: 0,
-    trainerSkills: defaultTrainerSkills(),
-    legendaryPokeballs: player.legendary_pokeballs ?? 0,
-    glowingPokeballs: player.glowing_pokeballs ?? 0,
-    towerProgress: player.tower_progress ?? 0,
-    premiumPityCounter: 0,
-    mysteryPieces: {},
-  };
-
-  res.status(201).json(result);
+  res.status(201).json(rowToPlayer(player));
 });
 
 playerRouter.get('/:id', (req, res) => {
   const db = getDb();
+
+  // Compute energy regen before returning player data
+  try {
+    computeAndUpdateEnergy(req.params.id);
+  } catch {
+    // Player may not exist yet, handled below
+  }
+
   const player = db.prepare('SELECT * FROM players WHERE id = ?').get(req.params.id) as any;
 
   if (!player) {
@@ -57,27 +70,32 @@ playerRouter.get('/:id', (req, res) => {
     return;
   }
 
-  const result: Player = {
-    id: player.id,
-    name: player.name,
-    regularPokeballs: player.regular_pokeballs,
-    premiumPokeballs: player.premium_pokeballs,
-    energy: player.energy,
-    storyProgress: JSON.parse(player.story_progress),
-    materials: {},
-    createdAt: player.created_at,
-    stardust: 0,
-    pokedollars: 0,
-    trainerLevel: 1,
-    trainerExp: 0,
-    trainerSkillPoints: 0,
-    trainerSkills: defaultTrainerSkills(),
-    legendaryPokeballs: player.legendary_pokeballs ?? 0,
-    glowingPokeballs: player.glowing_pokeballs ?? 0,
-    towerProgress: player.tower_progress ?? 0,
-    premiumPityCounter: 0,
-    mysteryPieces: {},
-  };
+  res.json(rowToPlayer(player));
+});
 
-  res.json(result);
+// ── Energy ─────────────────────────────────────────────────────────────
+
+playerRouter.get('/:id/energy', (req, res) => {
+  try {
+    const result = computeAndUpdateEnergy(req.params.id);
+    res.json(result);
+  } catch (e: any) {
+    res.status(404).json({ error: e.message });
+  }
+});
+
+// ── Trainer Skill Allocation ───────────────────────────────────────────
+
+playerRouter.post('/:id/trainer-skill', (req, res) => {
+  const { skill } = req.body as { skill: keyof TrainerSkills };
+  if (!skill) {
+    res.status(400).json({ error: 'skill name required' });
+    return;
+  }
+  try {
+    const updatedSkills = allocateTrainerSkill(req.params.id, skill);
+    res.json({ trainerSkills: updatedSkills });
+  } catch (e: any) {
+    res.status(400).json({ error: e.message });
+  }
 });
