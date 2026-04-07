@@ -47,7 +47,7 @@ export function performMerge(baseInstanceId: string, fodderInstanceId: string): 
   };
 
   // Remove the fodder
-  collection.splice(fodderIdx > baseIdx ? fodderIdx : fodderIdx, 1);
+  collection.splice(fodderIdx, 1);
 
   saveCollection(collection);
 

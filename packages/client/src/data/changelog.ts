@@ -7,6 +7,16 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.3.6',
+    date: '2026-04-07',
+    changes: [
+      'Faster app loading: code splitting, reduced loading screen timer, and non-blocking service worker',
+      'Fixed merge bug with incorrect splice logic',
+      'Fixed empty summon pool crash guard',
+      'Added unit tests for game formulas',
+    ],
+  },
+  {
     version: '0.3.5',
     date: '2026-04-07',
     changes: [

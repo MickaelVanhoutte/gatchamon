@@ -205,7 +205,7 @@ export const REGIONS: RegionDef[] = [
   {
     id: 11,
     name: 'Violet Skies',
-    icon: 'bird',
+    icon: 'flying',
     color: '#6890f0',
     commonPool: [16, 17, 21, 161, 163, 164, 165, 177, 187, 198, 19, 167, 172, 175],
     bossPool: [18],                        // Pidgeot
@@ -265,7 +265,7 @@ export const REGIONS: RegionDef[] = [
   {
     id: 15,
     name: 'Cianwood Shore',
-    icon: 'fist',
+    icon: 'fighting',
     color: '#c03028',
     commonPool: [66, 67, 236, 237, 57, 62, 214, 185, 217, 231, 186, 184, 56, 232],
     bossPool: [68],                        // Machamp
@@ -280,7 +280,7 @@ export const REGIONS: RegionDef[] = [
   {
     id: 16,
     name: 'Olivine Harbor',
-    icon: 'shield',
+    icon: 'steel',
     color: '#b8b8d0',
     commonPool: [81, 82, 205, 208, 212, 227, 170, 171, 179, 180, 181, 239, 204, 219],
     bossPool: [208],                       // Steelix

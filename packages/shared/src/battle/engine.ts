@@ -858,7 +858,7 @@ function applyInstantEffect(
       for (let i = 0; i < count; i++) {
         if (target.buffs.length === 0) break;
         const idx = Math.floor(Math.random() * target.buffs.length);
-        const removed = target.buffs.splice(idx, 1)[0];
+        target.buffs.splice(idx, 1);
       }
       return `${targetTemplate.name} lost ${count} buff(s)!`;
     }

@@ -6,11 +6,13 @@ import './LoadingScreen.css';
 
 interface LoadingScreenProps {
   onStart: () => void;
+  preloadUrls?: string[];
   swReady?: boolean;
 }
 
-export function LoadingScreen({ onStart, swReady = true }: LoadingScreenProps) {
+export function LoadingScreen({ onStart, preloadUrls, swReady = true }: LoadingScreenProps) {
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
+  const [swTimedOut, setSwTimedOut] = useState(false);
   const [changelogOpen, setChangelogOpen] = useState(false);
   const [justUpdated] = useState(() => {
     const flag = sessionStorage.getItem('sw-just-updated');
@@ -19,11 +21,27 @@ export function LoadingScreen({ onStart, swReady = true }: LoadingScreenProps) {
   });
 
   useEffect(() => {
-    const timer = setTimeout(() => setMinTimeElapsed(true), 3000);
+    const timer = setTimeout(() => setMinTimeElapsed(true), 1500);
     return () => clearTimeout(timer);
   }, []);
 
-  const canStart = minTimeElapsed && swReady;
+  // Give the SW up to 3s to finish its update check, then stop waiting
+  useEffect(() => {
+    if (swReady) return;
+    const timer = setTimeout(() => setSwTimedOut(true), 3000);
+    return () => clearTimeout(timer);
+  }, [swReady]);
+
+  // Preload home screen assets during loading screen
+  useEffect(() => {
+    if (!preloadUrls || preloadUrls.length === 0) return;
+    preloadUrls.forEach(url => {
+      const img = new Image();
+      img.src = url;
+    });
+  }, [preloadUrls]);
+
+  const canStart = minTimeElapsed && (swReady || swTimedOut);
 
   return (
     <div className="loading-screen" onClick={() => { if (!canStart || changelogOpen) return; tryLockLandscape(); onStart(); }}>

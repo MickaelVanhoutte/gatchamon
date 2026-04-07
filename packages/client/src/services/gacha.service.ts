@@ -45,6 +45,7 @@ function rollShiny(): boolean {
 
 export function pickFromPool(stars: 1 | 2 | 3 | 4 | 5): PokemonTemplate {
   const pool = ACTIVE_POKEDEX.filter(p => p.naturalStars === stars && p.summonable !== false);
+  if (pool.length === 0) throw new Error(`No summonable Pokemon with ${stars} stars in ACTIVE_POKEDEX`);
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
