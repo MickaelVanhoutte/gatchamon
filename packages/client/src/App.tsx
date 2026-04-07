@@ -50,7 +50,7 @@ export function App() {
   const [cloudWipe, setCloudWipe] = useState(false);
   const [fadeFromBlack, setFadeFromBlack] = useState(false);
   const prevPath = useRef(location.pathname);
-  const fadeTimer = useRef<number>();
+  const fadeTimer = useRef<number | undefined>(undefined);
 
   // Clean up fade timer on unmount
   useEffect(() => () => clearTimeout(fadeTimer.current), []);
