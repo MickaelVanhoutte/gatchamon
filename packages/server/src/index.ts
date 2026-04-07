@@ -9,6 +9,7 @@ import { battleRouter } from './routes/battle.js';
 import { monsterManagementRouter } from './routes/monster-management.js';
 import { heldItemsRouter } from './routes/held-items.js';
 import { dailyRouter } from './routes/daily.js';
+import { adminRouter } from './routes/admin.js';
 import { initDb } from './db/schema.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -30,6 +31,7 @@ app.use('/api/battle', battleRouter);
 app.use('/api', monsterManagementRouter);
 app.use('/api/items', heldItemsRouter);
 app.use('/api/daily', dailyRouter);
+app.use('/api/admin', adminRouter);
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' });

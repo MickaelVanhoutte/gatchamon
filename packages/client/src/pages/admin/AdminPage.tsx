@@ -7,6 +7,7 @@ import { AdminEditorPanel } from './AdminEditorPanel';
 import { AdminSkillPicker } from './AdminSkillPicker';
 import { AdminDistributionPanel } from './AdminDistributionPanel';
 import { AdminEffectsPanel } from './AdminEffectsPanel';
+import { AdminDatabasePanel } from './AdminDatabasePanel';
 import { STAR_COLORS } from './constants';
 import './AdminPage.css';
 
@@ -25,7 +26,7 @@ export function AdminPage() {
     exportDiff, importDiff, resetAll, getDiffCount, getEffective,
   } = useAdminStore();
 
-  const [activeTab, setActiveTab] = useState<'editor' | 'distribution' | 'effects'>('editor');
+  const [activeTab, setActiveTab] = useState<'editor' | 'distribution' | 'effects' | 'database'>('editor');
   const [showImport, setShowImport] = useState(false);
   const [importText, setImportText] = useState('');
   const diffCount = getDiffCount();
@@ -100,6 +101,10 @@ export function AdminPage() {
             className={`admin-tab ${activeTab === 'effects' ? 'admin-tab--active' : ''}`}
             onClick={() => setActiveTab('effects')}
           >Effects</button>
+          <button
+            className={`admin-tab ${activeTab === 'database' ? 'admin-tab--active' : ''}`}
+            onClick={() => setActiveTab('database')}
+          >Database</button>
         </div>
         <div className="admin-topbar-actions">
           <button className="admin-btn" onClick={() => setShowImport(true)}>Import</button>
@@ -228,8 +233,10 @@ export function AdminPage() {
         </>
       ) : activeTab === 'distribution' ? (
         <AdminDistributionPanel />
-      ) : (
+      ) : activeTab === 'effects' ? (
         <AdminEffectsPanel />
+      ) : (
+        <AdminDatabasePanel />
       )}
 
       {/* ─── Skill Picker Modal ─── */}

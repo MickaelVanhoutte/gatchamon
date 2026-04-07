@@ -7,6 +7,14 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.3.9',
+    date: '2026-04-07',
+    changes: [
+      'Admin: new Database tab with account count, player search, and inbox message sender',
+      'Admin: broadcast inbox messages to all players with optional reward attachments',
+    ],
+  },
+  {
     version: '0.3.8',
     date: '2026-04-07',
     changes: [
