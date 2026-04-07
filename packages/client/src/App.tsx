@@ -45,6 +45,10 @@ export function App() {
   const [cloudWipe, setCloudWipe] = useState(false);
   const [fadeFromBlack, setFadeFromBlack] = useState(false);
   const prevPath = useRef(location.pathname);
+  const fadeTimer = useRef<number>();
+
+  // Clean up fade timer on unmount
+  useEffect(() => () => clearTimeout(fadeTimer.current), []);
 
   useEffect(() => {
     if (location.pathname !== prevPath.current) {
@@ -52,9 +56,11 @@ export function App() {
       const state = location.state as { fromCity?: boolean } | null;
       if (state?.fromCity) {
         // Coming from city zoom: fade from black, skip cloud wipe
+        // Use a ref-based timer so subsequent location.state changes
+        // (e.g. DungeonPage syncing search params) don't cancel it
         setFadeFromBlack(true);
-        const t = setTimeout(() => setFadeFromBlack(false), 50);
-        return () => clearTimeout(t);
+        clearTimeout(fadeTimer.current);
+        fadeTimer.current = window.setTimeout(() => setFadeFromBlack(false), 50);
       } else {
         // Normal navigation: cloud wipe
         setCloudWipe(true);
