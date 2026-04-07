@@ -137,9 +137,91 @@
   60%      { transform: scale(0.93, 0.86); opacity: 0.72; }
 }
 
+/* ========================================
+   FORAGING INDICATOR — bouncing exclamation
+   ======================================== */
+
+.city-monster-forage-indicator {
+  position: absolute;
+  top: -8px;
+  right: -4px;
+  z-index: 12;
+  animation: forage-bounce 1s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.forage-indicator-icon {
+  font-size: 1.2rem;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
+}
+
+@keyframes forage-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+/* ========================================
+   FIND BUBBLE — text bubble from pokemon
+   ======================================== */
+
+.city-monster-find-bubble {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 20, 35, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  z-index: 20;
+  margin-bottom: 8px;
+  animation: find-bubble-in 0.35s ease-out;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 215, 0, 0.15);
+}
+
+.city-monster-find-bubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(15, 20, 35, 0.92);
+}
+
+.find-bubble-icon {
+  font-size: 1rem;
+}
+
+.find-bubble-text {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+@keyframes find-bubble-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(8px) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .city-monster-sprite-wrap,
   .city-monster-shadow {
+    animation: none;
+  }
+  .city-monster-forage-indicator {
     animation: none;
   }
 }

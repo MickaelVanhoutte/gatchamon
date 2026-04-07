@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import type { OwnedPokemon } from '../../stores/gameStore';
+import type { ForagingFind } from '../../services/foraging.service';
 import { useGameStore } from '../../stores/gameStore';
 import { useRotatedHorizontalScroll } from '../../hooks/useRotatedHorizontalScroll';
 import { CityBuilding } from './CityBuilding';
@@ -30,9 +31,11 @@ const BUILDINGS = [
 interface CitySceneProps {
   monsters: OwnedPokemon[];
   onNavigate: (path: string, options?: { state?: unknown }) => void;
+  pendingFinds?: Record<string, ForagingFind>;
+  onClaimFind?: (pokemonId: string) => ForagingFind | null;
 }
 
-export function CityScene({ monsters, onNavigate }: CitySceneProps) {
+export function CityScene({ monsters, onNavigate, pendingFinds, onClaimFind }: CitySceneProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollInnerRef = useRef<HTMLDivElement>(null);
   const unclaimedRewardCount = useGameStore(s => s.unclaimedRewardCount);
@@ -101,7 +104,13 @@ export function CityScene({ monsters, onNavigate }: CitySceneProps) {
         {/* Monster layer */}
         <div className="city-monsters">
           {monsters.map((m, i) => (
-            <CityMonster key={m.instance.instanceId} owned={m} positionIndex={i} />
+            <CityMonster
+              key={m.instance.instanceId}
+              owned={m}
+              positionIndex={i}
+              pendingFind={pendingFinds?.[m.instance.instanceId] ?? null}
+              onClaimFind={onClaimFind ? () => onClaimFind(m.instance.instanceId) : undefined}
+            />
           ))}
         </div>
 

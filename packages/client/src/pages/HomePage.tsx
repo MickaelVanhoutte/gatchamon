@@ -7,6 +7,7 @@ import { CityScene } from '../components/city/CityScene';
 import { LoginCalendarModal } from '../components/LoginCalendarModal';
 import { canClaimToday } from '../services/login-calendar.service';
 import { CheatBubble } from '../components/cheat/CheatBubble';
+import { useForaging } from '../hooks/useForaging';
 import './HomePage.css';
 
 export function HomePage() {
@@ -37,6 +38,9 @@ export function HomePage() {
       .slice(0, 6);
   }, [collection]);
 
+  const monsterIds = useMemo(() => topMonsters.map(m => m.instance.instanceId), [topMonsters]);
+  const { pendingFinds, claimFind } = useForaging(monsterIds);
+
   if (!player) return null;
 
   return (
@@ -44,6 +48,8 @@ export function HomePage() {
       <CityScene
         monsters={topMonsters}
         onNavigate={navigate}
+        pendingFinds={pendingFinds}
+        onClaimFind={claimFind}
       />
       {showCalendar && <LoginCalendarModal onClose={() => setShowCalendar(false)} />}
       <CheatBubble />

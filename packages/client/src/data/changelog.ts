@@ -7,6 +7,14 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.3.5',
+    date: '2026-04-07',
+    changes: [
+      'Pokémon on the home screen now forage for items! Every 15 minutes of playtime, one of your Pokémon will find an item — tap them to collect it',
+      'Foraging loot includes Pokédollars, Stardust, Pokéballs (all rarities), and Essences',
+    ],
+  },
+  {
     version: '0.3.4',
     date: '2026-04-06',
     changes: [
