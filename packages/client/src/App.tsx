@@ -225,7 +225,7 @@ export function App() {
               <>
                 <p className="onboarding-heading">Choose your trainer name</p>
                 {USE_SERVER ? nameForm(async (trimmed) => {
-                  const result = await registerWithGoogle(googleIdToken, trimmed);
+                  const result = await registerWithGoogle(googleIdToken!, trimmed);
                   handleAuthSuccess(result);
                   setPlayer(result.player);
                   useTutorialStore.getState().advanceStep();
