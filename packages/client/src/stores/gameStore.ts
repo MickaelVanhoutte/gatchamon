@@ -169,38 +169,16 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   summon: (count: 1 | 10, type: PokeballType = 'regular') => {
-    // Tutorial summons are always fixed (same for everyone), handled client-side
+    // Tutorial summons are always fixed (same for everyone)
     const tutorialStep = useTutorialStore.getState().step;
-    if (tutorialStep === 4 && type === 'regular' && count === 1) {
-      const results = [gachaService.summonSingleRegular(58)];
-      const newPokemon: OwnedPokemon[] = results.map(r => ({
-        instance: r.pokemon,
-        template: r.template,
-      }));
-      const updatedPlayer = storage.loadPlayer()!;
-      set({ player: updatedPlayer });
-      get().loadCollection();
-      get().loadPcBox();
-      get().refreshRewards();
-      return newPokemon;
-    }
-    if (tutorialStep === 5 && type === 'premium' && count === 1) {
-      const results = [gachaService.summonSinglePremium(133)];
-      const newPokemon: OwnedPokemon[] = results.map(r => ({
-        instance: r.pokemon,
-        template: r.template,
-      }));
-      const updatedPlayer = storage.loadPlayer()!;
-      set({ player: updatedPlayer });
-      get().loadCollection();
-      get().loadPcBox();
-      get().refreshRewards();
-      return newPokemon;
-    }
+    const forcedTemplateId =
+      tutorialStep === 4 && type === 'regular' && count === 1 ? 58 :
+      tutorialStep === 5 && type === 'premium' && count === 1 ? 133 :
+      undefined;
 
     if (USE_SERVER) {
       // Server mode: async summon — returns a promise
-      return serverApi.summon(count, type).then(async (res) => {
+      return serverApi.summon(count, type, forcedTemplateId).then(async (res) => {
         const newPokemon: OwnedPokemon[] = res.results.map(r => ({
           instance: r.pokemon,
           template: r.template,
@@ -216,7 +194,11 @@ export const useGameStore = create<GameState>((set, get) => ({
     if (!player) throw new Error('No player');
 
     let results: gachaService.SummonResult[];
-    if (type === 'glowing') {
+    if (forcedTemplateId != null && type === 'regular') {
+      results = [gachaService.summonSingleRegular(forcedTemplateId)];
+    } else if (forcedTemplateId != null && type === 'premium') {
+      results = [gachaService.summonSinglePremium(forcedTemplateId)];
+    } else if (type === 'glowing') {
       results = count === 10
         ? gachaService.summonMultiGlowing()
         : [gachaService.summonSingleGlowing()];

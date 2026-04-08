@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { ACTIVE_POKEDEX, BEGINNER_BONUS, isBeginnerBonusActive } from '@gatchamon/shared';
+import { POKEDEX, ACTIVE_POKEDEX, BEGINNER_BONUS, isBeginnerBonusActive } from '@gatchamon/shared';
 import type { PokemonTemplate, PokemonInstance, PokeballType } from '@gatchamon/shared';
 import { getDb } from '../db/schema.js';
 import { DEBUG_MODE } from '../config.js';
@@ -83,15 +83,16 @@ export const SUMMON_COSTS = {
 
 // ── Regular Pokeball (1-2★) ──
 
-export function summonSingleRegular(playerId: string): SummonResult {
+export function summonSingleRegular(playerId: string, forcedTemplateId?: number): SummonResult {
   const db = getDb();
   const player = getPlayerRow(playerId);
   if (player.regular_pokeballs < REGULAR_SINGLE_COST) throw new Error('Not enough pokeballs');
 
   db.prepare('UPDATE players SET regular_pokeballs = regular_pokeballs - ? WHERE id = ?').run(REGULAR_SINGLE_COST, playerId);
 
-  const stars = rollRegularStarRating();
-  const template = pickFromPool(stars);
+  const template = forcedTemplateId != null
+    ? POKEDEX.find(p => p.id === forcedTemplateId)!
+    : pickFromPool(rollRegularStarRating());
   const pokemon = createInstance(template, playerId);
 
   return { pokemon, template };
@@ -118,7 +119,7 @@ export function summonMultiRegular(playerId: string): SummonResult[] {
 
 // ── Premium Pokeball (3-5★) with Pity ──
 
-export function summonSinglePremium(playerId: string): SummonResult {
+export function summonSinglePremium(playerId: string, forcedTemplateId?: number): SummonResult {
   const db = getDb();
   const player = getPlayerRow(playerId);
   if (player.premium_pokeballs < PREMIUM_SINGLE_COST) throw new Error('Not enough premium pokeballs');
@@ -126,10 +127,15 @@ export function summonSinglePremium(playerId: string): SummonResult {
   const pity = (player.premium_pity_counter ?? 0) + 1;
   const isPityGuarantee = pity >= PREMIUM_PITY_THRESHOLD;
 
-  const createdAt = player.created_at;
-  const beginner = createdAt ? isBeginnerBonusActive(createdAt) : false;
-  const stars = isPityGuarantee ? 5 : rollPremiumStarRating(beginner);
-  const template = pickFromPool(stars);
+  let template;
+  if (forcedTemplateId != null) {
+    template = POKEDEX.find(p => p.id === forcedTemplateId)!;
+  } else {
+    const createdAt = player.created_at;
+    const beginner = createdAt ? isBeginnerBonusActive(createdAt) : false;
+    const stars = isPityGuarantee ? 5 : rollPremiumStarRating(beginner);
+    template = pickFromPool(stars);
+  }
   const isFiveStar = template.naturalStars === 5;
 
   db.prepare(

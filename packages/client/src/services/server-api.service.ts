@@ -34,8 +34,8 @@ export interface SummonResultServer {
   results: Array<{ pokemon: PokemonInstance; template: PokemonTemplate }>;
 }
 
-export async function summon(count: 1 | 10, type: PokeballType): Promise<SummonResultServer> {
-  return api.post<SummonResultServer>('/summon', { playerId: pid(), count, type });
+export async function summon(count: 1 | 10, type: PokeballType, forcedTemplateId?: number): Promise<SummonResultServer> {
+  return api.post<SummonResultServer>('/summon', { playerId: pid(), count, type, forcedTemplateId });
 }
 
 export async function shopSummon(type: 'premium_multi' | 'legendary_single'): Promise<SummonResultServer> {

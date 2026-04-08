@@ -11,7 +11,7 @@ import {
 export const summonRouter = Router();
 
 summonRouter.post('/', (req, res) => {
-  const { playerId, count, type = 'regular' } = req.body;
+  const { playerId, count, type = 'regular', forcedTemplateId } = req.body;
 
   if (!playerId) {
     res.status(400).json({ error: 'playerId is required' });
@@ -35,7 +35,7 @@ summonRouter.post('/', (req, res) => {
         const results = summonMultiPremium(playerId);
         res.json({ results });
       } else {
-        const result = summonSinglePremium(playerId);
+        const result = summonSinglePremium(playerId, forcedTemplateId);
         res.json({ results: [result] });
       }
     } else {
@@ -43,7 +43,7 @@ summonRouter.post('/', (req, res) => {
         const results = summonMultiRegular(playerId);
         res.json({ results });
       } else {
-        const result = summonSingleRegular(playerId);
+        const result = summonSingleRegular(playerId, forcedTemplateId);
         res.json({ results: [result] });
       }
     }

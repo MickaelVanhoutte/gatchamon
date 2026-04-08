@@ -17,6 +17,7 @@ export const changelog: ChangelogEntry[] = [
       'Arena: Rival battles also available in offline mode',
       'Reset Account now fully deletes your account — you will need to re-register and replay the tutorial',
       'Tutorial: first 2 summons are now always fixed (Growlithe + Eevee) for everyone, even in server mode',
+      'UI: redesigned player name screen with background art, glass panel, particles, and polished styling',
     ],
   },
   {

@@ -140,16 +140,69 @@ export function App() {
   }
 
   if (!player) {
-    // Server mode: Google authentication required
-    if (USE_SERVER) {
-      return (
-        <div className="app app--onboarding">
-          <div className="onboarding">
-            <h1>Forge : Monster Vault</h1>
-            {!googleIdToken ? (
+    const nameForm = (onSubmitHandler: (trimmed: string) => Promise<void>) => (
+      <form className="onboarding-form" onSubmit={async (e) => {
+        e.preventDefault();
+        const trimmed = nameInput.trim();
+        if (!trimmed || isCreating) return;
+        setNameError('');
+        setIsCreating(true);
+        try {
+          await onSubmitHandler(trimmed);
+        } catch (err: any) {
+          setNameError(err.message || 'Failed to create account');
+          setIsCreating(false);
+        }
+      }}>
+        <label className="onboarding-label">Trainer Name</label>
+        <input
+          ref={inputRef}
+          type="text"
+          className="onboarding-input"
+          value={nameInput}
+          onChange={e => { setNameInput(e.target.value); setNameError(''); }}
+          placeholder="Enter your name..."
+          maxLength={20}
+          enterKeyHint="done"
+          autoComplete="off"
+          autoCorrect="off"
+        />
+        <div className="onboarding-char-count">{nameInput.length}/20</div>
+        {nameError && <p className="onboarding-error">{nameError}</p>}
+        <button type="submit" className="onboarding-submit" disabled={nameInput.trim().length < 3 || !!nameError || isCreating}>
+          {isCreating ? 'Creating...' : 'Start Adventure'}
+        </button>
+      </form>
+    );
+
+    return (
+      <div className="app app--onboarding">
+        <div className="onboarding-bg">
+          <img src={assetUrl('splash/pikachu-4.jpg')} alt="" className="onboarding-bg-img" />
+          <div className="onboarding-bg-overlay" />
+        </div>
+
+        <div className="onboarding-particles">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div key={i} className="onboarding-particle" style={{
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 6}s`,
+              animationDuration: `${4 + Math.random() * 4}s`,
+            }} />
+          ))}
+        </div>
+
+        <div className="onboarding">
+          <h1 className="onboarding-title">
+            <span className="onboarding-title-forge">Forge</span>
+            <span className="onboarding-title-sub">Monster Vault</span>
+          </h1>
+
+          <div className="onboarding-card game-panel">
+            {USE_SERVER && !googleIdToken ? (
               <>
-                <p>Sign in to play</p>
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+                <p className="onboarding-heading">Sign in to play</p>
+                <div className="onboarding-google-wrap">
                   <GoogleSignInButton onToken={async (idToken) => {
                     setAuthError('');
                     try {
@@ -159,7 +212,6 @@ export function App() {
                         setPlayer(result.player);
                         navigate('/');
                       } else {
-                        // New user: needs to pick a trainer name
                         setGoogleIdToken(idToken);
                       }
                     } catch (err: any) {
@@ -171,90 +223,27 @@ export function App() {
               </>
             ) : (
               <>
-                <p>Choose your trainer name</p>
-                <form onSubmit={async (e) => {
-                  e.preventDefault();
-                  const trimmed = nameInput.trim();
-                  if (!trimmed || isCreating) return;
-                  setNameError('');
-                  setIsCreating(true);
-                  try {
-                    const result = await registerWithGoogle(googleIdToken, trimmed);
-                    handleAuthSuccess(result);
-                    setPlayer(result.player);
-                    useTutorialStore.getState().advanceStep();
-                    navigate('/');
-                  } catch (err: any) {
-                    setNameError(err.message || 'Failed to create account');
+                <p className="onboarding-heading">Choose your trainer name</p>
+                {USE_SERVER ? nameForm(async (trimmed) => {
+                  const result = await registerWithGoogle(googleIdToken, trimmed);
+                  handleAuthSuccess(result);
+                  setPlayer(result.player);
+                  useTutorialStore.getState().advanceStep();
+                  navigate('/');
+                }) : nameForm(async (trimmed) => {
+                  const available = await checkNameAvailable(trimmed);
+                  if (!available) {
+                    setNameError('This trainer name is already taken');
                     setIsCreating(false);
+                    return;
                   }
-                }}>
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    value={nameInput}
-                    onChange={e => { setNameInput(e.target.value); setNameError(''); }}
-                    placeholder="Enter name..."
-                    maxLength={20}
-                    enterKeyHint="done"
-                    autoComplete="off"
-                    autoCorrect="off"
-                  />
-                  {nameError && <p className="onboarding-error">{nameError}</p>}
-                  <button type="submit" disabled={!nameInput.trim() || isCreating}>
-                    {isCreating ? 'Creating...' : 'Start Adventure'}
-                  </button>
-                </form>
+                  await createPlayer(trimmed);
+                  useTutorialStore.getState().advanceStep();
+                  navigate('/');
+                })}
               </>
             )}
           </div>
-        </div>
-      );
-    }
-
-    // Offline mode: original flow
-    return (
-      <div className="app app--onboarding">
-        <div className="onboarding">
-          <h1>Forge : Monster Vault</h1>
-          <p>Choose your trainer name</p>
-          <form onSubmit={async (e) => {
-            e.preventDefault();
-            const trimmed = nameInput.trim();
-            if (!trimmed || isCreating) return;
-            setNameError('');
-            setIsCreating(true);
-            try {
-              const available = await checkNameAvailable(trimmed);
-              if (!available) {
-                setNameError('This trainer name is already taken');
-                setIsCreating(false);
-                return;
-              }
-              await createPlayer(trimmed);
-              useTutorialStore.getState().advanceStep(); // step 0 → 1
-              navigate('/');
-            } catch (err: any) {
-              setNameError(err.message || 'Failed to create account');
-              setIsCreating(false);
-            }
-          }}>
-            <input
-              ref={inputRef}
-              type="text"
-              value={nameInput}
-              onChange={e => { setNameInput(e.target.value); setNameError(''); }}
-              placeholder="Enter name..."
-              maxLength={20}
-              enterKeyHint="done"
-              autoComplete="off"
-              autoCorrect="off"
-            />
-            {nameError && <p className="onboarding-error">{nameError}</p>}
-            <button type="submit" disabled={!nameInput.trim() || isCreating}>
-              {isCreating ? 'Creating...' : 'Start Adventure'}
-            </button>
-          </form>
         </div>
       </div>
     );
