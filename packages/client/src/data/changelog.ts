@@ -7,6 +7,14 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.6.1',
+    date: '2026-04-08',
+    changes: [
+      'Fix: auto-repeat dungeons now works in server mode (was reading stale energy from local storage)',
+      'Fix: foraging (pokemon home screen items) now works regardless of server/offline mode',
+    ],
+  },
+  {
     version: '0.6.0',
     date: '2026-04-08',
     changes: [
