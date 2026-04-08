@@ -30,6 +30,7 @@ import { getDb } from '../db/schema.js';
 import { spendEnergy, grantTrainerXp, earnPokedollars } from './player.service.js';
 import { generateItem } from './held-item.service.js';
 import { defaultTrainerSkills } from '@gatchamon/shared';
+import { resolveArenaRewards, getArenaBattle, setArenaBattle, deleteArenaBattle } from './arena.service.js';
 
 // ---------------------------------------------------------------------------
 // In-memory battle store
@@ -290,6 +291,9 @@ function applyXpToTeam(
 }
 
 function calcRewardsForMode(state: BattleState): BattleRewards {
+  if (state.mode === 'arena' || state.mode === 'arena-rival') {
+    return resolveArenaRewards(state);
+  }
   return state.mode === 'story' ? calculateRewards(state) : calculateDungeonRewards(state);
 }
 
@@ -518,9 +522,13 @@ export function startBattle(
 }
 
 export function resolvePlayerAction(battleId: string, action: BattleAction): BattleResult {
-  const state = activeBattles.get(battleId);
+  const state = activeBattles.get(battleId) ?? getArenaBattle(battleId);
   if (!state) throw new Error('Battle not found');
   if (state.status !== 'active') throw new Error('Battle is already over');
+
+  const isArenaMode = state.mode === 'arena' || state.mode === 'arena-rival';
+  const saveBattle = () => { if (isArenaMode) setArenaBattle(battleId, state); else activeBattles.set(battleId, state); };
+  const removeBattle = () => { if (isArenaMode) deleteArenaBattle(battleId); else activeBattles.delete(battleId); };
 
   // Validate it's the correct actor's turn
   if (state.currentActorId !== action.actorInstanceId) {
@@ -572,9 +580,12 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
       logs.push(...enemyLogs);
     }
     state.log.push(...logs);
-    activeBattles.set(battleId, state);
+    saveBattle();
     const result: BattleResult = { state };
-    if (getStatus(state) === 'victory') result.rewards = calcRewardsForMode(state);
+    const dotStatus = getStatus(state);
+    if (dotStatus === 'victory') { result.rewards = calcRewardsForMode(state); removeBattle(); }
+    else if (dotStatus === 'defeat' && isArenaMode) { result.rewards = calcRewardsForMode(state); removeBattle(); }
+    else if (dotStatus === 'defeat') { removeBattle(); }
     return result;
   }
 
@@ -612,9 +623,12 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
       logs.push(...enemyLogs);
     }
     state.log.push(...logs);
-    activeBattles.set(battleId, state);
+    saveBattle();
     const result: BattleResult = { state };
-    if (getStatus(state) === 'victory') result.rewards = calcRewardsForMode(state);
+    const ccStatus = getStatus(state);
+    if (ccStatus === 'victory') { result.rewards = calcRewardsForMode(state); removeBattle(); }
+    else if (ccStatus === 'defeat' && isArenaMode) { result.rewards = calcRewardsForMode(state); removeBattle(); }
+    else if (ccStatus === 'defeat') { removeBattle(); }
     return result;
   }
 
@@ -662,24 +676,25 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
   }
 
   state.log.push(...logs);
-  activeBattles.set(battleId, state);
+  saveBattle();
 
   const result: BattleResult = { state };
   const finalStatus = getStatus(state);
   if (finalStatus === 'victory') {
-    result.rewards = state.mode === 'story'
-      ? calculateRewards(state)
-      : calculateDungeonRewards(state);
-    activeBattles.delete(battleId);
+    result.rewards = calcRewardsForMode(state);
+    removeBattle();
   } else if (finalStatus === 'defeat') {
-    activeBattles.delete(battleId);
+    if (isArenaMode) {
+      result.rewards = calcRewardsForMode(state);
+    }
+    removeBattle();
   }
 
   return result;
 }
 
 export function getBattleState(battleId: string): BattleState | null {
-  return activeBattles.get(battleId) ?? null;
+  return activeBattles.get(battleId) ?? getArenaBattle(battleId) ?? null;
 }
 
 // ---------------------------------------------------------------------------

@@ -39,6 +39,8 @@ export function createPlayer(name: string): Player {
     towerProgress: 0,
     premiumPityCounter: 0,
     mysteryPieces: {},
+    arenaElo: 1000,
+    arenaCoins: 0,
   };
   savePlayer(player);
   return player;

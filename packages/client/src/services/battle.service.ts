@@ -1,4 +1,4 @@
-import { getTemplate as getTemplateShared, computeStats, computeStatsWithItems, getActiveSetEffects, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel, BEGINNER_BONUS, isBeginnerBonusActive, getTowerFloor, getTowerEnemyPool, getCurrentTowerResetDate, STORY_ENERGY_COST, getMysteryDungeonDef, getMysteryDungeonDateKey } from '@gatchamon/shared';
+import { getTemplate as getTemplateShared, computeStats, computeStatsWithItems, getActiveSetEffects, xpToNextLevel, MAX_LEVEL_BY_STARS, isMaxLevel, BEGINNER_BONUS, isBeginnerBonusActive, getTowerFloor, getTowerEnemyPool, getCurrentTowerResetDate, STORY_ENERGY_COST, getMysteryDungeonDef, getMysteryDungeonDateKey, getArenaRivalTeam } from '@gatchamon/shared';
 import { getSkillsForPokemon, SKILLS } from '@gatchamon/shared';
 import { TOTAL_REGIONS, getFloorCount, isLeagueRegion, getArcForRegion, getNextRegionInArc, STORY_ARCS } from '@gatchamon/shared';
 import {
@@ -360,7 +360,39 @@ function calculateMysteryDungeonRewards(state: BattleState): BattleRewards {
   };
 }
 
+function calculateArenaRivalRewards(state: BattleState): BattleRewards {
+  const won = state.status === 'victory';
+  if (!won) {
+    return { regularPokeballs: 0, premiumPokeballs: 0, xpPerMon: 0, levelUps: [] };
+  }
+  const stardust = 30;
+  const arenaCoins = 5;
+  const player = loadPlayer();
+  if (player) {
+    savePlayer({
+      ...player,
+      stardust: player.stardust + stardust,
+      arenaCoins: (player.arenaCoins ?? 0) + arenaCoins,
+    });
+  }
+  return {
+    regularPokeballs: 0,
+    premiumPokeballs: 0,
+    xpPerMon: 0,
+    levelUps: [],
+    stardust,
+    arenaCoins,
+  };
+}
+
 function calculateRewards(state: BattleState): BattleRewards {
+  if (state.mode === 'arena-rival') {
+    return calculateArenaRivalRewards(state);
+  }
+  if (state.mode === 'arena') {
+    // PvP doesn't happen offline — return nothing
+    return { regularPokeballs: 0, premiumPokeballs: 0, xpPerMon: 0, levelUps: [] };
+  }
   if (state.mode === 'mystery-dungeon') {
     return calculateMysteryDungeonRewards(state);
   }
@@ -1158,6 +1190,9 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
     result.rewards = calculateRewards(state);
     activeBattles.delete(battleId);
   } else if (finalStatus === 'defeat') {
+    if (state.mode === 'arena-rival') {
+      result.rewards = calculateArenaRivalRewards(state);
+    }
     activeBattles.delete(battleId);
   }
 
@@ -1206,6 +1241,38 @@ export function getStoredRewards(battleId: string): BattleRewards | undefined {
 export function deleteBattle(battleId: string): void {
   activeBattles.delete(battleId);
   precomputedRewards.delete(battleId);
+}
+
+// ---------------------------------------------------------------------------
+// Arena rival battle (offline mode)
+// ---------------------------------------------------------------------------
+
+export function startArenaRivalBattle(
+  teamInstanceIds: string[],
+  rivalId: string,
+): BattleResult {
+  const player = loadPlayer();
+  if (!player) throw new Error('Player not found');
+
+  const attackerElo = player.arenaElo ?? 1000;
+  const rivalTeam = getArenaRivalTeam(rivalId, attackerElo);
+  if (!rivalTeam) throw new Error(`Unknown rival ${rivalId}`);
+
+  const collection = loadCollection();
+  const playerTeam: BattleMon[] = [];
+  for (const instId of teamInstanceIds) {
+    const inst = collection.find(p => p.instanceId === instId && p.ownerId === player.id);
+    if (!inst) throw new Error(`Pokemon instance ${instId} not found`);
+    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true, inst.skillLevels));
+  }
+  if (playerTeam.length === 0) throw new Error('Team cannot be empty');
+
+  const enemyTeam: BattleMon[] = rivalTeam.templateIds.map(tid => {
+    const id = `rival_${crypto.randomUUID()}`;
+    return makeBattleMon(id, tid, rivalTeam.level, rivalTeam.stars, false);
+  });
+
+  return initBattle(playerTeam, enemyTeam, { region: 0, floor: 0, difficulty: 'normal' }, 'arena-rival', player.id);
 }
 
 // Re-export shared engine functions that the UI needs

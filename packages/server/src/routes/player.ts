@@ -31,6 +31,8 @@ export function rowToPlayer(row: any): Player {
     trainerSkillPoints: row.trainer_skill_points ?? 0,
     trainerSkills: row.trainer_skills ? JSON.parse(row.trainer_skills) : defaultTrainerSkills(),
     premiumPityCounter: row.premium_pity_counter ?? 0,
+    arenaElo: row.arena_elo ?? 1000,
+    arenaCoins: row.arena_coins ?? 0,
     googleId: row.google_id ?? undefined,
     googleEmail: row.google_email ?? undefined,
   };

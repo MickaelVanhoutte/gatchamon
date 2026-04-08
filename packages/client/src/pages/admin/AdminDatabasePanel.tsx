@@ -184,7 +184,6 @@ export function AdminDatabasePanel() {
   const [inboxMessage, setInboxMessage] = useState('');
   const [inboxReward, setInboxReward] = useState<Record<string, number>>({});
   const [sendStatus, setSendStatus] = useState('');
-  const [broadcastMode, setBroadcastMode] = useState(false);
 
   // ── Error state ──
   const [globalError, setGlobalError] = useState('');
@@ -331,27 +330,41 @@ export function AdminDatabasePanel() {
     }
   }
 
-  async function handleSendInbox() {
+  async function handleSendToPlayer() {
     if (!inboxTitle.trim() || !inboxMessage.trim()) {
       setSendStatus('Title and message are required');
       return;
     }
+    if (!selectedPlayer) { setSendStatus('Select a player first'); return; }
     const reward = Object.keys(inboxReward).length > 0 ? inboxReward : undefined;
     setSendStatus('Sending...');
     try {
-      if (broadcastMode) {
-        const res = await api.post<{ ok: boolean; sent: number }>('/admin/inbox/broadcast', {
-          title: inboxTitle, message: inboxMessage, reward,
-        }, ADMIN_API_OPTS);
-        setSendStatus(`Broadcast sent to ${res.sent} players`);
-      } else {
-        if (!selectedPlayer) { setSendStatus('Select a player first'); return; }
-        await api.post('/admin/inbox/send', {
-          playerId: selectedPlayer.player.id,
-          title: inboxTitle, message: inboxMessage, reward,
-        }, ADMIN_API_OPTS);
-        setSendStatus(`Sent to ${selectedPlayer.player.trainerName}`);
-      }
+      await api.post('/admin/inbox/send', {
+        playerId: selectedPlayer.player.id,
+        title: inboxTitle, message: inboxMessage, reward,
+      }, ADMIN_API_OPTS);
+      setSendStatus(`Sent to ${selectedPlayer.player.trainerName}`);
+      setInboxTitle('');
+      setInboxMessage('');
+      setInboxReward({});
+    } catch (e: any) {
+      setSendStatus(`Error: ${e.message}`);
+    }
+  }
+
+  async function handleBroadcast() {
+    if (!inboxTitle.trim() || !inboxMessage.trim()) {
+      setSendStatus('Title and message are required');
+      return;
+    }
+    if (!confirm('Send this message to ALL players?')) return;
+    const reward = Object.keys(inboxReward).length > 0 ? inboxReward : undefined;
+    setSendStatus('Broadcasting...');
+    try {
+      const res = await api.post<{ ok: boolean; sent: number }>('/admin/inbox/broadcast', {
+        title: inboxTitle, message: inboxMessage, reward,
+      }, ADMIN_API_OPTS);
+      setSendStatus(`Broadcast sent to ${res.sent} players`);
       setInboxTitle('');
       setInboxMessage('');
       setInboxReward({});
@@ -759,118 +772,66 @@ export function AdminDatabasePanel() {
             </div>
           )}
 
-          {/* ── Send Inbox ── */}
-          <div className="admin-db-section">
-            <h2 className="admin-db-section-title">Send Inbox Message</h2>
-
-            <div className="admin-db-inbox-mode">
-              <label className="admin-toggle">
-                <input type="checkbox" checked={broadcastMode} onChange={e => setBroadcastMode(e.target.checked)} />
-                Broadcast to all players
-              </label>
-              {!broadcastMode && (
-                <span className="admin-db-hint">
-                  Sending to: {selectedPlayer.player.trainerName}
-                </span>
-              )}
-            </div>
-
-            <input
-              className="admin-search admin-db-inbox-input"
-              type="text"
-              placeholder="Title"
-              value={inboxTitle}
-              onChange={e => setInboxTitle(e.target.value)}
-              autoComplete="off"
-            />
-            <textarea
-              className="admin-db-inbox-textarea"
-              placeholder="Message..."
-              value={inboxMessage}
-              onChange={e => setInboxMessage(e.target.value)}
-            />
-
-            <div className="admin-db-reward-section">
-              <span className="admin-db-reward-title">Attached Rewards (optional)</span>
-              <div className="admin-db-reward-grid">
-                {REWARD_FIELDS.map(f => (
-                  <div key={f.key} className="admin-db-reward-field">
-                    <label className="admin-db-reward-label">{f.label}</label>
-                    <input
-                      className="admin-stat-input"
-                      type="number"
-                      min="0"
-                      placeholder="0"
-                      value={inboxReward[f.key] ?? ''}
-                      onChange={e => updateRewardField(f.key, e.target.value)}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="admin-db-inbox-actions">
-              <button
-                className={`admin-btn ${broadcastMode ? 'admin-btn--danger' : 'admin-btn--primary'}`}
-                onClick={handleSendInbox}
-                disabled={!inboxTitle.trim() || !inboxMessage.trim()}
-              >
-                {broadcastMode ? 'Broadcast to All' : 'Send to Player'}
-              </button>
-              {sendStatus && <span className="admin-db-send-status">{sendStatus}</span>}
-            </div>
-          </div>
         </>
       )}
 
-      {/* Inbox section when no player selected (broadcast only) */}
-      {!selectedPlayer && !detailLoading && (
-        <div className="admin-db-section">
-          <h2 className="admin-db-section-title">Broadcast Message</h2>
-          <input
-            className="admin-search admin-db-inbox-input"
-            type="text"
-            placeholder="Title"
-            value={inboxTitle}
-            onChange={e => setInboxTitle(e.target.value)}
-            autoComplete="off"
-          />
-          <textarea
-            className="admin-db-inbox-textarea"
-            placeholder="Message..."
-            value={inboxMessage}
-            onChange={e => setInboxMessage(e.target.value)}
-          />
-          <div className="admin-db-reward-section">
-            <span className="admin-db-reward-title">Attached Rewards (optional)</span>
-            <div className="admin-db-reward-grid">
-              {REWARD_FIELDS.map(f => (
-                <div key={f.key} className="admin-db-reward-field">
-                  <label className="admin-db-reward-label">{f.label}</label>
-                  <input
-                    className="admin-stat-input"
-                    type="number"
-                    min="0"
-                    placeholder="0"
-                    value={inboxReward[f.key] ?? ''}
-                    onChange={e => updateRewardField(f.key, e.target.value)}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="admin-db-inbox-actions">
-            <button
-              className="admin-btn admin-btn--danger"
-              onClick={() => { setBroadcastMode(true); handleSendInbox(); }}
-              disabled={!inboxTitle.trim() || !inboxMessage.trim()}
-            >
-              Broadcast to All
-            </button>
-            {sendStatus && <span className="admin-db-send-status">{sendStatus}</span>}
+      {/* ── Send Inbox (always visible) ── */}
+      <div className="admin-db-section">
+        <h2 className="admin-db-section-title">Send Inbox Message</h2>
+
+        <input
+          className="admin-search admin-db-inbox-input"
+          type="text"
+          placeholder="Title"
+          value={inboxTitle}
+          onChange={e => setInboxTitle(e.target.value)}
+          autoComplete="off"
+        />
+        <textarea
+          className="admin-db-inbox-textarea"
+          placeholder="Message..."
+          value={inboxMessage}
+          onChange={e => setInboxMessage(e.target.value)}
+        />
+
+        <div className="admin-db-reward-section">
+          <span className="admin-db-reward-title">Attached Rewards (optional)</span>
+          <div className="admin-db-reward-grid">
+            {REWARD_FIELDS.map(f => (
+              <div key={f.key} className="admin-db-reward-field">
+                <label className="admin-db-reward-label">{f.label}</label>
+                <input
+                  className="admin-stat-input"
+                  type="number"
+                  min="0"
+                  placeholder="0"
+                  value={inboxReward[f.key] ?? ''}
+                  onChange={e => updateRewardField(f.key, e.target.value)}
+                />
+              </div>
+            ))}
           </div>
         </div>
-      )}
+
+        <div className="admin-db-inbox-actions">
+          <button
+            className="admin-btn admin-btn--primary"
+            onClick={handleSendToPlayer}
+            disabled={!inboxTitle.trim() || !inboxMessage.trim() || !selectedPlayer}
+            title={!selectedPlayer ? 'Select a player first' : undefined}
+          >
+            Send to {selectedPlayer?.player.trainerName ?? 'Player'}
+          </button>
+          <button
+            className="admin-btn admin-btn--danger"
+            onClick={handleBroadcast}
+            disabled={!inboxTitle.trim() || !inboxMessage.trim()}
+          >
+            Send to All
+          </button>
+          {sendStatus && <span className="admin-db-send-status">{sendStatus}</span>}
+        </div>
+      </div>
     </div>
   );
 }

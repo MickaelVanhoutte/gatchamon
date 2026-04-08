@@ -14,6 +14,7 @@ const TABS = [
   { path: '/missions', icon: 'trophy', badge: true, tutorialId: 'nav-missions' },
   { path: '/story', icon: 'swords', badge: false, tutorialId: 'nav-story' },
   { path: '/dungeons', icon: 'dungeon', badge: false, tutorialId: 'nav-dungeons' },
+  { path: '/arena', icon: 'swords', badge: false, tutorialId: 'nav-arena' },
   { path: '/trainer', icon: 'trainer', badge: false, tutorialId: 'nav-trainer' },
 ];
 

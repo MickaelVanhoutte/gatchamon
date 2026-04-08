@@ -228,6 +228,36 @@ export async function saveDungeonRecord(key: string, floor: number, timeSec: num
   await api.post(`/daily/dungeon-records/${pid()}`, { key, floor, timeSec });
 }
 
+// ── Arena ─────────────────────────────────────────────────────────────
+
+export async function getArenaDefense(): Promise<any> {
+  return api.get(`/arena/defense/${pid()}`);
+}
+
+export async function setArenaDefense(teamInstanceIds: string[]): Promise<any> {
+  return api.post('/arena/defense', { playerId: pid(), teamInstanceIds });
+}
+
+export async function getArenaOpponents(): Promise<any> {
+  return api.get(`/arena/opponents/${pid()}`);
+}
+
+export async function startArenaBattle(teamInstanceIds: string[], defenderId: string): Promise<any> {
+  return api.post('/arena/battle/start', { playerId: pid(), teamInstanceIds, defenderId });
+}
+
+export async function startRivalBattle(teamInstanceIds: string[], rivalId: string): Promise<any> {
+  return api.post('/arena/rival/start', { playerId: pid(), teamInstanceIds, rivalId });
+}
+
+export async function getArenaHistory(): Promise<any> {
+  return api.get(`/arena/history/${pid()}`);
+}
+
+export async function getArenaRivals(): Promise<any> {
+  return api.get(`/arena/rivals/${pid()}`);
+}
+
 // ── Reset ─────────────────────────────────────────────────────────────
 
 export async function resetPlayer(): Promise<void> {

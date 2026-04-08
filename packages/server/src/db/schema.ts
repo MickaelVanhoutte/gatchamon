@@ -75,6 +75,7 @@ export function initDb(): void {
   migrateCreateDungeonRecords(database);
   migrateCreateForagingState(database);
   migrateGoogleAuth(database);
+  migrateArena(database);
 
   console.log('Database initialized');
 }
@@ -285,6 +286,52 @@ function migrateGoogleAuth(database: Database.Database): void {
   } catch {
     // Index already exists
   }
+}
+
+function migrateArena(database: Database.Database): void {
+  // Player columns
+  try { database.exec('ALTER TABLE players ADD COLUMN arena_elo INTEGER NOT NULL DEFAULT 1000'); } catch { /* exists */ }
+  try { database.exec('ALTER TABLE players ADD COLUMN arena_coins INTEGER NOT NULL DEFAULT 0'); } catch { /* exists */ }
+
+  // Defense team table
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS arena_defense (
+      player_id TEXT PRIMARY KEY,
+      team_instance_ids TEXT NOT NULL DEFAULT '[]',
+      updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (player_id) REFERENCES players(id)
+    );
+  `);
+
+  // Battle history table
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS arena_history (
+      id TEXT PRIMARY KEY,
+      attacker_id TEXT NOT NULL,
+      defender_id TEXT NOT NULL,
+      attacker_won INTEGER NOT NULL,
+      attacker_team TEXT NOT NULL DEFAULT '[]',
+      defender_team TEXT NOT NULL DEFAULT '[]',
+      attacker_elo_change INTEGER NOT NULL DEFAULT 0,
+      defender_elo_change INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (attacker_id) REFERENCES players(id),
+      FOREIGN KEY (defender_id) REFERENCES players(id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_arena_history_defender ON arena_history(defender_id);
+    CREATE INDEX IF NOT EXISTS idx_arena_history_attacker ON arena_history(attacker_id);
+  `);
+
+  // Rival cooldowns
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS arena_rival_cooldowns (
+      player_id TEXT NOT NULL,
+      rival_id TEXT NOT NULL,
+      last_battle_date TEXT NOT NULL,
+      PRIMARY KEY (player_id, rival_id),
+      FOREIGN KEY (player_id) REFERENCES players(id)
+    );
+  `);
 }
 
 function migrateStoryProgress(database: Database.Database): void {

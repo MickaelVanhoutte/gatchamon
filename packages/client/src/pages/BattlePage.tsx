@@ -577,7 +577,9 @@ export function BattlePage() {
       return;
     }
 
-    if (state?.mode === 'tower') {
+    if (state?.mode === 'arena' || state?.mode === 'arena-rival') {
+      navigate('/arena');
+    } else if (state?.mode === 'tower') {
       navigate('/dungeons?tab=tower');
     } else if (state?.mode === 'dungeon' || state?.mode === 'item-dungeon') {
       const tab = state.mode === 'item-dungeon' ? 'items' : 'essence';
@@ -845,6 +847,14 @@ export function BattlePage() {
                   )}
                   {rewards.stardust != null && rewards.stardust > 0 && (
                     <p>+ {rewards.stardust.toLocaleString()} <span style={{color:'#c4b5fd'}}><GameIcon id="stardust" size={12} /></span> Stardust</p>
+                  )}
+                  {rewards.arenaCoins != null && rewards.arenaCoins > 0 && (
+                    <p>+ {rewards.arenaCoins} <span style={{color:'#F7D117'}}>🪙</span> Arena Coins</p>
+                  )}
+                  {rewards.arenaEloChange != null && (
+                    <p style={{color: rewards.arenaEloChange >= 0 ? '#4ade80' : '#f87171'}}>
+                      {rewards.arenaEloChange >= 0 ? '+' : ''}{rewards.arenaEloChange} ELO
+                    </p>
                   )}
                   {rewards.essences && Object.keys(rewards.essences).length > 0 && (
                     <div className="essence-drops">

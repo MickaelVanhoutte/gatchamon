@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
 import { REGIONS, DUNGEONS, ITEM_DUNGEONS, getTemplate, getTowerFloor, getTowerEnemyPool, getCurrentTowerResetDate, getFloorCount, getGymLeader, getLeagueChampion, isLeagueRegion, isActivePokemon, STORY_ENERGY_COST, getMysteryDungeonDef } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
-import { startBattle, startDungeonBattle, startItemDungeonBattle, startTowerBattle, startMysteryDungeonBattle } from '../services/battle.service';
+import { startBattle, startDungeonBattle, startItemDungeonBattle, startTowerBattle, startMysteryDungeonBattle, startArenaRivalBattle } from '../services/battle.service';
 import { buildFloorEnemies } from '../services/floor.service';
 import { loadLastTeam, saveLastTeam, getTeamKey } from '../services/storage';
 import { USE_SERVER } from '../config';
@@ -55,6 +55,7 @@ export function TeamSelectPage() {
   const difficulty = (searchParams.get('difficulty') as Difficulty) ?? 'normal';
   const dungeonId = Number(searchParams.get('dungeonId') ?? 0);
   const dungeonFloor = Number(searchParams.get('floor') ?? 0);
+  const isArenaMode = mode === 'arena' || mode === 'arena-rival';
   const isDungeonMode = mode === 'dungeon' || mode === 'item-dungeon' || mode === 'mystery-dungeon';
   const teamKey = getTeamKey(mode, dungeonId);
 
@@ -93,6 +94,26 @@ export function TeamSelectPage() {
 
   // Build enemy preview
   const enemyPreviews = useMemo((): EnemyPreview[] => {
+    if (isArenaMode) {
+      // Enemy data passed via search params
+      try {
+        const raw = searchParams.get('enemies');
+        if (raw) {
+          const parsed = JSON.parse(decodeURIComponent(raw));
+          return (parsed as Array<{ templateId: number; level: number; stars: number }>).map(e => {
+            const tmpl = getTemplate(e.templateId);
+            return {
+              templateId: e.templateId,
+              name: tmpl?.name ?? '???',
+              spriteUrl: tmpl?.spriteUrl ?? '',
+              level: e.level,
+              stars: e.stars,
+            };
+          });
+        }
+      } catch { /* ignore */ }
+      return [];
+    }
     if (mode === 'mystery-dungeon' && mysteryDungeonDef) {
       const floorData = mysteryDungeonDef.floors[dungeonFloor];
       if (!floorData) return [];
@@ -214,7 +235,13 @@ export function TeamSelectPage() {
       if (USE_SERVER) {
         // Server mode: all battle start calls are async
         let result: any;
-        if (mode === 'mystery-dungeon') {
+        if (mode === 'arena') {
+          const defenderId = searchParams.get('defenderId')!;
+          result = await serverApi.startArenaBattle(selected, defenderId);
+        } else if (mode === 'arena-rival') {
+          const rivalId = searchParams.get('rivalId')!;
+          result = await serverApi.startRivalBattle(selected, rivalId);
+        } else if (mode === 'mystery-dungeon') {
           result = await serverApi.startMysteryDungeonBattle(selected, dungeonFloor);
         } else if (mode === 'tower') {
           const towerFloor = Number(searchParams.get('floor') ?? 1);
@@ -231,7 +258,11 @@ export function TeamSelectPage() {
         navigate(`/battle/${battleId}`);
       } else {
         // Offline mode: sync battle start
-        if (mode === 'mystery-dungeon') {
+        if (mode === 'arena-rival') {
+          const rivalId = searchParams.get('rivalId')!;
+          const result = startArenaRivalBattle(selected, rivalId);
+          navigate(`/battle/${result.state.battleId}`);
+        } else if (mode === 'mystery-dungeon') {
           const result = startMysteryDungeonBattle(selected, dungeonFloor);
           navigate(`/battle/${result.state.battleId}`);
         } else if (mode === 'tower') {

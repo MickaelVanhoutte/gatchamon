@@ -36,9 +36,11 @@ export interface BattleState {
   status: 'active' | 'victory' | 'defeat';
   log: BattleLogEntry[];
   floor: { region: number; floor: number; difficulty: Difficulty };
-  mode: 'story' | 'dungeon' | 'item-dungeon' | 'tower' | 'mystery-dungeon';
+  mode: 'story' | 'dungeon' | 'item-dungeon' | 'tower' | 'mystery-dungeon' | 'arena' | 'arena-rival';
   dungeonId?: number;
   mysteryDateKey?: string;  // "YYYY-MM-DD" for mystery dungeon reward lookup
+  arenaDefenderId?: string;   // PvP arena: defender player ID
+  arenaRivalId?: string;      // Arena rival: gym leader rival ID
   recap?: Record<string, { hpHealed: number }>;
 }
 
@@ -84,6 +86,8 @@ export interface BattleRewards {
   trainerLeveledUp?: boolean;
   trainerNewLevel?: number;
   mysteryPieces?: { templateId: number; count: number };
+  arenaCoins?: number;
+  arenaEloChange?: number;
 }
 
 export interface BattleResult {

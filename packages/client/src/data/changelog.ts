@@ -7,6 +7,17 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.5.0',
+    date: '2026-04-08',
+    changes: [
+      'Arena: PvP arena with ELO-based matchmaking — set a defense team and battle other players\' defenses',
+      'Arena: Gym leader rivals — battle familiar faces once per day for arena coins and stardust',
+      'Arena: Attack history — see who attacked your defense team and the results',
+      'Arena: New currency — Arena Coins earned from PvP and rival battles',
+      'Arena: Rival battles also available in offline mode',
+    ],
+  },
+  {
     version: '0.4.1',
     date: '2026-04-08',
     changes: [
