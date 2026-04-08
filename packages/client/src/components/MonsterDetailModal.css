@@ -85,6 +85,19 @@
   letter-spacing: 0.5px;
 }
 
+/* Leader Skill */
+.mdm-leader-skill {
+  background: linear-gradient(90deg, rgba(251, 191, 36, 0.1), transparent);
+  border-radius: 8px;
+  padding: 8px 10px !important;
+  border-left: 3px solid #fbbf24;
+}
+.mdm-leader-skill h4 { color: #fbbf24 !important; }
+.mdm-leader-desc {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
 /* Stats */
 .mdm-stats {
   display: flex;

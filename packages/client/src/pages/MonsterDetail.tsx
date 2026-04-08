@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
-import { computeStats } from '@gatchamon/shared';
+import { computeStats, describeLeaderSkill } from '@gatchamon/shared';
 import type { BaseStats } from '@gatchamon/shared';
 import { GameIcon, StarRating } from '../components/icons';
 import { assetUrl } from '../utils/asset-url';
@@ -90,6 +90,13 @@ export function MonsterDetail() {
           </span>
         ))}
       </div>
+
+      {template.leaderSkill && (
+        <div className="detail-leader-skill">
+          <span className="detail-leader-icon">&#x1F451;</span>
+          <span className="detail-leader-text">{describeLeaderSkill(template.leaderSkill)}</span>
+        </div>
+      )}
 
       <div className="detail-stats">
         {(Object.keys(STAT_LABELS) as Array<keyof BaseStats>).map(key => (

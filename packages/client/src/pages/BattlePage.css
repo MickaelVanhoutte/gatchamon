@@ -616,6 +616,10 @@
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
   font-weight: 600;
 }
+.mon-leader-crown {
+  font-size: 0.6rem;
+  margin-right: 2px;
+}
 
 /* ── Boss monster ─────────────────────────────────────────────────── */
 .boss-mon .mon-name {

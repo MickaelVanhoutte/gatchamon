@@ -1,5 +1,5 @@
 import type { BaseStats } from '@gatchamon/shared';
-import { computeStats, computeStatsWithItems, getSkillsForPokemon, getItemSet, STAT_TYPE_LABELS } from '@gatchamon/shared';
+import { computeStats, computeStatsWithItems, getSkillsForPokemon, getItemSet, STAT_TYPE_LABELS, describeLeaderSkill } from '@gatchamon/shared';
 import type { OwnedPokemon } from '../stores/gameStore';
 import { getItemsForPokemon } from '../services/storage';
 import { GameIcon, StarRating } from './icons';
@@ -64,6 +64,14 @@ export function MonsterDetailModal({ pokemon, onClose }: MonsterDetailModalProps
             </div>
           </div>
         </div>
+
+        {/* Leader Skill */}
+        {template.leaderSkill && (
+          <div className="mdm-section mdm-leader-skill">
+            <h4>&#x1F451; Leader Skill</h4>
+            <div className="mdm-leader-desc">{describeLeaderSkill(template.leaderSkill)}</div>
+          </div>
+        )}
 
         {/* Stats */}
         <div className="mdm-section">

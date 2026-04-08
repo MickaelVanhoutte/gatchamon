@@ -733,6 +733,7 @@ export function BattlePage() {
               <BattleMonSprite
                 key={mon.instanceId}
                 mon={mon}
+                isLeader={i === 0}
                 isTargetable={isAutoOn || (isPlayerTurn && selectedSkill !== null)}
                 isFocused={focusTargetId === mon.instanceId}
                 onClick={() => {
@@ -764,6 +765,7 @@ export function BattlePage() {
               <BattleMonSprite
                 key={mon.instanceId}
                 mon={mon}
+                isLeader={i === 0}
                 isActive={mon.instanceId === state.currentActorId}
                 onEffectClick={handleEffectClick}
                 arcOffset={arcOffset}
@@ -1079,6 +1081,7 @@ function StatusOverlay({ mon }: { mon: BattleMon }) {
 
 function BattleMonSprite({
   mon,
+  isLeader,
   isTargetable,
   isActive,
   isFocused,
@@ -1089,6 +1092,7 @@ function BattleMonSprite({
   arcOffset,
 }: {
   mon: BattleMon;
+  isLeader?: boolean;
   isTargetable?: boolean;
   isActive?: boolean;
   isFocused?: boolean;
@@ -1138,7 +1142,8 @@ function BattleMonSprite({
     </div>
   );
 
-  const nameLabel = <span className="mon-name">{tmpl.name}</span>;
+  const hasLeaderSkill = isLeader && tmpl.leaderSkill;
+  const nameLabel = <span className="mon-name">{hasLeaderSkill && <span className="mon-leader-crown">&#x1F451;</span>}{tmpl.name}</span>;
   const effectIcons = mon.isAlive && <EffectIcons mon={mon} onEffectClick={onEffectClick} />;
   const effArrow = effectiveness !== null && mon.isAlive && (
     <EffectivenessArrow effectiveness={effectiveness} />

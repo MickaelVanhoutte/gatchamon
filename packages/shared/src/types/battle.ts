@@ -7,6 +7,7 @@ export interface ActiveEffect {
   value: number;              // Magnitude (shield HP remaining, 1 for unique effects)
   remainingTurns: number;     // Countdown, 999 = permanent (legacy passives)
   sourceId?: string;          // Who applied it (for provoke targeting)
+  isLeaderSkill?: boolean;    // Leader skill buffs — cannot be stripped/cleansed/stolen
 }
 
 export interface BattleMon {

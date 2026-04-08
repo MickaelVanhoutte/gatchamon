@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
-import { REGIONS, DUNGEONS, ITEM_DUNGEONS, getTemplate, getTowerFloor, getTowerEnemyPool, getCurrentTowerResetDate, getFloorCount, getGymLeader, getLeagueChampion, isLeagueRegion, isActivePokemon, STORY_ENERGY_COST, getMysteryDungeonDef } from '@gatchamon/shared';
+import { REGIONS, DUNGEONS, ITEM_DUNGEONS, getTemplate, getTowerFloor, getTowerEnemyPool, getCurrentTowerResetDate, getFloorCount, getGymLeader, getLeagueChampion, isLeagueRegion, isActivePokemon, STORY_ENERGY_COST, getMysteryDungeonDef, describeLeaderSkill } from '@gatchamon/shared';
 import type { Difficulty } from '@gatchamon/shared';
 import { startBattle, startDungeonBattle, startItemDungeonBattle, startTowerBattle, startMysteryDungeonBattle, startArenaRivalBattle } from '../services/battle.service';
 import { buildFloorEnemies } from '../services/floor.service';
@@ -346,6 +346,19 @@ export function TeamSelectPage() {
         <span className="ts-stage-name">{headerText}</span>
         <span className="ts-pick-count">{selected.length}/4</span>
       </div>
+
+      {/* Leader Skill Banner */}
+      {(() => {
+        const leaderMon = selected[0] ? collection.find(m => m.instance.instanceId === selected[0]) : null;
+        const ls = leaderMon?.template.leaderSkill;
+        if (!ls) return null;
+        return (
+          <div className="ts-leader-skill">
+            <span className="ts-leader-icon">&#x1F451;</span>
+            <span className="ts-leader-text">{describeLeaderSkill(ls)}</span>
+          </div>
+        );
+      })()}
 
       {/* VS Panel */}
       <div className="ts-vs-panel">

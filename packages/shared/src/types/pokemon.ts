@@ -15,6 +15,18 @@ export interface BaseStats {
   res: number;
 }
 
+// ---------------------------------------------------------------------------
+// Leader skill types
+// ---------------------------------------------------------------------------
+
+export type LeaderSkillStat = 'hp' | 'atk' | 'def' | 'spd' | 'critRate' | 'acc' | 'res';
+
+export interface LeaderSkillDefinition {
+  stat: LeaderSkillStat;
+  percent: number;                    // e.g., 24 for +24%
+  elementRestriction?: PokemonType;   // undefined = universal (all allies)
+}
+
 export interface PokemonTemplate {
   id: number;
   name: string;
@@ -25,6 +37,7 @@ export interface PokemonTemplate {
   skillIds: [string, string, string];
   height: number; // meters, from official Pokedex
   summonable?: boolean;
+  leaderSkill?: LeaderSkillDefinition;
 }
 
 export interface PokemonInstance {
@@ -72,7 +85,15 @@ export type BuffEffectId =
   | 'evasion'          // 50% chance to dodge attacks
   | 'amplify'          // Next attack +50% damage (consumed)
   | 'nullify'          // Blocks next debuff (consumed)
-  | 'skill_refresh';   // Next skill has no cooldown (consumed)
+  | 'skill_refresh'    // Next skill has no cooldown (consumed)
+  // Leader skill buffs (variable %, read from effect.value)
+  | 'leader_hp'
+  | 'leader_atk'
+  | 'leader_def'
+  | 'leader_spd'
+  | 'leader_crit_rate'
+  | 'leader_acc'
+  | 'leader_res';
 
 // SW Debuffs
 export type DebuffEffectId =

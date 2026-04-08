@@ -14,6 +14,7 @@ export interface EffectMeta {
     stat: keyof BaseStats;
     percent: number;      // e.g., 50 for +50%, -70 for -70%
     perStack?: boolean;   // If true, percent is multiplied by stack count
+    useEffectValue?: boolean; // If true, read percent from ActiveEffect.value (for leader skills)
   };
   dot?: {                 // Damage over time
     percentHp?: number;   // % of max HP per turn
@@ -121,7 +122,44 @@ export const EFFECT_REGISTRY: Record<EffectId, EffectMeta> = {
     unique: true, icon: 'skill-refresh', color: '#2dd4bf',
   },
 
-  // ── SW Debuffs ───────────────────────────────────────────────────────
+  // ── Leader Skill Buffs (variable %, read from effect.value) ──────────
+  leader_hp: {
+    category: 'buff', name: 'Leader: HP', description: 'Leader skill HP bonus',
+    unique: true, statMod: { stat: 'hp', percent: 0, useEffectValue: true },
+    icon: 'leader', color: '#fbbf24',
+  },
+  leader_atk: {
+    category: 'buff', name: 'Leader: ATK', description: 'Leader skill ATK bonus',
+    unique: true, statMod: { stat: 'atk', percent: 0, useEffectValue: true },
+    icon: 'leader', color: '#ef4444',
+  },
+  leader_def: {
+    category: 'buff', name: 'Leader: DEF', description: 'Leader skill DEF bonus',
+    unique: true, statMod: { stat: 'def', percent: 0, useEffectValue: true },
+    icon: 'leader', color: '#3b82f6',
+  },
+  leader_spd: {
+    category: 'buff', name: 'Leader: SPD', description: 'Leader skill SPD bonus',
+    unique: true, statMod: { stat: 'spd', percent: 0, useEffectValue: true },
+    icon: 'leader', color: '#f59e0b',
+  },
+  leader_crit_rate: {
+    category: 'buff', name: 'Leader: CR', description: 'Leader skill Crit Rate bonus',
+    unique: true, statMod: { stat: 'critRate', percent: 0, useEffectValue: true },
+    icon: 'leader', color: '#dc2626',
+  },
+  leader_acc: {
+    category: 'buff', name: 'Leader: ACC', description: 'Leader skill Accuracy bonus',
+    unique: true, statMod: { stat: 'acc', percent: 0, useEffectValue: true },
+    icon: 'leader', color: '#22d3ee',
+  },
+  leader_res: {
+    category: 'buff', name: 'Leader: RES', description: 'Leader skill Resistance bonus',
+    unique: true, statMod: { stat: 'res', percent: 0, useEffectValue: true },
+    icon: 'leader', color: '#a3e635',
+  },
+
+  // ── SW Debuffs ─────��─────────────────────────���───────────────────────
   atk_break: {
     category: 'debuff', name: 'ATK Break', description: 'Attack decreased by 50%',
     unique: true, statMod: { stat: 'atk', percent: -50 },

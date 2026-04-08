@@ -13,6 +13,8 @@ import type {
   SkillTarget,
   PassiveTrigger,
   LegacyEffectType,
+  LeaderSkillStat,
+  BuffEffectId,
 } from '../types/pokemon.js';
 import type {
   BattleState,
@@ -209,7 +211,7 @@ export function getEffectiveStats(mon: BattleMon): BaseStats {
   for (const effect of mon.buffs) {
     const meta = EFFECT_REGISTRY[effect.id];
     if (!meta?.statMod) continue;
-    let pct = meta.statMod.percent;
+    let pct = meta.statMod.useEffectValue ? effect.value : meta.statMod.percent;
     if (meta.statMod.perStack) {
       if (processedBuffStackable.has(effect.id)) continue;
       processedBuffStackable.add(effect.id);
@@ -652,10 +654,62 @@ export function processPassiveTrigger(
 }
 
 // ---------------------------------------------------------------------------
+// Leader skills — applied at battle start to team[0]'s allies
+// ---------------------------------------------------------------------------
+
+const LEADER_STAT_TO_EFFECT: Record<LeaderSkillStat, BuffEffectId> = {
+  hp: 'leader_hp',
+  atk: 'leader_atk',
+  def: 'leader_def',
+  spd: 'leader_spd',
+  critRate: 'leader_crit_rate',
+  acc: 'leader_acc',
+  res: 'leader_res',
+};
+
+function applyLeaderSkills(state: BattleState): void {
+  for (const team of [state.playerTeam, state.enemyTeam]) {
+    if (team.length === 0) continue;
+    const leader = team[0];
+    const leaderTemplate = getTemplate(leader.templateId);
+    const ls = leaderTemplate.leaderSkill;
+    if (!ls) continue;
+
+    const effectId = LEADER_STAT_TO_EFFECT[ls.stat];
+    for (const mon of team) {
+      if (!mon.isAlive) continue;
+      // Element restriction check
+      if (ls.elementRestriction) {
+        const monTemplate = getTemplate(mon.templateId);
+        if (!monTemplate.types.includes(ls.elementRestriction)) continue;
+      }
+      // Apply as a permanent leader buff
+      const leaderBuff: ActiveEffect = {
+        id: effectId,
+        type: 'buff',
+        value: ls.percent,
+        remainingTurns: 999,
+        isLeaderSkill: true,
+      };
+      mon.buffs.push(leaderBuff);
+
+      // For HP leader skill, also increase current and max HP
+      if (ls.stat === 'hp') {
+        const bonusHp = Math.floor(mon.maxHp * ls.percent / 100);
+        mon.maxHp += bonusHp;
+        mon.currentHp += bonusHp;
+      }
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Apply passives at battle start (legacy support + battle_start trigger)
 // ---------------------------------------------------------------------------
 
 export function applyPassives(state: BattleState): void {
+  // Apply leader skills first (before other passives)
+  applyLeaderSkills(state);
   const allMons = [...state.playerTeam, ...state.enemyTeam];
   for (const mon of allMons) {
     const template = getTemplate(mon.templateId);
@@ -852,12 +906,16 @@ function applyInstantEffect(
     }
 
     case 'strip': {
-      const count = Math.min(effect.value, target.buffs.length);
+      // Leader skill buffs cannot be stripped
+      const strippable = target.buffs.filter(b => !b.isLeaderSkill);
+      const count = Math.min(effect.value, strippable.length);
       if (count === 0) return null;
-      // Remove random buffs
+      // Remove random strippable buffs
       for (let i = 0; i < count; i++) {
-        if (target.buffs.length === 0) break;
-        const idx = Math.floor(Math.random() * target.buffs.length);
+        const remaining = target.buffs.filter(b => !b.isLeaderSkill);
+        if (remaining.length === 0) break;
+        const pick = remaining[Math.floor(Math.random() * remaining.length)];
+        const idx = target.buffs.indexOf(pick);
         target.buffs.splice(idx, 1);
       }
       return `${targetTemplate.name} lost ${count} buff(s)!`;
@@ -896,8 +954,11 @@ function applyInstantEffect(
       if (!resistCheck(attackerStats2.acc, defenderStats2.res)) {
         return `${targetTemplate.name} resisted buff steal!`;
       }
-      if (target.buffs.length === 0) return null;
-      const idx = Math.floor(Math.random() * target.buffs.length);
+      // Leader skill buffs cannot be stolen
+      const stealable = target.buffs.filter(b => !b.isLeaderSkill);
+      if (stealable.length === 0) return null;
+      const pick = stealable[Math.floor(Math.random() * stealable.length)];
+      const idx = target.buffs.indexOf(pick);
       const stolen = target.buffs.splice(idx, 1)[0];
       const stolenMeta = getEffectMeta(stolen.id);
       applyBuff(actor, stolen.id, stolen.remainingTurns, stolen.value);

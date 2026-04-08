@@ -118,13 +118,17 @@ export function TutorialOverlay() {
     }
   }, [step, location.pathname]);
 
-  // Auto-collapse dialog after 3s on interact steps with buttons (summon + team-select)
+  // Auto-collapse dialog after 3s on interact steps with buttons
+  const isManagePage = location.pathname.startsWith('/items/');
   useEffect(() => {
-    if ((step === 4 || step === 5 || step === 10) && !autoCollapsed) {
+    const shouldAutoCollapse =
+      step === 4 || step === 5 || step === 10 ||
+      ((step === 15 || step === 16) && isManagePage);
+    if (shouldAutoCollapse && !autoCollapsed) {
       const timer = setTimeout(() => setAutoCollapsed(true), 3000);
       return () => clearTimeout(timer);
     }
-  }, [step, autoCollapsed]);
+  }, [step, autoCollapsed, isManagePage]);
 
   // Redirect to correct page if on wrong page mid-tutorial
   useEffect(() => {
@@ -173,7 +177,9 @@ export function TutorialOverlay() {
   const handleDialogTap = useCallback(() => {
     if (lineIndex < dialogLines.length - 1) {
       setLineIndex(i => i + 1);
-    } else if (!INTERACT_STEPS.has(step)) {
+    } else if (INTERACT_STEPS.has(step)) {
+      setAutoCollapsed(true);
+    } else {
       advanceStep();
     }
   }, [step, lineIndex, dialogLines.length, advanceStep]);

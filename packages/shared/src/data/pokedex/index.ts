@@ -9,6 +9,7 @@ import { GEN7 } from './gen7.js';
 import { GEN8 } from './gen8.js';
 import { GEN9 } from './gen9.js';
 import { FORMS } from './forms.js';
+import { initLeaderSkills } from '../leader-skills.js';
 
 export const POKEDEX: PokemonTemplate[] = [
   ...GEN1,
@@ -22,6 +23,9 @@ export const POKEDEX: PokemonTemplate[] = [
   ...GEN9,
   ...FORMS,
 ];
+
+// Patch all 3★+ templates with deterministic leader skills
+initLeaderSkills();
 
 export const POKEDEX_MAP = new Map<number, PokemonTemplate>(
   POKEDEX.map(p => [p.id, p])

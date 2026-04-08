@@ -7,6 +7,17 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.5.1',
+    date: '2026-04-08',
+    changes: [
+      'Leader Skills: every 3-star+ monster now has a leader skill — a passive stat bonus applied to all team members when placed in the first team slot',
+      'Leader Skills: higher rarity monsters have stronger or more universal bonuses; lower rarity monsters have element-restricted bonuses',
+      'Leader Skills: visible on monster detail, team select screen, and in battle with a crown icon on the leader',
+      'Leader Skills: leader buffs cannot be stripped, cleansed, or stolen — they persist for the entire battle',
+      'Leader Skills: enemy teams also benefit from their leader\'s skill',
+    ],
+  },
+  {
     version: '0.5.0',
     date: '2026-04-08',
     changes: [
@@ -18,6 +29,7 @@ export const changelog: ChangelogEntry[] = [
       'Reset Account now fully deletes your account — you will need to re-register and replay the tutorial',
       'Tutorial: first 2 summons are now always fixed (Growlithe + Eevee) for everyone, even in server mode',
       'UI: redesigned player name screen with background art, glass panel, particles, and polished styling',
+      'Fix: tutorial held item step no longer blocks interaction — dialog collapses on tap or after 3s',
     ],
   },
   {

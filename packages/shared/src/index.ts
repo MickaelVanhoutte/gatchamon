@@ -36,3 +36,4 @@ export type { RouletteSlot } from './data/daily-roulette.js';
 export { BEGINNER_BONUS, isBeginnerBonusActive } from './constants/beginner-bonus.js';
 export { GEN_RESTRICTION_ENABLED, isActivePokemon, ACTIVE_POKEDEX, ACTIVE_POKEDEX_MAP, getActiveEvolutionsFrom, canActiveEvolve, resolveActiveId, isGen2Pokemon } from './data/gen-filter.js';
 export { getMysteryDungeonDef, getMysteryDungeonDateKey, getMysteryDungeonResetTime, PIECE_COST } from './data/mystery-dungeon.js';
+export { generateLeaderSkill, describeLeaderSkill } from './data/leader-skills.js';
