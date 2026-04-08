@@ -86,6 +86,10 @@ export async function performEssenceMerge(element: string, targetTier: string, t
   return api.post('/essence-merge', { playerId: pid(), element, targetTier, targetCount });
 }
 
+export async function switchPassive(instanceId: string, selectedPassive: 0 | 1): Promise<{ ok: boolean; selectedPassive: 0 | 1 }> {
+  return api.post('/switch-passive', { playerId: pid(), instanceId, selectedPassive });
+}
+
 // ── Held Items ────────────────────────────────────────────────────────
 
 export async function loadHeldItems(): Promise<HeldItemInstance[]> {

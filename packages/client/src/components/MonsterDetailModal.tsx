@@ -1,5 +1,5 @@
 import type { BaseStats } from '@gatchamon/shared';
-import { computeStats, computeStatsWithItems, getSkillsForPokemon, getItemSet, STAT_TYPE_LABELS, describeLeaderSkill } from '@gatchamon/shared';
+import { computeStats, computeStatsWithItems, getSkillsForPokemon, getEffectiveSkillIds, getItemSet, STAT_TYPE_LABELS, describeLeaderSkill } from '@gatchamon/shared';
 import type { OwnedPokemon } from '../stores/gameStore';
 import { getItemsForPokemon } from '../services/storage';
 import { GameIcon, StarRating } from './icons';
@@ -36,7 +36,7 @@ export function MonsterDetailModal({ pokemon, onClose }: MonsterDetailModalProps
   const totalStats = equippedItems.length > 0
     ? computeStatsWithItems(template, instance.level, instance.stars, equippedItems)
     : baseStats;
-  const skills = getSkillsForPokemon(template.skillIds);
+  const skills = getSkillsForPokemon(getEffectiveSkillIds(template, instance.selectedPassive));
   const starColor = STAR_COLORS[instance.stars] ?? STAR_COLORS[1];
   const isShiny = instance.isShiny ?? false;
   const spriteUrl = isShiny

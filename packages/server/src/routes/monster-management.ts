@@ -11,6 +11,8 @@ import {
   getActiveEvolutionsFrom,
   getTypeChangeDef,
   getAvailableTypeChanges,
+  getTemplate,
+  getShinyAlternatePassive,
 } from '@gatchamon/shared';
 import { incrementMission, trackTrophyStat } from '../services/daily.service.js';
 
@@ -128,6 +130,41 @@ monsterManagementRouter.post('/type-change/perform', (req, res) => {
     }
     const result = performTypeChange(playerId, instanceId, targetTemplateId);
     res.json({ instance: result });
+  } catch (e: any) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+// ── Switch Passive (Shiny only) ───────────────────────────────────────
+
+monsterManagementRouter.post('/switch-passive', (req, res) => {
+  try {
+    const { playerId, instanceId, selectedPassive } = req.body;
+    if (!playerId || !instanceId || (selectedPassive !== 0 && selectedPassive !== 1)) {
+      res.status(400).json({ error: 'playerId, instanceId, and selectedPassive (0|1) required' });
+      return;
+    }
+    const db = getDb();
+    const row = db.prepare(
+      'SELECT * FROM pokemon_instances WHERE instance_id = ? AND owner_id = ?'
+    ).get(instanceId, playerId) as any;
+    if (!row) {
+      res.status(404).json({ error: 'Monster not found' });
+      return;
+    }
+    if (!row.is_shiny) {
+      res.status(400).json({ error: 'Only shiny monsters can switch passives' });
+      return;
+    }
+    const template = getTemplate(row.template_id);
+    if (!template || !getShinyAlternatePassive(template)) {
+      res.status(400).json({ error: 'No alternate passive available for this monster' });
+      return;
+    }
+    db.prepare(
+      'UPDATE pokemon_instances SET selected_passive = ? WHERE instance_id = ? AND owner_id = ?'
+    ).run(selectedPassive, instanceId, playerId);
+    res.json({ ok: true, selectedPassive });
   } catch (e: any) {
     res.status(400).json({ error: e.message });
   }

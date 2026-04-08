@@ -20,6 +20,7 @@ export function rowToInstance(row: any): PokemonInstance {
     exp: row.exp,
     isShiny: !!row.is_shiny,
     skillLevels: row.skill_levels ? JSON.parse(row.skill_levels) : [1, 1, 1],
+    selectedPassive: (row.selected_passive ?? 0) as 0 | 1,
   };
 }
 

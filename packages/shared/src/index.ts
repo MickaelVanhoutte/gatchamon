@@ -7,7 +7,7 @@ export * from './constants/effects.js';
 export * from './battle/index.js';
 export * from './types/evolution.js';
 export { POKEDEX, POKEDEX_MAP, getTemplate } from './data/pokedex/index.js';
-export { SKILLS, getSkillsForPokemon } from './data/skills/index.js';
+export { SKILLS, getSkillsForPokemon, getShinyAlternatePassive, getEffectiveSkillIds } from './data/skills/index.js';
 export { REGIONS, TOTAL_REGIONS, getFloorCount, isLeagueRegion, STORY_ARCS, getArcForRegion, getNextRegionInArc } from './data/regions.js';
 export type { RegionDef, StoryArc } from './data/regions.js';
 export { GYM_LEADERS, LEAGUE_CHAMPIONS, getGymLeader, getLeagueChampion, getGymLeaderTeam, getBossDialogue } from './data/gym-leaders.js';

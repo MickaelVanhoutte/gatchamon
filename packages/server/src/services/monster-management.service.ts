@@ -220,13 +220,13 @@ export function performEvolution(
     db.prepare('UPDATE players SET materials = ? WHERE id = ?')
       .run(JSON.stringify(materials), playerId);
 
-    // Update templateId
-    db.prepare('UPDATE pokemon_instances SET template_id = ? WHERE instance_id = ?')
+    // Update templateId and reset selected passive (new species may have different alternate)
+    db.prepare('UPDATE pokemon_instances SET template_id = ?, selected_passive = 0 WHERE instance_id = ?')
       .run(targetTemplateId, instanceId);
   });
   txn();
 
-  return { ...instance, templateId: targetTemplateId };
+  return { ...instance, templateId: targetTemplateId, selectedPassive: 0 };
 }
 
 // ── Type Change ────────────────────────────────────────────────────────
@@ -268,12 +268,12 @@ export function performTypeChange(
     db.prepare('UPDATE players SET materials = ? WHERE id = ?')
       .run(JSON.stringify(materials), playerId);
 
-    db.prepare('UPDATE pokemon_instances SET template_id = ? WHERE instance_id = ?')
+    db.prepare('UPDATE pokemon_instances SET template_id = ?, selected_passive = 0 WHERE instance_id = ?')
       .run(targetTemplateId, instanceId);
   });
   txn();
 
-  return { ...instance, templateId: targetTemplateId };
+  return { ...instance, templateId: targetTemplateId, selectedPassive: 0 };
 }
 
 // ── Essence Merge ──────────────────────────────────────────────────────

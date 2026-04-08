@@ -49,6 +49,7 @@ export interface PokemonInstance {
   exp: number;
   isShiny: boolean;
   skillLevels?: [number, number, number];
+  selectedPassive?: 0 | 1;
   isLocked?: boolean;
   showOnHome?: boolean;
 }

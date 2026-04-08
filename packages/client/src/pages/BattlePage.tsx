@@ -6,13 +6,14 @@ import { USE_SERVER } from '../config';
 import * as serverApi from '../services/server-api.service';
 import { useBattleAnimation } from '../battle/useBattleAnimation';
 import { useAutoBattle } from '../battle/useAutoBattle';
-import { getTemplate, SKILLS, getTypeEffectiveness, ESSENCES, ITEM_SETS, getBossDialogue, EFFECT_REGISTRY, simulateTimeline } from '@gatchamon/shared';
+import { getTemplate, SKILLS, getTypeEffectiveness, ESSENCES, ITEM_SETS, getBossDialogue, EFFECT_REGISTRY, simulateTimeline, getEffectiveSkillIds } from '@gatchamon/shared';
 import type { BattleState, BattleMon, BattleLogEntry, BattleResult, PokemonType, EffectId, ActiveEffect, SkillDefinition, TimelineEntry } from '@gatchamon/shared';
 import { assetUrl } from '../utils/asset-url';
 import { getSpriteBoost } from '../utils/sprite-scale';
 import { GameIcon, StarRating } from '../components/icons';
 import { BattleLoadingScreen } from '../components/BattleLoadingScreen';
 import { GymLeaderDialogue } from '../components/GymLeaderDialogue';
+import { ShinyEntrySparkle } from '../components/ShinyEntrySparkle';
 import { useTutorialStore } from '../stores/tutorialStore';
 import gsap from 'gsap';
 import { loadBattleSettings, saveBattleSettings, loadPlayer, hasGrantedFlag, saveDungeonRecord as saveDungeonRecordLocal } from '../services/storage';
@@ -123,7 +124,7 @@ function SkillPanel({ actor, selectedSkill, onSkillSelect, onCancelSelect, onSki
   const didLongPress = useRef(false);
 
   const tmpl = getTemplate(actor.templateId);
-  const allSkillIds = tmpl?.skillIds ?? [];
+  const allSkillIds = tmpl ? getEffectiveSkillIds(tmpl, actor.selectedPassive) : [];
 
   const handlePointerDown = useCallback((skill: SkillDefinition) => {
     didLongPress.current = false;
@@ -198,6 +199,7 @@ export function BattlePage() {
   const [logEntries, setLogEntries] = useState<BattleLogEntry[]>([]);
   const [rewards, setRewards] = useState<BattleResult['rewards']>(undefined);
   const [assetsReady, setAssetsReady] = useState(false);
+  const [shinySparkleIds, setShinySparkleIds] = useState<Set<string>>(new Set());
   const [dialogueComplete, setDialogueComplete] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [selectedEffect, setSelectedEffect] = useState<{ id: EffectId; stacks: number; turns: number } | null>(null);
@@ -643,7 +645,16 @@ export function BattlePage() {
     return computeBattleRecap(state);
   }, [state, phase]);
 
-  const handleAssetsReady = useCallback(() => setAssetsReady(true), []);
+  const handleAssetsReady = useCallback(() => {
+    setAssetsReady(true);
+    if (state) {
+      const shinyIds = new Set<string>();
+      for (const mon of [...state.playerTeam, ...state.enemyTeam]) {
+        if (mon.isShiny && mon.isAlive) shinyIds.add(mon.instanceId);
+      }
+      if (shinyIds.size > 0) setShinySparkleIds(shinyIds);
+    }
+  }, [state]);
 
   if (!state) {
     return <div className="page battle-page"><p>Loading battle...</p></div>;
@@ -746,6 +757,8 @@ export function BattlePage() {
                 skillType={skill?.type}
                 onEffectClick={handleEffectClick}
                 arcOffset={arcOffset}
+                showEntrySparkle={shinySparkleIds.has(mon.instanceId)}
+                onSparkleComplete={() => setShinySparkleIds(prev => { const next = new Set(prev); next.delete(mon.instanceId); return next; })}
                 registerRef={(el) => {
                   if (el) monRefs.current.set(mon.instanceId, el);
                   else monRefs.current.delete(mon.instanceId);
@@ -769,6 +782,8 @@ export function BattlePage() {
                 isActive={mon.instanceId === state.currentActorId}
                 onEffectClick={handleEffectClick}
                 arcOffset={arcOffset}
+                showEntrySparkle={shinySparkleIds.has(mon.instanceId)}
+                onSparkleComplete={() => setShinySparkleIds(prev => { const next = new Set(prev); next.delete(mon.instanceId); return next; })}
                 registerRef={(el) => {
                   if (el) monRefs.current.set(mon.instanceId, el);
                   else monRefs.current.delete(mon.instanceId);
@@ -1090,6 +1105,8 @@ function BattleMonSprite({
   registerRef,
   onEffectClick,
   arcOffset,
+  showEntrySparkle,
+  onSparkleComplete,
 }: {
   mon: BattleMon;
   isLeader?: boolean;
@@ -1101,6 +1118,8 @@ function BattleMonSprite({
   registerRef?: (el: HTMLDivElement | null) => void;
   onEffectClick?: (id: EffectId, stacks: number, turns: number) => void;
   arcOffset?: number;
+  showEntrySparkle?: boolean;
+  onSparkleComplete?: () => void;
 }) {
   const tmpl = getTemplate(mon.templateId);
   if (!tmpl) return null;
@@ -1141,6 +1160,7 @@ function BattleMonSprite({
         style={{ transform: `scale(${sizeScale})` }}
       />
       {mon.isAlive && <StatusOverlay mon={mon} />}
+      {showEntrySparkle && <ShinyEntrySparkle onComplete={onSparkleComplete} />}
     </div>
   );
 

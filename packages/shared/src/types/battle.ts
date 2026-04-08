@@ -26,6 +26,7 @@ export interface BattleMon {
   isBoss?: boolean;
   skillLevels?: [number, number, number];
   isShiny?: boolean;
+  selectedPassive?: 0 | 1;
 }
 
 export interface BattleState {

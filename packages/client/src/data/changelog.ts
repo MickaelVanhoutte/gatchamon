@@ -7,6 +7,15 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.6.0',
+    date: '2026-04-08',
+    changes: [
+      'Shiny: dual passive ability — shiny monsters can now choose between two passive abilities via the skill tab',
+      'Shiny: golden sparkle burst effect when a shiny monster enters the battlefield',
+      'Shiny: alternate passives generated for all monsters across all generations',
+    ],
+  },
+  {
     version: '0.5.4',
     date: '2026-04-08',
     changes: [

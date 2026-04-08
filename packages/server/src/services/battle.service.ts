@@ -214,6 +214,9 @@ function makeBattleMon(
   level: number,
   stars: number,
   isPlayerOwned: boolean,
+  skillLevels?: [number, number, number],
+  isShiny?: boolean,
+  selectedPassive?: 0 | 1,
 ): BattleMon {
   const template = getTemplate(templateId);
   const stats = computeStats(template, level, stars);
@@ -238,6 +241,9 @@ function makeBattleMon(
     debuffs: [],
     isAlive: true,
     actionGauge: 0,
+    skillLevels,
+    isShiny,
+    selectedPassive,
   };
 }
 
@@ -470,12 +476,13 @@ export function startBattle(
   const playerTeam: BattleMon[] = [];
   for (const instId of teamInstanceIds) {
     const row = db.prepare(
-      'SELECT instance_id, template_id, level, stars FROM pokemon_instances WHERE instance_id = ? AND owner_id = ?'
-    ).get(instId, playerId) as { instance_id: string; template_id: number; level: number; stars: number } | undefined;
+      'SELECT instance_id, template_id, level, stars, skill_levels, is_shiny, selected_passive FROM pokemon_instances WHERE instance_id = ? AND owner_id = ?'
+    ).get(instId, playerId) as { instance_id: string; template_id: number; level: number; stars: number; skill_levels?: string; is_shiny?: number; selected_passive?: number } | undefined;
 
     if (!row) throw new Error(`Pokemon instance ${instId} not found or not owned by player`);
 
-    playerTeam.push(makeBattleMon(row.instance_id, row.template_id, row.level, row.stars, true));
+    const skillLevels = row.skill_levels ? JSON.parse(row.skill_levels) : [1, 1, 1];
+    playerTeam.push(makeBattleMon(row.instance_id, row.template_id, row.level, row.stars, true, skillLevels, !!row.is_shiny, (row.selected_passive ?? 0) as 0 | 1));
   }
 
   if (playerTeam.length === 0) throw new Error('Team cannot be empty');
@@ -769,10 +776,11 @@ function loadPlayerTeam(playerId: string, teamInstanceIds: string[]): BattleMon[
   const team: BattleMon[] = [];
   for (const instId of teamInstanceIds) {
     const row = db.prepare(
-      'SELECT instance_id, template_id, level, stars FROM pokemon_instances WHERE instance_id = ? AND owner_id = ?'
+      'SELECT instance_id, template_id, level, stars, skill_levels, is_shiny, selected_passive FROM pokemon_instances WHERE instance_id = ? AND owner_id = ?'
     ).get(instId, playerId) as any;
     if (!row) throw new Error(`Pokemon ${instId} not found`);
-    team.push(makeBattleMon(row.instance_id, row.template_id, row.level, row.stars, true));
+    const skillLevels = row.skill_levels ? JSON.parse(row.skill_levels) : [1, 1, 1];
+    team.push(makeBattleMon(row.instance_id, row.template_id, row.level, row.stars, true, skillLevels, !!row.is_shiny, (row.selected_passive ?? 0) as 0 | 1));
   }
   if (team.length === 0) throw new Error('Team cannot be empty');
   return team;

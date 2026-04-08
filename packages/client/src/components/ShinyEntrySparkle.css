@@ -1,0 +1,63 @@
+.shiny-entry-sparkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  overflow: visible;
+}
+
+.shiny-entry-sparkle {
+  position: absolute;
+  border-radius: 50%;
+  background: #ffd700;
+  opacity: 0;
+  animation: shiny-entry-fly var(--dur) ease-out forwards;
+  animation-delay: var(--delay);
+}
+
+.shiny-entry-sparkle--sm {
+  width: 3px;
+  height: 3px;
+  box-shadow: 0 0 4px 1px rgba(255, 215, 0, 0.9),
+              0 0 8px 3px rgba(255, 215, 0, 0.5);
+}
+
+.shiny-entry-sparkle--md {
+  width: 6px;
+  height: 6px;
+  box-shadow: 0 0 8px 3px rgba(255, 255, 255, 1),
+              0 0 16px 6px rgba(255, 215, 0, 0.7),
+              0 0 24px 8px rgba(250, 204, 21, 0.35);
+}
+
+.shiny-entry-sparkle--star {
+  background: transparent;
+  width: 0;
+  height: 0;
+  border-radius: 0;
+  box-shadow: 0 0 8px 4px #fff,
+              0 0 16px 8px rgba(255, 215, 0, 0.8),
+              0 0 30px 12px rgba(250, 204, 21, 0.4),
+              4px 0 6px -2px rgba(255, 255, 255, 0.7),
+              -4px 0 6px -2px rgba(255, 255, 255, 0.7),
+              0 4px 6px -2px rgba(255, 255, 255, 0.7),
+              0 -4px 6px -2px rgba(255, 255, 255, 0.7);
+}
+
+@keyframes shiny-entry-fly {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(calc(var(--tx) * 0.3), calc(var(--ty) * 0.3)) scale(1.4) rotate(90deg);
+  }
+  70% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--tx), var(--ty)) scale(0.1) rotate(180deg);
+  }
+}

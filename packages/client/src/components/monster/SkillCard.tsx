@@ -46,7 +46,7 @@ const PASSIVE_TRIGGER_LABELS: Record<string, string> = {
   always: 'Always Active',
 };
 
-export function SkillCard({ skill, index, skillLevel = 1, isAbility = false }: { skill: SkillDefinition; index: number; skillLevel?: number; isAbility?: boolean }) {
+export function SkillCard({ skill, index, skillLevel = 1, isAbility = false, onSwapPassive }: { skill: SkillDefinition; index: number; skillLevel?: number; isAbility?: boolean; onSwapPassive?: () => void }) {
   const bonus = getSkillMultiplierBonus(skillLevel);
   const effectiveMultiplier = skill.multiplier > 0
     ? Math.round(skill.multiplier * bonus * 100) / 100
@@ -67,6 +67,11 @@ export function SkillCard({ skill, index, skillLevel = 1, isAbility = false }: {
         <span className="skill-card-type" style={{ background: `var(--type-${skill.type})` }}>
           {skill.type}
         </span>
+        {onSwapPassive && (
+          <button className="skill-card-swap" onClick={e => { e.stopPropagation(); onSwapPassive(); }} title="Switch passive">
+            &#x21C4;
+          </button>
+        )}
       </div>
 
       <p className="skill-card-desc">{skill.description}</p>

@@ -77,6 +77,7 @@ export function initDb(): void {
   migrateGoogleAuth(database);
   migrateArena(database);
   migrateChat(database);
+  migrateAddSelectedPassive(database);
 
   console.log('Database initialized');
 }
@@ -348,6 +349,14 @@ function migrateChat(database: Database.Database): void {
     );
     CREATE INDEX IF NOT EXISTS idx_chat_created ON chat_messages(created_at);
   `);
+}
+
+function migrateAddSelectedPassive(database: Database.Database): void {
+  try {
+    database.exec('ALTER TABLE pokemon_instances ADD COLUMN selected_passive INTEGER NOT NULL DEFAULT 0');
+  } catch {
+    // Column already exists
+  }
 }
 
 function migrateStoryProgress(database: Database.Database): void {

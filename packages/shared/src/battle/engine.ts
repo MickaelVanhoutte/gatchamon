@@ -35,7 +35,7 @@ import {
   MAX_DEBUFFS,
 } from '../constants/effects.js';
 import { getTemplate as getTemplateShared } from '../data/pokedex/index.js';
-import { getSkillsForPokemon, SKILLS } from '../data/skills/index.js';
+import { getSkillsForPokemon, getEffectiveSkillIds, SKILLS } from '../data/skills/index.js';
 import { getSkillMultiplierBonus, getSkillCooldownReduction, getSkillChanceBonus } from '../constants/formulas.js';
 
 // ---------------------------------------------------------------------------
@@ -588,7 +588,8 @@ export function processPassiveTrigger(
   if (trigger === 'hp_threshold' && mon.hpThresholdTriggered) return effects;
 
   const template = getTemplate(mon.templateId);
-  const skills = getSkillsForPokemon(template.skillIds);
+  const effectiveIds = getEffectiveSkillIds(template, mon.selectedPassive);
+  const skills = getSkillsForPokemon(effectiveIds);
 
   for (const skill of skills) {
     if (skill.category !== 'passive') continue;
@@ -609,7 +610,7 @@ export function processPassiveTrigger(
     }
 
     // Resolve passive effects (skill level boosts proc chance)
-    const passiveSkillIndex = template.skillIds.indexOf(skill.id);
+    const passiveSkillIndex = effectiveIds.indexOf(skill.id);
     const passiveSkillLevel = mon.skillLevels?.[passiveSkillIndex] ?? 1;
     const chanceBonus = getSkillChanceBonus(passiveSkillLevel);
 
@@ -713,7 +714,8 @@ export function applyPassives(state: BattleState): void {
   const allMons = [...state.playerTeam, ...state.enemyTeam];
   for (const mon of allMons) {
     const template = getTemplate(mon.templateId);
-    const skills = getSkillsForPokemon(template.skillIds);
+    const effectiveIds = getEffectiveSkillIds(template, mon.selectedPassive);
+    const skills = getSkillsForPokemon(effectiveIds);
     for (const skill of skills) {
       if (skill.category !== 'passive') continue;
 
@@ -1107,7 +1109,8 @@ export function resolveSkill(
   const attackerStats = getEffectiveStats(actor);
 
   // Apply skill level multiplier bonus
-  const skillIndex = actorTemplate.skillIds.indexOf(skill.id);
+  const effectiveActorIds = getEffectiveSkillIds(actorTemplate, actor.selectedPassive);
+  const skillIndex = effectiveActorIds.indexOf(skill.id);
   const skillLevel = actor.skillLevels?.[skillIndex] ?? 1;
   const levelBonus = getSkillMultiplierBonus(skillLevel);
   const effectiveSkill = skill.multiplier > 0
@@ -1457,7 +1460,7 @@ function resolveCounterAttack(
   if (!counterMon.isAlive || !attacker.isAlive) return null;
 
   const template = getTemplate(counterMon.templateId);
-  const skills = getSkillsForPokemon(template.skillIds);
+  const skills = getSkillsForPokemon(getEffectiveSkillIds(template, counterMon.selectedPassive));
   const basicSkill = skills.find(s => s.category === 'basic');
   if (!basicSkill) return null;
 
@@ -1496,7 +1499,7 @@ export function pickEnemyAction(
   state: BattleState,
 ): { skill: SkillDefinition; targets: BattleMon[] } {
   const template = getTemplate(actor.templateId);
-  const skills = getSkillsForPokemon(template.skillIds).filter(s => s.category !== 'passive');
+  const skills = getSkillsForPokemon(getEffectiveSkillIds(template, actor.selectedPassive)).filter(s => s.category !== 'passive');
 
   let chosenSkill: SkillDefinition | null = null;
   for (let i = skills.length - 1; i >= 0; i--) {
@@ -1685,7 +1688,7 @@ function pickEnemyActionWithCC(
   cc: CCResult,
 ): { skill: SkillDefinition; targets: BattleMon[] } {
   const template = getTemplate(actor.templateId);
-  const skills = getSkillsForPokemon(template.skillIds);
+  const skills = getSkillsForPokemon(getEffectiveSkillIds(template, actor.selectedPassive));
   const basicSkill = skills.find(s => s.category === 'basic') || skills[0];
 
   if (cc.type === 'provoke') {

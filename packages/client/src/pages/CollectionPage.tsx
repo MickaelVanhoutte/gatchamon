@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { GameIcon, StarRating } from '../components/icons';
 import type { OwnedPokemon } from '../stores/gameStore';
-import { computeStats, computeStatsWithItems, getSkillsForPokemon, MAX_LEVEL_BY_STARS, isMaxLevel, getTemplate, ESSENCES, getActiveEvolutionsFrom, getTypeChangeDef, getAvailableTypeChanges, isActivePokemon, describeLeaderSkill } from '@gatchamon/shared';
+import { computeStats, computeStatsWithItems, getSkillsForPokemon, getEffectiveSkillIds, getShinyAlternatePassive, MAX_LEVEL_BY_STARS, isMaxLevel, getTemplate, ESSENCES, getActiveEvolutionsFrom, getTypeChangeDef, getAvailableTypeChanges, isActivePokemon, describeLeaderSkill } from '@gatchamon/shared';
 import { canEvolveInstance } from '../services/evolution.service';
 import { canChangeType } from '../services/type-change.service';
 import type { PokemonType, BaseStats } from '@gatchamon/shared';
@@ -11,8 +11,10 @@ import { assetUrl, staticSpriteUrl } from '../utils/asset-url';
 
 import { HeldItemEquipPanel } from './HeldItemEquipPanel';
 import { SkillCard } from '../components/monster/SkillCard';
+import { PassiveChoiceModal } from '../components/monster/PassiveChoiceModal';
 import { Spinner } from '../components/Spinner';
 import { EvolutionAnimation } from '../components/EvolutionAnimation';
+import * as serverApi from '../services/server-api.service';
 import { useTutorialStore } from '../stores/tutorialStore';
 import './CollectionPage.css';
 
@@ -69,6 +71,7 @@ export function CollectionPage() {
     instanceId: string;
     targetTemplateId: number;
   } | null>(null);
+  const [showPassiveModal, setShowPassiveModal] = useState(false);
 
   const tutorialStep = useTutorialStore(s => s.step);
   const advanceTutorial = useTutorialStore(s => s.advanceStep);
@@ -120,8 +123,9 @@ export function CollectionPage() {
     : null;
 
   const selectedSkills = selected
-    ? getSkillsForPokemon(selected.template.skillIds)
+    ? getSkillsForPokemon(getEffectiveSkillIds(selected.template, selected.instance.selectedPassive))
     : [];
+  const shinyAltPassive = selected ? getShinyAlternatePassive(selected.template) : null;
 
   const maxLevel = selected ? (MAX_LEVEL_BY_STARS[selected.instance.stars] ?? 99) : 0;
   const atMaxLevel = selected ? isMaxLevel(selected.instance.level, selected.instance.stars) : false;
@@ -543,6 +547,7 @@ export function CollectionPage() {
                       index={i + 1}
                       skillLevel={selected.instance.skillLevels?.[i] ?? 1}
                       isAbility={i === 2 && skill.category === 'passive'}
+                      onSwapPassive={i === 2 && skill.category === 'passive' && selected.instance.isShiny && shinyAltPassive ? () => setShowPassiveModal(true) : undefined}
                     />
                   ))}
                 </div>
@@ -586,6 +591,22 @@ export function CollectionPage() {
             setSelectedId(evoAnim.instanceId);
             setEvoAnim(null);
           }}
+        />
+      )}
+
+      {/* Passive choice modal for shinies */}
+      {showPassiveModal && selected && shinyAltPassive && (
+        <PassiveChoiceModal
+          originalPassive={getSkillsForPokemon(selected.template.skillIds)[2]}
+          alternatePassive={shinyAltPassive}
+          currentSelection={selected.instance.selectedPassive ?? 0}
+          skillLevel={selected.instance.skillLevels?.[2] ?? 1}
+          onConfirm={async (sel) => {
+            await serverApi.switchPassive(selected.instance.instanceId, sel);
+            updateInstance(selected.instance.instanceId, { selectedPassive: sel });
+            setShowPassiveModal(false);
+          }}
+          onClose={() => setShowPassiveModal(false)}
         />
       )}
     </div>
