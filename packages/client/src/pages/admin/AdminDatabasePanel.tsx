@@ -388,7 +388,22 @@ export function AdminDatabasePanel() {
 
       {/* ── Stats Overview ── */}
       <div className="admin-db-section">
-        <h2 className="admin-db-section-title">Dashboard</h2>
+        <div className="admin-db-detail-header">
+          <h2 className="admin-db-section-title">Dashboard</h2>
+          <button
+            className="admin-btn"
+            style={{ marginLeft: 'auto' }}
+            onClick={() => {
+              api.get<DashboardStats>('/admin/stats', ADMIN_API_OPTS)
+                .then(setStats)
+                .catch((e) => setGlobalError(e.message));
+              loadPlayers(page, searchQuery);
+              if (selectedPlayer) selectPlayer(selectedPlayer.player.id);
+            }}
+          >
+            Refresh
+          </button>
+        </div>
         {stats ? (
           <div className="admin-db-stats-grid">
             <div className="admin-db-stat-card">

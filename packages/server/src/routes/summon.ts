@@ -7,6 +7,7 @@ import {
   shopSummonMultiPremium, shopSummonSingleLegendary,
   SUMMON_COSTS,
 } from '../services/gacha.service.js';
+import { incrementMission, trackTrophyStat } from '../services/daily.service.js';
 
 export const summonRouter = Router();
 
@@ -19,34 +20,20 @@ summonRouter.post('/', (req, res) => {
   }
 
   try {
+    let results: any[];
     if (type === 'legendary') {
-      const result = summonSingleLegendary(playerId);
-      res.json({ results: [result] });
+      results = [summonSingleLegendary(playerId)];
     } else if (type === 'glowing') {
-      if (count === 10) {
-        const results = summonMultiGlowing(playerId);
-        res.json({ results });
-      } else {
-        const result = summonSingleGlowing(playerId);
-        res.json({ results: [result] });
-      }
+      results = count === 10 ? summonMultiGlowing(playerId) : [summonSingleGlowing(playerId)];
     } else if (type === 'premium') {
-      if (count === 10) {
-        const results = summonMultiPremium(playerId);
-        res.json({ results });
-      } else {
-        const result = summonSinglePremium(playerId, forcedTemplateId);
-        res.json({ results: [result] });
-      }
+      results = count === 10 ? summonMultiPremium(playerId) : [summonSinglePremium(playerId, forcedTemplateId)];
     } else {
-      if (count === 10) {
-        const results = summonMultiRegular(playerId);
-        res.json({ results });
-      } else {
-        const result = summonSingleRegular(playerId, forcedTemplateId);
-        res.json({ results: [result] });
-      }
+      results = count === 10 ? summonMultiRegular(playerId) : [summonSingleRegular(playerId, forcedTemplateId)];
     }
+    const summonCount = results.length;
+    incrementMission(playerId, 'summon_any', summonCount);
+    trackTrophyStat(playerId, 'totalSummons', summonCount);
+    res.json({ results });
   } catch (err: any) {
     const status = err.message === 'Player not found' ? 404 : 400;
     res.status(status).json({ error: err.message });

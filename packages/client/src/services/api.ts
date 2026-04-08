@@ -28,16 +28,15 @@ async function request<T>(path: string, init?: RequestInit, opts?: ApiOptions): 
     ...init,
   });
 
-  if (res.status === 401) {
-    if (!opts?.skipReloadOn401) {
-      clearAuth();
-      window.location.reload();
-    }
-    throw new Error('Session expired');
-  }
-
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
+    if (res.status === 401) {
+      if (!opts?.skipReloadOn401) {
+        clearAuth();
+        window.location.reload();
+      }
+      throw new Error(body.error || 'Session expired');
+    }
     throw new Error(body.error || `HTTP ${res.status}`);
   }
   return res.json();

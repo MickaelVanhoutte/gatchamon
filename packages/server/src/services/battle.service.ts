@@ -31,6 +31,7 @@ import { spendEnergy, grantTrainerXp, earnPokedollars } from './player.service.j
 import { generateItem } from './held-item.service.js';
 import { defaultTrainerSkills } from '@gatchamon/shared';
 import { resolveArenaRewards, getArenaBattle, setArenaBattle, deleteArenaBattle } from './arena.service.js';
+import { incrementMission, trackTrophyStat } from './daily.service.js';
 
 // ---------------------------------------------------------------------------
 // In-memory battle store
@@ -290,10 +291,28 @@ function applyXpToTeam(
   return levelUps;
 }
 
+function trackBattleVictory(state: BattleState): void {
+  const pid = state.playerId;
+  if (state.mode === 'story') {
+    incrementMission(pid, 'battle_story');
+    trackTrophyStat(pid, 'totalBattlesStory');
+    const isBoss = isLeagueRegion(state.floor.region) || state.floor.floor === getFloorCount(state.floor.region);
+    if (isBoss) {
+      incrementMission(pid, 'clear_boss');
+      trackTrophyStat(pid, 'totalBossesDefeated');
+    }
+  } else if (state.mode === 'dungeon' || state.mode === 'item-dungeon' || state.mode === 'mystery-dungeon') {
+    incrementMission(pid, 'battle_dungeon');
+    trackTrophyStat(pid, 'totalBattlesDungeon');
+  }
+  incrementMission(pid, 'spend_energy', STORY_ENERGY_COST);
+}
+
 function calcRewardsForMode(state: BattleState): BattleRewards {
   if (state.mode === 'arena' || state.mode === 'arena-rival') {
     return resolveArenaRewards(state);
   }
+  trackBattleVictory(state);
   return state.mode === 'story' ? calculateRewards(state) : calculateDungeonRewards(state);
 }
 

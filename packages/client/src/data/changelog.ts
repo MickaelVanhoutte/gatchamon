@@ -7,6 +7,30 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.5.3',
+    date: '2026-04-08',
+    changes: [
+      'Fix: battle — monsters no longer attack dead targets (confusion fallthrough & multi-hit guard)',
+      'Fix: missions now progress on server (summons, battles, merges, evolutions tracked server-side)',
+      'Fix: trophies now correctly award rewards when tier is claimed',
+      'Fix: trophy progress updates from lifetime stats (battles, summons, merges, etc.)',
+      'Fix: admin inbox send/broadcast now surfaces actual error messages instead of generic "Session expired"',
+      'Fix: daily login bonus now sends a notification to the inbox',
+      'Fix: daily roulette badge now correctly hides after all spins are used',
+      'Inbox: added refresh button and auto-polling every 30 seconds in server mode',
+      'Leader skills are now displayed in the skill tab of Collection, PC Box, and Pokedex pages',
+      'Team setup: drag-and-drop reordering of team slots',
+    ],
+  },
+  {
+    version: '0.5.2',
+    date: '2026-04-08',
+    changes: [
+      'Fix: shiny pokemon now display their shiny sprites in battle (front and back)',
+      'Fix: repeat battle button is now disabled when you don\'t have enough energy for all runs',
+    ],
+  },
+  {
     version: '0.5.1',
     date: '2026-04-08',
     changes: [

@@ -23,7 +23,7 @@ const GRID_CELLS = 12; // 4x3
 const PERIMETER_ORDER = [0, 1, 2, 3, 7, 11, 10, 9, 8, 4];
 
 interface DailyRouletteModalProps {
-  onClose: () => void;
+  onClose: (remainingSpins: number) => void;
 }
 
 export function DailyRouletteModal({ onClose }: DailyRouletteModalProps) {
@@ -139,9 +139,9 @@ export function DailyRouletteModal({ onClose }: DailyRouletteModalProps) {
   const canSpin = remaining > 0;
 
   return (
-    <div className="roulette-overlay" onClick={phase === 'result' && !canSpin ? onClose : undefined}>
+    <div className="roulette-overlay" onClick={phase === 'result' && !canSpin ? () => onClose(remaining) : undefined}>
       <div className="roulette-modal" onClick={e => e.stopPropagation()}>
-        <button className="roulette-close" onClick={onClose}>
+        <button className="roulette-close" onClick={() => onClose(remaining)}>
           <GameIcon id="close" size={18} />
         </button>
 

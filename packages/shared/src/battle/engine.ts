@@ -1124,6 +1124,9 @@ export function resolveSkill(
   for (const m of allMons) hpBefore.set(m.instanceId, m.currentHp);
 
   for (const target of targets) {
+    // Skip dead targets (may have died during multi-hit or earlier in this turn)
+    if (!target.isAlive) continue;
+
     const targetTemplate = getTemplate(target.templateId);
     let damage = 0;
     let isCrit = false;
@@ -1716,6 +1719,8 @@ function pickEnemyActionWithCC(
         const randomAlly = allies[Math.floor(Math.random() * allies.length)];
         return { skill, targets: [randomAlly] };
       }
+      // No allies to redirect to — use original targets (skip confusion)
+      return { skill, targets };
     }
   }
 

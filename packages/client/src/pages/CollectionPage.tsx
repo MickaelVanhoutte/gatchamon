@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { GameIcon, StarRating } from '../components/icons';
 import type { OwnedPokemon } from '../stores/gameStore';
-import { computeStats, computeStatsWithItems, getSkillsForPokemon, MAX_LEVEL_BY_STARS, isMaxLevel, getTemplate, ESSENCES, getActiveEvolutionsFrom, getTypeChangeDef, getAvailableTypeChanges, isActivePokemon } from '@gatchamon/shared';
+import { computeStats, computeStatsWithItems, getSkillsForPokemon, MAX_LEVEL_BY_STARS, isMaxLevel, getTemplate, ESSENCES, getActiveEvolutionsFrom, getTypeChangeDef, getAvailableTypeChanges, isActivePokemon, describeLeaderSkill } from '@gatchamon/shared';
 import { canEvolveInstance } from '../services/evolution.service';
 import { canChangeType } from '../services/type-change.service';
 import type { PokemonType, BaseStats } from '@gatchamon/shared';
@@ -530,6 +530,12 @@ export function CollectionPage() {
               ) : (
                 /* Skill tab */
                 <div className="box-skills">
+                  {selected.template.leaderSkill && (
+                    <div className="box-leader-skill">
+                      <span className="box-leader-label">Leader Skill</span>
+                      <div className="box-leader-desc">{describeLeaderSkill(selected.template.leaderSkill)}</div>
+                    </div>
+                  )}
                   {selectedSkills.map((skill, i) => (
                     <SkillCard
                       key={skill.id}

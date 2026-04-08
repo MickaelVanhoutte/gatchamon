@@ -1108,7 +1108,9 @@ function BattleMonSprite({
   const hpPct = mon.maxHp > 0 ? (mon.currentHp / mon.maxHp) * 100 : 0;
   const hpColor = hpPct > 50 ? '#4ade80' : hpPct > 20 ? '#fbbf24' : '#ef4444';
 
-  const spriteDir = mon.isPlayerOwned ? 'ani-back' : 'ani';
+  const spriteDir = mon.isPlayerOwned
+    ? (mon.isShiny ? 'ani-back-shiny' : 'ani-back')
+    : (mon.isShiny ? 'ani-shiny' : 'ani');
   const animatedSpriteUrl = assetUrl(`monsters/${spriteDir}/${tmpl.name.toLowerCase()}.gif`);
 
   const effectiveness = skillType

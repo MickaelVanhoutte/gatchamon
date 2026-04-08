@@ -69,6 +69,7 @@ function makeBattleMon(
   stars: number,
   isPlayerOwned: boolean,
   skillLevels?: [number, number, number],
+  isShiny?: boolean,
 ): BattleMon {
   const template = getTemplate(templateId);
 
@@ -117,6 +118,7 @@ function makeBattleMon(
     isAlive: true,
     actionGauge: 0,
     skillLevels,
+    isShiny,
   };
 }
 
@@ -669,7 +671,7 @@ export function startBattle(
   for (const instId of teamInstanceIds) {
     const inst = collection.find(p => p.instanceId === instId && p.ownerId === player.id);
     if (!inst) throw new Error(`Pokemon instance ${instId} not found or not owned by player`);
-    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true, inst.skillLevels));
+    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true, inst.skillLevels, inst.isShiny));
   }
 
   if (playerTeam.length === 0) throw new Error('Team cannot be empty');
@@ -718,7 +720,7 @@ export function startDungeonBattle(
   for (const instId of teamInstanceIds) {
     const inst = collection.find(p => p.instanceId === instId && p.ownerId === player.id);
     if (!inst) throw new Error(`Pokemon instance ${instId} not found`);
-    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true, inst.skillLevels));
+    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true, inst.skillLevels, inst.isShiny));
   }
 
   if (playerTeam.length === 0) throw new Error('Team cannot be empty');
@@ -779,7 +781,7 @@ export function startItemDungeonBattle(
   for (const instId of teamInstanceIds) {
     const inst = collection.find(p => p.instanceId === instId && p.ownerId === player.id);
     if (!inst) throw new Error(`Pokemon instance ${instId} not found`);
-    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true, inst.skillLevels));
+    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true, inst.skillLevels, inst.isShiny));
   }
 
   if (playerTeam.length === 0) throw new Error('Team cannot be empty');
@@ -839,7 +841,7 @@ export function startMysteryDungeonBattle(
   for (const instId of teamInstanceIds) {
     const inst = collection.find(p => p.instanceId === instId && p.ownerId === player.id);
     if (!inst) throw new Error(`Pokemon instance ${instId} not found`);
-    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true, inst.skillLevels));
+    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true, inst.skillLevels, inst.isShiny));
   }
 
   if (playerTeam.length === 0) throw new Error('Team cannot be empty');
@@ -900,7 +902,7 @@ export function startTowerBattle(
   for (const instId of teamInstanceIds) {
     const inst = collection.find(p => p.instanceId === instId && p.ownerId === player.id);
     if (!inst) throw new Error(`Pokemon instance ${instId} not found`);
-    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true, inst.skillLevels));
+    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true, inst.skillLevels, inst.isShiny));
   }
 
   if (playerTeam.length === 0) throw new Error('Team cannot be empty');
@@ -1263,7 +1265,7 @@ export function startArenaRivalBattle(
   for (const instId of teamInstanceIds) {
     const inst = collection.find(p => p.instanceId === instId && p.ownerId === player.id);
     if (!inst) throw new Error(`Pokemon instance ${instId} not found`);
-    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true, inst.skillLevels));
+    playerTeam.push(makeBattleMon(inst.instanceId, inst.templateId, inst.level, inst.stars, true, inst.skillLevels, inst.isShiny));
   }
   if (playerTeam.length === 0) throw new Error('Team cannot be empty');
 

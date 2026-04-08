@@ -42,6 +42,8 @@ export function TeamSelectPage() {
   const [startError, setStartError] = useState<string | null>(null);
   const [teamRestored, setTeamRestored] = useState(false);
   const [detailMon, setDetailMon] = useState<OwnedPokemon | null>(null);
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressTriggered = useRef(false);
   const rosterRef = useRef<HTMLDivElement>(null);
@@ -371,8 +373,27 @@ export function TeamSelectPage() {
             return (
               <div
                 key={i}
-                className={`ts-slot ${mon ? 'filled' : 'empty'}`}
+                className={`ts-slot ${mon ? 'filled' : 'empty'}${dragOverIdx === i && dragIdx !== i ? ' ts-slot--drag-over' : ''}`}
                 style={mon ? { borderColor: STAR_COLORS[mon.instance.stars] } : undefined}
+                draggable={!!mon}
+                onDragStart={() => setDragIdx(i)}
+                onDragOver={(e) => { e.preventDefault(); setDragOverIdx(i); }}
+                onDragLeave={() => setDragOverIdx(null)}
+                onDrop={() => {
+                  if (dragIdx !== null && dragIdx !== i && selected[dragIdx]) {
+                    setSelected(prev => {
+                      const next = [...prev];
+                      const dragged = next[dragIdx];
+                      next.splice(dragIdx, 1);
+                      const insertAt = Math.min(i, next.length);
+                      next.splice(insertAt, 0, dragged);
+                      return next;
+                    });
+                  }
+                  setDragIdx(null);
+                  setDragOverIdx(null);
+                }}
+                onDragEnd={() => { setDragIdx(null); setDragOverIdx(null); }}
                 onClick={() => mon && toggleSelect(mon.instance.instanceId)}
               >
                 {mon ? (
@@ -494,10 +515,10 @@ export function TeamSelectPage() {
             </div>
           )}
           <button
-            className={`ts-go-btn ${tutorialStep === 10 ? 'tutorial-target' : ''} ${energyCost > 0 && !!player && player.energy < energyCost ? 'ts-go-btn-disabled' : ''}`}
+            className={`ts-go-btn ${tutorialStep === 10 ? 'tutorial-target' : ''} ${energyCost > 0 && !!player && player.energy < energyCost * repeatCount ? 'ts-go-btn-disabled' : ''}`}
             data-tutorial-id="team-select-go"
             onClick={handleStart}
-            disabled={selected.length === 0 || isStarting || (energyCost > 0 && !!player && player.energy < energyCost)}
+            disabled={selected.length === 0 || isStarting || (energyCost > 0 && !!player && player.energy < energyCost * repeatCount)}
           >
             {isStarting ? '...' : (
               <>

@@ -12,6 +12,7 @@ import {
   getTypeChangeDef,
   getAvailableTypeChanges,
 } from '@gatchamon/shared';
+import { incrementMission, trackTrophyStat } from '../services/daily.service.js';
 
 export const monsterManagementRouter = Router();
 
@@ -41,6 +42,8 @@ monsterManagementRouter.post('/merge', (req, res) => {
       return;
     }
     const result = performMerge(playerId, baseInstanceId, fodderInstanceId);
+    incrementMission(playerId, 'merge_monster');
+    trackTrophyStat(playerId, 'totalMerges');
     res.json({ instance: result });
   } catch (e: any) {
     res.status(400).json({ error: e.message });
@@ -79,6 +82,8 @@ monsterManagementRouter.post('/evolution/perform', (req, res) => {
       return;
     }
     const result = performEvolution(playerId, instanceId, targetTemplateId);
+    incrementMission(playerId, 'evolve_monster');
+    trackTrophyStat(playerId, 'totalEvolutions');
     res.json({ instance: result });
   } catch (e: any) {
     res.status(400).json({ error: e.message });

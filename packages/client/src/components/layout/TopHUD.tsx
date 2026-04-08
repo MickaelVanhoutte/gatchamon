@@ -172,7 +172,7 @@ export function TopHUD() {
       </div>
     </header>
     {showRoulette && (
-      <DailyRouletteModal onClose={() => { setShowRoulette(false); setRouletteAvailable(canSpinToday()); }} />
+      <DailyRouletteModal onClose={(spinsLeft) => { setShowRoulette(false); setRouletteAvailable(spinsLeft > 0); }} />
     )}
     </>
   );

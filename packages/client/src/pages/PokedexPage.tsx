@@ -9,6 +9,7 @@ import {
   getTemplate,
   getEvolutionLineage,
   getActiveEvolutionsFrom,
+  describeLeaderSkill,
 } from '@gatchamon/shared';
 import type { PokemonType, PokemonTemplate, BaseStats, EffectId } from '@gatchamon/shared';
 import { assetUrl, staticSpriteUrl } from '../utils/asset-url';
@@ -360,6 +361,12 @@ export function PokedexPage() {
                 ) : (
                   /* Skill tab */
                   <div className="box-skills">
+                    {selected.leaderSkill && (
+                      <div className="box-leader-skill">
+                        <span className="box-leader-label">Leader Skill</span>
+                        <div className="box-leader-desc">{describeLeaderSkill(selected.leaderSkill)}</div>
+                      </div>
+                    )}
                     {selectedSkills.map((skill, i) => (
                       <SkillCard key={skill.id} skill={skill} index={i + 1} />
                     ))}

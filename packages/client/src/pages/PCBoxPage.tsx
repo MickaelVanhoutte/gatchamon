@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { GameIcon, StarRating } from '../components/icons';
 import type { PokemonType, BaseStats } from '@gatchamon/shared';
-import { computeStats, getSkillsForPokemon, isActivePokemon } from '@gatchamon/shared';
+import { computeStats, getSkillsForPokemon, isActivePokemon, describeLeaderSkill } from '@gatchamon/shared';
 import { staticSpriteUrl } from '../utils/asset-url';
 import { SkillCard } from '../components/monster/SkillCard';
 import './CollectionPage.css';
@@ -309,6 +309,12 @@ export function PCBoxPage() {
                 ) : (
                   /* Skill tab */
                   <div className="box-skills">
+                    {selectedTemplate?.leaderSkill && (
+                      <div className="box-leader-skill">
+                        <span className="box-leader-label">Leader Skill</span>
+                        <div className="box-leader-desc">{describeLeaderSkill(selectedTemplate.leaderSkill)}</div>
+                      </div>
+                    )}
                     {selectedSkills.map((skill, i) => (
                       <SkillCard
                         key={skill.id}

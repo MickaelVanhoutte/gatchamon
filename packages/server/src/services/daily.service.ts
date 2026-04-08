@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { getDb } from '../db/schema.js';
-import type { RewardState, MissionReward, InboxItem, MissionDefinition } from '@gatchamon/shared';
+import type { RewardState, MissionReward, InboxItem, MissionDefinition, MissionType, PlayerLifetimeStats } from '@gatchamon/shared';
 import {
   selectDailyMissions,
   MISSION_POOL,
@@ -8,6 +8,9 @@ import {
   LOGIN_CALENDAR_DAYS,
   ROULETTE_SLOTS,
   isBeginnerBonusActive,
+  TROPHIES,
+  getTrophyStat,
+  defaultLifetimeStats,
 } from '@gatchamon/shared';
 import { earnPokedollars, earnStardust } from './player.service.js';
 
@@ -102,11 +105,61 @@ export function claimTrophyTier(playerId: string, trophyId: string, tierIndex: n
   const trophy = state.trophyProgress.find(t => t.trophyId === trophyId);
   if (!trophy) return null;
   if (trophy.claimedTiers.includes(tierIndex)) return null;
-  // Mark tier as claimed
+
+  const def = TROPHIES.find(t => t.id === trophyId);
+  if (!def || tierIndex < 0 || tierIndex >= def.tiers.length) return null;
+  const tier = def.tiers[tierIndex];
+  if (trophy.current < tier.threshold) return null;
+
   trophy.claimedTiers.push(tierIndex);
   saveRewardState(playerId, state);
-  // TODO: look up trophy definition to get tier reward when trophy defs are added to shared
-  return null;
+  applyReward(playerId, tier.reward);
+  return tier.reward;
+}
+
+// ── Mission & Trophy Tracking ─────────────────────────────────────────
+
+export function incrementMission(playerId: string, type: MissionType, amount = 1): void {
+  const state = getRewardState(playerId);
+  const today = new Date().toISOString().slice(0, 10);
+  // Ensure daily missions are initialised for today
+  if (state.dailyMissions.date !== today) {
+    const defs = selectDailyMissions(today);
+    state.dailyMissions = {
+      date: today,
+      missions: defs.map(d => ({ missionId: d.id, current: 0, claimed: false })),
+      allClaimedBonus: false,
+    };
+  }
+  const todayDefs = selectDailyMissions(today);
+  for (const mission of state.dailyMissions.missions) {
+    const def = todayDefs.find(d => d.id === mission.missionId);
+    if (def && def.type === type && !mission.claimed) {
+      mission.current = Math.min(mission.current + amount, def.target);
+    }
+  }
+  saveRewardState(playerId, state);
+}
+
+export function trackTrophyStat(playerId: string, stat: keyof PlayerLifetimeStats, amount = 1): void {
+  const state = getRewardState(playerId);
+  if (!state.stats || typeof state.stats !== 'object') {
+    state.stats = defaultLifetimeStats();
+  }
+  (state.stats as any)[stat] = ((state.stats as any)[stat] ?? 0) + amount;
+
+  // Update trophy progress from lifetime stats
+  for (const trophy of TROPHIES) {
+    const trophyStat = getTrophyStat(trophy.id);
+    if (trophyStat !== stat) continue;
+    let tp = state.trophyProgress.find(t => t.trophyId === trophy.id);
+    if (!tp) {
+      tp = { trophyId: trophy.id, current: 0, claimedTiers: [] };
+      state.trophyProgress.push(tp);
+    }
+    tp.current = (state.stats as any)[stat];
+  }
+  saveRewardState(playerId, state);
 }
 
 // ── First Clears ───────────────────────────────────────────────────────
@@ -215,6 +268,11 @@ export function claimLoginCalendarDay(playerId: string): MissionReward | null {
     .run(JSON.stringify(state.claimedDays), today, playerId);
 
   applyReward(playerId, reward);
+  sendInboxItem(playerId, {
+    title: 'Daily Login Bonus',
+    message: `Day ${dayIndex + 1} reward claimed!`,
+    reward,
+  });
   return reward;
 }
 

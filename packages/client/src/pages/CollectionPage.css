@@ -478,6 +478,25 @@
   overflow-y: auto;
 }
 
+.box-leader-skill {
+  background: linear-gradient(90deg, rgba(251, 191, 36, 0.1), transparent);
+  border-radius: 8px;
+  padding: 8px 10px;
+  border-left: 3px solid #fbbf24;
+}
+.box-leader-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fbbf24;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.box-leader-desc {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 2px;
+}
+
 .skill-card {
   background: var(--bg-panel);
   border-radius: 8px;

@@ -25,6 +25,7 @@ export interface BattleMon {
   hpThresholdTriggered?: boolean;
   isBoss?: boolean;
   skillLevels?: [number, number, number];
+  isShiny?: boolean;
 }
 
 export interface BattleState {

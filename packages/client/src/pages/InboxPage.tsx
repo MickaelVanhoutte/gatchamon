@@ -26,9 +26,9 @@ export function InboxPage() {
 
   useEffect(() => {
     if (!USE_SERVER) return;
-    serverApi.getInbox().then((res: any) => {
-      setServerItems(res.items ?? res ?? []);
-    }).catch(() => {});
+    reloadInbox();
+    const interval = setInterval(reloadInbox, 30_000);
+    return () => clearInterval(interval);
   }, []);
 
   const reloadInbox = () => {
@@ -101,6 +101,11 @@ export function InboxPage() {
     <div className="page inbox-page">
       <div className="inbox-header">
         <h2 className="inbox-title">Inbox</h2>
+        {USE_SERVER && (
+          <button className="inbox-clear-btn" onClick={reloadInbox}>
+            Refresh
+          </button>
+        )}
         {!USE_SERVER && readCount > 0 && (
           <button className="inbox-clear-btn" onClick={handleClearRead}>
             Clear read ({readCount})
