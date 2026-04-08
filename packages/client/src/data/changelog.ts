@@ -19,7 +19,7 @@ export const changelog: ChangelogEntry[] = [
     date: '2026-04-07',
     changes: [
       'Tutorial: first battle now features only 2 enemies (Oddish + Rattata) for an easier intro',
-      'Tutorial: fixed held item management steps getting stuck due to page redirect issue',
+      'Tutorial: fixed held item management steps getting stuck — overlay no longer blocks item grid and equip/upgrade buttons',
     ],
   },
   {

@@ -37,8 +37,10 @@ const AdminPage = lazy(() => import('./pages/admin/AdminPage').then(m => ({ defa
 
 export function App() {
   const location = useLocation();
-  const { player, createPlayer, loadPlayer } = useGameStore();
+  const { player, createPlayer, checkNameAvailable, loadPlayer } = useGameStore();
   const [nameInput, setNameInput] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
   const [showLoading, setShowLoading] = useState(true);
   const [swDone, setSwDone] = useState(false);
   const navigate = useNavigate();
@@ -136,25 +138,39 @@ export function App() {
           <p>Choose your trainer name</p>
           <form onSubmit={async (e) => {
             e.preventDefault();
-            if (nameInput.trim()) {
-              await createPlayer(nameInput.trim());
+            const trimmed = nameInput.trim();
+            if (!trimmed || isCreating) return;
+            setNameError('');
+            setIsCreating(true);
+            try {
+              const available = await checkNameAvailable(trimmed);
+              if (!available) {
+                setNameError('This trainer name is already taken');
+                setIsCreating(false);
+                return;
+              }
+              await createPlayer(trimmed);
               useTutorialStore.getState().advanceStep(); // step 0 → 1
               navigate('/');
+            } catch (err: any) {
+              setNameError(err.message || 'Failed to create account');
+              setIsCreating(false);
             }
           }}>
             <input
               ref={inputRef}
               type="text"
               value={nameInput}
-              onChange={e => setNameInput(e.target.value)}
+              onChange={e => { setNameInput(e.target.value); setNameError(''); }}
               placeholder="Enter name..."
               maxLength={20}
               enterKeyHint="done"
               autoComplete="off"
               autoCorrect="off"
             />
-            <button type="submit" disabled={!nameInput.trim()}>
-              Start Adventure
+            {nameError && <p className="onboarding-error">{nameError}</p>}
+            <button type="submit" disabled={!nameInput.trim() || isCreating}>
+              {isCreating ? 'Creating...' : 'Start Adventure'}
             </button>
           </form>
         </div>

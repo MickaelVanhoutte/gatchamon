@@ -34,6 +34,15 @@ function rowToPlayer(row: any): Player {
   };
 }
 
+// Check if a trainer name is already taken
+playerRouter.get('/check-name', (req, res) => {
+  const name = (req.query.name as string ?? '').trim();
+  if (!name) { res.json({ available: false, reason: 'Name is required' }); return; }
+  const db = getDb();
+  const existing = db.prepare('SELECT 1 FROM players WHERE LOWER(name) = LOWER(?)').get(name);
+  res.json({ available: !existing });
+});
+
 playerRouter.post('/', (req, res) => {
   const { name } = req.body;
   if (!name || typeof name !== 'string' || name.trim().length === 0) {
@@ -42,12 +51,23 @@ playerRouter.post('/', (req, res) => {
   }
 
   const db = getDb();
+  const trimmed = name.trim();
+
+  // Check uniqueness (case-insensitive)
+  const existing = db.prepare('SELECT 1 FROM players WHERE LOWER(name) = LOWER(?)').get(trimmed);
+  if (existing) {
+    res.status(409).json({ error: 'This trainer name is already taken' });
+    return;
+  }
+
   const id = uuidv4();
   const storyProgress = JSON.stringify({ normal: { '1': 1 }, hard: {}, hell: {} });
+  const now = new Date().toISOString();
 
   db.prepare(
-    'INSERT INTO players (id, name, pokeballs, regular_pokeballs, premium_pokeballs, energy, story_progress) VALUES (?, ?, 50, 50, 5, 100, ?)'
-  ).run(id, name.trim(), storyProgress);
+    `INSERT INTO players (id, name, pokeballs, regular_pokeballs, premium_pokeballs, energy, story_progress, pokedollars, created_at, last_energy_update)
+     VALUES (?, ?, 50, 50, 10, 100, ?, 10000, ?, ?)`
+  ).run(id, trimmed, storyProgress, now, now);
 
   const player = db.prepare('SELECT * FROM players WHERE id = ?').get(id) as any;
   res.status(201).json(rowToPlayer(player));

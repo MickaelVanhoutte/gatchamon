@@ -138,8 +138,11 @@ export function TutorialOverlay() {
   }, [step, isActive, location.pathname, navigate]);
 
   // Position spotlight over target element
+  // On /items/ page during steps 15-16, skip spotlight — the manage page has its own
+  // tutorial-highlight CSS classes, and the overlay would block item grid + equip/upgrade buttons
+  const skipSpotlight = (step === 15 || step === 16) && location.pathname.startsWith('/items/');
   useEffect(() => {
-    if (!isActive || !highlightTarget || !SPOTLIGHT_STEPS.has(step)) {
+    if (!isActive || !highlightTarget || !SPOTLIGHT_STEPS.has(step) || skipSpotlight) {
       setSpot(null);
       return;
     }

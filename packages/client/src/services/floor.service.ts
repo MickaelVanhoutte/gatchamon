@@ -124,6 +124,18 @@ export function buildFloorEnemies(regionId: number, floor: number, difficulty: D
   const baseStars = getBaseStars(regionId, false);
   const starBoost = difficulty === 'hell' ? 1 : 0;
   const stars = clampStars(baseStars + starBoost);
+
+  // Tutorial first battle: only 2 enemies with 1 grass type (easier intro)
+  if (regionId === 1 && floor === 1 && difficulty === 'normal') {
+    return {
+      enemies: [
+        { templateId: 43, level: enemyLevel, stars }, // Oddish (Grass)
+        { templateId: 19, level: enemyLevel, stars }, // Rattata (Normal)
+      ],
+      isBoss: false,
+    };
+  }
+
   const enemyCount = difficulty === 'hell' ? 4 : 3;
 
   const enemies: FloorEnemy[] = [];

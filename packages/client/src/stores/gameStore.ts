@@ -15,6 +15,8 @@ import { regenerateEnergy } from '../services/energy.service';
 import { getUnclaimedMissionCount, getUnclaimedTrophyCount } from '../services/reward.service';
 import { getUnreadInboxCount, grantNewPlayerEnergyBonus } from '../services/inbox.service';
 import { useTutorialStore } from './tutorialStore';
+import { USE_SERVER } from '../config';
+import { createPlayerOnServer, loadPlayerFromServer, checkNameAvailable } from '../services/server-player.service';
 
 export interface OwnedPokemon {
   instance: PokemonInstance;
@@ -31,7 +33,8 @@ interface GameState {
   unclaimedRewardCount: number;
   inboxUnreadCount: number;
 
-  createPlayer: (name: string) => void;
+  createPlayer: (name: string) => Promise<void>;
+  checkNameAvailable: (name: string) => Promise<boolean>;
   loadPlayer: () => void;
   refreshPlayer: () => void;
   refreshInbox: () => void;
@@ -69,12 +72,35 @@ export const useGameStore = create<GameState>((set, get) => ({
   unclaimedRewardCount: 0,
   inboxUnreadCount: 0,
 
-  createPlayer: (name: string) => {
-    const player = playerService.createPlayer(name);
-    set({ player });
+  createPlayer: async (name: string) => {
+    if (USE_SERVER) {
+      const player = await createPlayerOnServer(name);
+      set({ player });
+    } else {
+      const player = playerService.createPlayer(name);
+      set({ player });
+    }
+  },
+
+  checkNameAvailable: async (name: string) => {
+    if (!USE_SERVER) return true; // No name check in offline mode
+    return checkNameAvailable(name);
   },
 
   loadPlayer: () => {
+    if (USE_SERVER) {
+      // Server mode: async load
+      loadPlayerFromServer().then(player => {
+        if (player) {
+          set({ player });
+          grantNewPlayerEnergyBonus();
+          get().refreshRewards();
+        }
+      });
+      return;
+    }
+
+    // Offline mode: sync load
     storage.checkAndResetTower();
     let player = storage.loadPlayer();
     if (player) {

@@ -73,7 +73,16 @@ export function useTutorial() {
 
   const isActive = step > 0 && step < 18 && step !== 11;
 
-  const dialogLines = (TUTORIAL_DIALOG[step] ?? []).map(line =>
+  // On the manage page during step 15/16, show contextual dialog
+  const onManagePage = window.location.hash.includes('/items/');
+  let rawLines = TUTORIAL_DIALOG[step] ?? [];
+  if (step === 15 && onManagePage) {
+    rawLines = ['Select an item from the list, then tap Equip!'];
+  } else if (step === 16 && onManagePage) {
+    rawLines = ['Now tap Upgrade to power up this item!'];
+  }
+
+  const dialogLines = rawLines.map(line =>
     line.replace('{name}', playerName),
   );
 
