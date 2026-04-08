@@ -137,7 +137,7 @@ export function HeldItemManagePage() {
         if (result.success) {
           let msg = `Success! +${equippedItem.level + 1}`;
           if (result.newSubStat) {
-            const label = STAT_TYPE_LABELS[result.newSubStat.type];
+            const label = STAT_TYPE_LABELS[result.newSubStat.type as keyof typeof STAT_TYPE_LABELS];
             msg += result.newSubStat.isNew
               ? ` — New sub: ${label} +${result.newSubStat.value}`
               : ` — ${label} +${result.newSubStat.value}`;

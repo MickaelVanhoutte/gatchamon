@@ -28,6 +28,7 @@ import type {
 import type { PokemonTemplate, SkillDefinition, StoryProgress } from '@gatchamon/shared';
 import { getDb } from '../db/schema.js';
 import { spendEnergy, grantTrainerXp, earnPokedollars } from './player.service.js';
+import { generateItem } from './held-item.service.js';
 import { defaultTrainerSkills } from '@gatchamon/shared';
 
 // ---------------------------------------------------------------------------
@@ -356,7 +357,24 @@ function calculateRewards(state: BattleState): BattleRewards {
   const trainerXpAmount = regionId * 5 + floorNum * 2;
   grantTrainerXp(state.playerId, trainerXpAmount);
 
-  return { regularPokeballs: pokeballs, premiumPokeballs, xpPerMon, levelUps, pokedollars };
+  // Tutorial: guarantee a held item drop on the very first story battle
+  const itemDrops: { itemId: string; setId: string; stars: number; grade: string }[] = [];
+  if (regionId === 1 && floorNum === 1 && difficulty === 'normal') {
+    // Check if this is the player's first clear (no items yet)
+    const itemCount = (db.prepare('SELECT COUNT(*) as c FROM held_items WHERE owner_id = ?').get(state.playerId) as any).c;
+    if (itemCount === 0) {
+      const item = generateItem('power_band', 1, 1, 'common', state.playerId);
+      itemDrops.push({ itemId: item.itemId, setId: item.setId, stars: item.stars, grade: item.grade });
+      // Grant bonus pokedollars so the player can afford the tutorial upgrade
+      db.prepare('UPDATE players SET pokedollars = pokedollars + 1000 WHERE id = ?').run(state.playerId);
+    }
+  }
+
+  return {
+    regularPokeballs: pokeballs, premiumPokeballs, xpPerMon, levelUps,
+    pokedollars: pokedollars + (itemDrops.length > 0 ? 1000 : 0),
+    itemDrops: itemDrops.length > 0 ? itemDrops : undefined,
+  };
 }
 
 function advanceStoryProgress(

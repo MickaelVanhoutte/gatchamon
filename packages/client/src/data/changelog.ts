@@ -13,6 +13,9 @@ export const changelog: ChangelogEntry[] = [
       'Auth: Google Sign-In required to play in server mode — accounts are linked to Google for cross-device access',
       'Auth: all API routes now require a valid JWT token; auth routes are public',
       'Auth: sign out button and Google email display on Trainer page',
+      'Auth: admin panel restricted to authorized Google account only',
+      'Server: tutorial first battle now drops a held item (was missing in server mode)',
+      'Server: all game operations (summon, battle rewards, merge, evolve, held items, transfers) now persist to database in server mode',
     ],
   },
   {

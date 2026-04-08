@@ -21,7 +21,7 @@ authRouter.post('/google', async (req, res) => {
 
     const row = db.prepare('SELECT * FROM players WHERE google_id = ?').get(googleUser.googleId) as any;
     if (row) {
-      const token = signToken(row.id, googleUser.googleId);
+      const token = signToken(row.id, googleUser.googleId, row.google_email ?? googleUser.email);
       res.json({ token, player: rowToPlayer(row) });
     } else {
       res.json({ needsName: true, googleUser: { googleId: googleUser.googleId, email: googleUser.email, name: googleUser.name } });
@@ -73,7 +73,7 @@ authRouter.post('/google/register', async (req, res) => {
     ).run(id, trimmed, storyProgress, now, now, googleUser.googleId, googleUser.email);
 
     const player = db.prepare('SELECT * FROM players WHERE id = ?').get(id) as any;
-    const token = signToken(id, googleUser.googleId);
+    const token = signToken(id, googleUser.googleId, googleUser.email);
     res.status(201).json({ token, player: rowToPlayer(player) });
   } catch (err: any) {
     res.status(401).json({ error: err.message || 'Registration failed' });

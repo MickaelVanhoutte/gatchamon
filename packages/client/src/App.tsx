@@ -128,6 +128,9 @@ export function App() {
   }, [player, showLoading]);
 
   if (location.pathname === '/admin') {
+    if (USE_SERVER && player?.googleEmail !== 'hktmika@gmail.com') {
+      return null;
+    }
     return <Suspense fallback={null}><AdminPage /></Suspense>;
   }
 

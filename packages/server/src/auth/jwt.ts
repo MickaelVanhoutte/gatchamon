@@ -5,10 +5,11 @@ const SECRET = process.env.JWT_SECRET || 'dev-secret-change-me';
 export interface TokenPayload {
   playerId: string;
   googleId: string;
+  googleEmail: string;
 }
 
-export function signToken(playerId: string, googleId: string): string {
-  return jwt.sign({ playerId, googleId } satisfies TokenPayload, SECRET, {
+export function signToken(playerId: string, googleId: string, googleEmail: string): string {
+  return jwt.sign({ playerId, googleId, googleEmail } satisfies TokenPayload, SECRET, {
     expiresIn: '30d',
   });
 }

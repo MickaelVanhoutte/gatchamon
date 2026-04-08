@@ -17,6 +17,7 @@ import { getUnreadInboxCount, grantNewPlayerEnergyBonus } from '../services/inbo
 import { useTutorialStore } from './tutorialStore';
 import { USE_SERVER } from '../config';
 import { createPlayerOnServer, loadPlayerFromServer, checkNameAvailable } from '../services/server-player.service';
+import * as serverApi from '../services/server-api.service';
 
 export interface OwnedPokemon {
   instance: PokemonInstance;
@@ -39,7 +40,7 @@ interface GameState {
   loadPlayer: () => void;
   refreshPlayer: () => void;
   refreshInbox: () => void;
-  summon: (count: 1 | 10, type?: PokeballType) => OwnedPokemon[];
+  summon: (count: 1 | 10, type?: PokeballType) => OwnedPokemon[] | Promise<OwnedPokemon[]>;
   loadCollection: () => void;
   loadPcBox: () => void;
   transferToPC: (instanceIds: string[]) => void;
@@ -53,15 +54,23 @@ interface GameState {
   loadHeldItems: () => void;
   equipItem: (itemId: string, pokemonInstanceId: string) => void;
   unequipItem: (itemId: string) => void;
-  upgradeItem: (itemId: string) => heldItemService.UpgradeResult;
-  sellItem: (itemId: string) => number;
-  sellItems: (itemIds: string[]) => number;
+  upgradeItem: (itemId: string) => any;
+  sellItem: (itemId: string) => any;
+  sellItems: (itemIds: string[]) => any;
   updateInstance: (instanceId: string, updates: Partial<PokemonInstance>) => void;
   allocateTrainerSkill: (skill: keyof TrainerSkills) => void;
   mergeEssences: (element: string, targetTier: 'mid' | 'high', count: number) => void;
 }
 
 let energyRegenInterval: ReturnType<typeof setInterval> | null = null;
+
+async function reloadFromServer(set: any, get: any) {
+  const player = await serverApi.loadPlayer();
+  if (player) set({ player });
+  // Reload collection and items
+  get().loadCollection();
+  get().loadHeldItems();
+}
 
 export const useGameStore = create<GameState>((set, get) => ({
   player: null,
@@ -101,6 +110,9 @@ export const useGameStore = create<GameState>((set, get) => ({
         if (player) {
           set({ player });
           grantNewPlayerEnergyBonus();
+          get().loadCollection();
+          get().loadPcBox();
+          get().loadHeldItems();
           get().refreshRewards();
         }
       });
@@ -144,12 +156,33 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   refreshPlayer: () => {
+    if (USE_SERVER) {
+      serverApi.loadPlayer().then(player => {
+        if (player) set({ player });
+        get().refreshRewards();
+      });
+      return;
+    }
     const player = storage.loadPlayer();
     set({ player });
     get().refreshRewards();
   },
 
   summon: (count: 1 | 10, type: PokeballType = 'regular') => {
+    if (USE_SERVER) {
+      // Server mode: async summon — returns a promise
+      return serverApi.summon(count, type).then(async (res) => {
+        const newPokemon: OwnedPokemon[] = res.results.map(r => ({
+          instance: r.pokemon,
+          template: r.template,
+        }));
+        await reloadFromServer(set, get);
+        get().loadPcBox();
+        return newPokemon;
+      });
+    }
+
+    // Offline mode: sync summon
     const { player } = get();
     if (!player) throw new Error('No player');
 
@@ -157,10 +190,8 @@ export const useGameStore = create<GameState>((set, get) => ({
 
     let results: gachaService.SummonResult[];
     if (tutorialStep === 4 && type === 'regular' && count === 1) {
-      // Tutorial step 4: always summon Growlithe (fire 2★)
       results = [gachaService.summonSingleRegular(58)];
     } else if (tutorialStep === 5 && type === 'premium' && count === 1) {
-      // Tutorial step 5: always summon Eevee (normal 3★)
       results = [gachaService.summonSinglePremium(133)];
     } else if (type === 'glowing') {
       results = count === 10
@@ -183,12 +214,10 @@ export const useGameStore = create<GameState>((set, get) => ({
       template: r.template,
     }));
 
-    // Reload player from storage (pokeballs were deducted)
     const updatedPlayer = storage.loadPlayer()!;
     set({ player: updatedPlayer });
     get().loadCollection();
     get().loadPcBox();
-
     get().refreshRewards();
     return newPokemon;
   },
@@ -197,6 +226,16 @@ export const useGameStore = create<GameState>((set, get) => ({
     const { player } = get();
     if (!player) return;
     set({ isLoading: true });
+
+    if (USE_SERVER) {
+      serverApi.loadCollection().then(res => {
+        const collection = res.collection
+          .filter(item => item.template != null)
+          .sort((a, b) => b.instance.stars - a.instance.stars || b.instance.level - a.instance.level);
+        set({ collection, isLoading: false });
+      }).catch(() => set({ isLoading: false }));
+      return;
+    }
 
     const instances = storage.loadCollection();
     const collection: OwnedPokemon[] = instances
@@ -211,6 +250,16 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   loadPcBox: () => {
+    if (USE_SERVER) {
+      serverApi.loadPcBox().then(res => {
+        const pcBox = res.pcBox
+          .filter(item => item.template != null)
+          .sort((a, b) => b.instance.stars - a.instance.stars || b.instance.level - a.instance.level);
+        set({ pcBox });
+      });
+      return;
+    }
+
     const instances = storage.loadPcBox();
     const pcBox: OwnedPokemon[] = instances
       .map(inst => ({
@@ -223,12 +272,26 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   transferToPC: (instanceIds: string[]) => {
+    if (USE_SERVER) {
+      serverApi.transferPokemon(instanceIds, 'pc').then(() => {
+        get().loadCollection();
+        get().loadPcBox();
+      });
+      return;
+    }
     pcService.transferToPC(instanceIds);
     get().loadCollection();
     get().loadPcBox();
   },
 
   transferFromPC: (instanceIds: string[]) => {
+    if (USE_SERVER) {
+      serverApi.transferPokemon(instanceIds, 'collection').then(() => {
+        get().loadCollection();
+        get().loadPcBox();
+      });
+      return;
+    }
     pcService.transferFromPC(instanceIds);
     get().loadCollection();
     get().loadPcBox();
@@ -236,17 +299,33 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   togglePcAutoSend: () => {
     const next = !get().pcAutoSend;
+    if (USE_SERVER) {
+      serverApi.setPcAutoSend(next);
+    }
     storage.savePcAutoSend(next);
     set({ pcAutoSend: next });
   },
 
   mergePokemon: (baseId: string, fodderId: string) => {
+    if (USE_SERVER) {
+      serverApi.performMerge(baseId, fodderId).then(() => {
+        reloadFromServer(set, get);
+      });
+      return;
+    }
     mergeService.performMerge(baseId, fodderId);
     get().loadCollection();
     get().refreshRewards();
   },
 
   altarFeed: (baseId: string, fodderIds: string[]) => {
+    if (USE_SERVER) {
+      serverApi.performAltarFeed(baseId, fodderIds).then(() => {
+        reloadFromServer(set, get);
+        get().loadPcBox();
+      });
+      return;
+    }
     altarService.performAltarFeed(baseId, fodderIds);
     get().loadCollection();
     get().loadPcBox();
@@ -254,6 +333,12 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   evolvePokemon: (instanceId: string, targetTemplateId: number) => {
+    if (USE_SERVER) {
+      serverApi.performEvolution(instanceId, targetTemplateId).then(() => {
+        reloadFromServer(set, get);
+      });
+      return;
+    }
     evolutionService.performEvolution(instanceId, targetTemplateId);
     const updatedPlayer = storage.loadPlayer();
     set({ player: updatedPlayer });
@@ -262,6 +347,12 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   changeType: (instanceId: string, targetTemplateId: number) => {
+    if (USE_SERVER) {
+      serverApi.performTypeChange(instanceId, targetTemplateId).then(() => {
+        reloadFromServer(set, get);
+      });
+      return;
+    }
     typeChangeService.performTypeChange(instanceId, targetTemplateId);
     const updatedPlayer = storage.loadPlayer();
     set({ player: updatedPlayer });
@@ -281,22 +372,46 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   loadHeldItems: () => {
+    if (USE_SERVER) {
+      serverApi.loadHeldItems().then(items => {
+        set({ heldItems: items });
+      });
+      return;
+    }
     const items = storage.loadHeldItems();
     set({ heldItems: items });
   },
 
   equipItem: (itemId: string, pokemonInstanceId: string) => {
+    if (USE_SERVER) {
+      serverApi.equipItem(itemId, pokemonInstanceId).then(() => {
+        get().loadHeldItems();
+      });
+      return;
+    }
     heldItemService.equipItem(itemId, pokemonInstanceId);
     set({ heldItems: storage.loadHeldItems() });
   },
 
   unequipItem: (itemId: string) => {
+    if (USE_SERVER) {
+      serverApi.unequipItem(itemId).then(() => {
+        reloadFromServer(set, get);
+      });
+      return;
+    }
     heldItemService.unequipItem(itemId);
     const updatedPlayer = storage.loadPlayer();
     set({ player: updatedPlayer, heldItems: storage.loadHeldItems() });
   },
 
   upgradeItem: (itemId: string) => {
+    if (USE_SERVER) {
+      return serverApi.upgradeItem(itemId).then(async (result: any) => {
+        await reloadFromServer(set, get);
+        return result;
+      });
+    }
     const result = heldItemService.upgradeItem(itemId);
     const updatedPlayer = storage.loadPlayer();
     set({ player: updatedPlayer, heldItems: storage.loadHeldItems() });
@@ -304,6 +419,12 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   sellItem: (itemId: string) => {
+    if (USE_SERVER) {
+      return serverApi.sellItems([itemId]).then(async (res) => {
+        await reloadFromServer(set, get);
+        return res.totalValue;
+      });
+    }
     const value = heldItemService.sellItem(itemId);
     const updatedPlayer = storage.loadPlayer();
     set({ player: updatedPlayer, heldItems: storage.loadHeldItems() });
@@ -311,6 +432,12 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   sellItems: (itemIds: string[]) => {
+    if (USE_SERVER) {
+      return serverApi.sellItems(itemIds).then(async (res) => {
+        await reloadFromServer(set, get);
+        return res.totalValue;
+      });
+    }
     const total = heldItemService.sellItems(itemIds);
     const updatedPlayer = storage.loadPlayer();
     set({ player: updatedPlayer, heldItems: storage.loadHeldItems() });
@@ -318,17 +445,33 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   updateInstance: (instanceId: string, updates: Partial<PokemonInstance>) => {
-    storage.updateInstance(instanceId, updates);
+    // In server mode, instance updates happen server-side via battle/merge/evolve routes
+    // This is only used for offline mode local updates
+    if (!USE_SERVER) {
+      storage.updateInstance(instanceId, updates);
+    }
     get().loadCollection();
   },
 
   allocateTrainerSkill: (skill: keyof TrainerSkills) => {
+    if (USE_SERVER) {
+      serverApi.allocateTrainerSkill(skill).then(() => {
+        get().refreshPlayer();
+      });
+      return;
+    }
     playerService.allocateTrainerSkill(skill);
     const updatedPlayer = storage.loadPlayer();
     set({ player: updatedPlayer });
   },
 
   mergeEssences: (element: string, targetTier: 'mid' | 'high', count: number) => {
+    if (USE_SERVER) {
+      serverApi.performEssenceMerge(element, targetTier, count).then(() => {
+        get().refreshPlayer();
+      });
+      return;
+    }
     essenceMergeService.performMerge(element, targetTier, count);
     const updatedPlayer = storage.loadPlayer();
     set({ player: updatedPlayer });
