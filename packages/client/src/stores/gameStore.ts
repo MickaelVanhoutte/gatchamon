@@ -169,6 +169,35 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   summon: (count: 1 | 10, type: PokeballType = 'regular') => {
+    // Tutorial summons are always fixed (same for everyone), handled client-side
+    const tutorialStep = useTutorialStore.getState().step;
+    if (tutorialStep === 4 && type === 'regular' && count === 1) {
+      const results = [gachaService.summonSingleRegular(58)];
+      const newPokemon: OwnedPokemon[] = results.map(r => ({
+        instance: r.pokemon,
+        template: r.template,
+      }));
+      const updatedPlayer = storage.loadPlayer()!;
+      set({ player: updatedPlayer });
+      get().loadCollection();
+      get().loadPcBox();
+      get().refreshRewards();
+      return newPokemon;
+    }
+    if (tutorialStep === 5 && type === 'premium' && count === 1) {
+      const results = [gachaService.summonSinglePremium(133)];
+      const newPokemon: OwnedPokemon[] = results.map(r => ({
+        instance: r.pokemon,
+        template: r.template,
+      }));
+      const updatedPlayer = storage.loadPlayer()!;
+      set({ player: updatedPlayer });
+      get().loadCollection();
+      get().loadPcBox();
+      get().refreshRewards();
+      return newPokemon;
+    }
+
     if (USE_SERVER) {
       // Server mode: async summon — returns a promise
       return serverApi.summon(count, type).then(async (res) => {
@@ -186,14 +215,8 @@ export const useGameStore = create<GameState>((set, get) => ({
     const { player } = get();
     if (!player) throw new Error('No player');
 
-    const tutorialStep = useTutorialStore.getState().step;
-
     let results: gachaService.SummonResult[];
-    if (tutorialStep === 4 && type === 'regular' && count === 1) {
-      results = [gachaService.summonSingleRegular(58)];
-    } else if (tutorialStep === 5 && type === 'premium' && count === 1) {
-      results = [gachaService.summonSinglePremium(133)];
-    } else if (type === 'glowing') {
+    if (type === 'glowing') {
       results = count === 10
         ? gachaService.summonMultiGlowing()
         : [gachaService.summonSingleGlowing()];
