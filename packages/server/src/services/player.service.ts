@@ -114,10 +114,11 @@ export function grantTrainerXp(playerId: string, amount: number): TrainerXpResul
     trainerExp = 0;
   }
 
-  // Restore energy on level-up
+  // Restore energy on level-up (never reduce if already above max)
   let energy = row.energy;
   if (trainerLevel > startLevel) {
-    energy = getMaxEnergy(skills);
+    const max = getMaxEnergy(skills);
+    energy = Math.max(energy, max);
   }
 
   db.prepare(
