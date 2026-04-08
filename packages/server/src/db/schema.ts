@@ -74,6 +74,7 @@ export function initDb(): void {
   migrateCreateGrantedFlags(database);
   migrateCreateDungeonRecords(database);
   migrateCreateForagingState(database);
+  migrateGoogleAuth(database);
 
   console.log('Database initialized');
 }
@@ -266,6 +267,24 @@ function migrateCreateForagingState(database: Database.Database): void {
       FOREIGN KEY (player_id) REFERENCES players(id)
     );
   `);
+}
+
+function migrateGoogleAuth(database: Database.Database): void {
+  try {
+    database.exec('ALTER TABLE players ADD COLUMN google_id TEXT');
+  } catch {
+    // Column already exists
+  }
+  try {
+    database.exec('ALTER TABLE players ADD COLUMN google_email TEXT');
+  } catch {
+    // Column already exists
+  }
+  try {
+    database.exec('CREATE UNIQUE INDEX idx_players_google_id ON players(google_id) WHERE google_id IS NOT NULL');
+  } catch {
+    // Index already exists
+  }
 }
 
 function migrateStoryProgress(database: Database.Database): void {

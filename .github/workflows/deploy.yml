@@ -31,6 +31,9 @@ jobs:
       - run: npm ci
 
       - run: npm run build:static
+        env:
+          VITE_USE_SERVER: 'true'
+          VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
 
       - uses: actions/configure-pages@v5
 

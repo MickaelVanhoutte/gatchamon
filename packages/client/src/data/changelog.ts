@@ -7,6 +7,15 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.4.0',
+    date: '2026-04-08',
+    changes: [
+      'Auth: Google Sign-In required to play in server mode — accounts are linked to Google for cross-device access',
+      'Auth: all API routes now require a valid JWT token; auth routes are public',
+      'Auth: sign out button and Google email display on Trainer page',
+    ],
+  },
+  {
     version: '0.3.9',
     date: '2026-04-07',
     changes: [

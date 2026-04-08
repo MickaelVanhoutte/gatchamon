@@ -33,6 +33,7 @@ interface GameState {
   unclaimedRewardCount: number;
   inboxUnreadCount: number;
 
+  setPlayer: (player: Player) => void;
   createPlayer: (name: string) => Promise<void>;
   checkNameAvailable: (name: string) => Promise<boolean>;
   loadPlayer: () => void;
@@ -71,6 +72,12 @@ export const useGameStore = create<GameState>((set, get) => ({
   isLoading: false,
   unclaimedRewardCount: 0,
   inboxUnreadCount: 0,
+
+  setPlayer: (player: Player) => {
+    set({ player });
+    grantNewPlayerEnergyBonus();
+    get().refreshRewards();
+  },
 
   createPlayer: async (name: string) => {
     if (USE_SERVER) {

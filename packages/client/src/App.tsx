@@ -14,6 +14,9 @@ import { useTutorialStore } from './stores/tutorialStore';
 import { useRotatedScroll } from './hooks/useRotatedScroll';
 import { AutoBattleFloatingIcon, RepeatBattleModal } from './components/RepeatBattleWidget';
 import { UpdateBanner } from './components/UpdateBanner';
+import { GoogleSignInButton } from './components/GoogleSignInButton';
+import { signInWithGoogle, registerWithGoogle, isAuthResponse, handleAuthSuccess } from './services/auth.service';
+import { USE_SERVER } from './config';
 
 // Lazy-loaded routes — only downloaded when navigated to
 const SummonPage = lazy(() => import('./pages/SummonPage').then(m => ({ default: m.SummonPage })));
@@ -37,10 +40,12 @@ const AdminPage = lazy(() => import('./pages/admin/AdminPage').then(m => ({ defa
 
 export function App() {
   const location = useLocation();
-  const { player, createPlayer, checkNameAvailable, loadPlayer } = useGameStore();
+  const { player, createPlayer, checkNameAvailable, loadPlayer, setPlayer } = useGameStore();
   const [nameInput, setNameInput] = useState('');
   const [nameError, setNameError] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [googleIdToken, setGoogleIdToken] = useState<string | null>(null);
+  const [authError, setAuthError] = useState('');
   const [showLoading, setShowLoading] = useState(true);
   const [swDone, setSwDone] = useState(false);
   const navigate = useNavigate();
@@ -131,6 +136,79 @@ export function App() {
   }
 
   if (!player) {
+    // Server mode: Google authentication required
+    if (USE_SERVER) {
+      return (
+        <div className="app app--onboarding">
+          <div className="onboarding">
+            <h1>Forge : Monster Vault</h1>
+            {!googleIdToken ? (
+              <>
+                <p>Sign in to play</p>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+                  <GoogleSignInButton onToken={async (idToken) => {
+                    setAuthError('');
+                    try {
+                      const result = await signInWithGoogle(idToken);
+                      if (isAuthResponse(result)) {
+                        handleAuthSuccess(result);
+                        setPlayer(result.player);
+                        navigate('/');
+                      } else {
+                        // New user: needs to pick a trainer name
+                        setGoogleIdToken(idToken);
+                      }
+                    } catch (err: any) {
+                      setAuthError(err.message || 'Sign-in failed');
+                    }
+                  }} />
+                </div>
+                {authError && <p className="onboarding-error">{authError}</p>}
+              </>
+            ) : (
+              <>
+                <p>Choose your trainer name</p>
+                <form onSubmit={async (e) => {
+                  e.preventDefault();
+                  const trimmed = nameInput.trim();
+                  if (!trimmed || isCreating) return;
+                  setNameError('');
+                  setIsCreating(true);
+                  try {
+                    const result = await registerWithGoogle(googleIdToken, trimmed);
+                    handleAuthSuccess(result);
+                    setPlayer(result.player);
+                    useTutorialStore.getState().advanceStep();
+                    navigate('/');
+                  } catch (err: any) {
+                    setNameError(err.message || 'Failed to create account');
+                    setIsCreating(false);
+                  }
+                }}>
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={nameInput}
+                    onChange={e => { setNameInput(e.target.value); setNameError(''); }}
+                    placeholder="Enter name..."
+                    maxLength={20}
+                    enterKeyHint="done"
+                    autoComplete="off"
+                    autoCorrect="off"
+                  />
+                  {nameError && <p className="onboarding-error">{nameError}</p>}
+                  <button type="submit" disabled={!nameInput.trim() || isCreating}>
+                    {isCreating ? 'Creating...' : 'Start Adventure'}
+                  </button>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // Offline mode: original flow
     return (
       <div className="app app--onboarding">
         <div className="onboarding">

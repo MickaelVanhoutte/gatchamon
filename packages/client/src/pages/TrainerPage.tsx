@@ -3,6 +3,8 @@ import { useGameStore } from '../stores/gameStore';
 import { trainerXpToNextLevel, MAX_TRAINER_LEVEL, TRAINER_SKILL_MAX, DUNGEONS, ITEM_DUNGEONS, REGIONS, getFloorCount } from '@gatchamon/shared';
 import type { TrainerSkills, Difficulty } from '@gatchamon/shared';
 import { clearAll, loadDungeonRecords } from '../services/storage';
+import { signOut } from '../services/auth.service';
+import { USE_SERVER } from '../config';
 import type { DungeonRecords } from '../services/storage';
 import { EssenceBag } from '../components/EssenceBag';
 import './TrainerPage.css';
@@ -218,7 +220,24 @@ export function TrainerPage() {
             })}
           </div>
         ))}
-        <div style={{ marginTop: 40, textAlign: 'center' }}>
+        {USE_SERVER && player.googleEmail && (
+          <div style={{ marginTop: 24, textAlign: 'center', fontSize: '0.75rem', color: '#94a3b8' }}>
+            Signed in as {player.googleEmail}
+          </div>
+        )}
+        <div style={{ marginTop: USE_SERVER ? 12 : 40, textAlign: 'center', display: 'flex', gap: 16, justifyContent: 'center' }}>
+          {USE_SERVER && (
+            <button
+              style={{ fontSize: '0.65rem', color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.4 }}
+              onClick={() => {
+                if (window.confirm('Sign out?')) {
+                  signOut();
+                }
+              }}
+            >
+              Sign Out
+            </button>
+          )}
           <button
             style={{ fontSize: '0.65rem', color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.4 }}
             onClick={() => {

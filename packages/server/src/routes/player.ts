@@ -8,7 +8,7 @@ import { computeAndUpdateEnergy, allocateTrainerSkill } from '../services/player
 export const playerRouter = Router();
 
 /** Convert a raw DB row to the Player shape the client expects. */
-function rowToPlayer(row: any): Player {
+export function rowToPlayer(row: any): Player {
   return {
     id: row.id,
     name: row.name,
@@ -31,6 +31,8 @@ function rowToPlayer(row: any): Player {
     trainerSkillPoints: row.trainer_skill_points ?? 0,
     trainerSkills: row.trainer_skills ? JSON.parse(row.trainer_skills) : defaultTrainerSkills(),
     premiumPityCounter: row.premium_pity_counter ?? 0,
+    googleId: row.google_id ?? undefined,
+    googleEmail: row.google_email ?? undefined,
   };
 }
 
