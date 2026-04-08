@@ -293,6 +293,8 @@ function migrateArena(database: Database.Database): void {
   // Player columns
   try { database.exec('ALTER TABLE players ADD COLUMN arena_elo INTEGER NOT NULL DEFAULT 1000'); } catch { /* exists */ }
   try { database.exec('ALTER TABLE players ADD COLUMN arena_coins INTEGER NOT NULL DEFAULT 0'); } catch { /* exists */ }
+  try { database.exec('ALTER TABLE players ADD COLUMN arena_tickets INTEGER NOT NULL DEFAULT 10'); } catch { /* exists */ }
+  try { database.exec("ALTER TABLE players ADD COLUMN last_arena_ticket_update TEXT NOT NULL DEFAULT (datetime('now'))"); } catch { /* exists */ }
 
   // Defense team table
   database.exec(`

@@ -7,6 +7,15 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.5.4',
+    date: '2026-04-08',
+    changes: [
+      'Arena: battles now cost 1 arena ticket (max 10, regenerates 10 per 24 hours)',
+      'Arena: win reward changed to 10 stardust (from 50-150)',
+      'Shop: added Arena Tickets pack (10 tickets for 100 stardust)',
+    ],
+  },
+  {
     version: '0.5.3',
     date: '2026-04-08',
     changes: [

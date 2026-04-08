@@ -81,6 +81,12 @@ export function calculateDamage(
   return { damage, isCrit, effectiveness };
 }
 
+// ── Arena Tickets ──────────────────────────────────────────────────────
+
+export const MAX_ARENA_TICKETS = 10;
+export const ARENA_TICKET_REGEN_INTERVAL_MS = (24 * 60 * 60 * 1000) / 10; // 10 per 24h → 1 every 2.4h
+export const ARENA_TICKET_COST = 1;
+
 // ── Energy ──────────────────────────────────────────────────────────────
 
 export const BASE_MAX_ENERGY = 100;

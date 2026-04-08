@@ -21,6 +21,7 @@ import type {
   ArenaRival,
 } from '@gatchamon/shared';
 import { getDb } from '../db/schema.js';
+import { spendArenaTicket } from './player.service.js';
 
 // ---------------------------------------------------------------------------
 // In-memory battle store (shared with battle.service.ts via module import)
@@ -215,6 +216,9 @@ export function startArenaBattle(
 ): BattleResult {
   if (teamInstanceIds.length > 4) throw new Error('Maximum 4 monsters per team');
 
+  // Spend arena ticket
+  spendArenaTicket(playerId);
+
   const db = getDb();
 
   // Load attacker team
@@ -287,6 +291,9 @@ export function startRivalBattle(
   rivalId: string,
 ): BattleResult {
   if (teamInstanceIds.length > 4) throw new Error('Maximum 4 monsters per team');
+
+  // Spend arena ticket
+  spendArenaTicket(playerId);
 
   const db = getDb();
 
@@ -384,16 +391,15 @@ function resolveArenaPvpRewards(state: BattleState, won: boolean): BattleRewards
   db.prepare('UPDATE players SET arena_elo = ? WHERE id = ?').run(newAttackerElo, attackerId);
   db.prepare('UPDATE players SET arena_elo = ? WHERE id = ?').run(newDefenderElo, defenderId);
 
-  // Calculate rewards based on ELO tier
-  const eloTier = Math.min(3, Math.floor(attackerElo / 500));
+  // Calculate rewards
   let stardust: number;
   let arenaCoins: number;
 
   if (won) {
-    stardust = Math.min(150, 50 + eloTier * 50);
-    arenaCoins = Math.min(30, 10 + eloTier * 10);
-  } else {
     stardust = 10;
+    arenaCoins = 10;
+  } else {
+    stardust = 0;
     arenaCoins = 3;
   }
 

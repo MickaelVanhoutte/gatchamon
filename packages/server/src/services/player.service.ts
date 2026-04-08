@@ -9,6 +9,8 @@ import {
   TRAINER_SKILL_MAX,
   BEGINNER_BONUS,
   isBeginnerBonusActive,
+  MAX_ARENA_TICKETS,
+  ARENA_TICKET_REGEN_INTERVAL_MS,
 } from '@gatchamon/shared';
 
 function getPlayerRow(playerId: string): any {
@@ -52,6 +54,38 @@ export function computeAndUpdateEnergy(playerId: string): { energy: number; maxE
   }
 
   return { energy, maxEnergy };
+}
+
+// ── Arena Ticket Regeneration ─────────────────────────────────────────
+
+export function computeAndUpdateArenaTickets(playerId: string): { arenaTickets: number } {
+  const db = getDb();
+  const row = getPlayerRow(playerId);
+
+  let tickets = row.arena_tickets ?? 10;
+  const now = Date.now();
+  const lastUpdate = row.last_arena_ticket_update
+    ? new Date(row.last_arena_ticket_update).getTime()
+    : now;
+
+  if (tickets < MAX_ARENA_TICKETS) {
+    const elapsed = now - lastUpdate;
+    const ticks = Math.floor(elapsed / ARENA_TICKET_REGEN_INTERVAL_MS);
+    if (ticks > 0) {
+      tickets = Math.min(MAX_ARENA_TICKETS, tickets + ticks);
+      const advancedMs = lastUpdate + ticks * ARENA_TICKET_REGEN_INTERVAL_MS;
+      db.prepare('UPDATE players SET arena_tickets = ?, last_arena_ticket_update = ? WHERE id = ?')
+        .run(tickets, new Date(advancedMs).toISOString(), playerId);
+    }
+  }
+
+  return { arenaTickets: tickets };
+}
+
+export function spendArenaTicket(playerId: string): void {
+  const { arenaTickets } = computeAndUpdateArenaTickets(playerId);
+  if (arenaTickets < 1) throw new Error('Not enough arena tickets');
+  getDb().prepare('UPDATE players SET arena_tickets = arena_tickets - 1 WHERE id = ?').run(playerId);
 }
 
 // ── Trainer Skill Allocation ───────────────────────────────────────────

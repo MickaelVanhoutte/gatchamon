@@ -38,6 +38,8 @@ export interface Player {
   mysteryPieces: Record<number, number>;  // templateId → piece count
   arenaElo: number;
   arenaCoins: number;
+  arenaTickets: number;
+  lastArenaTicketUpdate?: string;
   googleId?: string;
   googleEmail?: string;
 }

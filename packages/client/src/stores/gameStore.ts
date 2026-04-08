@@ -11,7 +11,7 @@ import * as typeChangeService from '../services/type-change.service';
 import * as essenceMergeService from '../services/essence-merge.service';
 import * as heldItemService from '../services/held-item.service';
 import * as pcService from '../services/pc.service';
-import { regenerateEnergy } from '../services/energy.service';
+import { regenerateEnergy, regenerateArenaTickets } from '../services/energy.service';
 import { getUnclaimedMissionCount, getUnclaimedTrophyCount } from '../services/reward.service';
 import { getUnreadInboxCount, grantNewPlayerEnergyBonus } from '../services/inbox.service';
 import { useTutorialStore } from './tutorialStore';
@@ -126,7 +126,9 @@ export const useGameStore = create<GameState>((set, get) => ({
       // Regenerate energy based on elapsed time
       const maxE = getMaxEnergy(player.trainerSkills);
       const interval = getEnergyRegenInterval(player.trainerSkills);
-      const updated = regenerateEnergy(player, maxE, interval);
+      let updated = regenerateEnergy(player, maxE, interval);
+      // Regenerate arena tickets
+      updated = regenerateArenaTickets(updated);
       if (updated !== player) {
         storage.savePlayer(updated);
         player = updated;
@@ -140,13 +142,14 @@ export const useGameStore = create<GameState>((set, get) => ({
         clearInterval(energyRegenInterval);
       }
 
-      // Periodic energy regen check every 60s
+      // Periodic energy + arena ticket regen check every 60s
       energyRegenInterval = setInterval(() => {
         let p = storage.loadPlayer();
         if (!p) return;
         const mE = getMaxEnergy(p.trainerSkills);
         const iv = getEnergyRegenInterval(p.trainerSkills);
-        const u = regenerateEnergy(p, mE, iv);
+        let u = regenerateEnergy(p, mE, iv);
+        u = regenerateArenaTickets(u);
         if (u !== p) {
           storage.savePlayer(u);
           set({ player: u });

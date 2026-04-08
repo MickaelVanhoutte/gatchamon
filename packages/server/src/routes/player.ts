@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getDb } from '../db/schema.js';
 import type { Player, TrainerSkills } from '@gatchamon/shared';
 import { defaultTrainerSkills } from '@gatchamon/shared';
-import { computeAndUpdateEnergy, allocateTrainerSkill } from '../services/player.service.js';
+import { computeAndUpdateEnergy, computeAndUpdateArenaTickets, allocateTrainerSkill } from '../services/player.service.js';
 
 export const playerRouter = Router();
 
@@ -33,6 +33,8 @@ export function rowToPlayer(row: any): Player {
     premiumPityCounter: row.premium_pity_counter ?? 0,
     arenaElo: row.arena_elo ?? 1000,
     arenaCoins: row.arena_coins ?? 0,
+    arenaTickets: row.arena_tickets ?? 10,
+    lastArenaTicketUpdate: row.last_arena_ticket_update ?? undefined,
     googleId: row.google_id ?? undefined,
     googleEmail: row.google_email ?? undefined,
   };
@@ -80,9 +82,10 @@ playerRouter.post('/', (req, res) => {
 playerRouter.get('/:id', (req, res) => {
   const db = getDb();
 
-  // Compute energy regen before returning player data
+  // Compute energy & arena ticket regen before returning player data
   try {
     computeAndUpdateEnergy(req.params.id);
+    computeAndUpdateArenaTickets(req.params.id);
   } catch {
     // Player may not exist yet, handled below
   }

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
-import { getTemplate, ARENA_RIVALS, getArenaRivalTeam, isActivePokemon } from '@gatchamon/shared';
+import { getTemplate, ARENA_RIVALS, getArenaRivalTeam, isActivePokemon, MAX_ARENA_TICKETS } from '@gatchamon/shared';
 import type { ArenaOpponent, ArenaHistoryEntry, ArenaRival, ArenaDefensePreview } from '@gatchamon/shared';
 import { USE_SERVER } from '../config';
 import * as serverApi from '../services/server-api.service';
@@ -147,6 +147,9 @@ export function ArenaPage() {
             <span className="arena-coins">
               <span className="arena-coin-icon">🪙</span> {player.arenaCoins ?? 0}
             </span>
+            <span className="arena-tickets">
+              🎟️ {player.arenaTickets ?? 0}/{MAX_ARENA_TICKETS}
+            </span>
           </div>
         </div>
       </div>
@@ -230,11 +233,12 @@ export function ArenaPage() {
             loading={loadingOpponents}
             onRefresh={refreshOpponents}
             hasDefense={hasDefense}
+            hasTickets={(player.arenaTickets ?? 0) > 0}
             navigate={navigate}
           />
         )}
         {tab === 'rivals' && (
-          <RivalsTab rivals={rivals} navigate={navigate} />
+          <RivalsTab rivals={rivals} hasTickets={(player.arenaTickets ?? 0) > 0} navigate={navigate} />
         )}
         {tab === 'history' && (
           <HistoryTab history={history} playerId={player.id} />
@@ -246,11 +250,12 @@ export function ArenaPage() {
 
 // ── Duel Tab ─────────────────────────────────────────────────────────────
 
-function DuelTab({ opponents, loading, onRefresh, hasDefense, navigate }: {
+function DuelTab({ opponents, loading, onRefresh, hasDefense, hasTickets, navigate }: {
   opponents: ArenaOpponent[];
   loading: boolean;
   onRefresh: () => void;
   hasDefense: boolean;
+  hasTickets: boolean;
   navigate: (path: string) => void;
 }) {
   if (!USE_SERVER) {
@@ -266,6 +271,9 @@ function DuelTab({ opponents, loading, onRefresh, hasDefense, navigate }: {
       </div>
       {!hasDefense && (
         <div className="arena-warning">Set a defense team before dueling!</div>
+      )}
+      {!hasTickets && (
+        <div className="arena-warning">No arena tickets! Buy more in the Shop or wait for regeneration.</div>
       )}
       {opponents.length === 0 && !loading && (
         <div className="arena-empty">No opponents found. Try refreshing!</div>
@@ -295,7 +303,7 @@ function DuelTab({ opponents, loading, onRefresh, hasDefense, navigate }: {
           </div>
           <button
             className="arena-btn-fight"
-            disabled={!hasDefense}
+            disabled={!hasDefense || !hasTickets}
             onClick={() => {
               const enemyData = encodeURIComponent(JSON.stringify(opp.defenseTeam));
               navigate(`/battle/team-select?mode=arena&defenderId=${opp.playerId}&defenderName=${encodeURIComponent(opp.playerName)}&enemies=${enemyData}`);
@@ -311,8 +319,9 @@ function DuelTab({ opponents, loading, onRefresh, hasDefense, navigate }: {
 
 // ── Rivals Tab ───────────────────────────────────────────────────────────
 
-function RivalsTab({ rivals, navigate }: {
+function RivalsTab({ rivals, hasTickets, navigate }: {
   rivals: ArenaRival[];
+  hasTickets: boolean;
   navigate: (path: string) => void;
 }) {
   return (
@@ -344,7 +353,7 @@ function RivalsTab({ rivals, navigate }: {
             </div>
             <button
               className={`arena-btn-fight ${!rival.cooldownExpired ? 'arena-btn-cooldown' : ''}`}
-              disabled={!rival.cooldownExpired}
+              disabled={!rival.cooldownExpired || !hasTickets}
               onClick={() => navigate(`/battle/team-select?mode=arena-rival&rivalId=${rival.rivalId}&rivalName=${encodeURIComponent(rival.name)}&enemies=${enemyData}`)}
             >
               {rival.cooldownExpired ? 'Battle' : 'Done'}

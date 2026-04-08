@@ -41,6 +41,8 @@ export function createPlayer(name: string): Player {
     mysteryPieces: {},
     arenaElo: 1000,
     arenaCoins: 0,
+    arenaTickets: 10,
+    lastArenaTicketUpdate: new Date().toISOString(),
   };
   savePlayer(player);
   return player;

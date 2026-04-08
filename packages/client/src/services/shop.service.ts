@@ -27,6 +27,13 @@ export const SHOP_ITEMS: ShopItemDef[] = [
     cost: 50,
   },
   {
+    id: 'arena_ticket_pack_10',
+    name: 'Arena Tickets',
+    description: '10 Arena Tickets',
+    icon: 'swords',
+    cost: 100,
+  },
+  {
     id: 'glowing_pack_3',
     name: 'Glowing Pack',
     description: '3 Glowing Pokeballs (3-5★ Shiny)',
@@ -71,6 +78,14 @@ export function purchaseShopItem(itemId: string): ShopPurchaseResult {
     const player = loadPlayer();
     if (player) {
       savePlayer({ ...player, energy: player.energy + 100 });
+    }
+    return { results };
+  }
+
+  if (itemId === 'arena_ticket_pack_10') {
+    const player = loadPlayer();
+    if (player) {
+      savePlayer({ ...player, arenaTickets: (player.arenaTickets ?? 0) + 10 });
     }
     return { results };
   }

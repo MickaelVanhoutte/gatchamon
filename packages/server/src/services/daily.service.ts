@@ -390,6 +390,13 @@ const SHOP_ITEMS: Record<string, { cost: number; apply: (playerId: string) => an
       return { energy: 100 };
     },
   },
+  arena_ticket_pack_10: {
+    cost: 100,
+    apply: (playerId) => {
+      getDb().prepare('UPDATE players SET arena_tickets = arena_tickets + 10 WHERE id = ?').run(playerId);
+      return { arenaTickets: 10 };
+    },
+  },
   glowing_pack_3: {
     cost: 200,
     apply: (playerId) => {
