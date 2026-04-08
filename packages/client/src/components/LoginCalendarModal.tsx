@@ -3,6 +3,8 @@ import { LOGIN_CALENDAR_REWARDS, LOGIN_CALENDAR_DAYS } from '@gatchamon/shared';
 import type { MissionReward } from '@gatchamon/shared';
 import { getCalendarState, claimTodayReward } from '../services/login-calendar.service';
 import { useGameStore } from '../stores/gameStore';
+import { USE_SERVER } from '../config';
+import * as serverApi from '../services/server-api.service';
 import { GameIcon } from './icons';
 import './LoginCalendarModal.css';
 
@@ -47,17 +49,49 @@ interface LoginCalendarModalProps {
 
 export function LoginCalendarModal({ onClose }: LoginCalendarModalProps) {
   const [claimedDay, setClaimedDay] = useState<number | null>(null);
-  const { state, currentDay, canClaim } = getCalendarState();
+
+  // Server mode state
+  const [serverState, setServerState] = useState<{ claimedDays: number[]; lastClaimDate: string } | null>(null);
+
+  const localState = USE_SERVER ? null : getCalendarState();
+  const currentDay = Math.min(new Date().getDate(), LOGIN_CALENDAR_DAYS);
 
   useEffect(() => {
-    if (canClaim) {
-      const reward = claimTodayReward();
-      if (reward) {
-        setClaimedDay(currentDay);
-        useGameStore.getState().refreshInbox();
+    if (!USE_SERVER) {
+      // Offline: auto-claim on mount
+      if (localState?.canClaim) {
+        const reward = claimTodayReward();
+        if (reward) {
+          setClaimedDay(currentDay);
+          useGameStore.getState().refreshInbox();
+        }
       }
+      return;
     }
+
+    // Server: load calendar then auto-claim
+    serverApi.getLoginCalendar().then(async (res: any) => {
+      setServerState(res);
+      const todayStr = new Date().toISOString().slice(0, 10);
+      if (res.lastClaimDate !== todayStr) {
+        try {
+          const claimRes = await serverApi.claimLoginCalendarDay();
+          if (claimRes?.reward) {
+            setClaimedDay(currentDay);
+            useGameStore.getState().refreshInbox();
+            useGameStore.getState().refreshPlayer();
+            // Reload calendar state
+            const updated = await serverApi.getLoginCalendar();
+            setServerState(updated);
+          }
+        } catch {}
+      }
+    }).catch(() => {});
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const state = USE_SERVER
+    ? (serverState ?? { claimedDays: [], lastClaimDate: '' })
+    : (localState?.state ?? { claimedDays: [], lastClaimDate: '' });
 
   const monthIndex = new Date().getMonth();
   const monthName = MONTH_NAMES[monthIndex];

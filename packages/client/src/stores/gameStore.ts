@@ -361,11 +361,46 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   refreshInbox: () => {
+    if (USE_SERVER) {
+      serverApi.getInbox().then((res: any) => {
+        const items = res.items ?? res;
+        const count = Array.isArray(items) ? items.filter((i: any) => !i.claimed).length : 0;
+        set({ inboxUnreadCount: count });
+      }).catch(() => {});
+      return;
+    }
     const count = getUnreadInboxCount();
     set({ inboxUnreadCount: count });
   },
 
   refreshRewards: () => {
+    if (USE_SERVER) {
+      Promise.all([
+        serverApi.getDailyMissions(),
+        serverApi.getTrophyProgress(),
+      ]).then(([missionsRes, trophiesRes]: [any, any]) => {
+        const missions = missionsRes.missions ?? missionsRes.dailyMissions?.missions ?? [];
+        const unclaimedMissions = Array.isArray(missions)
+          ? missions.filter((m: any) => m.current >= (m.target ?? Infinity) && !m.claimed).length
+          : 0;
+        const trophyProgress = trophiesRes.progress ?? [];
+        let unclaimedTrophies = 0;
+        if (Array.isArray(trophyProgress)) {
+          for (const tp of trophyProgress) {
+            const claimed = tp.claimedTiers ?? [];
+            const current = tp.current ?? 0;
+            // Count tiers that are reached but not claimed
+            const trophyDef = (tp as any).tiers;
+            if (Array.isArray(trophyDef)) {
+              unclaimedTrophies += trophyDef.filter((_: any, i: number) => !claimed.includes(i) && current >= trophyDef[i]?.threshold).length;
+            }
+          }
+        }
+        set({ unclaimedRewardCount: unclaimedMissions + unclaimedTrophies });
+      }).catch(() => {});
+      get().refreshInbox();
+      return;
+    }
     const count = getUnclaimedMissionCount() + getUnclaimedTrophyCount();
     set({ unclaimedRewardCount: count });
     get().refreshInbox();

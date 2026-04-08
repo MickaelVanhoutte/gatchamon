@@ -1,12 +1,14 @@
 /**
- * Unified data access layer.
+ * Unified data access layer — localStorage only.
  *
- * Routes to either localStorage (offline) or server API based on USE_SERVER.
- * Services should import from here instead of directly from storage.ts.
+ * This file provides localStorage helpers used by offline-mode services.
+ * In server mode, game state is managed via server-api.service.ts calls
+ * from gameStore.ts and page components directly — this file is NOT used
+ * for server persistence.
  *
- * Functions that are purely client-local (battle settings, tutorial, team
- * selection, story difficulty) are re-exported from storage directly since
- * they don't need server persistence.
+ * Client-only preferences (battle settings, tutorial, team selection,
+ * story difficulty) are re-exported from storage directly since they
+ * stay in localStorage regardless of mode.
  */
 
 import { USE_SERVER } from '../config';
@@ -37,13 +39,10 @@ export {
 // Re-export types that other modules depend on
 export type { BattleSettings, LoginCalendarData, RouletteData, DungeonRecord, DungeonRecords } from './storage';
 
-// ── Server-aware functions ─────────────────────────────────────────────
-// In offline mode these delegate to localStorage.
-// In server mode they will delegate to API calls (to be implemented as
-// server endpoints are built). For now, they all fall through to local.
-//
-// This file is the ONLY place that needs to change when wiring up each
-// server endpoint — no other service file needs to be touched.
+// ── Offline-mode storage functions ────────────────────────────────────
+// These are used by offline-mode services (gacha.service, merge.service,
+// etc.) for localStorage persistence. In server mode, gameStore.ts and
+// page components call server-api.service.ts directly instead.
 
 // ── Player ─────────────────────────────────────────────────────────────
 export const loadPlayer = USE_SERVER ? local.loadPlayer : local.loadPlayer;

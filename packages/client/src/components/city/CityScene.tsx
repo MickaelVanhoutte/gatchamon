@@ -32,7 +32,7 @@ interface CitySceneProps {
   monsters: OwnedPokemon[];
   onNavigate: (path: string, options?: { state?: unknown }) => void;
   pendingFinds?: Record<string, ForagingFind>;
-  onClaimFind?: (pokemonId: string) => ForagingFind | null;
+  onClaimFind?: (pokemonId: string) => ForagingFind | null | Promise<ForagingFind | null>;
 }
 
 export function CityScene({ monsters, onNavigate, pendingFinds, onClaimFind }: CitySceneProps) {

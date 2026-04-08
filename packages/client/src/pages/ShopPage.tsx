@@ -5,6 +5,8 @@ import type { SummonResult } from '../services/gacha.service';
 import { hasGrantedFlag } from '../services/storage';
 import { GameIcon, StarRating } from '../components/icons';
 import { getTemplate } from '@gatchamon/shared';
+import { USE_SERVER } from '../config';
+import * as serverApi from '../services/server-api.service';
 import './ShopPage.css';
 
 type Phase = 'browse' | 'confirm' | 'results';
@@ -26,8 +28,24 @@ export function ShopPage() {
     setError('');
   }
 
-  function handleConfirm() {
+  async function handleConfirm() {
     if (!selectedItemId) return;
+
+    if (USE_SERVER) {
+      try {
+        const res = await serverApi.purchaseShopItem(selectedItemId);
+        // Server may return summon results for summon-type items
+        setResults(res?.results ?? []);
+        setPhase('results');
+        refreshPlayer();
+        loadCollection();
+      } catch (e: any) {
+        setError(e.message ?? 'Purchase failed');
+        setPhase('browse');
+      }
+      return;
+    }
+
     try {
       const { results: summonResults } = purchaseShopItem(selectedItemId);
       setResults(summonResults);

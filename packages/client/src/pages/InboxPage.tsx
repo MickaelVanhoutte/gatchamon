@@ -1,14 +1,16 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import {
   getInboxItems,
-  claimInboxReward,
+  claimInboxReward as claimInboxLocal,
   markAsRead,
   clearReadMessages,
 } from '../services/inbox.service';
 import type { InboxItem, MissionReward } from '@gatchamon/shared';
 import { GameIcon } from '../components/icons';
+import { USE_SERVER } from '../config';
+import * as serverApi from '../services/server-api.service';
 import './InboxPage.css';
 
 export function InboxPage() {
@@ -19,10 +21,33 @@ export function InboxPage() {
   const [, setTick] = useState(0);
   const forceUpdate = useCallback(() => setTick(t => t + 1), []);
 
-  const items = getInboxItems();
-  const readCount = items.filter(i => i.read).length;
+  // Server mode state
+  const [serverItems, setServerItems] = useState<InboxItem[] | null>(null);
+
+  useEffect(() => {
+    if (!USE_SERVER) return;
+    serverApi.getInbox().then((res: any) => {
+      setServerItems(res.items ?? res ?? []);
+    }).catch(() => {});
+  }, []);
+
+  const reloadInbox = () => {
+    if (USE_SERVER) {
+      serverApi.getInbox().then((res: any) => {
+        setServerItems(res.items ?? res ?? []);
+      }).catch(() => {});
+    }
+  };
+
+  const items: InboxItem[] = USE_SERVER ? (serverItems ?? []) : getInboxItems();
+  const readCount = items.filter(i => i.read || i.claimed).length;
 
   const handleClearRead = () => {
+    if (USE_SERVER) {
+      // Server doesn't have a clear-read endpoint; just reload
+      reloadInbox();
+      return;
+    }
     const removed = clearReadMessages();
     if (removed > 0) {
       refreshPlayer();
@@ -30,14 +55,27 @@ export function InboxPage() {
     }
   };
 
-  const handleClaim = (item: InboxItem) => {
+  const handleClaim = async (item: InboxItem) => {
     // Retry summon: navigate — the destination page handles claiming
     if (item.specialItem === 'retry-summon-100') {
       navigate('/retry-summon');
       return;
     }
 
-    const result = claimInboxReward(item.id);
+    if (USE_SERVER) {
+      try {
+        const res = await serverApi.claimInboxReward(item.id);
+        refreshPlayer();
+        reloadInbox();
+        if (res?.reward) {
+          setClaimedReward(res.reward);
+          setTimeout(() => setClaimedReward(null), 2000);
+        }
+      } catch {}
+      return;
+    }
+
+    const result = claimInboxLocal(item.id);
     if (!result) return;
 
     refreshPlayer();
@@ -53,7 +91,7 @@ export function InboxPage() {
   };
 
   const handleRead = (item: InboxItem) => {
-    if (!item.read) {
+    if (!item.read && !USE_SERVER) {
       markAsRead(item.id);
       forceUpdate();
     }
@@ -63,7 +101,7 @@ export function InboxPage() {
     <div className="page inbox-page">
       <div className="inbox-header">
         <h2 className="inbox-title">Inbox</h2>
-        {readCount > 0 && (
+        {!USE_SERVER && readCount > 0 && (
           <button className="inbox-clear-btn" onClick={handleClearRead}>
             Clear read ({readCount})
           </button>

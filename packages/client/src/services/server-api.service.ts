@@ -228,6 +228,12 @@ export async function saveDungeonRecord(key: string, floor: number, timeSec: num
   await api.post(`/daily/dungeon-records/${pid()}`, { key, floor, timeSec });
 }
 
+// ── Reset ─────────────────────────────────────────────────────────────
+
+export async function resetPlayer(): Promise<void> {
+  await api.post(`/player/${pid()}/reset`);
+}
+
 // ── Admin ─────────────────────────────────────────────────────────────
 
 export async function adminResetPlayer(): Promise<void> {

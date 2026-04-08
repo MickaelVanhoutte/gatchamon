@@ -6,6 +6,8 @@ import type { Difficulty } from '@gatchamon/shared';
 import { startBattle, startDungeonBattle, startItemDungeonBattle, startTowerBattle, startMysteryDungeonBattle } from '../services/battle.service';
 import { buildFloorEnemies } from '../services/floor.service';
 import { loadLastTeam, saveLastTeam, getTeamKey } from '../services/storage';
+import { USE_SERVER } from '../config';
+import * as serverApi from '../services/server-api.service';
 import { useRotatedHorizontalScroll } from '../hooks/useRotatedHorizontalScroll';
 import { MonsterDetailModal } from '../components/MonsterDetailModal';
 import { GameIcon, StarRating } from '../components/icons';
@@ -178,7 +180,7 @@ export function TeamSelectPage() {
 
   const tutorialStep = useTutorialStore(s => s.step);
 
-  const handleStart = () => {
+  const handleStart = async () => {
     if (!player || selected.length === 0) return;
 
     // Repeat battle mode — start first battle visually, BattlePage chains the rest
@@ -209,23 +211,44 @@ export function TeamSelectPage() {
     setIsStarting(true);
     saveLastTeam(selected, teamKey);
     try {
-      if (mode === 'mystery-dungeon') {
-        const result = startMysteryDungeonBattle(selected, dungeonFloor);
-        navigate(`/battle/${result.state.battleId}`);
-      } else if (mode === 'tower') {
-        const towerFloor = Number(searchParams.get('floor') ?? 1);
-        const result = startTowerBattle(selected, towerFloor);
-        navigate(`/battle/${result.state.battleId}`);
-      } else if (mode === 'item-dungeon') {
-        const result = startItemDungeonBattle(selected, dungeonId, dungeonFloor);
-        navigate(`/battle/${result.state.battleId}`);
-      } else if (mode === 'dungeon') {
-        const result = startDungeonBattle(selected, dungeonId, dungeonFloor);
-        navigate(`/battle/${result.state.battleId}`);
+      if (USE_SERVER) {
+        // Server mode: all battle start calls are async
+        let result: any;
+        if (mode === 'mystery-dungeon') {
+          result = await serverApi.startMysteryDungeonBattle(selected, dungeonFloor);
+        } else if (mode === 'tower') {
+          const towerFloor = Number(searchParams.get('floor') ?? 1);
+          result = await serverApi.startTowerBattle(selected, towerFloor);
+        } else if (mode === 'item-dungeon') {
+          result = await serverApi.startItemDungeonBattle(selected, dungeonId, dungeonFloor);
+        } else if (mode === 'dungeon') {
+          result = await serverApi.startDungeonBattle(selected, dungeonId, dungeonFloor);
+        } else {
+          result = await serverApi.startBattle(selected, { region, floor, difficulty });
+          if (tutorialStep === 10) useTutorialStore.getState().setStep(11);
+        }
+        const battleId = result.state?.battleId ?? result.battleId;
+        navigate(`/battle/${battleId}`);
       } else {
-        const result = startBattle(selected, { region, floor, difficulty });
-        if (tutorialStep === 10) useTutorialStore.getState().setStep(11);
-        navigate(`/battle/${result.state.battleId}`);
+        // Offline mode: sync battle start
+        if (mode === 'mystery-dungeon') {
+          const result = startMysteryDungeonBattle(selected, dungeonFloor);
+          navigate(`/battle/${result.state.battleId}`);
+        } else if (mode === 'tower') {
+          const towerFloor = Number(searchParams.get('floor') ?? 1);
+          const result = startTowerBattle(selected, towerFloor);
+          navigate(`/battle/${result.state.battleId}`);
+        } else if (mode === 'item-dungeon') {
+          const result = startItemDungeonBattle(selected, dungeonId, dungeonFloor);
+          navigate(`/battle/${result.state.battleId}`);
+        } else if (mode === 'dungeon') {
+          const result = startDungeonBattle(selected, dungeonId, dungeonFloor);
+          navigate(`/battle/${result.state.battleId}`);
+        } else {
+          const result = startBattle(selected, { region, floor, difficulty });
+          if (tutorialStep === 10) useTutorialStore.getState().setStep(11);
+          navigate(`/battle/${result.state.battleId}`);
+        }
       }
     } catch (err: any) {
       setStartError(err.message);

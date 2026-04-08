@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import {
   getDailyMissions,
@@ -18,6 +18,8 @@ import {
 } from '@gatchamon/shared';
 import type { MissionReward, TrophyDefinition, TrophyProgress } from '@gatchamon/shared';
 import { GameIcon, StarRating } from '../components/icons';
+import { USE_SERVER } from '../config';
+import * as serverApi from '../services/server-api.service';
 import './MissionsPage.css';
 
 type Tab = 'daily' | 'trophies';
@@ -29,11 +31,46 @@ export function MissionsPage() {
   const [, setTick] = useState(0);
   const forceUpdate = useCallback(() => setTick(t => t + 1), []);
 
-  const dailyState = getDailyMissions();
-  const dailyDefs = selectDailyMissions(dailyState.date);
-  const rewardState = loadOrInitRewardState();
+  // Server mode state
+  const [serverMissions, setServerMissions] = useState<any>(null);
+  const [serverTrophies, setServerTrophies] = useState<any>(null);
 
-  const handleClaimMission = (missionId: string) => {
+  // Load data from server on mount
+  useEffect(() => {
+    if (!USE_SERVER) return;
+    serverApi.getDailyMissions().then(setServerMissions).catch(() => {});
+    serverApi.getTrophyProgress().then(setServerTrophies).catch(() => {});
+  }, []);
+
+  const reloadServerData = () => {
+    if (!USE_SERVER) return;
+    serverApi.getDailyMissions().then(setServerMissions).catch(() => {});
+    serverApi.getTrophyProgress().then(setServerTrophies).catch(() => {});
+  };
+
+  // Resolve mission data for either mode
+  const dailyState = USE_SERVER
+    ? (serverMissions?.dailyMissions ?? serverMissions ?? { date: '', missions: [], allClaimedBonus: false })
+    : getDailyMissions();
+  const dailyDefs = selectDailyMissions(dailyState.date);
+  const rewardState = USE_SERVER ? null : loadOrInitRewardState();
+
+  // Trophy progress
+  const trophyProgress: TrophyProgress[] = USE_SERVER
+    ? (serverTrophies?.progress ?? [])
+    : (rewardState?.trophyProgress ?? []);
+
+  const handleClaimMission = async (missionId: string) => {
+    if (USE_SERVER) {
+      try {
+        const res = await serverApi.claimMission(missionId);
+        if (res?.reward) setClaimedReward(res.reward);
+        refreshPlayer();
+        reloadServerData();
+        setTimeout(() => setClaimedReward(null), 2000);
+      } catch {}
+      return;
+    }
     const reward = claimMissionReward(missionId);
     if (reward) {
       setClaimedReward(reward);
@@ -43,7 +80,18 @@ export function MissionsPage() {
     }
   };
 
-  const handleClaimAllBonus = () => {
+  const handleClaimAllBonus = async () => {
+    if (USE_SERVER) {
+      // Claim all-dailies bonus by claiming the special 'all_dailies' mission
+      try {
+        const res = await serverApi.claimMission('all_dailies_bonus');
+        if (res?.reward) setClaimedReward(res.reward);
+        refreshPlayer();
+        reloadServerData();
+        setTimeout(() => setClaimedReward(null), 2000);
+      } catch {}
+      return;
+    }
     const reward = claimAllDailiesBonus();
     if (reward) {
       setClaimedReward(reward);
@@ -53,7 +101,17 @@ export function MissionsPage() {
     }
   };
 
-  const handleClaimTrophy = (trophyId: string, tierIndex: number) => {
+  const handleClaimTrophy = async (trophyId: string, tierIndex: number) => {
+    if (USE_SERVER) {
+      try {
+        const res = await serverApi.claimTrophy(trophyId, tierIndex);
+        if (res?.reward) setClaimedReward(res.reward);
+        refreshPlayer();
+        reloadServerData();
+        setTimeout(() => setClaimedReward(null), 2000);
+      } catch {}
+      return;
+    }
     const reward = claimTrophyTier(trophyId, tierIndex);
     if (reward) {
       setClaimedReward(reward);
@@ -63,7 +121,19 @@ export function MissionsPage() {
     }
   };
 
-  const handleClaimAllMissions = () => {
+  const handleClaimAllMissions = async () => {
+    if (USE_SERVER) {
+      // Claim each unclaimed mission + bonus
+      for (const m of dailyState.missions) {
+        const def = dailyDefs.find((d: any) => d.id === m.missionId);
+        if (def && m.current >= def.target && !m.claimed) {
+          try { await serverApi.claimMission(m.missionId); } catch {}
+        }
+      }
+      refreshPlayer();
+      reloadServerData();
+      return;
+    }
     const reward = claimAllMissions();
     if (reward) {
       setClaimedReward(reward);
@@ -73,7 +143,21 @@ export function MissionsPage() {
     }
   };
 
-  const handleClaimAllTrophies = () => {
+  const handleClaimAllTrophies = async () => {
+    if (USE_SERVER) {
+      for (const trophy of TROPHIES) {
+        const tp = trophyProgress.find((t: any) => t.trophyId === trophy.id);
+        if (!tp) continue;
+        for (let i = 0; i < trophy.tiers.length; i++) {
+          if (!tp.claimedTiers.includes(i) && tp.current >= trophy.tiers[i].threshold) {
+            try { await serverApi.claimTrophy(trophy.id, i); } catch {}
+          }
+        }
+      }
+      refreshPlayer();
+      reloadServerData();
+      return;
+    }
     const reward = claimAllTrophyTiers();
     if (reward) {
       setClaimedReward(reward);
@@ -83,7 +167,30 @@ export function MissionsPage() {
     }
   };
 
-  const completedCount = dailyState.missions.filter(m => m.claimed).length;
+  const getUnclaimedMissions = (): number => {
+    if (USE_SERVER) {
+      return dailyState.missions.filter((m: any) => {
+        const def = dailyDefs.find((d: any) => d.id === m.missionId);
+        return def && m.current >= def.target && !m.claimed;
+      }).length;
+    }
+    return getUnclaimedMissionCount();
+  };
+
+  const getUnclaimedTrophies = (): number => {
+    if (USE_SERVER) {
+      let count = 0;
+      for (const trophy of TROPHIES) {
+        const tp = trophyProgress.find((t: any) => t.trophyId === trophy.id);
+        if (!tp) continue;
+        count += trophy.tiers.filter((tier, i) => !tp.claimedTiers.includes(i) && tp.current >= tier.threshold).length;
+      }
+      return count;
+    }
+    return getUnclaimedTrophyCount();
+  };
+
+  const completedCount = dailyState.missions.filter((m: any) => m.claimed).length;
 
   return (
     <div className="page missions-page">
@@ -94,8 +201,8 @@ export function MissionsPage() {
           onClick={() => setTab('daily')}
         >
           Daily Missions
-          {getUnclaimedMissionCount() > 0 && (
-            <span className="tab-badge">{getUnclaimedMissionCount()}</span>
+          {getUnclaimedMissions() > 0 && (
+            <span className="tab-badge">{getUnclaimedMissions()}</span>
           )}
         </button>
         <button
@@ -103,8 +210,8 @@ export function MissionsPage() {
           onClick={() => setTab('trophies')}
         >
           Trophies
-          {getUnclaimedTrophyCount() > 0 && (
-            <span className="tab-badge">{getUnclaimedTrophyCount()}</span>
+          {getUnclaimedTrophies() > 0 && (
+            <span className="tab-badge">{getUnclaimedTrophies()}</span>
           )}
         </button>
       </div>
@@ -113,13 +220,13 @@ export function MissionsPage() {
       <div className="missions-content">
         {tab === 'daily' && (
           <div className="daily-missions">
-            {getUnclaimedMissionCount() > 0 && (
+            {getUnclaimedMissions() > 0 && (
               <button className="claim-all-btn" onClick={handleClaimAllMissions}>
-                Claim All ({getUnclaimedMissionCount()})
+                Claim All ({getUnclaimedMissions()})
               </button>
             )}
-            {dailyState.missions.map(mission => {
-              const def = dailyDefs.find(d => d.id === mission.missionId);
+            {dailyState.missions.map((mission: any) => {
+              const def = dailyDefs.find((d: any) => d.id === mission.missionId);
               if (!def) return null;
               const isComplete = mission.current >= def.target;
               const isClaimed = mission.claimed;
@@ -181,13 +288,13 @@ export function MissionsPage() {
 
         {tab === 'trophies' && (
           <div className="trophies-list">
-            {getUnclaimedTrophyCount() > 0 && (
+            {getUnclaimedTrophies() > 0 && (
               <button className="claim-all-btn" onClick={handleClaimAllTrophies}>
-                Claim All ({getUnclaimedTrophyCount()})
+                Claim All ({getUnclaimedTrophies()})
               </button>
             )}
             {TROPHIES.map(trophy => {
-              const progress = rewardState.trophyProgress.find(t => t.trophyId === trophy.id);
+              const progress = trophyProgress.find((t: any) => t.trophyId === trophy.id);
               if (!progress) return null;
 
               return (

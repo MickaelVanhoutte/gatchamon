@@ -29,7 +29,7 @@ interface CityMonsterProps {
   owned: OwnedPokemon;
   positionIndex: number;
   pendingFind?: ForagingFind | null;
-  onClaimFind?: () => ForagingFind | null;
+  onClaimFind?: () => ForagingFind | null | Promise<ForagingFind | null>;
 }
 
 export function CityMonster({ owned, positionIndex, pendingFind, onClaimFind }: CityMonsterProps) {
@@ -41,10 +41,10 @@ export function CityMonster({ owned, positionIndex, pendingFind, onClaimFind }: 
   const pos = STREET_POSITIONS[positionIndex] ?? STREET_POSITIONS[0];
   const size = spriteSize(owned.template.height) * getSpriteBoost(owned.template.name);
 
-  const handleTap = useCallback(() => {
+  const handleTap = useCallback(async () => {
     // If there's a pending find, claim it and show bubble
     if (pendingFind && onClaimFind) {
-      const find = onClaimFind();
+      const find = await onClaimFind();
       if (find) {
         setClaimedFind(find);
         if (bubbleTimerRef.current) clearTimeout(bubbleTimerRef.current);

@@ -7,6 +7,18 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.4.1',
+    date: '2026-04-08',
+    changes: [
+      'Server: battles (story, dungeon, tower, mystery dungeon) now fully resolved server-side — energy, rewards, XP, loot all persisted',
+      'Server: daily missions, trophies, inbox, shop, roulette, login calendar, and foraging all wired to server in online mode',
+      'Server: repeat/auto-battle now uses server API for battle resolution',
+      'Server: badge counts (missions, inbox) refresh from server data instead of localStorage',
+      'Server: dungeon records load from server in online mode',
+      'No more progress loss on page reload when playing in server mode',
+    ],
+  },
+  {
     version: '0.4.0',
     date: '2026-04-08',
     changes: [

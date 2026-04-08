@@ -10,7 +10,11 @@ import { getAuthToken, clearAuth } from '../config';
 
 const BASE = '/api';
 
-async function request<T>(path: string, options?: RequestInit): Promise<T> {
+interface ApiOptions {
+  skipReloadOn401?: boolean;
+}
+
+async function request<T>(path: string, init?: RequestInit, opts?: ApiOptions): Promise<T> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
@@ -21,12 +25,14 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
   const res = await fetch(`${BASE}${path}`, {
     headers,
-    ...options,
+    ...init,
   });
 
   if (res.status === 401) {
-    clearAuth();
-    window.location.reload();
+    if (!opts?.skipReloadOn401) {
+      clearAuth();
+      window.location.reload();
+    }
     throw new Error('Session expired');
   }
 
@@ -38,17 +44,22 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  get: <T>(path: string) => request<T>(path),
-  post: <T>(path: string, body?: unknown) =>
+  get: <T>(path: string, opts?: ApiOptions) => request<T>(path, undefined, opts),
+  post: <T>(path: string, body?: unknown, opts?: ApiOptions) =>
     request<T>(path, {
       method: 'POST',
       body: body ? JSON.stringify(body) : undefined,
-    }),
-  put: <T>(path: string, body?: unknown) =>
+    }, opts),
+  put: <T>(path: string, body?: unknown, opts?: ApiOptions) =>
     request<T>(path, {
       method: 'PUT',
       body: body ? JSON.stringify(body) : undefined,
-    }),
-  delete: <T>(path: string) =>
-    request<T>(path, { method: 'DELETE' }),
+    }, opts),
+  patch: <T>(path: string, body?: unknown, opts?: ApiOptions) =>
+    request<T>(path, {
+      method: 'PATCH',
+      body: body ? JSON.stringify(body) : undefined,
+    }, opts),
+  delete: <T>(path: string, opts?: ApiOptions) =>
+    request<T>(path, { method: 'DELETE' }, opts),
 };

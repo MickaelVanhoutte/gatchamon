@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { trainerXpToNextLevel, MAX_TRAINER_LEVEL, TRAINER_SKILL_MAX, DUNGEONS, ITEM_DUNGEONS, REGIONS, getFloorCount } from '@gatchamon/shared';
 import type { TrainerSkills, Difficulty } from '@gatchamon/shared';
-import { clearAll, loadDungeonRecords } from '../services/storage';
+import { clearAll, loadDungeonRecords as loadDungeonRecordsLocal } from '../services/storage';
 import { signOut } from '../services/auth.service';
+import { resetPlayer, getDungeonRecords as getDungeonRecordsServer } from '../services/server-api.service';
 import { USE_SERVER } from '../config';
 import type { DungeonRecords } from '../services/storage';
 import { EssenceBag } from '../components/EssenceBag';
@@ -50,7 +51,15 @@ function formatTime(sec: number): string {
 const DIFFICULTIES: Difficulty[] = ['normal', 'hard', 'hell'];
 
 function DungeonRecordsModal({ onClose }: { onClose: () => void }) {
-  const records: DungeonRecords = loadDungeonRecords();
+  const [records, setRecords] = useState<DungeonRecords>(() =>
+    USE_SERVER ? {} : loadDungeonRecordsLocal()
+  );
+
+  useEffect(() => {
+    if (USE_SERVER) {
+      getDungeonRecordsServer().then((r: any) => setRecords(r ?? {})).catch(() => {});
+    }
+  }, []);
 
   const sections: { title: string; rows: { label: string; floor: string; time: string }[] }[] = [];
 
@@ -240,9 +249,13 @@ export function TrainerPage() {
           )}
           <button
             style={{ fontSize: '0.65rem', color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.4 }}
-            onClick={() => {
+            onClick={async () => {
               if (window.confirm('Reset ALL data? This cannot be undone.')) {
-                clearAll();
+                if (USE_SERVER) {
+                  await resetPlayer();
+                } else {
+                  clearAll();
+                }
                 window.location.reload();
               }
             }}
