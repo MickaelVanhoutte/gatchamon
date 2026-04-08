@@ -28,7 +28,7 @@ import type {
 import type { PokemonTemplate, SkillDefinition, StoryProgress } from '@gatchamon/shared';
 import { getDb } from '../db/schema.js';
 import { spendEnergy, grantTrainerXp, earnPokedollars } from './player.service.js';
-import { generateItem } from './held-item.service.js';
+import { generateItem, rollItemDrop } from './held-item.service.js';
 import { defaultTrainerSkills } from '@gatchamon/shared';
 import { resolveArenaRewards, getArenaBattle, setArenaBattle, deleteArenaBattle } from './arena.service.js';
 import { incrementMission, trackTrophyStat } from './daily.service.js';
@@ -930,6 +930,12 @@ function calculateDungeonRewards(state: BattleState): BattleRewards {
   let pokedollars = 0;
   let essences: Record<string, number> = {};
   let trainerXpAmount = 0;
+  let regularPokeballs = 0;
+  let premiumPokeballs = 0;
+  let legendaryPokeballs = 0;
+  let stardust = 0;
+  let itemDrops: { itemId: string; setId: string; stars: number; grade: string }[] | undefined;
+  let mysteryPieces: { templateId: number; count: number } | undefined;
 
   if (mode === 'tower' as any) {
     const towerFloor = state.floor.floor;
@@ -937,16 +943,19 @@ function calculateDungeonRewards(state: BattleState): BattleRewards {
     if (floorDef?.reward) {
       const r = floorDef.reward as any;
       if (r.regularPokeballs) {
+        regularPokeballs = r.regularPokeballs;
         db.prepare('UPDATE players SET regular_pokeballs = regular_pokeballs + ? WHERE id = ?')
-          .run(r.regularPokeballs, state.playerId);
+          .run(regularPokeballs, state.playerId);
       }
       if (r.premiumPokeballs) {
+        premiumPokeballs = r.premiumPokeballs;
         db.prepare('UPDATE players SET premium_pokeballs = premium_pokeballs + ? WHERE id = ?')
-          .run(r.premiumPokeballs, state.playerId);
+          .run(premiumPokeballs, state.playerId);
       }
       if (r.legendaryPokeballs) {
+        legendaryPokeballs = r.legendaryPokeballs;
         db.prepare('UPDATE players SET legendary_pokeballs = legendary_pokeballs + ? WHERE id = ?')
-          .run(r.legendaryPokeballs, state.playerId);
+          .run(legendaryPokeballs, state.playerId);
       }
       if (r.pokedollars) {
         pokedollars = Math.floor(r.pokedollars * pokedollarMult);
@@ -954,8 +963,31 @@ function calculateDungeonRewards(state: BattleState): BattleRewards {
           .run(pokedollars, state.playerId);
       }
       if (r.stardust) {
+        stardust = r.stardust;
         db.prepare('UPDATE players SET stardust = stardust + ? WHERE id = ?')
-          .run(r.stardust, state.playerId);
+          .run(stardust, state.playerId);
+      }
+      if (r.essences) {
+        for (const [key, qty] of Object.entries(r.essences as Record<string, number>)) {
+          essences[key] = (essences[key] ?? 0) + qty;
+        }
+        if (Object.keys(essences).length > 0) {
+          const playerRow = db.prepare('SELECT materials FROM players WHERE id = ?').get(state.playerId) as any;
+          const materials = playerRow?.materials ? JSON.parse(playerRow.materials) : {};
+          for (const [key, qty] of Object.entries(essences)) {
+            materials[key] = (materials[key] ?? 0) + qty;
+          }
+          db.prepare('UPDATE players SET materials = ? WHERE id = ?')
+            .run(JSON.stringify(materials), state.playerId);
+        }
+      }
+      if (r.heldItem) {
+        const item = generateItem(r.heldItem.setId, Math.ceil(Math.random() * 6) as any, r.heldItem.stars, r.heldItem.grade, state.playerId);
+        itemDrops = [{ itemId: item.itemId, setId: item.setId, stars: item.stars, grade: item.grade }];
+      }
+      if (r.dittos) {
+        db.prepare('UPDATE players SET dittos = dittos + ? WHERE id = ?')
+          .run(r.dittos, state.playerId);
       }
     }
     // Advance tower progress
@@ -1011,6 +1043,24 @@ function calculateDungeonRewards(state: BattleState): BattleRewards {
           db.prepare('UPDATE players SET pokedollars = pokedollars + ? WHERE id = ?')
             .run(pokedollars, state.playerId);
         }
+        // Roll held item drop from one random drop entry
+        if (floor.drops && floor.drops.length > 0) {
+          const drop = floor.drops[Math.floor(Math.random() * floor.drops.length)];
+          const item = rollItemDrop(drop, state.playerId);
+          itemDrops = [{ itemId: item.itemId, setId: item.setId, stars: item.stars, grade: item.grade }];
+        }
+        // Roll stardust
+        if (floor.stardustDrop) {
+          const sd = floor.stardustDrop;
+          if (Math.random() < sd.chance) {
+            const qty = sd.min + Math.floor(Math.random() * (sd.max - sd.min + 1));
+            if (qty > 0) {
+              stardust = qty;
+              db.prepare('UPDATE players SET stardust = stardust + ? WHERE id = ?')
+                .run(stardust, state.playerId);
+            }
+          }
+        }
       }
     }
     trainerXpAmount = (floorIdx + 1) * 8 + 10;
@@ -1032,6 +1082,7 @@ function calculateDungeonRewards(state: BattleState): BattleRewards {
           pieces[def.featuredTemplateId] = (pieces[def.featuredTemplateId] ?? 0) + floor.pieceReward;
           db.prepare('UPDATE players SET mystery_pieces = ? WHERE id = ?')
             .run(JSON.stringify(pieces), state.playerId);
+          mysteryPieces = { templateId: def.featuredTemplateId, count: floor.pieceReward };
         }
       }
     }
@@ -1047,12 +1098,16 @@ function calculateDungeonRewards(state: BattleState): BattleRewards {
   }
 
   return {
-    regularPokeballs: 0,
-    premiumPokeballs: 0,
+    regularPokeballs,
+    premiumPokeballs,
+    legendaryPokeballs: legendaryPokeballs > 0 ? legendaryPokeballs : undefined,
     xpPerMon,
     levelUps,
     essences: Object.keys(essences).length > 0 ? essences : undefined,
     pokedollars: pokedollars > 0 ? pokedollars : undefined,
+    stardust: stardust > 0 ? stardust : undefined,
+    itemDrops,
+    mysteryPieces,
     trainerXpGained: trainerXpAmount,
     trainerLeveledUp: trainerResult?.leveledUp,
     trainerNewLevel: trainerResult?.newLevel,
