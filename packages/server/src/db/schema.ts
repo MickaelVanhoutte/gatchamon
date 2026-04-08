@@ -76,6 +76,7 @@ export function initDb(): void {
   migrateCreateForagingState(database);
   migrateGoogleAuth(database);
   migrateArena(database);
+  migrateChat(database);
 
   console.log('Database initialized');
 }
@@ -331,6 +332,19 @@ function migrateArena(database: Database.Database): void {
       PRIMARY KEY (player_id, rival_id),
       FOREIGN KEY (player_id) REFERENCES players(id)
     );
+  `);
+}
+
+function migrateChat(database: Database.Database): void {
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS chat_messages (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      player_id TEXT NOT NULL,
+      player_name TEXT NOT NULL,
+      message TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE INDEX IF NOT EXISTS idx_chat_created ON chat_messages(created_at);
   `);
 }
 

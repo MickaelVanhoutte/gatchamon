@@ -6,7 +6,7 @@ import { useTutorialStore } from '../stores/tutorialStore';
 import { CityScene } from '../components/city/CityScene';
 import { LoginCalendarModal } from '../components/LoginCalendarModal';
 import { canClaimToday } from '../services/login-calendar.service';
-import { CheatBubble } from '../components/cheat/CheatBubble';
+import { ChatPanel } from '../components/chat/ChatPanel';
 import { useForaging } from '../hooks/useForaging';
 import './HomePage.css';
 
@@ -52,7 +52,7 @@ export function HomePage() {
         onClaimFind={claimFind}
       />
       {showCalendar && <LoginCalendarModal onClose={() => setShowCalendar(false)} />}
-      <CheatBubble />
+      <ChatPanel />
     </div>
   );
 }

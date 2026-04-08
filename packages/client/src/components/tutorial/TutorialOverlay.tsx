@@ -172,7 +172,7 @@ export function TutorialOverlay() {
     const interval = setInterval(update, 600);
 
     return () => { clearTimeout(t1); clearTimeout(t2); clearInterval(interval); };
-  }, [step, isActive, highlightTarget]);
+  }, [step, isActive, highlightTarget, skipSpotlight]);
 
   const handleDialogTap = useCallback(() => {
     if (lineIndex < dialogLines.length - 1) {
@@ -231,7 +231,9 @@ export function TutorialOverlay() {
 
       {/* Professor dialog — passthrough clicks when user must interact with the page */}
       {hasDialog && (() => {
-        const hasReadAllLines = dialogLines.length > 1 && lineIndex >= dialogLines.length - 1;
+        const hasReadAllLines = dialogLines.length > 1
+          ? lineIndex >= dialogLines.length - 1
+          : lineIndex > 0 || autoCollapsed;
         const isInteractReady = INTERACT_STEPS.has(step) && (hasReadAllLines || autoCollapsed);
         // On interact steps once the user has read all dialog lines (or auto-collapsed),
         // collapse to just the professor head so buttons are accessible

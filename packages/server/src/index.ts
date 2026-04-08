@@ -11,6 +11,7 @@ import { heldItemsRouter } from './routes/held-items.js';
 import { dailyRouter } from './routes/daily.js';
 import { adminRouter } from './routes/admin.js';
 import { arenaRouter } from './routes/arena.js';
+import { chatRouter } from './routes/chat.js';
 import { authRouter } from './routes/auth.js';
 import { requireAuth } from './auth/middleware.js';
 import { requireAdmin } from './auth/admin.js';
@@ -43,6 +44,7 @@ app.use('/api', monsterManagementRouter);
 app.use('/api/items', heldItemsRouter);
 app.use('/api/daily', dailyRouter);
 app.use('/api/arena', arenaRouter);
+app.use('/api/chat', chatRouter);
 app.use('/api/admin', requireAdmin, adminRouter);
 
 // In production, serve the client's built static files

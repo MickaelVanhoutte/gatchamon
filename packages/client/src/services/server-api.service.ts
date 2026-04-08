@@ -258,6 +258,25 @@ export async function getArenaRivals(): Promise<any> {
   return api.get(`/arena/rivals/${pid()}`);
 }
 
+// ── Chat ──────────────────────────────────────────────────────────────
+
+export interface ChatMessage {
+  id: number;
+  playerId: string;
+  playerName: string;
+  message: string;
+  createdAt: string;
+}
+
+export async function sendChatMessage(message: string): Promise<{ ok: boolean; message: ChatMessage }> {
+  return api.post('/chat/message', { message });
+}
+
+export async function getRecentChatMessages(afterId?: number): Promise<{ messages: ChatMessage[] }> {
+  const query = afterId ? `?afterId=${afterId}` : '';
+  return api.get(`/chat/recent${query}`);
+}
+
 // ── Reset ─────────────────────────────────────────────────────────────
 
 export async function resetPlayer(): Promise<void> {
