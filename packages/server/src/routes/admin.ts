@@ -281,12 +281,18 @@ adminRouter.post('/inbox/send', (req, res) => {
       res.status(400).json({ error: 'playerId, title, and message required' }); return;
     }
     const db = getDb();
-    const player = db.prepare('SELECT id FROM players WHERE id = ?').get(playerId);
+    const player = db.prepare('SELECT id, name FROM players WHERE id = ?').get(playerId) as any;
     if (!player) { res.status(404).json({ error: 'Player not found' }); return; }
 
     sendInboxItem(playerId, { title, message, reward: reward || undefined });
-    res.json({ ok: true });
+
+    // Verify the item was inserted
+    const count = (db.prepare('SELECT COUNT(*) as c FROM inbox WHERE player_id = ?').get(playerId) as any).c;
+    console.log(`[Admin] Inbox sent to ${player.name} (${playerId}) — "${title}" — total inbox: ${count}`);
+
+    res.json({ ok: true, playerName: player.name, inboxCount: count });
   } catch (e: any) {
+    console.error('[Admin] Inbox send error:', e);
     res.status(500).json({ error: e.message });
   }
 });
@@ -306,8 +312,10 @@ adminRouter.post('/inbox/broadcast', (req, res) => {
       sendInboxItem(p.id, { title, message, reward: reward || undefined });
       sent++;
     }
+    console.log(`[Admin] Inbox broadcast "${title}" sent to ${sent} players`);
     res.json({ ok: true, sent });
   } catch (e: any) {
+    console.error('[Admin] Inbox broadcast error:', e);
     res.status(500).json({ error: e.message });
   }
 });

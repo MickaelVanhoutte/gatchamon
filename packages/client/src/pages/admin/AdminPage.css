@@ -1451,8 +1451,21 @@
 }
 
 .admin-db-send-status {
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 4px;
   color: var(--text-secondary);
+}
+
+.admin-db-send-success {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.12);
+}
+
+.admin-db-send-error {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.12);
 }
 
 /* Player Table */

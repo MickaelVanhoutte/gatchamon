@@ -65,13 +65,15 @@ export function InboxPage() {
     if (USE_SERVER) {
       try {
         const res = await serverApi.claimInboxReward(item.id);
-        refreshPlayer();
-        reloadInbox();
         if (res?.reward) {
           setClaimedReward(res.reward);
           setTimeout(() => setClaimedReward(null), 2000);
         }
-      } catch {}
+      } catch {
+        // claim may still have succeeded server-side
+      }
+      refreshPlayer();
+      reloadInbox();
       return;
     }
 

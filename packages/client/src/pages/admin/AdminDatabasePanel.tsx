@@ -330,31 +330,37 @@ export function AdminDatabasePanel() {
     }
   }
 
+  function resetInboxForm() {
+    setInboxTitle('');
+    setInboxMessage('');
+    setInboxReward({});
+  }
+
   async function handleSendToPlayer() {
     if (!inboxTitle.trim() || !inboxMessage.trim()) {
-      setSendStatus('Title and message are required');
+      setSendStatus('error:Title and message are required');
       return;
     }
-    if (!selectedPlayer) { setSendStatus('Select a player first'); return; }
+    if (!selectedPlayer) { setSendStatus('error:Select a player first'); return; }
     const reward = Object.keys(inboxReward).length > 0 ? inboxReward : undefined;
     setSendStatus('Sending...');
     try {
-      await api.post('/admin/inbox/send', {
+      const res = await api.post<{ ok: boolean; playerName?: string; inboxCount?: number }>('/admin/inbox/send', {
         playerId: selectedPlayer.player.id,
         title: inboxTitle, message: inboxMessage, reward,
       }, ADMIN_API_OPTS);
-      setSendStatus(`Sent to ${selectedPlayer.player.trainerName}`);
-      setInboxTitle('');
-      setInboxMessage('');
-      setInboxReward({});
+      const msg = `Sent to ${res.playerName ?? selectedPlayer.player.trainerName} (inbox: ${res.inboxCount ?? '?'} items)`;
+      setSendStatus(`success:${msg}`);
+      resetInboxForm();
     } catch (e: any) {
-      setSendStatus(`Error: ${e.message}`);
+      setSendStatus(`error:${e.message}`);
+      alert(`Send failed: ${e.message}`);
     }
   }
 
   async function handleBroadcast() {
     if (!inboxTitle.trim() || !inboxMessage.trim()) {
-      setSendStatus('Title and message are required');
+      setSendStatus('error:Title and message are required');
       return;
     }
     if (!confirm('Send this message to ALL players?')) return;
@@ -364,12 +370,11 @@ export function AdminDatabasePanel() {
       const res = await api.post<{ ok: boolean; sent: number }>('/admin/inbox/broadcast', {
         title: inboxTitle, message: inboxMessage, reward,
       }, ADMIN_API_OPTS);
-      setSendStatus(`Broadcast sent to ${res.sent} players`);
-      setInboxTitle('');
-      setInboxMessage('');
-      setInboxReward({});
+      setSendStatus(`success:Broadcast sent to ${res.sent} players`);
+      resetInboxForm();
     } catch (e: any) {
-      setSendStatus(`Error: ${e.message}`);
+      setSendStatus(`error:${e.message}`);
+      alert(`Broadcast failed: ${e.message}`);
     }
   }
 
@@ -844,7 +849,11 @@ export function AdminDatabasePanel() {
           >
             Send to All
           </button>
-          {sendStatus && <span className="admin-db-send-status">{sendStatus}</span>}
+          {sendStatus && (
+            <span className={`admin-db-send-status ${sendStatus.startsWith('success:') ? 'admin-db-send-success' : sendStatus.startsWith('error:') ? 'admin-db-send-error' : ''}`}>
+              {sendStatus.replace(/^(success|error):/, '')}
+            </span>
+          )}
         </div>
       </div>
     </div>

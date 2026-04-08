@@ -83,9 +83,9 @@ dailyRouter.post('/inbox/:playerId/claim', (req, res) => {
   try {
     const { inboxId } = req.body;
     if (!inboxId) { res.status(400).json({ error: 'inboxId required' }); return; }
-    const reward = claimInboxReward(req.params.playerId, inboxId);
-    if (!reward) { res.status(400).json({ error: 'Cannot claim this inbox item' }); return; }
-    res.json({ reward });
+    const result = claimInboxReward(req.params.playerId, inboxId);
+    if (result === false) { res.status(400).json({ error: 'Cannot claim this inbox item' }); return; }
+    res.json({ reward: result || undefined });
   } catch (e: any) {
     res.status(400).json({ error: e.message });
   }

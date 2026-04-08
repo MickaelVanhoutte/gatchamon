@@ -197,10 +197,10 @@ export function getInbox(playerId: string): InboxItem[] {
   }));
 }
 
-export function claimInboxReward(playerId: string, inboxId: string): MissionReward | null {
+export function claimInboxReward(playerId: string, inboxId: string): MissionReward | null | false {
   const db = getDb();
   const row = db.prepare('SELECT * FROM inbox WHERE id = ? AND player_id = ?').get(inboxId, playerId) as any;
-  if (!row || row.claimed) return null;
+  if (!row || row.claimed) return false;
   db.prepare('UPDATE inbox SET claimed = 1 WHERE id = ?').run(inboxId);
   if (row.reward) {
     const reward = JSON.parse(row.reward) as MissionReward;
