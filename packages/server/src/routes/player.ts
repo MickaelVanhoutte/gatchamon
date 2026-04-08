@@ -119,7 +119,7 @@ playerRouter.post('/:id/reset', (req, res) => {
   db.prepare('DELETE FROM dungeon_records WHERE player_id = ?').run(playerId);
   db.prepare('DELETE FROM foraging_state WHERE player_id = ?').run(playerId);
   db.prepare('DELETE FROM arena_defense WHERE player_id = ?').run(playerId);
-  db.prepare('DELETE FROM arena_history WHERE player_id = ? OR opponent_id = ?').run(playerId, playerId);
+  db.prepare('DELETE FROM arena_history WHERE attacker_id = ? OR defender_id = ?').run(playerId, playerId);
   db.prepare('DELETE FROM arena_rival_cooldowns WHERE player_id = ?').run(playerId);
 
   // Delete the player entirely so they go back to registration + tutorial
