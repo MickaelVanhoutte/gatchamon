@@ -13,6 +13,7 @@ export const changelog: ChangelogEntry[] = [
       'Arena: battles now cost 1 arena ticket (max 10, regenerates 10 per 24 hours)',
       'Arena: win reward changed to 10 stardust (from 50-150)',
       'Shop: added Arena Tickets pack (10 tickets for 100 stardust)',
+      'Fix: disabled double-tap zoom and scroll bounce on mobile PWA',
     ],
   },
   {

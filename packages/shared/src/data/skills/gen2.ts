@@ -3879,14 +3879,14 @@ export const GEN2_SKILLS: Record<string, SkillDefinition> = {
     description: 'Passive: applies Recovery for 999 turn(s) to self, applies Revive for 1 turn(s) to a fallen ally (20% HP).',
     type: 'fire',
     category: 'passive',
-    cooldown: 0,
+    cooldown: 6,
     multiplier: 0,
     effects: [
       { id: 'recovery', value: 0, duration: 999, chance: 100, target: 'self' },
       { id: 'revive', value: 20, duration: 0, chance: 100, target: 'single_ally' },
     ],
-    target: 'self',
-    passiveTrigger: 'battle_start',
+    target: 'single_ally',
+    passiveTrigger: 'on_ally_death',
   },
 
   // --- celebi (psychic/grass) ---
