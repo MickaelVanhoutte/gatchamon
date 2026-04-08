@@ -30,6 +30,8 @@ export const changelog: ChangelogEntry[] = [
       'Tutorial: first 2 summons are now always fixed (Growlithe + Eevee) for everyone, even in server mode',
       'UI: redesigned player name screen with background art, glass panel, particles, and polished styling',
       'Fix: tutorial held item step no longer blocks interaction — dialog collapses on tap or after 3s',
+      'Fix: tutorial item upgrade step now properly advances in server mode',
+      'Fix: tutorial spotlight overlay no longer persists when navigating to item manage page',
     ],
   },
   {

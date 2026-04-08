@@ -424,10 +424,9 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   equipItem: (itemId: string, pokemonInstanceId: string) => {
     if (USE_SERVER) {
-      serverApi.equipItem(itemId, pokemonInstanceId).then(() => {
+      return serverApi.equipItem(itemId, pokemonInstanceId).then(() => {
         get().loadHeldItems();
       });
-      return;
     }
     heldItemService.equipItem(itemId, pokemonInstanceId);
     set({ heldItems: storage.loadHeldItems() });

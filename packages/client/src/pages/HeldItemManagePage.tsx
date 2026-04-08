@@ -131,9 +131,9 @@ export function HeldItemManagePage() {
     setAnimating(true);
     setLastResult(null);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       try {
-        const result = storeUpgrade(equippedItem.itemId);
+        const result = await storeUpgrade(equippedItem.itemId);
         if (result.success) {
           let msg = `Success! +${equippedItem.level + 1}`;
           if (result.newSubStat) {
@@ -157,9 +157,9 @@ export function HeldItemManagePage() {
     }, 300);
   }
 
-  function handleEquip() {
+  async function handleEquip() {
     if (!selectedItem) return;
-    equipItem(selectedItem.itemId, pokemon!.instance.instanceId);
+    await equipItem(selectedItem.itemId, pokemon!.instance.instanceId);
     refreshPlayer();
     setSelectedItemId(null);
     // Tutorial step 15: advance when item equipped
