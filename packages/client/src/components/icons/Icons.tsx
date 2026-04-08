@@ -324,3 +324,6 @@ export const IconRoulette = makeMultiPathIcon([
   'M12 6v6l4.24 4.24',
   'M12 2v3M12 19v3M2 12h3M19 12h3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12',
 ]);
+
+// Book icon (for Story)
+export const IconBook = makeIcon('M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z');

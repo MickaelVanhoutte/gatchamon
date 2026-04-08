@@ -12,7 +12,7 @@ const TABS = [
   { path: '/shop', icon: 'shop', badge: false, tutorialId: 'nav-shop' },
   { path: '/collection', icon: 'collection', badge: false, tutorialId: 'nav-collection' },
   { path: '/missions', icon: 'trophy', badge: true, tutorialId: 'nav-missions' },
-  { path: '/story', icon: 'swords', badge: false, tutorialId: 'nav-story' },
+  { path: '/story', icon: 'book', badge: false, tutorialId: 'nav-story' },
   { path: '/dungeons', icon: 'dungeon', badge: false, tutorialId: 'nav-dungeons' },
   { path: '/arena', icon: 'swords', badge: false, tutorialId: 'nav-arena' },
   { path: '/trainer', icon: 'trainer', badge: false, tutorialId: 'nav-trainer' },

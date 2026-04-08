@@ -12,6 +12,7 @@ import {
   IconTree, IconWheat, IconWave, IconMountain, IconShrine,
   IconPokedollar, IconShop, IconGlowingPokeball, IconRoulette,
   IconBag,
+  IconBook,
 } from './Icons';
 
 type IconComponent = ComponentType<{ size?: number } & SVGProps<SVGSVGElement>>;
@@ -82,6 +83,9 @@ const ICON_MAP: Record<string, IconComponent> = {
   glasses: IconGlasses,
   paw: IconPaw,
   sandwich: IconSandwich,
+
+  // Misc
+  book: IconBook,
 
   // Currency & Shop
   bag: IconBag,

@@ -7,6 +7,7 @@ interface BuildingDef {
   icon: string;
   path: string;
   xPct: number;
+  yPct: number;
 }
 
 interface CityBuildingProps {
@@ -19,7 +20,7 @@ export function CityBuilding({ building, badgeCount, onNavigate }: CityBuildingP
   return (
     <button
       className="city-building-btn"
-      style={{ left: `${building.xPct}%` }}
+      style={{ left: `${building.xPct}%`, top: `${building.yPct}%` }}
       onClick={() => onNavigate(building.path)}
     >
       <span className="city-building-sign">

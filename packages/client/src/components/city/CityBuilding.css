@@ -1,6 +1,5 @@
 .city-building-btn {
   position: absolute;
-  top: 42%;
   transform: translateX(-50%);
   z-index: 3;
   background: none;

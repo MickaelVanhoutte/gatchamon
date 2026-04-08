@@ -10,22 +10,24 @@ import './CityScene.css';
 
 /*
  * Building positions as % of image width, mapped to the actual buildings in poke-street.png:
- *  - Far-left Japanese building  → Summon Lab
- *  - Red pagoda building         → PC Center
- *  - White columned "Mart" bldg  → PokéMart
- *  - Center alley (leads outside)→ Route Gate (Story)
- *  - Green awning "Glameow's"    → Mission Board
- *  - Gym building                → Dungeon Cave
- *  - Far-right windmill bldg     → Trainer HQ
+ *  - Far-left Japanese building    → Summon Lab
+ *  - Red pagoda building           → PC Center
+ *  - White columned "Mart" bldg    → PokéMart
+ *  - Center alley (leads outside)  → Route Gate (Story)
+ *  - Green awning "Sweet & Slowpoke" → Mission Board
+ *  - Brown "Glameow's Closet" bldg → Arena
+ *  - Gym building                  → Dungeon Cave
+ *  - Far-right windmill bldg       → Trainer HQ
  */
 const BUILDINGS = [
-  { id: 'summon',     label: 'Summon Lab',    icon: 'summon',     path: '/summon',     xPct: 8   },
-  { id: 'collection', label: 'PC Center',     icon: 'collection', path: '/collection', xPct: 23  },
-  { id: 'shop',       label: 'PokéMart',      icon: 'shop',       path: '/shop',       xPct: 38  },
-  { id: 'story',      label: 'Route Gate',    icon: 'swords',     path: '/story',      xPct: 50  },
-  { id: 'missions',   label: 'Mission Board', icon: 'trophy',     path: '/missions',   xPct: 62  },
-  { id: 'dungeons',   label: 'Dungeon Cave',  icon: 'dungeon',    path: '/dungeons',   xPct: 80  },
-  { id: 'trainer',    label: 'Trainer HQ',    icon: 'trainer',    path: '/trainer',     xPct: 91  },
+  { id: 'summon',     label: 'Summon Lab',    icon: 'summon',     path: '/summon',     xPct: 8,  yPct: 48 },
+  { id: 'collection', label: 'PC Center',     icon: 'collection', path: '/collection', xPct: 23, yPct: 42 },
+  { id: 'shop',       label: 'PokéMart',      icon: 'shop',       path: '/shop',       xPct: 38, yPct: 38 },
+  { id: 'story',      label: 'Route Gate',    icon: 'book',       path: '/story',      xPct: 50, yPct: 55 },
+  { id: 'missions',   label: 'Mission Board', icon: 'trophy',     path: '/missions',   xPct: 60, yPct: 42 },
+  { id: 'arena',      label: 'Arena',         icon: 'swords',     path: '/arena',      xPct: 70, yPct: 48 },
+  { id: 'dungeons',   label: 'Dungeon Cave',  icon: 'dungeon',    path: '/dungeons',   xPct: 80, yPct: 40 },
+  { id: 'trainer',    label: 'Trainer HQ',    icon: 'trainer',    path: '/trainer',     xPct: 91, yPct: 45 },
 ] as const;
 
 interface CitySceneProps {

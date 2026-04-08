@@ -5,7 +5,7 @@ import type { TrainerSkills, Difficulty } from '@gatchamon/shared';
 import { clearAll, loadDungeonRecords as loadDungeonRecordsLocal } from '../services/storage';
 import { signOut } from '../services/auth.service';
 import { resetPlayer, getDungeonRecords as getDungeonRecordsServer } from '../services/server-api.service';
-import { USE_SERVER } from '../config';
+import { USE_SERVER, clearAuth } from '../config';
 import type { DungeonRecords } from '../services/storage';
 import { EssenceBag } from '../components/EssenceBag';
 import './TrainerPage.css';
@@ -250,9 +250,11 @@ export function TrainerPage() {
           <button
             style={{ fontSize: '0.65rem', color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.4 }}
             onClick={async () => {
-              if (window.confirm('Reset ALL data? This cannot be undone.')) {
+              if (window.confirm('Reset ALL data? This cannot be undone. You will need to register again.')) {
                 if (USE_SERVER) {
                   await resetPlayer();
+                  clearAll();
+                  clearAuth();
                 } else {
                   clearAll();
                 }
