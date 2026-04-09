@@ -381,7 +381,7 @@ import { shopSummonMultiPremium, shopSummonSingleLegendary } from './gacha.servi
 
 const SHOP_ITEMS: Record<string, { cost: number; apply: (playerId: string) => any }> = {
   speed_x3: {
-    cost: 100,
+    cost: 300,
     apply: (playerId) => {
       const db = getDb();
       db.prepare('INSERT OR IGNORE INTO granted_flags (player_id, flag) VALUES (?, ?)').run(playerId, 'speed_x3');

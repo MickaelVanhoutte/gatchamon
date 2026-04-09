@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { Player, PokemonInstance, PokemonTemplate, HeldItemInstance, TrainerSkills, PokeballType } from '@gatchamon/shared';
 import { getTemplate } from '@gatchamon/shared';
-import { loadPcAutoSend, savePcAutoSend } from '../services/storage';
+import { loadPcAutoSend, savePcAutoSend, setGrantedFlag } from '../services/storage';
 import { useTutorialStore } from './tutorialStore';
 import { createPlayerOnServer, loadPlayerFromServer, checkNameAvailable } from '../services/server-player.service';
 import * as serverApi from '../services/server-api.service';
@@ -49,9 +49,13 @@ interface GameState {
   mergeEssences: (element: string, targetTier: 'mid' | 'high', count: number) => void;
 }
 
+function syncGrantedFlags(player: Player) {
+  for (const flag of player.grantedFlags ?? []) setGrantedFlag(flag);
+}
+
 async function reloadFromServer(set: any, get: any) {
   const player = await serverApi.loadPlayer();
-  if (player) set({ player });
+  if (player) { syncGrantedFlags(player); set({ player }); }
   get().loadCollection();
   get().loadHeldItems();
 }
@@ -83,6 +87,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   loadPlayer: () => {
     loadPlayerFromServer().then(player => {
       if (player) {
+        syncGrantedFlags(player);
         set({ player });
         get().loadCollection();
         get().loadPcBox();
@@ -94,7 +99,7 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   refreshPlayer: () => {
     serverApi.loadPlayer().then(player => {
-      if (player) set({ player });
+      if (player) { syncGrantedFlags(player); set({ player }); }
       get().refreshRewards();
     });
   },

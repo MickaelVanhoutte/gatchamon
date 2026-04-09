@@ -40,6 +40,7 @@ export interface Player {
   arenaCoins: number;
   arenaTickets: number;
   lastArenaTicketUpdate?: string;
+  grantedFlags: string[];
   googleId?: string;
   googleEmail?: string;
 }

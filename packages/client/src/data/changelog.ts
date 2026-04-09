@@ -7,6 +7,14 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.7.1',
+    date: '2026-04-09',
+    changes: [
+      'Fix: speed x3 shop purchase now persists correctly — flag synced from server on every login',
+      'Fix: speed x3 cost aligned between client and server (300 stardust)',
+    ],
+  },
+  {
     version: '0.7.0',
     date: '2026-04-09',
     changes: [

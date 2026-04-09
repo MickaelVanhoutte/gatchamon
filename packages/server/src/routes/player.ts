@@ -10,6 +10,8 @@ export const playerRouter = Router();
 
 /** Convert a raw DB row to the Player shape the client expects. */
 export function rowToPlayer(row: any): Player {
+  const db = getDb();
+  const flags = (db.prepare('SELECT flag FROM granted_flags WHERE player_id = ?').all(row.id) as any[]).map(r => r.flag);
   return {
     id: row.id,
     name: row.name,
@@ -36,6 +38,7 @@ export function rowToPlayer(row: any): Player {
     arenaCoins: row.arena_coins ?? 0,
     arenaTickets: row.arena_tickets ?? 10,
     lastArenaTicketUpdate: row.last_arena_ticket_update ?? undefined,
+    grantedFlags: flags,
     googleId: row.google_id ?? undefined,
     googleEmail: row.google_email ?? undefined,
   };

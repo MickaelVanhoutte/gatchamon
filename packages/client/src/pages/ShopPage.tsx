@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { SHOP_ITEMS } from '../services/shop.service';
 import type { SummonResult } from '../services/gacha.service';
-import { hasGrantedFlag } from '../services/storage';
+import { hasGrantedFlag, setGrantedFlag } from '../services/storage';
 import { GameIcon, StarRating } from '../components/icons';
 import { getTemplate } from '@gatchamon/shared';
 import * as serverApi from '../services/server-api.service';
@@ -32,6 +32,8 @@ export function ShopPage() {
 
     try {
       const res = await serverApi.purchaseShopItem(selectedItemId);
+      // Persist one-time flags (e.g. speed_x3) so they survive page reloads
+      if (res?.granted) setGrantedFlag(res.granted);
       // Server may return summon results for summon-type items
       setResults(res?.results ?? []);
       setPhase('results');
