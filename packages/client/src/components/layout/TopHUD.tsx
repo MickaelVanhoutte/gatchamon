@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useGameStore } from '../../stores/gameStore';
 import { getMaxEnergy, trainerXpToNextLevel, BEGINNER_BONUS } from '@gatchamon/shared';
 import { onUpdateAvailable } from '../../services/sw-update';
-import { canSpinToday, getRemainingSpins } from '../../services/roulette.service';
+import * as serverApi from '../../services/server-api.service';
 import { DailyRouletteModal } from '../DailyRouletteModal';
 import { GameIcon } from '../icons';
 import './TopHUD.css';
@@ -52,12 +52,22 @@ export function TopHUD() {
   const [showResources, setShowResources] = useState(false);
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [showRoulette, setShowRoulette] = useState(false);
-  const [rouletteAvailable, setRouletteAvailable] = useState(canSpinToday());
+  const [rouletteAvailable, setRouletteAvailable] = useState(false);
+  const [rouletteSpins, setRouletteSpins] = useState(0);
   const { active: beginnerActive, remaining } = useBeginnerCountdown(player?.createdAt);
 
   useEffect(() => {
     onUpdateAvailable(() => setUpdateAvailable(true));
   }, []);
+
+  useEffect(() => {
+    if (!player) return;
+    serverApi.getRoulette().then((res: any) => {
+      const spins = res.remaining ?? 0;
+      setRouletteSpins(spins);
+      setRouletteAvailable(spins > 0);
+    }).catch(() => {});
+  }, [player]);
 
   if (!player) return null;
   if (location.pathname.startsWith('/battle/')) return null;
@@ -123,7 +133,7 @@ export function TopHUD() {
         <button className={`hud-roulette-btn${rouletteAvailable ? ' hud-roulette-btn--available' : ''}`} onClick={() => { setShowRoulette(true); }} title="Daily Roulette">
           <GameIcon id="roulette" size={13} />
           {rouletteAvailable && (
-            <span className="hud-inbox-badge">{getRemainingSpins()}</span>
+            <span className="hud-inbox-badge">{rouletteSpins}</span>
           )}
         </button>
         <button className={`hud-inbox-btn${inboxUnreadCount > 0 ? ' hud-inbox-btn--unread' : ''}`} onClick={() => navigate('/inbox')}>

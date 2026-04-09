@@ -7,6 +7,19 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.7.0',
+    date: '2026-04-09',
+    changes: [
+      'Cleanup: removed offline/client-only mode — game now runs exclusively with server',
+      'Fix: daily login calendar no longer reopens every time you navigate to home',
+      'Fix: floor reward preview now correctly shows first-clear status from server',
+      'Fix: roulette badge in top HUD now shows correct spin count from server',
+      'Fix: piece summon now works via server API',
+      'Feature: 100x retry summon is now server-side — granted automatically to new players',
+      'Removed ~3000 lines of dead offline-only code',
+    ],
+  },
+  {
     version: '0.6.2',
     date: '2026-04-09',
     changes: [

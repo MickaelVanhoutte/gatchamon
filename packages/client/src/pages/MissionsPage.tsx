@@ -1,24 +1,11 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useGameStore } from '../stores/gameStore';
-import {
-  getDailyMissions,
-  claimMissionReward,
-  claimAllDailiesBonus,
-  claimAllMissions,
-  claimAllTrophyTiers,
-  getUnclaimedMissionCount,
-  getUnclaimedTrophyCount,
-  claimTrophyTier,
-  loadOrInitRewardState,
-} from '../services/reward.service';
 import {
   selectDailyMissions,
   TROPHIES,
-  getTrophyStat,
 } from '@gatchamon/shared';
 import type { MissionReward, TrophyDefinition, TrophyProgress } from '@gatchamon/shared';
 import { GameIcon, StarRating } from '../components/icons';
-import { USE_SERVER } from '../config';
 import * as serverApi from '../services/server-api.service';
 import './MissionsPage.css';
 
@@ -28,8 +15,6 @@ export function MissionsPage() {
   const { refreshPlayer } = useGameStore();
   const [tab, setTab] = useState<Tab>('daily');
   const [claimedReward, setClaimedReward] = useState<MissionReward | null>(null);
-  const [, setTick] = useState(0);
-  const forceUpdate = useCallback(() => setTick(t => t + 1), []);
 
   // Server mode state
   const [serverMissions, setServerMissions] = useState<any>(null);
@@ -37,157 +22,94 @@ export function MissionsPage() {
 
   // Load data from server on mount
   useEffect(() => {
-    if (!USE_SERVER) return;
     serverApi.getDailyMissions().then(setServerMissions).catch(() => {});
     serverApi.getTrophyProgress().then(setServerTrophies).catch(() => {});
   }, []);
 
   const reloadServerData = () => {
-    if (!USE_SERVER) return;
     serverApi.getDailyMissions().then(setServerMissions).catch(() => {});
     serverApi.getTrophyProgress().then(setServerTrophies).catch(() => {});
   };
 
-  // Resolve mission data for either mode
-  const dailyState = USE_SERVER
-    ? (serverMissions?.dailyMissions ?? serverMissions ?? { date: '', missions: [], allClaimedBonus: false })
-    : getDailyMissions();
+  // Resolve mission data
+  const dailyState = serverMissions?.dailyMissions ?? serverMissions ?? { date: '', missions: [], allClaimedBonus: false };
   const dailyDefs = selectDailyMissions(dailyState.date);
-  const rewardState = USE_SERVER ? null : loadOrInitRewardState();
 
   // Trophy progress
-  const trophyProgress: TrophyProgress[] = USE_SERVER
-    ? (serverTrophies?.progress ?? [])
-    : (rewardState?.trophyProgress ?? []);
+  const trophyProgress: TrophyProgress[] = serverTrophies?.progress ?? [];
 
   const handleClaimMission = async (missionId: string) => {
-    if (USE_SERVER) {
-      try {
-        const res = await serverApi.claimMission(missionId);
-        if (res?.reward) setClaimedReward(res.reward);
-        refreshPlayer();
-        reloadServerData();
-        setTimeout(() => setClaimedReward(null), 2000);
-      } catch {}
-      return;
-    }
-    const reward = claimMissionReward(missionId);
-    if (reward) {
-      setClaimedReward(reward);
+    try {
+      const res = await serverApi.claimMission(missionId);
+      if (res?.reward) setClaimedReward(res.reward);
       refreshPlayer();
-      forceUpdate();
+      reloadServerData();
       setTimeout(() => setClaimedReward(null), 2000);
-    }
+    } catch {}
   };
 
   const handleClaimAllBonus = async () => {
-    if (USE_SERVER) {
-      // Claim all-dailies bonus by claiming the special 'all_dailies' mission
-      try {
-        const res = await serverApi.claimMission('all_dailies_bonus');
-        if (res?.reward) setClaimedReward(res.reward);
-        refreshPlayer();
-        reloadServerData();
-        setTimeout(() => setClaimedReward(null), 2000);
-      } catch {}
-      return;
-    }
-    const reward = claimAllDailiesBonus();
-    if (reward) {
-      setClaimedReward(reward);
+    // Claim all-dailies bonus by claiming the special 'all_dailies' mission
+    try {
+      const res = await serverApi.claimMission('all_dailies_bonus');
+      if (res?.reward) setClaimedReward(res.reward);
       refreshPlayer();
-      forceUpdate();
+      reloadServerData();
       setTimeout(() => setClaimedReward(null), 2000);
-    }
+    } catch {}
   };
 
   const handleClaimTrophy = async (trophyId: string, tierIndex: number) => {
-    if (USE_SERVER) {
-      try {
-        const res = await serverApi.claimTrophy(trophyId, tierIndex);
-        if (res?.reward) setClaimedReward(res.reward);
-        refreshPlayer();
-        reloadServerData();
-        setTimeout(() => setClaimedReward(null), 2000);
-      } catch {}
-      return;
-    }
-    const reward = claimTrophyTier(trophyId, tierIndex);
-    if (reward) {
-      setClaimedReward(reward);
+    try {
+      const res = await serverApi.claimTrophy(trophyId, tierIndex);
+      if (res?.reward) setClaimedReward(res.reward);
       refreshPlayer();
-      forceUpdate();
+      reloadServerData();
       setTimeout(() => setClaimedReward(null), 2000);
-    }
+    } catch {}
   };
 
   const handleClaimAllMissions = async () => {
-    if (USE_SERVER) {
-      // Claim each unclaimed mission + bonus
-      for (const m of dailyState.missions) {
-        const def = dailyDefs.find((d: any) => d.id === m.missionId);
-        if (def && m.current >= def.target && !m.claimed) {
-          try { await serverApi.claimMission(m.missionId); } catch {}
-        }
+    // Claim each unclaimed mission + bonus
+    for (const m of dailyState.missions) {
+      const def = dailyDefs.find((d: any) => d.id === m.missionId);
+      if (def && m.current >= def.target && !m.claimed) {
+        try { await serverApi.claimMission(m.missionId); } catch {}
       }
-      refreshPlayer();
-      reloadServerData();
-      return;
     }
-    const reward = claimAllMissions();
-    if (reward) {
-      setClaimedReward(reward);
-      refreshPlayer();
-      forceUpdate();
-      setTimeout(() => setClaimedReward(null), 2000);
-    }
+    refreshPlayer();
+    reloadServerData();
   };
 
   const handleClaimAllTrophies = async () => {
-    if (USE_SERVER) {
-      for (const trophy of TROPHIES) {
-        const tp = trophyProgress.find((t: any) => t.trophyId === trophy.id);
-        if (!tp) continue;
-        for (let i = 0; i < trophy.tiers.length; i++) {
-          if (!tp.claimedTiers.includes(i) && tp.current >= trophy.tiers[i].threshold) {
-            try { await serverApi.claimTrophy(trophy.id, i); } catch {}
-          }
+    for (const trophy of TROPHIES) {
+      const tp = trophyProgress.find((t: any) => t.trophyId === trophy.id);
+      if (!tp) continue;
+      for (let i = 0; i < trophy.tiers.length; i++) {
+        if (!tp.claimedTiers.includes(i) && tp.current >= trophy.tiers[i].threshold) {
+          try { await serverApi.claimTrophy(trophy.id, i); } catch {}
         }
       }
-      refreshPlayer();
-      reloadServerData();
-      return;
     }
-    const reward = claimAllTrophyTiers();
-    if (reward) {
-      setClaimedReward(reward);
-      refreshPlayer();
-      forceUpdate();
-      setTimeout(() => setClaimedReward(null), 2000);
-    }
+    refreshPlayer();
+    reloadServerData();
   };
 
   const getUnclaimedMissions = (): number => {
-    if (USE_SERVER) {
-      return dailyState.missions.filter((m: any) => {
-        const def = dailyDefs.find((d: any) => d.id === m.missionId);
-        return def && m.current >= def.target && !m.claimed;
-      }).length;
-    }
-    return getUnclaimedMissionCount();
+    return dailyState.missions.filter((m: any) => {
+      const def = dailyDefs.find((d: any) => d.id === m.missionId);
+      return def && m.current >= def.target && !m.claimed;
+    }).length;
   };
 
   const getUnclaimedTrophies = (): number => {
-    if (USE_SERVER) {
-      let count = 0;
-      for (const trophy of TROPHIES) {
-        const tp = trophyProgress.find((t: any) => t.trophyId === trophy.id);
-        if (!tp) continue;
-        count += trophy.tiers.filter((tier, i) => !tp.claimedTiers.includes(i) && tp.current >= tier.threshold).length;
-      }
-      return count;
+    let count = 0;
+    for (const trophy of TROPHIES) {
+      const tp = trophyProgress.find((t: any) => t.trophyId === trophy.id);
+      if (!tp) continue;
+      count += trophy.tiers.filter((tier, i) => !tp.claimedTiers.includes(i) && tp.current >= tier.threshold).length;
     }
-    return getUnclaimedTrophyCount();
+    return count;
   };
 
   const completedCount = dailyState.missions.filter((m: any) => m.claimed).length;

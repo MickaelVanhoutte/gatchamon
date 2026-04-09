@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useGameStore, type OwnedPokemon } from '../../stores/gameStore';
 import { getTemplate, PIECE_COST } from '@gatchamon/shared';
-import { summonFromPieces } from '../../services/mystery-dungeon.service';
+import * as serverApi from '../../services/server-api.service';
 import { GameIcon, StarRating } from '../icons';
 import { assetUrl } from '../../utils/asset-url';
 import { SummonRevealSequence } from './SummonRevealSequence';
@@ -40,12 +40,12 @@ export function PieceSummonTab() {
     return b.template.naturalStars - a.template.naturalStars;
   });
 
-  const handleSummon = (templateId: number) => {
+  const handleSummon = async (templateId: number) => {
     try {
       const template = getTemplate(templateId);
       if (!template) return;
-      const instance = summonFromPieces(templateId);
-      const owned: OwnedPokemon = { instance, template };
+      const res = await serverApi.summonFromPieces(templateId);
+      const owned: OwnedPokemon = { instance: res.instance ?? res, template };
       setResult(owned);
       setPhase('revealing');
       refreshPlayer();

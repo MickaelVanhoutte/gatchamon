@@ -1,15 +1,8 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
-import {
-  getInboxItems,
-  claimInboxReward as claimInboxLocal,
-  markAsRead,
-  clearReadMessages,
-} from '../services/inbox.service';
 import type { InboxItem, MissionReward } from '@gatchamon/shared';
 import { GameIcon } from '../components/icons';
-import { USE_SERVER } from '../config';
 import * as serverApi from '../services/server-api.service';
 import './InboxPage.css';
 
@@ -17,43 +10,23 @@ export function InboxPage() {
   const navigate = useNavigate();
   const { refreshPlayer } = useGameStore();
   const [claimedReward, setClaimedReward] = useState<MissionReward | null>(null);
-  const [claimedSpecial, setClaimedSpecial] = useState<string | null>(null);
-  const [, setTick] = useState(0);
-  const forceUpdate = useCallback(() => setTick(t => t + 1), []);
 
   // Server mode state
   const [serverItems, setServerItems] = useState<InboxItem[] | null>(null);
 
   useEffect(() => {
-    if (!USE_SERVER) return;
     reloadInbox();
     const interval = setInterval(reloadInbox, 30_000);
     return () => clearInterval(interval);
   }, []);
 
   const reloadInbox = () => {
-    if (USE_SERVER) {
-      serverApi.getInbox().then((res: any) => {
-        setServerItems(res.items ?? res ?? []);
-      }).catch(() => {});
-    }
+    serverApi.getInbox().then((res: any) => {
+      setServerItems(res.items ?? res ?? []);
+    }).catch(() => {});
   };
 
-  const items: InboxItem[] = USE_SERVER ? (serverItems ?? []) : getInboxItems();
-  const readCount = items.filter(i => i.read || i.claimed).length;
-
-  const handleClearRead = () => {
-    if (USE_SERVER) {
-      // Server doesn't have a clear-read endpoint; just reload
-      reloadInbox();
-      return;
-    }
-    const removed = clearReadMessages();
-    if (removed > 0) {
-      refreshPlayer();
-      forceUpdate();
-    }
-  };
+  const items: InboxItem[] = serverItems ?? [];
 
   const handleClaim = async (item: InboxItem) => {
     // Retry summon: navigate — the destination page handles claiming
@@ -62,57 +35,30 @@ export function InboxPage() {
       return;
     }
 
-    if (USE_SERVER) {
-      try {
-        const res = await serverApi.claimInboxReward(item.id);
-        if (res?.reward) {
-          setClaimedReward(res.reward);
-          setTimeout(() => setClaimedReward(null), 2000);
-        }
-      } catch {
-        // claim may still have succeeded server-side
+    try {
+      const res = await serverApi.claimInboxReward(item.id);
+      if (res?.reward) {
+        setClaimedReward(res.reward);
+        setTimeout(() => setClaimedReward(null), 2000);
       }
-      refreshPlayer();
-      reloadInbox();
-      return;
+    } catch {
+      // claim may still have succeeded server-side
     }
-
-    const result = claimInboxLocal(item.id);
-    if (!result) return;
-
     refreshPlayer();
-    forceUpdate();
-
-    if (result.specialItem === 'beginner-item-set') {
-      setClaimedSpecial('Starter Item Set received! Check your held items.');
-      setTimeout(() => setClaimedSpecial(null), 3000);
-    } else if (result.reward) {
-      setClaimedReward(result.reward);
-      setTimeout(() => setClaimedReward(null), 2000);
-    }
+    reloadInbox();
   };
 
-  const handleRead = (item: InboxItem) => {
-    if (!item.read && !USE_SERVER) {
-      markAsRead(item.id);
-      forceUpdate();
-    }
+  const handleRead = (_item: InboxItem) => {
+    // Server handles read status automatically
   };
 
   return (
     <div className="page inbox-page">
       <div className="inbox-header">
         <h2 className="inbox-title">Inbox</h2>
-        {USE_SERVER && (
-          <button className="inbox-clear-btn" onClick={reloadInbox}>
-            Refresh
-          </button>
-        )}
-        {!USE_SERVER && readCount > 0 && (
-          <button className="inbox-clear-btn" onClick={handleClearRead}>
-            Clear read ({readCount})
-          </button>
-        )}
+        <button className="inbox-clear-btn" onClick={reloadInbox}>
+          Refresh
+        </button>
       </div>
 
       <div className="inbox-list">
@@ -181,9 +127,6 @@ export function InboxPage() {
           {claimedReward.premiumPokeballs && <span> +{claimedReward.premiumPokeballs} <GameIcon id="premiumPokeball" size={14} /></span>}
           {claimedReward.energy && <span> +{claimedReward.energy} <GameIcon id="energy" size={14} /></span>}
         </div>
-      )}
-      {claimedSpecial && (
-        <div className="claim-toast">{claimedSpecial}</div>
       )}
     </div>
   );

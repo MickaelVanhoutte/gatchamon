@@ -10,7 +10,7 @@
 
 <br><br>
 
-[![Play Now](https://img.shields.io/badge/🎮_PLAY_NOW-FF6B35?style=for-the-badge&logoColor=white)](https://mickaelvanhoutte.github.io/gatchamon/)
+[![Play Now](https://img.shields.io/badge/🎮_PLAY_NOW-FF6B35?style=for-the-badge&logoColor=white)](https://forge-monster-vault.up.railway.app)
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github)](https://github.com/MickaelVanhoutte/gatchamon)
 
 <br>
@@ -170,7 +170,7 @@ gatchamon/
 
 ### Ready to start your journey?
 
-[![Play Forge](https://img.shields.io/badge/⚡_PLAY_FORGE-FF6B35?style=for-the-badge&logoColor=white)](https://mickaelvanhoutte.github.io/gatchamon/)
+[![Play Forge](https://img.shields.io/badge/⚡_PLAY_FORGE-FF6B35?style=for-the-badge&logoColor=white)](https://forge-monster-vault.up.railway.app)
 
 <br>
 

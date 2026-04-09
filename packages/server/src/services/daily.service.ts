@@ -177,6 +177,11 @@ export function markFirstClear(playerId: string, regionId: number, floor: number
   saveRewardState(playerId, state);
 }
 
+export function getFirstClears(playerId: string): Record<string, boolean> {
+  const state = getRewardState(playerId);
+  return state.firstClears;
+}
+
 // ── Inbox ──────────────────────────────────────────────────────────────
 
 export function getInbox(playerId: string): InboxItem[] {

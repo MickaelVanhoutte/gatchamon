@@ -4,6 +4,7 @@ import { getDb } from '../db/schema.js';
 import type { Player, TrainerSkills } from '@gatchamon/shared';
 import { defaultTrainerSkills } from '@gatchamon/shared';
 import { computeAndUpdateEnergy, computeAndUpdateArenaTickets, allocateTrainerSkill } from '../services/player.service.js';
+import { sendInboxItem } from '../services/daily.service.js';
 
 export const playerRouter = Router();
 
@@ -74,6 +75,18 @@ playerRouter.post('/', (req, res) => {
     `INSERT INTO players (id, name, pokeballs, regular_pokeballs, premium_pokeballs, energy, story_progress, pokedollars, created_at, last_energy_update)
      VALUES (?, ?, 50, 50, 10, 100, ?, 10000, ?, ?)`
   ).run(id, trimmed, storyProgress, now, now);
+
+  // Grant welcome bonuses
+  sendInboxItem(id, {
+    title: 'New Player Bonus: 100 Energy',
+    message: "Welcome, new trainer! Here's some energy to help you on your journey.",
+    reward: { energy: 100 },
+  });
+  sendInboxItem(id, {
+    title: 'Welcome Gift: 100x Retry Summon!',
+    message: 'Use this special ticket to perform a x10 premium summon up to 100 times. Save a backup and keep the best result!',
+    specialItem: 'retry-summon-100',
+  });
 
   const player = db.prepare('SELECT * FROM players WHERE id = ?').get(id) as any;
   res.status(201).json(rowToPlayer(player));

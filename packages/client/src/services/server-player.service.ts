@@ -1,6 +1,5 @@
 /**
  * Server-backed player operations.
- * Used when USE_SERVER is enabled.
  */
 import type { Player } from '@gatchamon/shared';
 import { api } from './api';

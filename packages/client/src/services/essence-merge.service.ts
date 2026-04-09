@@ -1,6 +1,4 @@
-import type { EssenceTier } from '@gatchamon/shared';
 import { ELEMENTS } from '@gatchamon/shared';
-import { loadPlayer, savePlayer } from './storage';
 
 const MERGE_RATIO = 10;
 
@@ -45,40 +43,6 @@ export function getMaxMergeCount(
   // For high: each high needs 10 mid. Mid can come from stock or from converting low (10 low = 1 mid)
   const totalMid = availableMid + Math.floor(availableLow / MERGE_RATIO);
   return Math.floor(totalMid / MERGE_RATIO);
-}
-
-export function performMerge(element: string, targetTier: 'mid' | 'high', targetCount: number): void {
-  const player = loadPlayer();
-  if (!player) throw new Error('No player found');
-
-  if (!ELEMENTS.includes(element as any)) throw new Error(`Invalid element: ${element}`);
-
-  const materials = { ...(player.materials ?? {}) };
-  const lowKey = `${element}_low`;
-  const midKey = `${element}_mid`;
-  const highKey = `${element}_high`;
-  const availableLow = materials[lowKey] ?? 0;
-  const availableMid = materials[midKey] ?? 0;
-
-  const cost = calculateMergeCost(targetTier, targetCount, availableLow, availableMid);
-  if (!cost) throw new Error('Not enough essences to merge');
-
-  // Deduct
-  materials[lowKey] = availableLow - cost.lowConsumed;
-  materials[midKey] = (targetTier === 'high')
-    ? availableMid - cost.midConsumed
-    : (materials[midKey] ?? 0);
-
-  // Add produced essences
-  const targetKey = targetTier === 'mid' ? midKey : highKey;
-  materials[targetKey] = (materials[targetKey] ?? 0) + targetCount;
-
-  // Clean up zero values
-  for (const key of Object.keys(materials)) {
-    if (materials[key] <= 0) delete materials[key];
-  }
-
-  savePlayer({ ...player, materials });
 }
 
 export interface ElementEssenceSummary {

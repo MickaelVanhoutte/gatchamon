@@ -1,31 +1,37 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { isActivePokemon } from '@gatchamon/shared';
 import { useGameStore } from '../stores/gameStore';
 import { useTutorialStore } from '../stores/tutorialStore';
 import { CityScene } from '../components/city/CityScene';
 import { LoginCalendarModal } from '../components/LoginCalendarModal';
-import { canClaimToday } from '../services/login-calendar.service';
+import * as serverApi from '../services/server-api.service';
 import { ChatPanel } from '../components/chat/ChatPanel';
 import { useForaging } from '../hooks/useForaging';
 import './HomePage.css';
+
+// Module-level flag survives component remounts but resets on page refresh
+let calendarShownToday = false;
 
 export function HomePage() {
   const { player, collection, loadCollection } = useGameStore();
   const tutorialStep = useTutorialStore(s => s.step);
   const navigate = useNavigate();
   const [showCalendar, setShowCalendar] = useState(false);
-  const calendarShownRef = useRef(false);
 
   useEffect(() => {
     if (player) loadCollection();
   }, [player, loadCollection]);
 
   useEffect(() => {
-    if (tutorialStep === 99 && canClaimToday() && !calendarShownRef.current) {
-      calendarShownRef.current = true;
-      setShowCalendar(true);
-    }
+    if (tutorialStep !== 99 || calendarShownToday) return;
+    serverApi.getLoginCalendar().then((res: any) => {
+      const todayStr = new Date().toISOString().slice(0, 10);
+      if (res.lastClaimDate !== todayStr) {
+        calendarShownToday = true;
+        setShowCalendar(true);
+      }
+    }).catch(() => {});
   }, [tutorialStep]);
 
   const topMonsters = useMemo(() => {

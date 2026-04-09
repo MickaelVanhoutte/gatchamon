@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { USE_SERVER } from '../config';
 import { getRecentChatMessages, sendChatMessage, type ChatMessage } from '../services/server-api.service';
 
 const POLL_INTERVAL = 3000;
@@ -38,8 +37,6 @@ export function useChat() {
   }, []);
 
   useEffect(() => {
-    if (!USE_SERVER) return;
-
     // Initial fetch
     poll();
 

@@ -1,6 +1,5 @@
-import type { Player } from '@gatchamon/shared';
 import { ELEMENTS } from '@gatchamon/shared';
-import { loadPlayer, savePlayer } from './storage';
+import { claimForaging } from './server-api.service';
 
 // ── Types ──────────────────────────────────────────────────────────────
 
@@ -93,43 +92,10 @@ export function rollForagingLoot(): ForagingFind {
 
 // ── Grant the find to the player ───────────────────────────────────────
 
-export function grantForagingFind(find: ForagingFind): void {
-  const player = loadPlayer();
-  if (!player) return;
-
-  switch (find.type) {
-    case 'pokedollars':
-      player.pokedollars = (player.pokedollars ?? 0) + find.quantity;
-      break;
-    case 'stardust':
-      player.stardust = (player.stardust ?? 0) + find.quantity;
-      break;
-    case 'regular_ball':
-      player.regularPokeballs = (player.regularPokeballs ?? 0) + find.quantity;
-      break;
-    case 'premium_ball':
-      player.premiumPokeballs = (player.premiumPokeballs ?? 0) + find.quantity;
-      break;
-    case 'legendary_ball':
-      player.legendaryPokeballs = (player.legendaryPokeballs ?? 0) + find.quantity;
-      break;
-    case 'glowing_ball':
-      player.glowingPokeballs = (player.glowingPokeballs ?? 0) + find.quantity;
-      break;
-    case 'essence': {
-      // Extract element from label e.g. "Fire Essence (Low)" → "fire_low"
-      const match = find.label.match(/^(\w+) Essence \((\w+)\)$/);
-      if (match) {
-        const essenceId = `${match[1].toLowerCase()}_${match[2].toLowerCase()}`;
-        const materials = { ...(player.materials ?? {}) };
-        materials[essenceId] = (materials[essenceId] ?? 0) + find.quantity;
-        player.materials = materials;
-      }
-      break;
-    }
-  }
-
-  savePlayer(player);
+export function grantForagingFind(_find: ForagingFind): void {
+  // Game state is server-owned — call the server claim endpoint.
+  // The caller (useForaging hook) also calls refreshPlayer() to sync state.
+  claimForaging().catch(() => {});
 }
 
 // ── State persistence ──────────────────────────────────────────────────

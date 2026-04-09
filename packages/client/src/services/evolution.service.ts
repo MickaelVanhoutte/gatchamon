@@ -1,8 +1,6 @@
 import type { PokemonInstance, Player } from '@gatchamon/shared';
 import { getTemplate, getActiveEvolutionsFrom, isActivePokemon } from '@gatchamon/shared';
 import type { EvolutionChain } from '@gatchamon/shared';
-import { loadPlayer, savePlayer, loadCollection, saveCollection } from './storage';
-import { trackStat, incrementMission, checkAndUpdateTrophies } from './reward.service';
 
 export interface EvolutionValidation {
   valid: boolean;
@@ -56,40 +54,4 @@ export function canEvolveInstance(
   }
 
   return { valid: true };
-}
-
-export function performEvolution(instanceId: string, targetTemplateId: number): PokemonInstance {
-  const player = loadPlayer();
-  if (!player) throw new Error('No player found');
-
-  const collection = loadCollection();
-  const idx = collection.findIndex(p => p.instanceId === instanceId);
-  if (idx === -1) throw new Error('Monster not found');
-
-  const instance = collection[idx];
-  const validation = canEvolveInstance(instance, player, targetTemplateId);
-  if (!validation.valid) throw new Error(validation.reason);
-
-  const chain = getActiveEvolutionsFrom(instance.templateId).find(c => c.to === targetTemplateId)!;
-
-  // Deduct materials
-  const materials = { ...(player.materials ?? {}) };
-  for (const [essenceId, needed] of Object.entries(chain.requirements.essences)) {
-    materials[essenceId] = (materials[essenceId] ?? 0) - needed;
-  }
-  savePlayer({ ...player, materials });
-
-  // Evolve the instance (keep level, stars, exp, shiny)
-  collection[idx] = {
-    ...instance,
-    templateId: targetTemplateId,
-  };
-  saveCollection(collection);
-
-  // Track rewards
-  trackStat('totalEvolutions', 1);
-  incrementMission('evolve_monster', 1);
-  checkAndUpdateTrophies();
-
-  return collection[idx];
 }

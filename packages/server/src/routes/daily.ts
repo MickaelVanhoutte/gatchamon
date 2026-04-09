@@ -16,6 +16,7 @@ import {
   summonFromPieces,
   getDungeonRecords,
   saveDungeonRecord,
+  getFirstClears,
 } from '../services/daily.service.js';
 
 export const dailyRouter = Router();
@@ -63,6 +64,17 @@ dailyRouter.post('/trophies/:playerId/claim', (req, res) => {
     const reward = claimTrophyTier(req.params.playerId, trophyId, tierIndex);
     if (!reward) { res.status(400).json({ error: 'Cannot claim this trophy tier' }); return; }
     res.json({ reward });
+  } catch (e: any) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+// ── First Clears ─────────────────────────────────────────────────────
+
+dailyRouter.get('/first-clears/:playerId', (req, res) => {
+  try {
+    const firstClears = getFirstClears(req.params.playerId);
+    res.json({ firstClears });
   } catch (e: any) {
     res.status(400).json({ error: e.message });
   }

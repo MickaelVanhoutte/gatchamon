@@ -1,7 +1,7 @@
 import type { BaseStats } from '@gatchamon/shared';
 import { computeStats, computeStatsWithItems, getSkillsForPokemon, getEffectiveSkillIds, getItemSet, STAT_TYPE_LABELS, describeLeaderSkill } from '@gatchamon/shared';
 import type { OwnedPokemon } from '../stores/gameStore';
-import { getItemsForPokemon } from '../services/storage';
+import { useGameStore } from '../stores/gameStore';
 import { GameIcon, StarRating } from './icons';
 import { assetUrl } from '../utils/asset-url';
 import './MonsterDetailModal.css';
@@ -31,7 +31,7 @@ interface MonsterDetailModalProps {
 
 export function MonsterDetailModal({ pokemon, onClose }: MonsterDetailModalProps) {
   const { instance, template } = pokemon;
-  const equippedItems = getItemsForPokemon(instance.instanceId);
+  const equippedItems = useGameStore(s => s.heldItems).filter(i => i.equippedTo === instance.instanceId);
   const baseStats = computeStats(template, instance.level, instance.stars);
   const totalStats = equippedItems.length > 0
     ? computeStatsWithItems(template, instance.level, instance.stars, equippedItems)

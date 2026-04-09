@@ -1,8 +1,6 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getBattleState as fetchBattleState, resolvePlayerAction as resolveLocal, deleteBattle, getStoredRewards } from '../services/battle.service';
 import { useGameStore } from '../stores/gameStore';
-import { USE_SERVER } from '../config';
 import * as serverApi from '../services/server-api.service';
 import { useBattleAnimation } from '../battle/useBattleAnimation';
 import { useAutoBattle } from '../battle/useAutoBattle';
@@ -16,7 +14,7 @@ import { GymLeaderDialogue } from '../components/GymLeaderDialogue';
 import { ShinyEntrySparkle } from '../components/ShinyEntrySparkle';
 import { useTutorialStore } from '../stores/tutorialStore';
 import gsap from 'gsap';
-import { loadBattleSettings, saveBattleSettings, loadPlayer, hasGrantedFlag, saveDungeonRecord as saveDungeonRecordLocal } from '../services/storage';
+import { loadBattleSettings, saveBattleSettings, hasGrantedFlag } from '../services/storage';
 import './BattlePage.css';
 
 type Phase = 'player_turn' | 'animating' | 'victory' | 'defeat';
@@ -286,46 +284,25 @@ export function BattlePage() {
   const loadBattle = useCallback(() => {
     if (!battleId) return;
 
-    if (USE_SERVER) {
-      serverApi.getBattleState(battleId).then((res: any) => {
-        const battleState = res.state ?? res;
-        if (!battleState) return;
-        setState(battleState);
-        setLogEntries(battleState.log ?? []);
-        if (battleState.status === 'victory' || battleState.status === 'defeat') {
-          setPhase('animating');
-          setTimeout(() => {
-            if (res.rewards) setRewards(res.rewards);
-            setPhase(battleState.status === 'victory' ? 'victory' : 'defeat');
-          }, 1500);
-        } else {
-          const hasDialogue = battleState.mode === 'story'
-            && getBossDialogue(battleState.floor.region, battleState.floor.floor);
-          setPhase(hasDialogue ? 'animating' : 'player_turn');
-        }
-      }).catch((err: any) => {
-        console.error('[loadBattle server error]', err.message);
-      });
-      return;
-    }
-
-    const battleState = fetchBattleState(battleId);
-    if (!battleState) return;
-    setState(battleState);
-    setLogEntries(battleState.log);
-    if (battleState.status === 'victory' || battleState.status === 'defeat') {
-      setPhase('animating');
-      const storedRewards = getStoredRewards(battleId);
-      setTimeout(() => {
-        if (storedRewards) setRewards(storedRewards);
-        setPhase(battleState.status === 'victory' ? 'victory' : 'defeat');
-      }, 1500);
-    } else {
-      // If there's a boss dialogue, stay in 'animating' until the player dismisses it
-      const hasDialogue = battleState.mode === 'story'
-        && getBossDialogue(battleState.floor.region, battleState.floor.floor);
-      setPhase(hasDialogue ? 'animating' : 'player_turn');
-    }
+    serverApi.getBattleState(battleId).then((res: any) => {
+      const battleState = res.state ?? res;
+      if (!battleState) return;
+      setState(battleState);
+      setLogEntries(battleState.log ?? []);
+      if (battleState.status === 'victory' || battleState.status === 'defeat') {
+        setPhase('animating');
+        setTimeout(() => {
+          if (res.rewards) setRewards(res.rewards);
+          setPhase(battleState.status === 'victory' ? 'victory' : 'defeat');
+        }, 1500);
+      } else {
+        const hasDialogue = battleState.mode === 'story'
+          && getBossDialogue(battleState.floor.region, battleState.floor.floor);
+        setPhase(hasDialogue ? 'animating' : 'player_turn');
+      }
+    }).catch((err: any) => {
+      console.error('[loadBattle server error]', err.message);
+    });
   }, [battleId]);
 
   useEffect(() => {
@@ -394,13 +371,7 @@ export function BattlePage() {
       // turn order because gauges haven't been mutated yet by resolvePlayerAction.
       const preTimeline = simulateTimeline(state.playerTeam, state.enemyTeam, state.currentActorId);
 
-      const result = USE_SERVER
-        ? await serverApi.resolveBattleAction(battleId, state.currentActorId!, skillId, targetId)
-        : resolveLocal(battleId, {
-            actorInstanceId: state.currentActorId!,
-            skillId,
-            targetInstanceId: targetId,
-          });
+      const result = await serverApi.resolveBattleAction(battleId, state.currentActorId!, skillId, targetId);
 
       // Save final HP values, then restore pre-attack values for progressive display
       const finalSnapshot = new Map<string, { currentHp: number; isAlive: boolean }>();
@@ -507,11 +478,7 @@ export function BattlePage() {
           : 0;
         setBattleDuration(elapsed);
         if (result.state.status === 'victory' && elapsed > 0) {
-          if (USE_SERVER) {
-            serverApi.saveDungeonRecord(getDungeonRecordKey(result.state), result.state.floor.floor, elapsed).catch(() => {});
-          } else {
-            saveDungeonRecordLocal(getDungeonRecordKey(result.state), result.state.floor.floor, elapsed);
-          }
+          serverApi.saveDungeonRecord(getDungeonRecordKey(result.state), result.state.floor.floor, elapsed).catch(() => {});
         }
       }
 
@@ -519,17 +486,13 @@ export function BattlePage() {
         setRewards(result.rewards);
         setPhase('victory');
         // Refresh player/collection/items from server after victory
-        if (USE_SERVER) {
-          useGameStore.getState().refreshPlayer();
-          useGameStore.getState().loadCollection();
-          useGameStore.getState().loadHeldItems();
-        }
+        useGameStore.getState().refreshPlayer();
+        useGameStore.getState().loadCollection();
+        useGameStore.getState().loadHeldItems();
       } else if (result.state.status === 'defeat') {
         setPhase('defeat');
         // Refresh player energy from server after defeat
-        if (USE_SERVER) {
-          useGameStore.getState().refreshPlayer();
-        }
+        useGameStore.getState().refreshPlayer();
       } else {
         setPhase('player_turn');
       }
@@ -599,11 +562,8 @@ export function BattlePage() {
   }, [state, phase, navigate, refreshPlayer, loadCollection]);
 
   const handleQuit = useCallback(() => {
-    if (battleId && !USE_SERVER) {
-      deleteBattle(battleId);
-    }
     navigateAway();
-  }, [battleId, navigateAway]);
+  }, [navigateAway]);
 
   const handleSkillSelect = (skillId: string) => {
     if (!state) return;

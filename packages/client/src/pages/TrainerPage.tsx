@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { trainerXpToNextLevel, MAX_TRAINER_LEVEL, TRAINER_SKILL_MAX, DUNGEONS, ITEM_DUNGEONS, REGIONS, getFloorCount } from '@gatchamon/shared';
 import type { TrainerSkills, Difficulty } from '@gatchamon/shared';
-import { clearAll, loadDungeonRecords as loadDungeonRecordsLocal } from '../services/storage';
+import { clearAll } from '../services/storage';
 import { signOut } from '../services/auth.service';
 import { resetPlayer, getDungeonRecords as getDungeonRecordsServer } from '../services/server-api.service';
-import { USE_SERVER, clearAuth } from '../config';
-import type { DungeonRecords } from '../services/storage';
+import { clearAuth } from '../config';
+type DungeonRecords = Record<string, { maxFloor: number; bestTimeSec: number }>;
 import { EssenceBag } from '../components/EssenceBag';
 import './TrainerPage.css';
 
@@ -51,14 +51,10 @@ function formatTime(sec: number): string {
 const DIFFICULTIES: Difficulty[] = ['normal', 'hard', 'hell'];
 
 function DungeonRecordsModal({ onClose }: { onClose: () => void }) {
-  const [records, setRecords] = useState<DungeonRecords>(() =>
-    USE_SERVER ? {} : loadDungeonRecordsLocal()
-  );
+  const [records, setRecords] = useState<DungeonRecords>({});
 
   useEffect(() => {
-    if (USE_SERVER) {
-      getDungeonRecordsServer().then((r: any) => setRecords(r ?? {})).catch(() => {});
-    }
+    getDungeonRecordsServer().then((r: any) => setRecords(r ?? {})).catch(() => {});
   }, []);
 
   const sections: { title: string; rows: { label: string; floor: string; time: string }[] }[] = [];
@@ -229,35 +225,29 @@ export function TrainerPage() {
             })}
           </div>
         ))}
-        {USE_SERVER && player.googleEmail && (
+        {player.googleEmail && (
           <div style={{ marginTop: 24, textAlign: 'center', fontSize: '0.75rem', color: '#94a3b8' }}>
             Signed in as {player.googleEmail}
           </div>
         )}
-        <div style={{ marginTop: USE_SERVER ? 12 : 40, textAlign: 'center', display: 'flex', gap: 16, justifyContent: 'center' }}>
-          {USE_SERVER && (
-            <button
-              style={{ fontSize: '0.65rem', color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.4 }}
-              onClick={() => {
-                if (window.confirm('Sign out?')) {
-                  signOut();
-                }
-              }}
-            >
-              Sign Out
-            </button>
-          )}
+        <div style={{ marginTop: 12, textAlign: 'center', display: 'flex', gap: 16, justifyContent: 'center' }}>
+          <button
+            style={{ fontSize: '0.65rem', color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.4 }}
+            onClick={() => {
+              if (window.confirm('Sign out?')) {
+                signOut();
+              }
+            }}
+          >
+            Sign Out
+          </button>
           <button
             style={{ fontSize: '0.65rem', color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.4 }}
             onClick={async () => {
               if (window.confirm('Reset ALL data? This cannot be undone. You will need to register again.')) {
-                if (USE_SERVER) {
-                  await resetPlayer();
-                  clearAll();
-                  clearAuth();
-                } else {
-                  clearAll();
-                }
+                await resetPlayer();
+                clearAll();
+                clearAuth();
                 window.location.reload();
               }
             }}

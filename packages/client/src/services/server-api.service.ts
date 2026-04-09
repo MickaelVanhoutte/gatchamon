@@ -1,6 +1,5 @@
 /**
  * Server API calls for all game operations.
- * Used when USE_SERVER is enabled — all game logic runs server-side.
  */
 import type { Player, PokemonInstance, PokemonTemplate, HeldItemInstance, PokeballType } from '@gatchamon/shared';
 import { api } from './api';
@@ -227,6 +226,11 @@ export async function summonFromPieces(templateId: number): Promise<any> {
   return api.post('/daily/mystery-summon', { playerId: pid(), templateId });
 }
 
+export async function getFirstClears(): Promise<Record<string, boolean>> {
+  const res = await api.get<{ firstClears: Record<string, boolean> }>(`/daily/first-clears/${pid()}`);
+  return res.firstClears;
+}
+
 export async function getDungeonRecords(): Promise<any> {
   const res = await api.get<{ records: any }>(`/daily/dungeon-records/${pid()}`);
   return res.records;
@@ -283,6 +287,24 @@ export async function sendChatMessage(message: string): Promise<{ ok: boolean; m
 export async function getRecentChatMessages(afterId?: number): Promise<{ messages: ChatMessage[] }> {
   const query = afterId ? `?afterId=${afterId}` : '';
   return api.get(`/chat/recent${query}`);
+}
+
+// ── Retry Summon ─────────────────────────────────────────────────────
+
+export async function getRetrySummonState(): Promise<any> {
+  return api.get('/retry-summon/state');
+}
+
+export async function retrySummonRoll(): Promise<any> {
+  return api.post('/retry-summon/roll', {});
+}
+
+export async function retrySummonSaveBackup(): Promise<any> {
+  return api.post('/retry-summon/save-backup', {});
+}
+
+export async function retrySummonConfirm(choice: 'current' | 'backup'): Promise<any> {
+  return api.post('/retry-summon/confirm', { choice });
 }
 
 // ── Reset ─────────────────────────────────────────────────────────────

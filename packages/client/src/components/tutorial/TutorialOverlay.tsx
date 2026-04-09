@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useTutorial } from '../../hooks/useTutorial';
 import { useTutorialStore } from '../../stores/tutorialStore';
 import { useGameStore } from '../../stores/gameStore';
-import { sendRetrySummonGift } from '../../services/inbox.service';
 import { assetUrl } from '../../utils/asset-url';
 import './TutorialOverlay.css';
 
@@ -101,11 +100,10 @@ export function TutorialOverlay() {
     }
   }, [step, navigate, advanceStep]);
 
-  // Step 18: tutorial done — send welcome gift
+  // Step 18: tutorial done — server grants welcome gift at registration
   useEffect(() => {
     if (step === 18) {
       completeTutorial();
-      sendRetrySummonGift();
       useGameStore.getState().refreshInbox();
     }
   }, [step, completeTutorial]);

@@ -1,13 +1,4 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import {
-  resolvePlayerAction,
-  deleteBattle as deleteLocalBattle,
-  getBattleState as getLocalBattleState,
-  startDungeonBattle as startLocalDungeon,
-  startItemDungeonBattle as startLocalItemDungeon,
-  startMysteryDungeonBattle as startLocalMysteryDungeon,
-} from '../services/battle.service';
-import { USE_SERVER } from '../config';
 import * as serverApi from '../services/server-api.service';
 import type { BattleRewards } from '@gatchamon/shared';
 import { useGameStore } from '../stores/gameStore';
@@ -23,7 +14,6 @@ import {
 } from '@gatchamon/shared';
 import type { BattleState, BattleMon, BattleLogEntry, EffectId, ActiveEffect } from '@gatchamon/shared';
 import { assetUrl } from '../utils/asset-url';
-import { loadPlayer } from '../services/storage';
 import gsap from 'gsap';
 import '../pages/BattlePage.css';
 
@@ -112,10 +102,7 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
 
   // ── Helper: get player energy ──
   function getPlayerEnergy(): number {
-    if (USE_SERVER) {
-      return useGameStore.getState().player?.energy ?? 0;
-    }
-    return loadPlayer()?.energy ?? 0;
+    return useGameStore.getState().player?.energy ?? 0;
   }
 
   // ── Helper: get energy cost for this dungeon ──
@@ -157,24 +144,14 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
       let battleState: BattleState;
       let rewards: BattleRewards | undefined;
 
-      if (USE_SERVER) {
-        const apiCall = config.mode === 'mystery-dungeon'
-          ? serverApi.startMysteryDungeonBattle(config.teamIds, config.floorIndex)
-          : config.mode === 'item-dungeon'
-            ? serverApi.startItemDungeonBattle(config.teamIds, config.dungeonId, config.floorIndex)
-            : serverApi.startDungeonBattle(config.teamIds, config.dungeonId, config.floorIndex);
-        const result = await apiCall;
-        battleState = result.state ?? result;
-        rewards = result.rewards;
-      } else {
-        const result = config.mode === 'mystery-dungeon'
-          ? startLocalMysteryDungeon(config.teamIds, config.floorIndex)
-          : config.mode === 'item-dungeon'
-            ? startLocalItemDungeon(config.teamIds, config.dungeonId, config.floorIndex)
-            : startLocalDungeon(config.teamIds, config.dungeonId, config.floorIndex);
-        battleState = result.state;
-        rewards = result.rewards;
-      }
+      const apiCall = config.mode === 'mystery-dungeon'
+        ? serverApi.startMysteryDungeonBattle(config.teamIds, config.floorIndex)
+        : config.mode === 'item-dungeon'
+          ? serverApi.startItemDungeonBattle(config.teamIds, config.dungeonId, config.floorIndex)
+          : serverApi.startDungeonBattle(config.teamIds, config.dungeonId, config.floorIndex);
+      const result = await apiCall;
+      battleState = result.state ?? result;
+      rewards = result.rewards;
 
       store.incrementRun();
       setBattleId(battleState.battleId);
@@ -204,8 +181,6 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
     });
 
     return () => {
-      const bid = battleIdRef.current;
-      if (bid && !USE_SERVER) deleteLocalBattle(bid);
       const didIncrement = useRepeatBattleStore.getState().currentRun > runBefore;
       if (didIncrement) {
         const s = useRepeatBattleStore.getState();
@@ -234,14 +209,6 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
     if (!bid || !state || isActingRef.current) return;
     if (useRepeatBattleStore.getState().status !== 'running') return;
 
-    // Verify battle still exists (local mode only — server battles persist)
-    if (!USE_SERVER && !getLocalBattleState(bid)) {
-      console.warn('[BG Battle] battle gone before action, chaining next');
-      setPhase('loading');
-      setTimeout(() => void startNextBattle(), 100);
-      return;
-    }
-
     isActingRef.current = true;
     setPhase('animating');
 
@@ -255,16 +222,8 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
       }
 
       let result: { state: BattleState; rewards?: BattleRewards };
-      if (USE_SERVER) {
-        result = await serverApi.resolveBattleAction(bid, state.currentActorId!, skillId, targetId);
-        result.state = result.state ?? result;
-      } else {
-        result = resolvePlayerAction(bid, {
-          actorInstanceId: state.currentActorId!,
-          skillId,
-          targetInstanceId: targetId,
-        });
-      }
+      result = await serverApi.resolveBattleAction(bid, state.currentActorId!, skillId, targetId);
+      result.state = result.state ?? result;
 
       const finalSnapshot = new Map<string, { currentHp: number; isAlive: boolean }>();
       for (const mon of allMons) {
@@ -346,20 +305,12 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
       }
     } catch (err: any) {
       console.error('[BG Battle error]', err.message);
-      const bid = battleIdRef.current;
-      if (!USE_SERVER && bid && !getLocalBattleState(bid)) {
-        console.warn('[BG Battle] battle deleted during action, chaining next');
-        setPhase('loading');
-        setTimeout(() => void startNextBattle(), 100);
+      retryCountRef.current++;
+      if (retryCountRef.current > 3) {
+        console.error('[BG Battle] too many retries, stopping');
+        useRepeatBattleStore.getState().setStatus('stopped_defeat');
       } else {
-        retryCountRef.current++;
-        if (retryCountRef.current > 3) {
-          console.error('[BG Battle] too many retries, stopping');
-          useRepeatBattleStore.getState().setStatus('stopped_defeat');
-          if (bid && !USE_SERVER) deleteLocalBattle(bid);
-        } else {
-          setPhase('player_turn');
-        }
+        setPhase('player_turn');
       }
     } finally {
       isActingRef.current = false;
@@ -393,12 +344,10 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
     const updated = useRepeatBattleStore.getState();
     if (updated.completedRuns >= (updated.config?.totalRuns ?? 0)) {
       updated.setStatus('completed');
-      if (bid && !USE_SERVER) deleteLocalBattle(bid);
       return;
     }
     if (updated._shouldStop) {
       updated.setStatus('stopped_user');
-      if (bid && !USE_SERVER) deleteLocalBattle(bid);
       return;
     }
 
@@ -406,7 +355,6 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
     const energyCost = getEnergyCost();
     if (energyCost === null) {
       store.setStatus('stopped_no_energy');
-      if (bid && !USE_SERVER) deleteLocalBattle(bid);
       return;
     }
 
@@ -418,11 +366,9 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
       const energy = getPlayerEnergy();
       if (energy < energyCost) {
         useRepeatBattleStore.getState().setStatus('stopped_no_energy');
-        if (bid && !USE_SERVER) deleteLocalBattle(bid);
         return;
       }
 
-      if (bid && !USE_SERVER) deleteLocalBattle(bid);
       setPhase('loading');
       setTimeout(() => void startNextBattle(), 100);
     }, 1500 / battleSpeedRef.current);
@@ -434,8 +380,6 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
   useEffect(() => {
     return useRepeatBattleStore.subscribe((curr, prev) => {
       if (prev.status === 'running' && curr.status === 'stopped_user') {
-        const bid = battleIdRef.current;
-        if (bid && !USE_SERVER) deleteLocalBattle(bid);
         battleIdRef.current = null;
         setBattleId(null);
       }

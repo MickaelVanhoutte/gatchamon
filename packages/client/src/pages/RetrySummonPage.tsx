@@ -1,15 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
-import { performRetrySummonRoll } from '../services/retry-summon.service';
-import { getInboxItems, claimInboxReward } from '../services/inbox.service';
-import { commitSummonedInstances } from '../services/gacha.service';
-import {
-  loadRetrySummonState,
-  saveRetrySummonState,
-  clearRetrySummonState,
-} from '../services/storage';
-import { trackStat, incrementMission, checkAndUpdateTrophies } from '../services/reward.service';
+import { getTemplate } from '@gatchamon/shared';
+import * as serverApi from '../services/server-api.service';
 import { SummonPortal } from '../components/summon/SummonPortal';
 import { SummonRevealSequence } from '../components/summon/SummonRevealSequence';
 import { MonsterCard } from '../components/monster/MonsterCard';
@@ -52,6 +45,13 @@ type Phase = 'intro' | 'rolling' | 'revealing' | 'results' | 'confirming' | 'don
 
 const MAX_ATTEMPTS = 100;
 
+function toOwned(results: any[]): OwnedPokemon[] {
+  return results.map((r: any) => ({
+    instance: r.pokemon,
+    template: r.template ?? getTemplate(r.pokemon.templateId)!,
+  }));
+}
+
 function LongPressCard({ mon, index, onLongPress }: { mon: OwnedPokemon; index: number; onLongPress: (m: OwnedPokemon) => void }) {
   const handlers = useLongPress(useCallback(() => onLongPress(mon), [mon, onLongPress]));
   return (
@@ -65,25 +65,6 @@ function LongPressCard({ mon, index, onLongPress }: { mon: OwnedPokemon; index: 
   );
 }
 
-interface PersistedState {
-  attemptsUsed: number;
-  currentResults: OwnedPokemon[] | null;
-  backupResults: OwnedPokemon[] | null;
-  inboxItemId: string;
-}
-
-function serializeState(state: PersistedState): string {
-  return JSON.stringify(state);
-}
-
-function deserializeState(raw: string): PersistedState | null {
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
-}
-
 export function RetrySummonPage() {
   const navigate = useNavigate();
   const { refreshPlayer, loadCollection, refreshRewards } = useGameStore();
@@ -94,68 +75,41 @@ export function RetrySummonPage() {
   const [backupResults, setBackupResults] = useState<OwnedPokemon[] | null>(null);
   const [resultsReady, setResultsReady] = useState(false);
   const [selectedChoice, setSelectedChoice] = useState<'current' | 'backup'>('current');
-  const [inboxItemId, setInboxItemId] = useState('');
   const [detailMon, setDetailMon] = useState<OwnedPokemon | null>(null);
   const didInit = useRef(false);
 
-  // On mount: verify inbox item exists OR resume from persisted state
+  // On mount: check server for existing session or eligible inbox item
   useEffect(() => {
     if (didInit.current) return;
     didInit.current = true;
 
-    // Check for in-progress state
-    const saved = loadRetrySummonState();
-    if (saved) {
-      const persisted = deserializeState(saved);
-      if (persisted) {
-        setAttemptsUsed(persisted.attemptsUsed);
-        setCurrentResults(persisted.currentResults);
-        setBackupResults(persisted.backupResults);
-        setInboxItemId(persisted.inboxItemId);
-        setPhase(persisted.currentResults ? 'results' : 'intro');
-        return;
+    serverApi.getRetrySummonState().then((res: any) => {
+      if (res.session) {
+        setAttemptsUsed(res.session.attemptsUsed);
+        if (res.session.currentResults) setCurrentResults(toOwned(res.session.currentResults));
+        if (res.session.backupResults) setBackupResults(toOwned(res.session.backupResults));
+        setPhase(res.session.currentResults ? 'results' : 'intro');
+      } else if (!res.hasItem) {
+        navigate('/', { replace: true });
       }
-    }
-
-    // No saved state — check inbox for unclaimed retry summon
-    const items = getInboxItems();
-    const retrySummon = items.find(i => i.specialItem === 'retry-summon-100' && !i.claimed);
-    if (!retrySummon) {
+    }).catch(() => {
       navigate('/', { replace: true });
-      return;
-    }
-    setInboxItemId(retrySummon.id);
+    });
   }, [navigate]);
-
-  // Persist state changes
-  const persistState = useCallback(
-    (used: number, current: OwnedPokemon[] | null, backup: OwnedPokemon[] | null) => {
-      saveRetrySummonState(
-        serializeState({ attemptsUsed: used, currentResults: current, backupResults: backup, inboxItemId }),
-      );
-    },
-    [inboxItemId],
-  );
 
   const doRoll = useCallback(() => {
     setResultsReady(false);
     setPhase('rolling');
 
-    // Small delay so portal animation starts before results are ready
-    setTimeout(() => {
-      const results = performRetrySummonRoll();
-      const owned: OwnedPokemon[] = results.map(r => ({
-        instance: r.pokemon,
-        template: r.template,
-      }));
+    serverApi.retrySummonRoll().then((res: any) => {
+      const owned = toOwned(res.results);
       setCurrentResults(owned);
-      const newUsed = attemptsUsed + 1;
-      setAttemptsUsed(newUsed);
+      setAttemptsUsed(res.attemptsUsed);
       setResultsReady(true);
-
-      persistState(newUsed, owned, backupResults);
-    }, 100);
-  }, [attemptsUsed, backupResults, persistState]);
+    }).catch(() => {
+      setPhase('results');
+    });
+  }, []);
 
   const handlePortalComplete = useCallback(() => {
     setPhase('revealing');
@@ -166,26 +120,19 @@ export function RetrySummonPage() {
   }, []);
 
   const handleSaveAsBackup = useCallback(() => {
-    const newBackup = currentResults;
-    setBackupResults(newBackup);
-
-    // Perform next roll
     setResultsReady(false);
     setPhase('rolling');
-    setTimeout(() => {
-      const results = performRetrySummonRoll();
-      const owned: OwnedPokemon[] = results.map(r => ({
-        instance: r.pokemon,
-        template: r.template,
-      }));
-      setCurrentResults(owned);
-      const newUsed = attemptsUsed + 1;
-      setAttemptsUsed(newUsed);
-      setResultsReady(true);
 
-      persistState(newUsed, owned, newBackup);
-    }, 100);
-  }, [currentResults, attemptsUsed, persistState]);
+    serverApi.retrySummonSaveBackup().then((res: any) => {
+      const owned = toOwned(res.results);
+      setCurrentResults(owned);
+      if (res.backupResults) setBackupResults(toOwned(res.backupResults));
+      setAttemptsUsed(res.attemptsUsed);
+      setResultsReady(true);
+    }).catch(() => {
+      setPhase('results');
+    });
+  }, []);
 
   const handleSummonAgain = useCallback(() => {
     doRoll();
@@ -197,34 +144,14 @@ export function RetrySummonPage() {
   }, []);
 
   const handleConfirm = useCallback(() => {
-    const chosen = selectedChoice === 'current' ? currentResults : backupResults;
-    if (!chosen) return;
-
-    // Add to collection
-    const instances = chosen.map(o => o.instance);
-    commitSummonedInstances(instances);
-
-    // Track stats
-    trackStat('totalSummons', 10);
-    trackStat('totalMonstersCollected', 10);
-    incrementMission('summon_any', 10);
-    incrementMission('collect_monster', 10);
-    checkAndUpdateTrophies();
-
-    // Mark inbox item as claimed
-    claimInboxReward(inboxItemId);
-
-    // Clean up persisted state
-    clearRetrySummonState();
-
-    // Refresh game store
-    loadCollection();
-    refreshPlayer();
-    refreshRewards();
-
-    setPhase('done');
-    setTimeout(() => navigate('/'), 1500);
-  }, [selectedChoice, currentResults, backupResults, inboxItemId, loadCollection, refreshPlayer, refreshRewards, navigate]);
+    serverApi.retrySummonConfirm(selectedChoice).then(() => {
+      loadCollection();
+      refreshPlayer();
+      refreshRewards();
+      setPhase('done');
+      setTimeout(() => navigate('/'), 1500);
+    }).catch(() => {});
+  }, [selectedChoice, loadCollection, refreshPlayer, refreshRewards, navigate]);
 
   const handleGoBack = useCallback(() => {
     setPhase('results');

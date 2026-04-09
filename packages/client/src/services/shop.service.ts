@@ -1,8 +1,3 @@
-import type { SummonResult } from './gacha.service';
-import { shopSummonMultiPremium, shopSummonSingleLegendary } from './gacha.service';
-import { spendStardust } from './player.service';
-import { loadPlayer, savePlayer, setGrantedFlag, hasGrantedFlag } from './storage';
-
 export interface ShopItemDef {
   id: string;
   name: string;
@@ -55,58 +50,3 @@ export const SHOP_ITEMS: ShopItemDef[] = [
     cost: 3000,
   },
 ];
-
-export interface ShopPurchaseResult {
-  results: SummonResult[];
-}
-
-export function purchaseShopItem(itemId: string): ShopPurchaseResult {
-  const def = SHOP_ITEMS.find(i => i.id === itemId);
-  if (!def) throw new Error('Unknown shop item');
-
-  // Spend stardust (throws if insufficient)
-  spendStardust(def.cost);
-
-  const results: SummonResult[] = [];
-
-  if (itemId === 'speed_x3') {
-    setGrantedFlag('speed_x3');
-    return { results };
-  }
-
-  if (itemId === 'energy_pack_100') {
-    const player = loadPlayer();
-    if (player) {
-      savePlayer({ ...player, energy: player.energy + 100 });
-    }
-    return { results };
-  }
-
-  if (itemId === 'arena_ticket_pack_10') {
-    const player = loadPlayer();
-    if (player) {
-      savePlayer({ ...player, arenaTickets: (player.arenaTickets ?? 0) + 10 });
-    }
-    return { results };
-  }
-
-  if (itemId === 'glowing_pack_3') {
-    const player = loadPlayer();
-    if (player) {
-      savePlayer({ ...player, glowingPokeballs: (player.glowingPokeballs ?? 0) + 3 });
-    }
-    return { results };
-  }
-
-  if (itemId === 'premium_pack_10') {
-    results.push(...shopSummonMultiPremium());
-  } else if (itemId === 'legendary_bundle') {
-    // 1 legendary + 3 premium multi packs
-    results.push(shopSummonSingleLegendary());
-    results.push(...shopSummonMultiPremium());
-    results.push(...shopSummonMultiPremium());
-    results.push(...shopSummonMultiPremium());
-  }
-
-  return { results };
-}

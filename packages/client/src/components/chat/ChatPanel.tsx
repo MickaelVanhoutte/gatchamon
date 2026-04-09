@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { USE_SERVER } from '../../config';
 import { useGameStore } from '../../stores/gameStore';
 import { useChat } from '../../hooks/useChat';
 import type { ChatMessage } from '../../services/server-api.service';
@@ -29,8 +28,6 @@ function nameColor(name: string): string {
 }
 
 export function ChatPanel() {
-  if (!USE_SERVER) return null;
-
   const player = useGameStore(s => s.player);
   const { messages, send } = useChat();
   const [isOpen, setIsOpen] = useState(false);

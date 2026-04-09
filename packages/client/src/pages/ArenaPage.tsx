@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
-import { getTemplate, ARENA_RIVALS, getArenaRivalTeam, isActivePokemon, MAX_ARENA_TICKETS } from '@gatchamon/shared';
+import { getTemplate, isActivePokemon, MAX_ARENA_TICKETS } from '@gatchamon/shared';
 import type { ArenaOpponent, ArenaHistoryEntry, ArenaRival, ArenaDefensePreview } from '@gatchamon/shared';
-import { USE_SERVER } from '../config';
 import * as serverApi from '../services/server-api.service';
 import { GameIcon } from '../components/icons';
 import { assetUrl } from '../utils/asset-url';
@@ -36,7 +35,6 @@ export function ArenaPage() {
 
   // Load defense on mount
   useEffect(() => {
-    if (!USE_SERVER) return;
     serverApi.getArenaDefense().then(res => {
       if (res.defense) {
         setDefenseTeam(res.defense.team);
@@ -47,7 +45,6 @@ export function ArenaPage() {
 
   // Load opponents
   const refreshOpponents = useCallback(async () => {
-    if (!USE_SERVER) return;
     setLoadingOpponents(true);
     try {
       const res = await serverApi.getArenaOpponents();
@@ -58,30 +55,14 @@ export function ArenaPage() {
 
   // Load rivals
   const refreshRivals = useCallback(async () => {
-    if (USE_SERVER) {
-      try {
-        const res = await serverApi.getArenaRivals();
-        setRivals(res.rivals ?? []);
-      } catch { /* ignore */ }
-    } else {
-      // Offline: build from shared data
-      const elo = player?.arenaElo ?? 1000;
-      setRivals(ARENA_RIVALS.map(r => {
-        const team = getArenaRivalTeam(r.rivalId, elo);
-        return {
-          rivalId: r.rivalId,
-          name: r.name,
-          icon: r.icon,
-          team: team?.previews ?? [],
-          cooldownExpired: true, // no cooldown tracking offline
-        };
-      }));
-    }
-  }, [player?.arenaElo]);
+    try {
+      const res = await serverApi.getArenaRivals();
+      setRivals(res.rivals ?? []);
+    } catch { /* ignore */ }
+  }, []);
 
   // Load history
   const refreshHistory = useCallback(async () => {
-    if (!USE_SERVER) return;
     try {
       const res = await serverApi.getArenaHistory();
       setHistory(res.history ?? []);
@@ -96,7 +77,7 @@ export function ArenaPage() {
   }, [tab]);
 
   // No defense → prompt to set one
-  const hasDefense = defenseTeam.length > 0 || !USE_SERVER;
+  const hasDefense = defenseTeam.length > 0;
 
   // Defense editing
   const visibleCollection = useMemo(
@@ -114,16 +95,14 @@ export function ArenaPage() {
 
   const saveDefense = async () => {
     if (selectedDefense.length === 0) return;
-    if (USE_SERVER) {
-      try {
-        await serverApi.setArenaDefense(selectedDefense);
-        const res = await serverApi.getArenaDefense();
-        if (res.defense) {
-          setDefenseTeam(res.defense.team);
-          setDefenseIds(res.defense.teamInstanceIds);
-        }
-      } catch { /* ignore */ }
-    }
+    try {
+      await serverApi.setArenaDefense(selectedDefense);
+      const res = await serverApi.getArenaDefense();
+      if (res.defense) {
+        setDefenseTeam(res.defense.team);
+        setDefenseIds(res.defense.teamInstanceIds);
+      }
+    } catch { /* ignore */ }
     setEditingDefense(false);
   };
 
@@ -258,10 +237,6 @@ function DuelTab({ opponents, loading, onRefresh, hasDefense, hasTickets, naviga
   hasTickets: boolean;
   navigate: (path: string) => void;
 }) {
-  if (!USE_SERVER) {
-    return <div className="arena-empty">PvP duels require server mode.</div>;
-  }
-
   return (
     <div className="arena-duel-tab">
       <div className="arena-duel-header">
@@ -371,10 +346,6 @@ function HistoryTab({ history, playerId }: {
   history: ArenaHistoryEntry[];
   playerId: string;
 }) {
-  if (!USE_SERVER) {
-    return <div className="arena-empty">Battle history requires server mode.</div>;
-  }
-
   if (history.length === 0) {
     return <div className="arena-empty">No arena battles yet.</div>;
   }

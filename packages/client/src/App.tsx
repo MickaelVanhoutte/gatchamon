@@ -1,10 +1,10 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { getTemplate, isActivePokemon } from '@gatchamon/shared';
+
 import { useGameStore } from './stores/gameStore';
 import { swReady, setAppReady } from './services/sw-update';
 import { assetUrl } from './utils/asset-url';
-import { loadCollection as loadCollectionFromStorage } from './services/storage';
+
 import { HomePage } from './pages/HomePage';
 import { BottomNav } from './components/layout/BottomNav';
 import { TopHUD } from './components/layout/TopHUD';
@@ -16,7 +16,6 @@ import { AutoBattleFloatingIcon, RepeatBattleModal } from './components/RepeatBa
 import { UpdateBanner } from './components/UpdateBanner';
 import { GoogleSignInButton } from './components/GoogleSignInButton';
 import { signInWithGoogle, registerWithGoogle, isAuthResponse, handleAuthSuccess } from './services/auth.service';
-import { USE_SERVER } from './config';
 
 // Lazy-loaded routes — only downloaded when navigated to
 const SummonPage = lazy(() => import('./pages/SummonPage').then(m => ({ default: m.SummonPage })));
@@ -41,7 +40,7 @@ const AdminPage = lazy(() => import('./pages/admin/AdminPage').then(m => ({ defa
 
 export function App() {
   const location = useLocation();
-  const { player, createPlayer, checkNameAvailable, loadPlayer, setPlayer } = useGameStore();
+  const { player, loadPlayer, setPlayer } = useGameStore();
   const [nameInput, setNameInput] = useState('');
   const [nameError, setNameError] = useState('');
   const [isCreating, setIsCreating] = useState(false);
@@ -102,24 +101,8 @@ export function App() {
     swReady.then(() => setSwDone(true));
   }, [loadPlayer]);
 
-  // Compute preload URLs for home screen assets (city background + top monster sprites)
-  const preloadUrls = useMemo(() => {
-    const urls: string[] = [assetUrl('backgrounds/poke-street.png')];
-    if (!player) return urls;
-    const instances = loadCollectionFromStorage();
-    const owned = instances
-      .map(inst => ({ inst, tpl: getTemplate(inst.templateId) }))
-      .filter((o): o is { inst: typeof o.inst; tpl: NonNullable<typeof o.tpl> } =>
-        o.tpl != null && isActivePokemon(o.inst.templateId),
-      );
-    const homeOnes = owned.filter(o => o.inst.showOnHome);
-    const source = homeOnes.length > 0 ? homeOnes : owned;
-    source
-      .sort((a, b) => b.inst.stars - a.inst.stars || b.inst.level - a.inst.level)
-      .slice(0, 6)
-      .forEach(o => urls.push(assetUrl(o.tpl.spriteUrl)));
-    return urls;
-  }, [player]);
+  // Preload the city background (sprite preloading removed — collection is loaded async by gameStore)
+  const preloadUrls = useMemo(() => [assetUrl('backgrounds/poke-street.png')], []);
 
   // Auto-focus name input
   useEffect(() => {
@@ -129,7 +112,7 @@ export function App() {
   }, [player, showLoading]);
 
   if (location.pathname === '/admin') {
-    if (USE_SERVER && player?.googleEmail !== 'hktmika@gmail.com') {
+    if (player?.googleEmail !== 'hktmika@gmail.com') {
       return null;
     }
     return <Suspense fallback={null}><AdminPage /></Suspense>;
@@ -199,7 +182,7 @@ export function App() {
           </h1>
 
           <div className="onboarding-card game-panel">
-            {USE_SERVER && !googleIdToken ? (
+            {!googleIdToken ? (
               <>
                 <p className="onboarding-heading">Sign in to play</p>
                 <div className="onboarding-google-wrap">
@@ -224,20 +207,10 @@ export function App() {
             ) : (
               <>
                 <p className="onboarding-heading">Choose your trainer name</p>
-                {USE_SERVER ? nameForm(async (trimmed) => {
+                {nameForm(async (trimmed) => {
                   const result = await registerWithGoogle(googleIdToken!, trimmed);
                   handleAuthSuccess(result);
                   setPlayer(result.player);
-                  useTutorialStore.getState().advanceStep();
-                  navigate('/');
-                }) : nameForm(async (trimmed) => {
-                  const available = await checkNameAvailable(trimmed);
-                  if (!available) {
-                    setNameError('This trainer name is already taken');
-                    setIsCreating(false);
-                    return;
-                  }
-                  await createPlayer(trimmed);
                   useTutorialStore.getState().advanceStep();
                   navigate('/');
                 })}

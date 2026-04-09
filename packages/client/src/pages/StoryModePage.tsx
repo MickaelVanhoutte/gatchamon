@@ -7,6 +7,7 @@ import type { Difficulty, StoryArc, Player } from '@gatchamon/shared';
 import { getFloorDefsForRegion } from '../services/floor.service';
 import { getFloorRewardPreview } from '../services/reward.service';
 import type { FloorRewardPreview } from '../services/reward.service';
+import * as serverApi from '../services/server-api.service';
 import { loadStoryDifficulty, saveStoryDifficulty } from '../services/storage';
 import { assetUrl } from '../utils/asset-url';
 import { useRotatedScroll } from '../hooks/useRotatedScroll';
@@ -129,21 +130,23 @@ export function StoryModePage() {
 
   useEffect(() => {
     if (selectedRegionId) {
-      const defs = getFloorDefsForRegion(selectedRegionId, difficulty);
-      const floorList: FloorInfo[] = Object.entries(defs).map(([floorNum, def]) => {
-        const fn = Number(floorNum);
-        const enemies = def.enemies.map(e => ({ templateId: e.templateId, level: e.level, stars: e.stars }));
-        return {
-          region: selectedRegionId,
-          floor: fn,
-          difficulty,
-          enemyCount: def.enemies.length,
-          isBoss: def.isBoss,
-          enemies,
-          rewardPreview: getFloorRewardPreview(selectedRegionId, fn, difficulty, def.enemies),
-        };
-      });
-      setFloors(floorList);
+      serverApi.getFirstClears().then(firstClears => {
+        const defs = getFloorDefsForRegion(selectedRegionId, difficulty);
+        const floorList: FloorInfo[] = Object.entries(defs).map(([floorNum, def]) => {
+          const fn = Number(floorNum);
+          const enemies = def.enemies.map(e => ({ templateId: e.templateId, level: e.level, stars: e.stars }));
+          return {
+            region: selectedRegionId,
+            floor: fn,
+            difficulty,
+            enemyCount: def.enemies.length,
+            isBoss: def.isBoss,
+            enemies,
+            rewardPreview: getFloorRewardPreview(selectedRegionId, fn, difficulty, def.enemies, firstClears),
+          };
+        });
+        setFloors(floorList);
+      }).catch(() => {});
     }
   }, [selectedRegionId, difficulty]);
 

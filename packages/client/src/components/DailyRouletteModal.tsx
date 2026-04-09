@@ -1,9 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import gsap from 'gsap';
 import { ROULETTE_SLOTS } from '@gatchamon/shared';
-import { spinRoulette as spinRouletteLocal, canSpinToday, getRemainingSpins as getRemainingSpinsLocal } from '../services/roulette.service';
 import { useGameStore } from '../stores/gameStore';
-import { USE_SERVER } from '../config';
 import * as serverApi from '../services/server-api.service';
 import { GameIcon } from './icons';
 import './DailyRouletteModal.css';
@@ -32,11 +30,10 @@ export function DailyRouletteModal({ onClose }: DailyRouletteModalProps) {
   const [phase, setPhase] = useState<Phase>('idle');
   const [highlightIdx, setHighlightIdx] = useState<number>(-1);
   const [winSlot, setWinSlot] = useState<typeof ROULETTE_SLOTS[number] | null>(null);
-  const [remaining, setRemaining] = useState(USE_SERVER ? 0 : getRemainingSpinsLocal());
+  const [remaining, setRemaining] = useState(0);
 
   // Load roulette state from server on mount
   useEffect(() => {
-    if (!USE_SERVER) return;
     serverApi.getRoulette().then((res: any) => {
       setRemaining(res.remaining ?? 0);
     }).catch(() => {});
@@ -54,18 +51,12 @@ export function DailyRouletteModal({ onClose }: DailyRouletteModalProps) {
     let slotIndex: number;
     let slot: typeof ROULETTE_SLOTS[number];
 
-    if (USE_SERVER) {
-      try {
-        const res = await serverApi.spinRoulette();
-        slotIndex = res.slotIndex ?? 0;
-        slot = ROULETTE_SLOTS[slotIndex] ?? ROULETTE_SLOTS[0];
-      } catch {
-        return;
-      }
-    } else {
-      const result = spinRouletteLocal();
-      slotIndex = result.slotIndex;
-      slot = result.slot;
+    try {
+      const res = await serverApi.spinRoulette();
+      slotIndex = res.slotIndex ?? 0;
+      slot = ROULETTE_SLOTS[slotIndex] ?? ROULETTE_SLOTS[0];
+    } catch {
+      return;
     }
 
     setWinSlot(slot);
@@ -83,13 +74,9 @@ export function DailyRouletteModal({ onClose }: DailyRouletteModalProps) {
       if (step > totalSteps) {
         if (intervalRef.current) clearInterval(intervalRef.current);
         setPhase('result');
-        if (USE_SERVER) {
-          serverApi.getRoulette().then((res: any) => {
-            setRemaining(res.remaining ?? 0);
-          }).catch(() => {});
-        } else {
-          setRemaining(getRemainingSpinsLocal());
-        }
+        serverApi.getRoulette().then((res: any) => {
+          setRemaining(res.remaining ?? 0);
+        }).catch(() => {});
         useGameStore.getState().refreshPlayer();
         setTimeout(() => {
           if (resultRef.current) {

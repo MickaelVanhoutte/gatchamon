@@ -69,6 +69,30 @@ function createInstance(template: PokemonTemplate, ownerId: string, forceShiny =
   return instance;
 }
 
+/** Create a PokemonInstance without persisting to DB — for preview/retry flows. */
+export function createTemporaryInstance(template: PokemonTemplate, ownerId: string): PokemonInstance {
+  return {
+    instanceId: uuidv4(),
+    templateId: template.id,
+    ownerId,
+    level: 1,
+    stars: template.naturalStars,
+    exp: 0,
+    isShiny: rollShiny(),
+    skillLevels: [1, 1, 1],
+  };
+}
+
+/** Persist a previously-created temporary instance to the DB. */
+export function persistInstance(instance: PokemonInstance): void {
+  const db = getDb();
+  db.prepare(
+    'INSERT INTO pokemon_instances (instance_id, template_id, owner_id, level, stars, exp, is_shiny, skill_levels) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+  ).run(instance.instanceId, instance.templateId, instance.ownerId, instance.level, instance.stars, instance.exp, instance.isShiny ? 1 : 0, JSON.stringify(instance.skillLevels));
+}
+
+export { rollPremiumStarRating, pickFromPool };
+
 export interface SummonResult {
   pokemon: PokemonInstance;
   template: PokemonTemplate;
