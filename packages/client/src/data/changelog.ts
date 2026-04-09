@@ -7,6 +7,15 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.6.2',
+    date: '2026-04-09',
+    changes: [
+      'Balance: type resistances reduced from 0.5x to 0.65x — resisted attacks now deal more damage',
+      'Balance: type immunities replaced with 0.25x near-immunity — no more 1-damage deadlocks',
+      'Balance: super effective remains at 2.0x — good matchups still rewarded',
+    ],
+  },
+  {
     version: '0.6.1',
     date: '2026-04-08',
     changes: [
