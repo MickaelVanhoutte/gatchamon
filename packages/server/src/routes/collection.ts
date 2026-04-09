@@ -21,6 +21,8 @@ export function rowToInstance(row: any): PokemonInstance {
     isShiny: !!row.is_shiny,
     skillLevels: row.skill_levels ? JSON.parse(row.skill_levels) : [1, 1, 1],
     selectedPassive: (row.selected_passive ?? 0) as 0 | 1,
+    isLocked: !!row.is_locked,
+    showOnHome: !!row.show_on_home,
   };
 }
 
@@ -76,6 +78,26 @@ collectionRouter.put('/:playerId/pc-auto-send', (req, res) => {
   const db = getDb();
   db.prepare('UPDATE players SET pc_auto_send = ? WHERE id = ?')
     .run(enabled ? 1 : 0, req.params.playerId);
+  res.json({ ok: true });
+});
+
+// Update instance toggles (isLocked, showOnHome)
+collectionRouter.patch('/:playerId/:instanceId', (req, res) => {
+  const { isLocked, showOnHome } = req.body as { isLocked?: boolean; showOnHome?: boolean };
+  const db = getDb();
+  const row = db.prepare(
+    'SELECT instance_id FROM pokemon_instances WHERE instance_id = ? AND owner_id = ?'
+  ).get(req.params.instanceId, req.params.playerId) as any;
+  if (!row) { res.status(404).json({ error: 'Pokemon not found' }); return; }
+
+  if (isLocked !== undefined) {
+    db.prepare('UPDATE pokemon_instances SET is_locked = ? WHERE instance_id = ?')
+      .run(isLocked ? 1 : 0, req.params.instanceId);
+  }
+  if (showOnHome !== undefined) {
+    db.prepare('UPDATE pokemon_instances SET show_on_home = ? WHERE instance_id = ?')
+      .run(showOnHome ? 1 : 0, req.params.instanceId);
+  }
   res.json({ ok: true });
 });
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { isActivePokemon } from '@gatchamon/shared';
 import { useGameStore } from '../stores/gameStore';
@@ -15,13 +15,15 @@ export function HomePage() {
   const tutorialStep = useTutorialStore(s => s.step);
   const navigate = useNavigate();
   const [showCalendar, setShowCalendar] = useState(false);
+  const calendarShownRef = useRef(false);
 
   useEffect(() => {
     if (player) loadCollection();
   }, [player, loadCollection]);
 
   useEffect(() => {
-    if (tutorialStep === 99 && canClaimToday()) {
+    if (tutorialStep === 99 && canClaimToday() && !calendarShownRef.current) {
+      calendarShownRef.current = true;
       setShowCalendar(true);
     }
   }, [tutorialStep]);

@@ -78,6 +78,7 @@ export function initDb(): void {
   migrateArena(database);
   migrateChat(database);
   migrateAddSelectedPassive(database);
+  migrateAddLockAndHome(database);
 
   console.log('Database initialized');
 }
@@ -357,6 +358,15 @@ function migrateAddSelectedPassive(database: Database.Database): void {
   } catch {
     // Column already exists
   }
+}
+
+function migrateAddLockAndHome(database: Database.Database): void {
+  try {
+    database.exec('ALTER TABLE pokemon_instances ADD COLUMN is_locked INTEGER NOT NULL DEFAULT 0');
+  } catch { /* already exists */ }
+  try {
+    database.exec('ALTER TABLE pokemon_instances ADD COLUMN show_on_home INTEGER NOT NULL DEFAULT 0');
+  } catch { /* already exists */ }
 }
 
 function migrateStoryProgress(database: Database.Database): void {

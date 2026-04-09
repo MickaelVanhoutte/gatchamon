@@ -90,6 +90,10 @@ export async function switchPassive(instanceId: string, selectedPassive: 0 | 1):
   return api.post('/switch-passive', { playerId: pid(), instanceId, selectedPassive });
 }
 
+export async function updateInstance(instanceId: string, updates: { isLocked?: boolean; showOnHome?: boolean }): Promise<{ ok: boolean }> {
+  return api.patch(`/collection/${pid()}/${instanceId}`, updates);
+}
+
 // ── Held Items ────────────────────────────────────────────────────────
 
 export async function loadHeldItems(): Promise<HeldItemInstance[]> {

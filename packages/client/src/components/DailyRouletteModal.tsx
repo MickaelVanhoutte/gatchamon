@@ -38,9 +38,7 @@ export function DailyRouletteModal({ onClose }: DailyRouletteModalProps) {
   useEffect(() => {
     if (!USE_SERVER) return;
     serverApi.getRoulette().then((res: any) => {
-      const spinsToday = res.spinsToday ?? 0;
-      const maxSpins = res.maxSpins ?? 1;
-      setRemaining(Math.max(0, maxSpins - spinsToday));
+      setRemaining(res.remaining ?? 0);
     }).catch(() => {});
   }, []);
 
@@ -87,9 +85,7 @@ export function DailyRouletteModal({ onClose }: DailyRouletteModalProps) {
         setPhase('result');
         if (USE_SERVER) {
           serverApi.getRoulette().then((res: any) => {
-            const spinsToday = res.spinsToday ?? 0;
-            const maxSpins = res.maxSpins ?? 1;
-            setRemaining(Math.max(0, maxSpins - spinsToday));
+            setRemaining(res.remaining ?? 0);
           }).catch(() => {});
         } else {
           setRemaining(getRemainingSpinsLocal());

@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { getTemplate as getTemplateShared, computeStats, xpToNextLevel } from '@gatchamon/shared';
+import { getTemplate as getTemplateShared, computeStats, computeStatsWithItems, getActiveSetEffects, xpToNextLevel, MAX_LEVEL_BY_STARS } from '@gatchamon/shared';
 import { getSkillsForPokemon, SKILLS } from '@gatchamon/shared';
 import { REGIONS, TOTAL_REGIONS, getFloorCount, getGymLeaderTeam, getLeagueChampion, isLeagueRegion, getArcForRegion, getNextRegionInArc, STORY_ARCS } from '@gatchamon/shared';
 import { STORY_ENERGY_COST, BEGINNER_BONUS, isBeginnerBonusActive } from '@gatchamon/shared';
@@ -9,6 +9,7 @@ import {
   advanceToNextActor,
   autoResolveEnemyTurns,
   processStartOfTurn,
+  processPassiveTrigger,
   resolveSkill,
   getCCState,
   checkBattleEnd,
@@ -24,11 +25,12 @@ import type {
   BattleResult,
   Difficulty,
   TrainerSkills,
+  ActiveSetEffect,
 } from '@gatchamon/shared';
-import type { PokemonTemplate, SkillDefinition, StoryProgress } from '@gatchamon/shared';
+import type { PokemonTemplate, SkillDefinition, StoryProgress, BaseStats } from '@gatchamon/shared';
 import { getDb } from '../db/schema.js';
 import { spendEnergy, grantTrainerXp, earnPokedollars } from './player.service.js';
-import { generateItem, rollItemDrop } from './held-item.service.js';
+import { generateItem, rollItemDrop, getItemsForPokemon } from './held-item.service.js';
 import { defaultTrainerSkills } from '@gatchamon/shared';
 import { resolveArenaRewards, getArenaBattle, setArenaBattle, deleteArenaBattle } from './arena.service.js';
 import { incrementMission, trackTrophyStat } from './daily.service.js';
@@ -37,6 +39,9 @@ import { incrementMission, trackTrophyStat } from './daily.service.js';
 // In-memory battle store
 // ---------------------------------------------------------------------------
 const activeBattles = new Map<string, BattleState>();
+
+// Map instanceId → active set effects for proc handling in battle
+const battleSetEffects = new Map<string, ActiveSetEffect[]>();
 
 // ---------------------------------------------------------------------------
 // Floor definitions — Region-based with difficulty scaling
@@ -217,9 +222,31 @@ function makeBattleMon(
   skillLevels?: [number, number, number],
   isShiny?: boolean,
   selectedPassive?: 0 | 1,
+  playerId?: string,
 ): BattleMon {
   const template = getTemplate(templateId);
-  const stats = computeStats(template, level, stars);
+
+  let stats: BaseStats;
+  if (isPlayerOwned && playerId) {
+    // Apply held item bonuses
+    const equippedItems = getItemsForPokemon(playerId, instanceId);
+    stats = computeStatsWithItems(template, level, stars, equippedItems);
+    // Store set effects for proc handling during battle
+    const setEffects = getActiveSetEffects(equippedItems);
+    battleSetEffects.set(instanceId, setEffects);
+    // Apply trainer global stat bonuses
+    const trainerSkills = getPlayerSkills(playerId);
+    stats = {
+      ...stats,
+      atk: Math.floor(stats.atk * (1 + trainerSkills.globalAtkBonus * 0.02)),
+      def: Math.floor(stats.def * (1 + trainerSkills.globalDefBonus * 0.02)),
+      hp: Math.floor(stats.hp * (1 + trainerSkills.globalHpBonus * 0.02)),
+      spd: Math.floor(stats.spd * (1 + trainerSkills.globalSpdBonus * 0.02)),
+    };
+  } else {
+    stats = computeStats(template, level, stars);
+  }
+
   const skills = getSkillsForPokemon(template.skillIds);
 
   const cooldowns: Record<string, number> = {};
@@ -252,6 +279,24 @@ function getStatus(state: BattleState): BattleState['status'] {
   return state.status;
 }
 
+function resolveTargets(skill: SkillDefinition, actor: BattleMon, targetInstanceId: string, state: BattleState): BattleMon[] {
+  if (skill.target === 'self') {
+    return [actor];
+  } else if (skill.target === 'all_enemies') {
+    return state.enemyTeam.filter(m => m.isAlive);
+  } else if (skill.target === 'single_ally') {
+    const ally = state.playerTeam.find(m => m.instanceId === targetInstanceId && m.isAlive);
+    return ally ? [ally] : [actor];
+  } else if (skill.target === 'all_allies') {
+    return state.playerTeam.filter(m => m.isAlive);
+  } else {
+    // single_enemy
+    const target = state.enemyTeam.find(m => m.instanceId === targetInstanceId && m.isAlive);
+    if (!target) throw new Error('Target not found or dead');
+    return [target];
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Reward calculation and application
 // ---------------------------------------------------------------------------
@@ -282,11 +327,16 @@ function applyXpToTeam(
     let currentLevel = row.level;
     let currentExp = row.exp + xpPerMon;
     let needed = xpToNextLevel(currentLevel);
-    while (currentExp >= needed) {
+    const maxLevel = MAX_LEVEL_BY_STARS[row.stars] ?? 99;
+    while (currentExp >= needed && currentLevel < maxLevel) {
       currentExp -= needed;
       currentLevel++;
       needed = xpToNextLevel(currentLevel);
       levelUps.push({ instanceId: mon.instanceId, newLevel: currentLevel });
+    }
+    if (currentLevel >= maxLevel) {
+      currentLevel = maxLevel;
+      currentExp = 0;
     }
 
     db.prepare(
@@ -482,7 +532,7 @@ export function startBattle(
     if (!row) throw new Error(`Pokemon instance ${instId} not found or not owned by player`);
 
     const skillLevels = row.skill_levels ? JSON.parse(row.skill_levels) : [1, 1, 1];
-    playerTeam.push(makeBattleMon(row.instance_id, row.template_id, row.level, row.stars, true, skillLevels, !!row.is_shiny, (row.selected_passive ?? 0) as 0 | 1));
+    playerTeam.push(makeBattleMon(row.instance_id, row.template_id, row.level, row.stars, true, skillLevels, !!row.is_shiny, (row.selected_passive ?? 0) as 0 | 1, playerId));
   }
 
   if (playerTeam.length === 0) throw new Error('Team cannot be empty');
@@ -490,17 +540,9 @@ export function startBattle(
   // Build enemy team from region floor definition
   const floorDef = buildFloorEnemies(floor.region, floor.floor, floor.difficulty);
 
-  // Speed bonus scales with region and difficulty to simulate held item speed
-  const diffSpeedBase = floor.difficulty === 'hell' ? 40 : floor.difficulty === 'hard' ? 20 : 0;
-  const diffSpeedPerRegion = floor.difficulty === 'hell' ? 4.5 : floor.difficulty === 'hard' ? 3.5 : 2.5;
-  const storySpeedBonus = Math.floor(diffSpeedBase + (floor.region - 1) * diffSpeedPerRegion);
-
   const enemyTeam: BattleMon[] = floorDef.enemies.map(e => {
     const id = `enemy_${uuidv4()}`;
     const mon = makeBattleMon(id, e.templateId, e.level, e.stars, false);
-    if (storySpeedBonus > 0) {
-      mon.stats.spd += storySpeedBonus;
-    }
     if (e.isBoss) mon.isBoss = true;
     return mon;
   });
@@ -577,9 +619,11 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
 
   state.turnNumber++;
 
+  // Trigger turn_start passives
+  const turnStartEffects = processPassiveTrigger('turn_start', actor, state);
   // Process start-of-turn effects for the player actor
   const turnResult = processStartOfTurn(actor, state);
-  const turnEffects = turnResult.texts;
+  const allTurnEffects = [...turnStartEffects, ...turnResult.texts];
   const logs: BattleLogEntry[] = [];
 
   // Create heal log entries for turn-start heals
@@ -596,6 +640,34 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
       effects: [],
       healAmount: heal.amount,
     });
+  }
+
+  // Proc heal_per_turn (Leftovers) at turn start
+  const actorTurnEffects = battleSetEffects.get(actor.instanceId);
+  if (actorTurnEffects && actor.isAlive) {
+    for (const eff of actorTurnEffects) {
+      if (eff.procEffect === 'heal_per_turn' && actor.currentHp < actor.maxHp) {
+        const oldHp = actor.currentHp;
+        const healAmt = Math.floor(actor.maxHp * (eff.procValue ?? 15) / 100);
+        actor.currentHp = Math.min(actor.maxHp, actor.currentHp + healAmt);
+        const healed = actor.currentHp - oldHp;
+        allTurnEffects.push(`${template.name} recovered ${healAmt} HP from Leftovers!`);
+        if (healed > 0) {
+          logs.push({
+            turn: state.turnNumber,
+            actorId: actor.instanceId,
+            actorName: template.name,
+            skillUsed: '__turn_heal',
+            skillName: 'Leftovers',
+            targetId: actor.instanceId,
+            targetName: template.name,
+            damage: 0, isCrit: false, effectiveness: 1,
+            effects: [],
+            healAmount: healed,
+          });
+        }
+      }
+    }
   }
 
   if (!actor.isAlive) {
@@ -615,34 +687,31 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
     return result;
   }
 
-  // Check CC (stun, paralysis, etc.)
-  const cc = getCCState(actor);
-  if (cc.type === 'stun' || cc.type === 'skip') {
-    const ccLabel = cc.type === 'stun'
-      ? (cc.reason === 'freeze' ? 'Frozen' : 'Asleep')
-      : 'Paralyzed';
-    const ccMsg = cc.type === 'stun'
-      ? `${template.name} is ${cc.reason === 'freeze' ? 'frozen' : 'asleep'} and cannot act!`
-      : `${template.name} is paralyzed and cannot move!`;
-    logs.push({
-      turn: state.turnNumber,
-      actorId: actor.instanceId,
-      actorName: template.name,
-      skillUsed: '',
-      skillName: ccLabel,
-      targetId: actor.instanceId,
-      targetName: template.name,
-      damage: 0,
-      isCrit: false,
-      effectiveness: 1,
-      effects: [ccMsg, ...turnEffects],
-    });
-    // Tick cooldowns even when stunned/skipped
+  // Helper to tick cooldowns
+  const tickCooldowns = () => {
     for (const skId of Object.keys(actor.skillCooldowns)) {
       if (actor.skillCooldowns[skId] > 0) {
         actor.skillCooldowns[skId]--;
       }
     }
+  };
+
+  // Check CC (stun, sleep, skip)
+  const cc = getCCState(actor);
+
+  if (cc.type === 'stun') {
+    logs.push({
+      turn: state.turnNumber,
+      actorId: actor.instanceId,
+      actorName: template.name,
+      skillUsed: '',
+      skillName: cc.reason === 'freeze' ? 'Frozen' : 'Asleep',
+      targetId: actor.instanceId,
+      targetName: template.name,
+      damage: 0, isCrit: false, effectiveness: 1,
+      effects: [`${template.name} is ${cc.reason === 'freeze' ? 'frozen' : 'asleep'} and cannot act!`, ...allTurnEffects],
+    });
+    tickCooldowns();
     checkBattleEnd(state);
     if (getStatus(state) === 'active') {
       const enemyLogs = autoResolveEnemyTurns(state);
@@ -658,40 +727,126 @@ export function resolvePlayerAction(battleId: string, action: BattleAction): Bat
     return result;
   }
 
-  // Paralysis CD increase: increase all cooldowns by 1 but still act
+  if (cc.type === 'skip') {
+    logs.push({
+      turn: state.turnNumber,
+      actorId: actor.instanceId,
+      actorName: template.name,
+      skillUsed: '',
+      skillName: 'Paralyzed',
+      targetId: actor.instanceId,
+      targetName: template.name,
+      damage: 0, isCrit: false, effectiveness: 1,
+      effects: [`${template.name} is paralyzed and cannot move!`, ...allTurnEffects],
+    });
+    tickCooldowns();
+    checkBattleEnd(state);
+    if (getStatus(state) === 'active') {
+      const enemyLogs = autoResolveEnemyTurns(state);
+      logs.push(...enemyLogs);
+    }
+    state.log.push(...logs);
+    saveBattle();
+    const result: BattleResult = { state };
+    const ccStatus = getStatus(state);
+    if (ccStatus === 'victory') { result.rewards = calcRewardsForMode(state); removeBattle(); }
+    else if (ccStatus === 'defeat' && isArenaMode) { result.rewards = calcRewardsForMode(state); removeBattle(); }
+    else if (ccStatus === 'defeat') { removeBattle(); }
+    return result;
+  }
+
+  // Paralysis CD increase: increase cooldowns but still skip the turn
   if (cc.type === 'cd_increase') {
     for (const skId of Object.keys(actor.skillCooldowns)) {
       const skillDef = SKILLS[skId];
-      if (skillDef && skillDef.cooldown === 0) continue; // Never put basic attacks on cooldown
+      if (skillDef && skillDef.cooldown === 0) continue;
       actor.skillCooldowns[skId]++;
     }
-    turnEffects.push(`${template.name} is paralyzed! Cooldowns increased!`);
+    logs.push({
+      turn: state.turnNumber,
+      actorId: actor.instanceId,
+      actorName: template.name,
+      skillUsed: '',
+      skillName: 'Paralyzed',
+      targetId: actor.instanceId,
+      targetName: template.name,
+      damage: 0, isCrit: false, effectiveness: 1,
+      effects: [`${template.name} is paralyzed! Cooldowns increased!`, ...allTurnEffects],
+    });
+    tickCooldowns();
+    checkBattleEnd(state);
+    if (getStatus(state) === 'active') {
+      const enemyLogs = autoResolveEnemyTurns(state);
+      logs.push(...enemyLogs);
+    }
+    state.log.push(...logs);
+    saveBattle();
+    const result: BattleResult = { state };
+    const ccStatus = getStatus(state);
+    if (ccStatus === 'victory') { result.rewards = calcRewardsForMode(state); removeBattle(); }
+    else if (ccStatus === 'defeat' && isArenaMode) { result.rewards = calcRewardsForMode(state); removeBattle(); }
+    else if (ccStatus === 'defeat') { removeBattle(); }
+    return result;
   }
 
-  // Resolve the player's chosen skill
+  // Determine actual skill (handle silence, provoke)
+  let actualSkill = skill;
+  if (cc.type === 'silence' || cc.type === 'provoke') {
+    const basicSkill = skills.find(s => s.category === 'basic');
+    if (basicSkill) actualSkill = basicSkill;
+  }
+
+  // Resolve targets with CC redirects
   let targets: BattleMon[];
-  if (skill.target === 'self') {
-    targets = [actor];
-  } else if (skill.target === 'all_enemies') {
-    targets = state.enemyTeam.filter(m => m.isAlive);
-  } else if (skill.target === 'single_ally') {
-    // For player: target a player mon
-    const ally = state.playerTeam.find(m => m.instanceId === action.targetInstanceId && m.isAlive);
-    targets = ally ? [ally] : [actor];
-  } else if (skill.target === 'all_allies') {
-    targets = state.playerTeam.filter(m => m.isAlive);
+  if (cc.type === 'confusion') {
+    if (actualSkill.target === 'all_enemies') {
+      targets = state.playerTeam.filter(m => m.isAlive && m.instanceId !== actor.instanceId);
+    } else if (actualSkill.target === 'single_enemy') {
+      const allies = state.playerTeam.filter(m => m.isAlive && m.instanceId !== actor.instanceId);
+      if (allies.length > 0) {
+        targets = [allies[Math.floor(Math.random() * allies.length)]];
+      } else {
+        targets = state.enemyTeam.filter(m => m.isAlive).slice(0, 1);
+      }
+    } else {
+      targets = resolveTargets(actualSkill, actor, action.targetInstanceId, state);
+    }
+  } else if (cc.type === 'provoke') {
+    const allMons = [...state.playerTeam, ...state.enemyTeam];
+    const provoker = allMons.find(m => m.instanceId === cc.targetId && m.isAlive);
+    targets = provoker ? [provoker] : resolveTargets(actualSkill, actor, action.targetInstanceId, state);
   } else {
-    // single_enemy
-    const target = state.enemyTeam.find(m => m.instanceId === action.targetInstanceId && m.isAlive);
-    if (!target) throw new Error('Target not found or dead');
-    targets = [target];
+    targets = resolveTargets(actualSkill, actor, action.targetInstanceId, state);
   }
 
-  const actionLogs = resolveSkill(actor, skill, targets, state);
-  if (actionLogs.length > 0 && turnEffects.length > 0) {
-    actionLogs[0].effects = [...turnEffects, ...actionLogs[0].effects];
+  const actionLogs = resolveSkill(actor, actualSkill, targets, state);
+  if (actionLogs.length > 0 && allTurnEffects.length > 0) {
+    actionLogs[0].effects = [...allTurnEffects, ...actionLogs[0].effects];
   }
   logs.push(...actionLogs);
+
+  // Proc set effects: stun_on_hit and extra_turn
+  const actorSetEffects = battleSetEffects.get(actor.instanceId);
+  if (actorSetEffects && actor.isAlive && actualSkill.target !== 'self' && actualSkill.target !== 'single_ally' && actualSkill.target !== 'all_allies') {
+    for (const eff of actorSetEffects) {
+      if (eff.procEffect === 'stun_on_hit' && eff.procChance != null) {
+        for (const target of targets) {
+          if (target.isAlive && Math.random() < eff.procChance) {
+            target.debuffs.push({ id: 'freeze', type: 'debuff', value: 0, remainingTurns: eff.procValue ?? 1 });
+            const lastLog = logs[logs.length - 1];
+            if (lastLog) lastLog.effects.push(`${getTemplate(target.templateId).name} was stunned by Razor Fang!`);
+          }
+        }
+      }
+      if (eff.procEffect === 'extra_turn' && eff.procChance != null) {
+        if (Math.random() < eff.procChance) {
+          actor.actionGauge = 1000;
+          const lastLog = logs[logs.length - 1];
+          if (lastLog) lastLog.effects.push(`${template.name} gains an extra turn from King's Rock!`);
+        }
+      }
+    }
+  }
 
   checkBattleEnd(state);
 
@@ -780,7 +935,7 @@ function loadPlayerTeam(playerId: string, teamInstanceIds: string[]): BattleMon[
     ).get(instId, playerId) as any;
     if (!row) throw new Error(`Pokemon ${instId} not found`);
     const skillLevels = row.skill_levels ? JSON.parse(row.skill_levels) : [1, 1, 1];
-    team.push(makeBattleMon(row.instance_id, row.template_id, row.level, row.stars, true, skillLevels, !!row.is_shiny, (row.selected_passive ?? 0) as 0 | 1));
+    team.push(makeBattleMon(row.instance_id, row.template_id, row.level, row.stars, true, skillLevels, !!row.is_shiny, (row.selected_passive ?? 0) as 0 | 1, playerId));
   }
   if (team.length === 0) throw new Error('Team cannot be empty');
   return team;

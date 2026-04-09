@@ -61,7 +61,9 @@ export function IslandMonster({ owned, positionIndex }: IslandMonsterProps) {
       </div>
       <div className={`island-monster-sprite-wrap roam-${positionIndex % 6}`}>
         <img
-          src={assetUrl(owned.template.spriteUrl)}
+          src={owned.instance.isShiny
+            ? assetUrl(`monsters/ani-shiny/${owned.template.name.toLowerCase()}.gif`)
+            : assetUrl(owned.template.spriteUrl)}
           alt={owned.template.name}
           draggable={false}
           style={{ width: size, height: size }}

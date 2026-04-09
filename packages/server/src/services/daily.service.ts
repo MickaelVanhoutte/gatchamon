@@ -249,7 +249,7 @@ export function getLoginCalendar(playerId: string) {
   const claimedDays = JSON.parse(row.claimed_days) as number[];
   const canClaim = row.last_claim_date !== today;
 
-  return { month, claimedDays, canClaim, currentDay };
+  return { month, claimedDays, canClaim, currentDay, lastClaimDate: row.last_claim_date };
 }
 
 export function claimLoginCalendarDay(playerId: string): MissionReward | null {

@@ -487,12 +487,15 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   updateInstance: (instanceId: string, updates: Partial<PokemonInstance>) => {
-    // In server mode, instance updates happen server-side via battle/merge/evolve routes
-    // This is only used for offline mode local updates
-    if (!USE_SERVER) {
+    if (USE_SERVER) {
+      serverApi.updateInstance(instanceId, {
+        isLocked: updates.isLocked,
+        showOnHome: updates.showOnHome,
+      }).then(() => get().loadCollection());
+    } else {
       storage.updateInstance(instanceId, updates);
+      get().loadCollection();
     }
-    get().loadCollection();
   },
 
   allocateTrainerSkill: (skill: keyof TrainerSkills) => {
