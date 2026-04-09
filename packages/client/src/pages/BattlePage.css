@@ -906,6 +906,8 @@
   justify-content: center;
   z-index: 200;
   animation: fadeIn 0.5s ease;
+  overflow: hidden;
+  touch-action: none;
 }
 
 .overlay-content {
@@ -922,6 +924,7 @@
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
   max-height: 92vh;
   overflow-y: auto;
+  overscroll-behavior: contain;
   width: 95%;
   max-width: 600px;
   color: var(--text-primary, #e2e8f0);
@@ -949,6 +952,7 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .overlay-content h2 {
