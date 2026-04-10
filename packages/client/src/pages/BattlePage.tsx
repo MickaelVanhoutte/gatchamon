@@ -6,7 +6,7 @@ import { useBattleAnimation } from '../battle/useBattleAnimation';
 import { useAutoBattle } from '../battle/useAutoBattle';
 import { getTemplate, SKILLS, getTypeEffectiveness, ESSENCES, ITEM_SETS, getBossDialogue, EFFECT_REGISTRY, simulateTimeline, getEffectiveSkillIds } from '@gatchamon/shared';
 import type { BattleState, BattleMon, BattleLogEntry, BattleResult, PokemonType, EffectId, ActiveEffect, SkillDefinition, TimelineEntry } from '@gatchamon/shared';
-import { assetUrl } from '../utils/asset-url';
+import { assetUrl, getBattleBackground } from '../utils/asset-url';
 import { getSpriteBoost } from '../utils/sprite-scale';
 import { GameIcon, StarRating } from '../components/icons';
 import { BattleLoadingScreen } from '../components/BattleLoadingScreen';
@@ -18,10 +18,6 @@ import { loadBattleSettings, saveBattleSettings, hasGrantedFlag } from '../servi
 import './BattlePage.css';
 
 type Phase = 'player_turn' | 'animating' | 'victory' | 'defeat';
-
-const LEVEL_BACKGROUNDS: Record<number, string> = {
-  1: assetUrl('backgrounds/forest-arena.png'),
-};
 
 const PASSIVE_TRIGGER_LABELS: Record<string, string> = {
   battle_start: 'Battle Start',
@@ -585,7 +581,7 @@ export function BattlePage() {
     setSelectedSkill(skillId);
   };
 
-  const backgroundUrl = state ? (LEVEL_BACKGROUNDS[state.floor.region] ?? LEVEL_BACKGROUNDS[1]) : '';
+  const backgroundUrl = state ? getBattleBackground(state) : '';
 
   const assetUrls = useMemo(() => {
     if (!state) return [];

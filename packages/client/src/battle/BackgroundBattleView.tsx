@@ -13,7 +13,7 @@ import {
   getMysteryDungeonDef,
 } from '@gatchamon/shared';
 import type { BattleState, BattleMon, BattleLogEntry, EffectId, ActiveEffect } from '@gatchamon/shared';
-import { assetUrl } from '../utils/asset-url';
+import { assetUrl, getBattleBackground } from '../utils/asset-url';
 import gsap from 'gsap';
 import '../pages/BattlePage.css';
 
@@ -387,7 +387,7 @@ export function BackgroundBattleView({ config }: { config: RepeatBattleConfig })
   }, []);
 
 
-  const backgroundUrl = assetUrl('backgrounds/forest-arena.png');
+  const backgroundUrl = state ? getBattleBackground(state) : assetUrl('backgrounds/forest-arena.png');
 
   if (phase === 'loading' || !state) {
     return (

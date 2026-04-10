@@ -7,6 +7,13 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.7.2',
+    date: '2026-04-10',
+    changes: [
+      'Feature: battle backgrounds now vary by region, dungeon, and battle mode — 12 unique arenas across all content',
+    ],
+  },
+  {
     version: '0.7.1',
     date: '2026-04-09',
     changes: [
