@@ -13,6 +13,7 @@ interface LoadingScreenProps {
 export function LoadingScreen({ onStart, preloadUrls, swReady = true }: LoadingScreenProps) {
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
   const [swTimedOut, setSwTimedOut] = useState(false);
+  const [bgLoaded, setBgLoaded] = useState(false);
   const [changelogOpen, setChangelogOpen] = useState(false);
   const [justUpdated] = useState(() => {
     const flag = sessionStorage.getItem('sw-just-updated');
@@ -32,14 +33,14 @@ export function LoadingScreen({ onStart, preloadUrls, swReady = true }: LoadingS
     return () => clearTimeout(timer);
   }, [swReady]);
 
-  // Preload home screen assets during loading screen
+  // Preload home screen assets only after the splash background is displayed
   useEffect(() => {
-    if (!preloadUrls || preloadUrls.length === 0) return;
+    if (!bgLoaded || !preloadUrls || preloadUrls.length === 0) return;
     preloadUrls.forEach(url => {
       const img = new Image();
       img.src = url;
     });
-  }, [preloadUrls]);
+  }, [bgLoaded, preloadUrls]);
 
   const canStart = minTimeElapsed && (swReady || swTimedOut);
 
@@ -47,7 +48,7 @@ export function LoadingScreen({ onStart, preloadUrls, swReady = true }: LoadingS
     <div className="loading-screen" onClick={() => { if (!canStart || changelogOpen) return; tryLockLandscape(); onStart(); }}>
       {/* Full-screen background image */}
       <div className="ls-bg">
-        <img src={assetUrl('splash/pikachu-4.jpg')} alt="" className="ls-bg-img" />
+        <img src={assetUrl('splash/pikachu-4.jpg')} alt="" className="ls-bg-img" onLoad={() => setBgLoaded(true)} />
       </div>
 
       {/* Dark gradient overlay */}

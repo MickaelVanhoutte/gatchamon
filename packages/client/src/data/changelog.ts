@@ -7,6 +7,16 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.7.3',
+    date: '2026-04-10',
+    changes: [
+      'Fix: story level first-clear rewards (pokeballs) now only granted once per floor, as intended',
+      'Balance: dungeon difficulty reworked — early floors (B1-B3) are significantly harder, late floors slightly tougher',
+      'Balance: XP gain reduced across story, dungeons, and tower modes',
+      'Balance: beginner bonus duration reduced from 30 days to 7 days',
+    ],
+  },
+  {
     version: '0.7.2',
     date: '2026-04-10',
     changes: [

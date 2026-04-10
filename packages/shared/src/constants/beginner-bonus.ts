@@ -1,10 +1,10 @@
 /**
- * Beginner Bonus — first 30 days after account creation.
+ * Beginner Bonus — first 7 days after account creation.
  *
  * 1.5x Pokémon XP & pokédollars, +2% to 4★ summon rate.
  */
 
-const BEGINNER_BONUS_DURATION_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+const BEGINNER_BONUS_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 export const BEGINNER_BONUS = {
   xpMult: 1.5,

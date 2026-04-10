@@ -33,7 +33,7 @@ import { spendEnergy, grantTrainerXp, earnPokedollars } from './player.service.j
 import { generateItem, rollItemDrop, getItemsForPokemon } from './held-item.service.js';
 import { defaultTrainerSkills } from '@gatchamon/shared';
 import { resolveArenaRewards, getArenaBattle, setArenaBattle, deleteArenaBattle } from './arena.service.js';
-import { incrementMission, trackTrophyStat } from './daily.service.js';
+import { incrementMission, trackTrophyStat, isFirstClear, markFirstClear } from './daily.service.js';
 
 // ---------------------------------------------------------------------------
 // In-memory battle store
@@ -386,12 +386,14 @@ function calculateRewards(state: BattleState): BattleRewards {
   const pokeballMult = 1 + skills.pokeballBonus * 0.1;
   const pokedollarMult = (1 + skills.pokedollarBonus * 0.1) * (isBeginner ? BEGINNER_BONUS.pokedollarMult : 1);
 
-  // Pokeballs
-  const pokeballBase = 1 + Math.floor(regionId / 2) + Math.floor(floorNum / 4);
-  const pokeballs = Math.floor(pokeballBase * diffMult * bossMult * pokeballMult);
+  const firstClear = isFirstClear(state.playerId, regionId, floorNum, difficulty);
+
+  // Pokeballs (first clear only)
+  let pokeballs = 0;
+  let premiumPokeballs = 0;
 
   // XP with trainer skill and beginner multipliers
-  const xpBase = regionId * 10 + floorNum * 5;
+  const xpBase = regionId * 7 + floorNum * 3;
   const xpBossMult = isBoss ? 2 : 1;
   const xpPerMon = Math.floor(xpBase * diffMult * xpBossMult * xpMult);
 
@@ -402,25 +404,29 @@ function calculateRewards(state: BattleState): BattleRewards {
   const db = getDb();
   const levelUps = applyXpToTeam(state, xpPerMon);
 
-  // Award pokeballs
-  db.prepare(
-    'UPDATE players SET regular_pokeballs = regular_pokeballs + ? WHERE id = ?'
-  ).run(pokeballs, state.playerId);
+  if (firstClear) {
+    const pokeballBase = 1 + Math.floor(regionId / 2) + Math.floor(floorNum / 4);
+    pokeballs = Math.floor(pokeballBase * diffMult * bossMult * pokeballMult);
+
+    db.prepare(
+      'UPDATE players SET regular_pokeballs = regular_pokeballs + ? WHERE id = ?'
+    ).run(pokeballs, state.playerId);
+
+    if (isBoss) {
+      premiumPokeballs = 1;
+      db.prepare(
+        'UPDATE players SET premium_pokeballs = premium_pokeballs + 1 WHERE id = ?'
+      ).run(state.playerId);
+    }
+
+    markFirstClear(state.playerId, regionId, floorNum, difficulty);
+  }
 
   // Award pokedollars
   if (pokedollars > 0) {
     db.prepare(
       'UPDATE players SET pokedollars = pokedollars + ? WHERE id = ?'
     ).run(pokedollars, state.playerId);
-  }
-
-  // Premium pokeball on boss first clear
-  let premiumPokeballs = 0;
-  if (isBoss) {
-    premiumPokeballs = 1;
-    db.prepare(
-      'UPDATE players SET premium_pokeballs = premium_pokeballs + 1 WHERE id = ?'
-    ).run(state.playerId);
   }
 
   // Advance story progress
@@ -453,6 +459,7 @@ function calculateRewards(state: BattleState): BattleRewards {
     regularPokeballs: pokeballs, premiumPokeballs, xpPerMon, levelUps,
     pokedollars: pokedollars + (itemDrops.length > 0 ? 1000 : 0),
     itemDrops: itemDrops.length > 0 ? itemDrops : undefined,
+    isFirstClear: firstClear,
   };
 }
 
@@ -1152,13 +1159,13 @@ function calculateDungeonRewards(state: BattleState): BattleRewards {
         .run(towerFloor, state.playerId);
     }
     trainerXpAmount = towerFloor * 3 + 10;
-    xpPerMon = Math.floor(towerFloor * 15 * xpMult);
+    xpPerMon = Math.floor(towerFloor * 10 * xpMult);
   } else if (mode === 'dungeon' as any) {
     const dungeon = getDungeon(dungeonId);
     if (dungeon) {
       const floor = dungeon.floors[floorIdx];
       if (floor) {
-        xpPerMon = Math.floor(floor.enemyLevel * 8 * xpMult);
+        xpPerMon = Math.floor(floor.enemyLevel * 5 * xpMult);
         // Roll essence drops
         for (const drop of floor.drops) {
           if (Math.random() < drop.chance) {
@@ -1191,7 +1198,7 @@ function calculateDungeonRewards(state: BattleState): BattleRewards {
     if (dungeon) {
       const floor = dungeon.floors[floorIdx];
       if (floor) {
-        xpPerMon = Math.floor(floor.enemyLevel * 8 * xpMult);
+        xpPerMon = Math.floor(floor.enemyLevel * 5 * xpMult);
         const pdRange = floor.pokedollarReward ?? [20, 50];
         pokedollars = Math.floor((pdRange[0] + Math.random() * (pdRange[1] - pdRange[0] + 1)) * pokedollarMult);
         if (pokedollars > 0) {
@@ -1224,7 +1231,7 @@ function calculateDungeonRewards(state: BattleState): BattleRewards {
     if (def) {
       const floor = def.floors[floorIdx];
       if (floor) {
-        xpPerMon = Math.floor(floor.enemyLevel * 8 * xpMult);
+        xpPerMon = Math.floor(floor.enemyLevel * 5 * xpMult);
         pokedollars = Math.floor((20 + floor.enemyLevel * 2) * pokedollarMult);
         if (pokedollars > 0) {
           db.prepare('UPDATE players SET pokedollars = pokedollars + ? WHERE id = ?')
