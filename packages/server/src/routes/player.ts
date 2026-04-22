@@ -75,9 +75,9 @@ playerRouter.post('/', (req, res) => {
   const now = new Date().toISOString();
 
   db.prepare(
-    `INSERT INTO players (id, name, pokeballs, regular_pokeballs, premium_pokeballs, energy, story_progress, pokedollars, created_at, last_energy_update)
-     VALUES (?, ?, 50, 50, 10, 100, ?, 10000, ?, ?)`
-  ).run(id, trimmed, storyProgress, now, now);
+    `INSERT INTO players (id, name, pokeballs, regular_pokeballs, premium_pokeballs, energy, story_progress, pokedollars, created_at, last_energy_update, last_arena_ticket_update)
+     VALUES (?, ?, 50, 50, 10, 100, ?, 10000, ?, ?, ?)`
+  ).run(id, trimmed, storyProgress, now, now, now);
 
   // Grant welcome bonuses
   sendInboxItem(id, {

@@ -64,9 +64,16 @@ export function computeAndUpdateArenaTickets(playerId: string): { arenaTickets: 
 
   let tickets = row.arena_tickets ?? 10;
   const now = Date.now();
-  const lastUpdate = row.last_arena_ticket_update
-    ? new Date(row.last_arena_ticket_update).getTime()
-    : now;
+
+  // Self-heal: if the column is missing a value (pre-backfill row, or old migration
+  // that silently failed to add the column), seed the clock so regen starts now.
+  if (!row.last_arena_ticket_update) {
+    db.prepare('UPDATE players SET last_arena_ticket_update = ? WHERE id = ?')
+      .run(new Date(now).toISOString(), playerId);
+    return { arenaTickets: tickets };
+  }
+
+  const lastUpdate = new Date(row.last_arena_ticket_update).getTime();
 
   if (tickets < MAX_ARENA_TICKETS) {
     const elapsed = now - lastUpdate;

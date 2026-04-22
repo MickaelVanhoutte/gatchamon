@@ -296,7 +296,10 @@ function migrateArena(database: Database.Database): void {
   try { database.exec('ALTER TABLE players ADD COLUMN arena_elo INTEGER NOT NULL DEFAULT 1000'); } catch { /* exists */ }
   try { database.exec('ALTER TABLE players ADD COLUMN arena_coins INTEGER NOT NULL DEFAULT 0'); } catch { /* exists */ }
   try { database.exec('ALTER TABLE players ADD COLUMN arena_tickets INTEGER NOT NULL DEFAULT 10'); } catch { /* exists */ }
-  try { database.exec("ALTER TABLE players ADD COLUMN last_arena_ticket_update TEXT NOT NULL DEFAULT (datetime('now'))"); } catch { /* exists */ }
+  // SQLite rejects ALTER TABLE ADD COLUMN with a non-constant default (e.g. datetime('now'))
+  // on non-empty tables, so add nullable and backfill.
+  try { database.exec('ALTER TABLE players ADD COLUMN last_arena_ticket_update TEXT'); } catch { /* exists */ }
+  database.exec("UPDATE players SET last_arena_ticket_update = datetime('now') WHERE last_arena_ticket_update IS NULL");
 
   // Defense team table
   database.exec(`

@@ -412,20 +412,15 @@ const SHOP_ITEMS: Record<string, { cost: number; apply: (playerId: string) => an
   premium_pack_10: {
     cost: 300,
     apply: (playerId) => {
-      const results = shopSummonMultiPremium(playerId);
-      return { summonResults: results };
+      getDb().prepare('UPDATE players SET premium_pokeballs = premium_pokeballs + 10 WHERE id = ?').run(playerId);
+      return { premiumPokeballs: 10 };
     },
   },
   legendary_bundle: {
     cost: 1000,
     apply: (playerId) => {
-      const legendary = shopSummonSingleLegendary(playerId);
-      const premiums = [
-        shopSummonMultiPremium(playerId),
-        shopSummonMultiPremium(playerId),
-        shopSummonMultiPremium(playerId),
-      ];
-      return { legendary, premiums };
+      getDb().prepare('UPDATE players SET legendary_pokeballs = legendary_pokeballs + 1, premium_pokeballs = premium_pokeballs + 30 WHERE id = ?').run(playerId);
+      return { legendaryPokeballs: 1, premiumPokeballs: 30 };
     },
   },
 };

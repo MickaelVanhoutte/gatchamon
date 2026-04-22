@@ -7,6 +7,15 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.7.4',
+    date: '2026-04-22',
+    changes: [
+      'Fix: arena tickets now regenerate correctly — broken migration left the regen timestamp column unset on existing accounts, so tickets stayed at 0 forever',
+      'Fix: Premium Pack now grants 10 premium pokeballs to your inventory; Legendary Bundle grants 1 legendary + 30 premium pokeballs. Previously the purchase silently ran the summons server-side but granted no balls.',
+      'Fix: shop prices aligned with server — Glowing Pack 200 (was displayed 500), Premium Pack 300 (was 500), Legendary Bundle 1000 (was 3000). You were already paying the correct lower price; only the display was stale.',
+    ],
+  },
+  {
     version: '0.7.3',
     date: '2026-04-10',
     changes: [
