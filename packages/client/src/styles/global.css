@@ -112,6 +112,23 @@ h1, h2, h3, h4,
   text-shadow: 0 0 2px #0B4D53;
 }
 
+/* When the tab/app is backgrounded, freeze every CSS animation and transition
+   so particles, pulses, and ambient floats don't burn battery. Also honor
+   prefers-reduced-motion as a general courtesy. */
+body.is-hidden *,
+body.is-hidden *::before,
+body.is-hidden *::after {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* Canvas texture overlay */
 body::after {
   content: '';
@@ -159,6 +176,10 @@ body::after {
   overflow-y: auto;
   overflow-x: hidden;
   overscroll-behavior: contain;
+  /* Reserve room for the Android/iOS home gesture bar. The docked BottomNav
+     applies this itself, but when the toolbar is in collapsed/floating mode
+     nothing else does. */
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .page {

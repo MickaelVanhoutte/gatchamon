@@ -1,25 +1,23 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
-import { getTemplate, isActivePokemon, MAX_ARENA_TICKETS } from '@gatchamon/shared';
+import { useGameStore } from '../stores/gameStore';
+import { getTemplate, MAX_ARENA_TICKETS } from '@gatchamon/shared';
 import type { ArenaOpponent, ArenaHistoryEntry, ArenaRival, ArenaDefensePreview } from '@gatchamon/shared';
 import * as serverApi from '../services/server-api.service';
 import { GameIcon } from '../components/icons';
 import { assetUrl } from '../utils/asset-url';
+import { reportError } from '../utils/report-error';
 import './ArenaPage.css';
 
 type ArenaTab = 'duel' | 'rivals' | 'history';
 
 export function ArenaPage() {
   const navigate = useNavigate();
-  const { player, collection, loadCollection } = useGameStore();
+  const { player, loadCollection } = useGameStore();
   const [tab, setTab] = useState<ArenaTab>('duel');
 
-  // Defense state
+  // Defense preview (read-only on this page)
   const [defenseTeam, setDefenseTeam] = useState<ArenaDefensePreview[]>([]);
-  const [defenseIds, setDefenseIds] = useState<string[]>([]);
-  const [editingDefense, setEditingDefense] = useState(false);
-  const [selectedDefense, setSelectedDefense] = useState<string[]>([]);
 
   // Duel state
   const [opponents, setOpponents] = useState<ArenaOpponent[]>([]);
@@ -33,83 +31,51 @@ export function ArenaPage() {
 
   useEffect(() => { loadCollection(); }, [loadCollection]);
 
-  // Load defense on mount
+  // Load defense on mount (re-fetches when returning from the editor)
   useEffect(() => {
     serverApi.getArenaDefense().then(res => {
-      if (res.defense) {
-        setDefenseTeam(res.defense.team);
-        setDefenseIds(res.defense.teamInstanceIds);
-      }
-    }).catch(() => {});
+      if (res.defense) setDefenseTeam(res.defense.team);
+      else setDefenseTeam([]);
+    }).catch(err => reportError('ArenaPage.getArenaDefense', err));
   }, []);
 
-  // Load opponents
   const refreshOpponents = useCallback(async () => {
     setLoadingOpponents(true);
     try {
       const res = await serverApi.getArenaOpponents();
       setOpponents(res.opponents ?? []);
-    } catch { /* ignore */ }
+    } catch (err) {
+      reportError('ArenaPage.getArenaOpponents', err);
+    }
     setLoadingOpponents(false);
   }, []);
 
-  // Load rivals
   const refreshRivals = useCallback(async () => {
     try {
       const res = await serverApi.getArenaRivals();
       setRivals(res.rivals ?? []);
-    } catch { /* ignore */ }
+    } catch (err) {
+      reportError('ArenaPage.getArenaRivals', err);
+    }
   }, []);
 
-  // Load history
   const refreshHistory = useCallback(async () => {
     try {
       const res = await serverApi.getArenaHistory();
       setHistory(res.history ?? []);
-    } catch { /* ignore */ }
+    } catch (err) {
+      reportError('ArenaPage.getArenaHistory', err);
+    }
   }, []);
 
-  // Auto-load tab data
   useEffect(() => {
     if (tab === 'duel' && opponents.length === 0) refreshOpponents();
     if (tab === 'rivals' && rivals.length === 0) refreshRivals();
     if (tab === 'history' && history.length === 0) refreshHistory();
   }, [tab]);
 
-  // No defense → prompt to set one
   const hasDefense = defenseTeam.length > 0;
-
-  // Defense editing
-  const visibleCollection = useMemo(
-    () => collection.filter(m => isActivePokemon(m.instance.templateId)),
-    [collection],
-  );
-
-  const toggleDefenseSelect = (instanceId: string) => {
-    setSelectedDefense(prev => {
-      if (prev.includes(instanceId)) return prev.filter(id => id !== instanceId);
-      if (prev.length >= 4) return prev;
-      return [...prev, instanceId];
-    });
-  };
-
-  const saveDefense = async () => {
-    if (selectedDefense.length === 0) return;
-    try {
-      await serverApi.setArenaDefense(selectedDefense);
-      const res = await serverApi.getArenaDefense();
-      if (res.defense) {
-        setDefenseTeam(res.defense.team);
-        setDefenseIds(res.defense.teamInstanceIds);
-      }
-    } catch { /* ignore */ }
-    setEditingDefense(false);
-  };
-
-  const startEditDefense = () => {
-    setSelectedDefense(defenseIds.length > 0 ? [...defenseIds] : []);
-    setEditingDefense(true);
-  };
+  const openDefenseEditor = () => navigate('/arena/defense');
 
   if (!player) return null;
 
@@ -129,67 +95,34 @@ export function ArenaPage() {
             <span className="arena-tickets">
               🎟️ {player.arenaTickets ?? 0}/{MAX_ARENA_TICKETS}
             </span>
+            <button
+              type="button"
+              className={`arena-defense-btn ${!hasDefense ? 'arena-defense-btn--empty' : ''}`}
+              onClick={openDefenseEditor}
+              aria-label={hasDefense ? 'Edit defense team' : 'Set defense team'}
+            >
+              <span className="arena-defense-btn-icon">🛡️</span>
+              {hasDefense ? (
+                <span className="arena-defense-btn-sprites">
+                  {defenseTeam.slice(0, 4).map((mon, i) => {
+                    const tmpl = getTemplate(mon.templateId);
+                    return tmpl ? (
+                      <img
+                        key={i}
+                        src={assetUrl(tmpl.spriteUrl)}
+                        alt=""
+                        className="arena-defense-btn-sprite"
+                      />
+                    ) : null;
+                  })}
+                </span>
+              ) : (
+                <span className="arena-defense-btn-label">Set defense</span>
+              )}
+            </button>
           </div>
         </div>
       </div>
-
-      {/* Defense Section */}
-      {!editingDefense ? (
-        <div className="arena-defense-section">
-          <div className="arena-defense-header">
-            <span className="arena-defense-label">Defense Team</span>
-            <button className="arena-btn-small" onClick={startEditDefense}>
-              {hasDefense ? 'Edit' : 'Set Defense'}
-            </button>
-          </div>
-          {defenseTeam.length > 0 ? (
-            <div className="arena-defense-team">
-              {defenseTeam.map((mon, i) => {
-                const tmpl = getTemplate(mon.templateId);
-                return (
-                  <div key={i} className="arena-defense-mon">
-                    <img
-                      src={assetUrl(tmpl?.spriteUrl ?? '')}
-                      alt={tmpl?.name}
-                      className="arena-mon-sprite"
-                    />
-                    <span className="arena-mon-level">Lv.{mon.level}</span>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <p className="arena-no-defense">No defense team set. Set one to participate in duels!</p>
-          )}
-        </div>
-      ) : (
-        <div className="arena-defense-edit">
-          <div className="arena-defense-header">
-            <span className="arena-defense-label">Select Defense ({selectedDefense.length}/4)</span>
-            <div style={{ display: 'flex', gap: 6 }}>
-              <button className="arena-btn-small arena-btn-cancel" onClick={() => setEditingDefense(false)}>Cancel</button>
-              <button className="arena-btn-small" onClick={saveDefense} disabled={selectedDefense.length === 0}>Save</button>
-            </div>
-          </div>
-          <div className="arena-defense-picker">
-            {visibleCollection.map(mon => {
-              const tmpl = getTemplate(mon.instance.templateId);
-              const isSelected = selectedDefense.includes(mon.instance.instanceId);
-              return (
-                <div
-                  key={mon.instance.instanceId}
-                  className={`arena-pick-mon ${isSelected ? 'arena-pick-mon--selected' : ''}`}
-                  onClick={() => toggleDefenseSelect(mon.instance.instanceId)}
-                >
-                  <img src={assetUrl(tmpl?.spriteUrl ?? '')} alt={tmpl?.name} className="arena-pick-sprite" />
-                  <span className="arena-pick-level">Lv.{mon.instance.level}</span>
-                  <span className="arena-pick-stars">{'★'.repeat(mon.instance.stars)}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
 
       {/* Tab bar */}
       <div className="arena-tab-toggle">
@@ -213,6 +146,7 @@ export function ArenaPage() {
             onRefresh={refreshOpponents}
             hasDefense={hasDefense}
             hasTickets={(player.arenaTickets ?? 0) > 0}
+            onOpenDefense={openDefenseEditor}
             navigate={navigate}
           />
         )}
@@ -229,12 +163,13 @@ export function ArenaPage() {
 
 // ── Duel Tab ─────────────────────────────────────────────────────────────
 
-function DuelTab({ opponents, loading, onRefresh, hasDefense, hasTickets, navigate }: {
+function DuelTab({ opponents, loading, onRefresh, hasDefense, hasTickets, onOpenDefense, navigate }: {
   opponents: ArenaOpponent[];
   loading: boolean;
   onRefresh: () => void;
   hasDefense: boolean;
   hasTickets: boolean;
+  onOpenDefense: () => void;
   navigate: (path: string) => void;
 }) {
   return (
@@ -245,7 +180,9 @@ function DuelTab({ opponents, loading, onRefresh, hasDefense, hasTickets, naviga
         </button>
       </div>
       {!hasDefense && (
-        <div className="arena-warning">Set a defense team before dueling!</div>
+        <button type="button" className="arena-warning arena-warning--action" onClick={onOpenDefense}>
+          Set a defense team before dueling →
+        </button>
       )}
       {!hasTickets && (
         <div className="arena-warning">No arena tickets! Buy more in the Shop or wait for regeneration.</div>

@@ -377,11 +377,11 @@ function applyForagingFind(playerId: string, find: any): void {
 // ── Shop ───────────────────────────────────────────────────────────────
 
 import { spendStardust } from './player.service.js';
-import { shopSummonMultiPremium, shopSummonSingleLegendary } from './gacha.service.js';
+import { SHOP_COSTS, type ShopItemId } from '@gatchamon/shared';
 
-const SHOP_ITEMS: Record<string, { cost: number; apply: (playerId: string) => any }> = {
+const SHOP_ITEMS: Record<ShopItemId, { cost: number; apply: (playerId: string) => any }> = {
   speed_x3: {
-    cost: 300,
+    cost: SHOP_COSTS.speed_x3,
     apply: (playerId) => {
       const db = getDb();
       db.prepare('INSERT OR IGNORE INTO granted_flags (player_id, flag) VALUES (?, ?)').run(playerId, 'speed_x3');
@@ -389,35 +389,35 @@ const SHOP_ITEMS: Record<string, { cost: number; apply: (playerId: string) => an
     },
   },
   energy_pack_100: {
-    cost: 50,
+    cost: SHOP_COSTS.energy_pack_100,
     apply: (playerId) => {
       getDb().prepare('UPDATE players SET energy = energy + 100 WHERE id = ?').run(playerId);
       return { energy: 100 };
     },
   },
   arena_ticket_pack_10: {
-    cost: 100,
+    cost: SHOP_COSTS.arena_ticket_pack_10,
     apply: (playerId) => {
       getDb().prepare('UPDATE players SET arena_tickets = arena_tickets + 10 WHERE id = ?').run(playerId);
       return { arenaTickets: 10 };
     },
   },
   glowing_pack_3: {
-    cost: 200,
+    cost: SHOP_COSTS.glowing_pack_3,
     apply: (playerId) => {
       getDb().prepare('UPDATE players SET glowing_pokeballs = glowing_pokeballs + 3 WHERE id = ?').run(playerId);
       return { glowingPokeballs: 3 };
     },
   },
   premium_pack_10: {
-    cost: 300,
+    cost: SHOP_COSTS.premium_pack_10,
     apply: (playerId) => {
       getDb().prepare('UPDATE players SET premium_pokeballs = premium_pokeballs + 10 WHERE id = ?').run(playerId);
       return { premiumPokeballs: 10 };
     },
   },
   legendary_bundle: {
-    cost: 1000,
+    cost: SHOP_COSTS.legendary_bundle,
     apply: (playerId) => {
       getDb().prepare('UPDATE players SET legendary_pokeballs = legendary_pokeballs + 1, premium_pokeballs = premium_pokeballs + 30 WHERE id = ?').run(playerId);
       return { legendaryPokeballs: 1, premiumPokeballs: 30 };
@@ -426,7 +426,7 @@ const SHOP_ITEMS: Record<string, { cost: number; apply: (playerId: string) => an
 };
 
 export function purchaseShopItem(playerId: string, itemId: string): any {
-  const shopItem = SHOP_ITEMS[itemId];
+  const shopItem = SHOP_ITEMS[itemId as ShopItemId];
   if (!shopItem) throw new Error('Unknown shop item');
   spendStardust(playerId, shopItem.cost);
   return shopItem.apply(playerId);

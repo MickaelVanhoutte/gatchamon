@@ -7,6 +7,7 @@ import {
 import type { MissionReward, TrophyDefinition, TrophyProgress } from '@gatchamon/shared';
 import { GameIcon, StarRating } from '../components/icons';
 import * as serverApi from '../services/server-api.service';
+import { reportError } from '../utils/report-error';
 import './MissionsPage.css';
 
 type Tab = 'daily' | 'trophies';
@@ -22,13 +23,13 @@ export function MissionsPage() {
 
   // Load data from server on mount
   useEffect(() => {
-    serverApi.getDailyMissions().then(setServerMissions).catch(() => {});
-    serverApi.getTrophyProgress().then(setServerTrophies).catch(() => {});
+    serverApi.getDailyMissions().then(setServerMissions).catch(err => reportError('MissionsPage.getDailyMissions', err));
+    serverApi.getTrophyProgress().then(setServerTrophies).catch(err => reportError('MissionsPage.getTrophyProgress', err));
   }, []);
 
   const reloadServerData = () => {
-    serverApi.getDailyMissions().then(setServerMissions).catch(() => {});
-    serverApi.getTrophyProgress().then(setServerTrophies).catch(() => {});
+    serverApi.getDailyMissions().then(setServerMissions).catch(err => reportError('MissionsPage.getDailyMissions', err));
+    serverApi.getTrophyProgress().then(setServerTrophies).catch(err => reportError('MissionsPage.getTrophyProgress', err));
   };
 
   // Resolve mission data

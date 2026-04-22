@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import type { OwnedPokemon } from '../../stores/gameStore';
 import { SummonLightning } from './SummonLightning';
 import { SummonReveal } from './SummonReveal';
+import { haptic } from '../../utils/haptics';
 import './SummonRevealSequence.css';
 
 interface Props {
@@ -51,6 +52,12 @@ export function SummonRevealSequence({ results, onAllRevealed }: Props) {
 
   const handleRevealComplete = useCallback(() => {
     const current = results[currentIndex];
+    if (current) {
+      // Heavier haptic for high-rarity / shiny reveals, light tick otherwise.
+      if (isHighRarity(current)) haptic.impact();
+      else if (isSpecialPull(current)) haptic.double();
+      else haptic.tap();
+    }
     // If this is a special pull in multi-summon, pause and wait for tap
     if (current && isSpecialPull(current) && results.length > 1) {
       setSubPhase('waiting');

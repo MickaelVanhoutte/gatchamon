@@ -123,6 +123,30 @@ function migrateLegendaryAndTower(database: Database.Database): void {
   }
 }
 
+/**
+ * IMPORTANT — SQLite ALTER TABLE ADD COLUMN rules (re-learned the hard way twice):
+ *
+ * SQLite refuses to add a NOT NULL column with a **non-constant default**
+ * (e.g. `DEFAULT (datetime('now'))`, `CURRENT_TIMESTAMP`) when the table already
+ * has rows. The ALTER throws "Cannot add a column with non-constant default",
+ * and because the try/catch below swallows all errors ("column already exists"),
+ * the failure is silent — leaving production DBs without the column while dev
+ * DBs that happened to be empty at migration time work fine.
+ *
+ * That's exactly what caused last_arena_ticket_update (0.7.4) to stay NULL on
+ * every pre-existing account, which in turn froze arena ticket regen at zero.
+ *
+ * Rule for future migrations:
+ *   - Constant defaults (INTEGER, fixed string, empty JSON) → fine, use this list.
+ *   - Non-constant defaults (datetime('now'), etc.) → add as **nullable** and
+ *     backfill with a separate `UPDATE ... WHERE col IS NULL` statement. See
+ *     migrateArena for the reference pattern.
+ *
+ * The `last_energy_update` entry below is the one risky case still in this
+ * list; it's been in prod long enough that every account has a valid value,
+ * but a fresh ADD on a populated legacy DB would fail silently. Do not copy
+ * this shape for new columns.
+ */
 function migratePlayerFullFields(database: Database.Database): void {
   const cols: [string, string][] = [
     ['glowing_pokeballs', 'INTEGER NOT NULL DEFAULT 0'],
@@ -139,6 +163,8 @@ function migratePlayerFullFields(database: Database.Database): void {
       pokedollarBonus: 0, xpBonus: 0, pokeballBonus: 0, essenceBonus: 0,
     })}'`],
     ['premium_pity_counter', 'INTEGER NOT NULL DEFAULT 0'],
+    // ⚠️ Non-constant default — see comment block above. New columns should use
+    // the nullable + backfill pattern instead of this shape.
     ['last_energy_update', "TEXT NOT NULL DEFAULT (datetime('now'))"],
     ['pc_auto_send', 'INTEGER NOT NULL DEFAULT 0'],
     ['tower_reset_date', "TEXT"],
@@ -147,8 +173,15 @@ function migratePlayerFullFields(database: Database.Database): void {
     try {
       database.exec(`ALTER TABLE players ADD COLUMN ${name} ${def}`);
     } catch {
-      // Column already exists
+      // Column already exists (or the non-constant-default failure; see doc block)
     }
+  }
+  // Belt-and-braces backfill in case last_energy_update failed to ADD on a
+  // populated legacy DB — no-op where the column was added successfully.
+  try {
+    database.exec("UPDATE players SET last_energy_update = datetime('now') WHERE last_energy_update IS NULL OR last_energy_update = ''");
+  } catch {
+    // Column genuinely doesn't exist (very old DB); ignore.
   }
 }
 

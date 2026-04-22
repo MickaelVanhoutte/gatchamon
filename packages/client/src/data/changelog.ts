@@ -13,6 +13,12 @@ export const changelog: ChangelogEntry[] = [
       'Fix: arena tickets now regenerate correctly — broken migration left the regen timestamp column unset on existing accounts, so tickets stayed at 0 forever',
       'Fix: Premium Pack now grants 10 premium pokeballs to your inventory; Legendary Bundle grants 1 legendary + 30 premium pokeballs. Previously the purchase silently ran the summons server-side but granted no balls.',
       'Fix: shop prices aligned with server — Glowing Pack 200 (was displayed 500), Premium Pack 300 (was 500), Legendary Bundle 1000 (was 3000). You were already paying the correct lower price; only the display was stale.',
+      'Fix: Summon screen buttons no longer clip under the Android gesture bar in landscape; pokéball sizing adapts to the shorter viewport axis.',
+      'Arena: defense team editing moved to its own screen. Tap the 🛡️ chip in the header (always available, not just the first time) to set or change your defense team. The main Arena page is now focused on the opponent list.',
+      'Mobile feel: haptic feedback on summon reveals, battle hits, crits, and reward claims (where supported by the device).',
+      'Battery: animations and battle audio now pause when the app is backgrounded.',
+      'Latency: primary CTAs (Summon x1/x10, Battle Start) now respond on touch-down instead of waiting for the click event.',
+      'Stability: fixed a latent infinite-loop in the battle turn scheduler when both teams were dead, and serialized rapid evolve/merge/altar mutations so they can no longer overwrite each other with stale snapshots.',
     ],
   },
   {

@@ -4,6 +4,7 @@ import { HashRouter } from 'react-router-dom';
 import { App } from './App';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import './services/sw-update';
+import './utils/page-visibility';
 import './styles/global.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

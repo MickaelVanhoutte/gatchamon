@@ -36,6 +36,7 @@ const ItemInventoryPage = lazy(() => import('./pages/ItemInventoryPage').then(m 
 const HeldItemManagePage = lazy(() => import('./pages/HeldItemManagePage').then(m => ({ default: m.HeldItemManagePage })));
 const ShopPage = lazy(() => import('./pages/ShopPage').then(m => ({ default: m.ShopPage })));
 const ArenaPage = lazy(() => import('./pages/ArenaPage').then(m => ({ default: m.ArenaPage })));
+const ArenaDefensePage = lazy(() => import('./pages/ArenaDefensePage').then(m => ({ default: m.ArenaDefensePage })));
 const AdminPage = lazy(() => import('./pages/admin/AdminPage').then(m => ({ default: m.AdminPage })));
 
 export function App() {
@@ -239,6 +240,7 @@ export function App() {
             <Route path="/story" element={<StoryModePage />} />
             <Route path="/dungeons" element={<DungeonPage />} />
             <Route path="/arena" element={<ArenaPage />} />
+            <Route path="/arena/defense" element={<ArenaDefensePage />} />
             <Route path="/trainer" element={<TrainerPage />} />
             <Route path="/altar" element={<AltarPage />} />
             <Route path="/inbox" element={<InboxPage />} />

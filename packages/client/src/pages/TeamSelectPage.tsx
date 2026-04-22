@@ -12,6 +12,7 @@ import { GameIcon, StarRating } from '../components/icons';
 import { assetUrl } from '../utils/asset-url';
 import { useTutorialStore } from '../stores/tutorialStore';
 import { useRepeatBattleStore } from '../stores/repeatBattleStore';
+import { haptic } from '../utils/haptics';
 import './TeamSelectPage.css';
 
 const STAR_COLORS: Record<number, string> = {
@@ -203,6 +204,7 @@ export function TeamSelectPage() {
 
   const handleStart = async () => {
     if (!player || selected.length === 0) return;
+    haptic.medium();
 
     // Repeat battle mode — start first battle visually, BattlePage chains the rest
     if (isDungeonMode && repeatCount > 1) {
@@ -488,7 +490,7 @@ export function TeamSelectPage() {
           <button
             className={`ts-go-btn ${tutorialStep === 10 ? 'tutorial-target' : ''} ${energyCost > 0 && !!player && player.energy < energyCost * repeatCount ? 'ts-go-btn-disabled' : ''}`}
             data-tutorial-id="team-select-go"
-            onClick={handleStart}
+            onPointerDown={(e) => { e.preventDefault(); handleStart(); }}
             disabled={selected.length === 0 || isStarting || (energyCost > 0 && !!player && player.energy < energyCost * repeatCount)}
           >
             {isStarting ? '...' : (

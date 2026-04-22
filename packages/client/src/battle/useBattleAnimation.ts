@@ -5,6 +5,7 @@ import { registerAllMoves, EFFECT_ANIMATIONS } from './animations/moves';
 import { skillNameToSlug, resolveAnimationCategory } from './animations/move-registry';
 import { SKILLS } from '@gatchamon/shared';
 import type { BattleLogEntry } from '@gatchamon/shared';
+import { haptic } from '../utils/haptics';
 
 interface UseBattleAnimationReturn {
 	playLogEntry: (entry: BattleLogEntry) => Promise<void>;
@@ -111,15 +112,19 @@ export function useBattleAnimation(
 			}
 		}
 
-		// Play effectiveness SFX
+		// Play effectiveness SFX + haptic feedback on hits
 		if (entry.damage > 0) {
 			if (entry.effectiveness > 1) {
 				audio?.playBattleSound('hit-super-effective');
+				haptic.impact();
 			} else if (entry.effectiveness < 1 && entry.effectiveness > 0) {
 				audio?.playBattleSound('hit-not-very-effective');
+				haptic.tap();
 			} else if (entry.effectiveness === 1) {
 				audio?.playBattleSound('hit-normal');
+				haptic.medium();
 			}
+			if (entry.isCrit) haptic.double();
 		}
 	}, [monRefs]);
 

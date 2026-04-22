@@ -4,6 +4,7 @@ import type { MissionReward } from '@gatchamon/shared';
 import { useGameStore } from '../stores/gameStore';
 import * as serverApi from '../services/server-api.service';
 import { GameIcon } from './icons';
+import { haptic } from '../utils/haptics';
 import './LoginCalendarModal.css';
 
 const MONTH_NAMES = [
@@ -62,6 +63,7 @@ export function LoginCalendarModal({ onClose }: LoginCalendarModalProps) {
           const claimRes = await serverApi.claimLoginCalendarDay();
           if (claimRes?.reward) {
             setClaimedDay(currentDay);
+            haptic.success();
             useGameStore.getState().refreshInbox();
             useGameStore.getState().refreshPlayer();
             // Reload calendar state

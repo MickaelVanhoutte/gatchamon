@@ -245,33 +245,3 @@ export function summonMultiGlowing(playerId: string): SummonResult[] {
   return results;
 }
 
-// ── Shop Summons (bypass pokeball costs) ──
-
-export function shopSummonMultiPremium(playerId: string): SummonResult[] {
-  const db = getDb();
-  const player = getPlayerRow(playerId);
-  const createdAt = player.created_at;
-  const beginner = createdAt ? isBeginnerBonusActive(createdAt) : false;
-  let pity = player.premium_pity_counter ?? 0;
-
-  const results: SummonResult[] = [];
-  for (let i = 0; i < MULTI_COUNT; i++) {
-    pity++;
-    const isPityGuarantee = pity >= PREMIUM_PITY_THRESHOLD;
-    const stars = isPityGuarantee ? 5 : rollPremiumStarRating(beginner);
-    const template = pickFromPool(stars);
-    if (template.naturalStars === 5) pity = 0;
-    const pokemon = createInstance(template, playerId);
-    results.push({ pokemon, template });
-  }
-
-  db.prepare('UPDATE players SET premium_pity_counter = ? WHERE id = ?').run(pity, playerId);
-  return results;
-}
-
-export function shopSummonSingleLegendary(playerId: string): SummonResult {
-  const player = getPlayerRow(playerId);
-  const template = pickFromPool(5);
-  const pokemon = createInstance(template, playerId);
-  return { pokemon, template };
-}

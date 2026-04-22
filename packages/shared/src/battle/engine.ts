@@ -194,79 +194,65 @@ function resistCheck(attackerAcc: number, defenderRes: number): boolean {
 // Effective stats (percentage-based modifiers)
 // ---------------------------------------------------------------------------
 
+/**
+ * Stats that the buff/debuff system can modify. Order matters only for the
+ * mods record below — all loops iterate via the keys of that record.
+ */
+type ModStat = 'atk' | 'def' | 'spd' | 'critRate' | 'acc' | 'res' | 'critDmg';
+
+function emptyMods(): Record<ModStat, number> {
+  return { atk: 0, def: 0, spd: 0, critRate: 0, acc: 0, res: 0, critDmg: 0 };
+}
+
+/**
+ * Walks a list of active effects (buffs or debuffs) and accumulates their
+ * statMod contributions into `mods`. Replaces three near-identical
+ * switch-case blocks that diverged only in (a) whether `effect.value`
+ * overrides percent (`useEffectValue`, buffs only), and (b) per-stack
+ * vs. per-instance accumulation.
+ */
+function accumulateStatMods(
+  effects: ActiveEffect[],
+  mon: BattleMon,
+  mods: Record<ModStat, number>,
+  allowUseEffectValue: boolean,
+): void {
+  const seenStackable = new Set<EffectId>();
+  for (const effect of effects) {
+    const meta = EFFECT_REGISTRY[effect.id];
+    if (!meta?.statMod) continue;
+    const stat = meta.statMod.stat as ModStat;
+
+    let pct: number;
+    if (meta.statMod.perStack) {
+      if (seenStackable.has(effect.id)) continue;
+      seenStackable.add(effect.id);
+      pct = meta.statMod.percent * countStacks(mon, effect.id);
+    } else if (allowUseEffectValue && meta.statMod.useEffectValue) {
+      pct = effect.value;
+    } else {
+      pct = meta.statMod.percent;
+    }
+    mods[stat] += pct;
+  }
+}
+
 export function getEffectiveStats(mon: BattleMon): BaseStats {
   const stats = { ...mon.stats };
+  const mods = emptyMods();
 
-  // Collect percentage modifiers per stat
-  let atkMod = 0;
-  let defMod = 0;
-  let spdMod = 0;
-  let critRateMod = 0;
-  let accMod = 0;
-  let resMod = 0;
-  let critDmgMod = 0;
+  accumulateStatMods(mon.buffs, mon, mods, /* allowUseEffectValue */ true);
+  accumulateStatMods(mon.debuffs, mon, mods, /* allowUseEffectValue */ false);
 
-  // Process buffs
-  const processedBuffStackable = new Set<EffectId>();
-  for (const effect of mon.buffs) {
-    const meta = EFFECT_REGISTRY[effect.id];
-    if (!meta?.statMod) continue;
-    let pct = meta.statMod.useEffectValue ? effect.value : meta.statMod.percent;
-    if (meta.statMod.perStack) {
-      if (processedBuffStackable.has(effect.id)) continue;
-      processedBuffStackable.add(effect.id);
-      pct = meta.statMod.percent * countStacks(mon, effect.id);
-    }
-    switch (meta.statMod.stat) {
-      case 'atk': atkMod += pct; break;
-      case 'def': defMod += pct; break;
-      case 'spd': spdMod += pct; break;
-      case 'critRate': critRateMod += pct; break;
-      case 'acc': accMod += pct; break;
-      case 'res': resMod += pct; break;
-      case 'critDmg': critDmgMod += pct; break;
-    }
-  }
-
-  // Process debuffs (including status effects like burn)
-  const processedDebuffStackable = new Set<EffectId>();
-  for (const effect of mon.debuffs) {
-    const meta = EFFECT_REGISTRY[effect.id];
-    if (!meta?.statMod) continue;
-    if (meta.statMod.perStack) {
-      if (processedDebuffStackable.has(effect.id)) continue;
-      processedDebuffStackable.add(effect.id);
-      const stacks = countStacks(mon, effect.id);
-      switch (meta.statMod.stat) {
-        case 'atk': atkMod += meta.statMod.percent * stacks; break;
-        case 'def': defMod += meta.statMod.percent * stacks; break;
-        case 'spd': spdMod += meta.statMod.percent * stacks; break;
-        case 'critRate': critRateMod += meta.statMod.percent * stacks; break;
-        case 'acc': accMod += meta.statMod.percent * stacks; break;
-        case 'res': resMod += meta.statMod.percent * stacks; break;
-        case 'critDmg': critDmgMod += meta.statMod.percent * stacks; break;
-      }
-    } else {
-      switch (meta.statMod.stat) {
-        case 'atk': atkMod += meta.statMod.percent; break;
-        case 'def': defMod += meta.statMod.percent; break;
-        case 'spd': spdMod += meta.statMod.percent; break;
-        case 'critRate': critRateMod += meta.statMod.percent; break;
-        case 'acc': accMod += meta.statMod.percent; break;
-        case 'res': resMod += meta.statMod.percent; break;
-        case 'critDmg': critDmgMod += meta.statMod.percent; break;
-      }
-    }
-  }
-
-  // Apply percentage modifiers
-  stats.atk = Math.max(1, Math.floor(stats.atk * (1 + atkMod / 100)));
-  stats.def = Math.max(1, Math.floor(stats.def * (1 + defMod / 100)));
-  stats.spd = Math.max(1, Math.floor(stats.spd * (1 + spdMod / 100)));
-  stats.critRate = Math.max(0, Math.floor(stats.critRate + critRateMod));
-  stats.acc = Math.max(0, Math.floor(stats.acc * (1 + accMod / 100)));
-  stats.res = Math.max(0, Math.floor(stats.res * (1 + resMod / 100)));
-  stats.critDmg = Math.max(50, Math.floor(stats.critDmg + critDmgMod));
+  // Percentage stats — multiplicative scaling.
+  stats.atk = Math.max(1, Math.floor(stats.atk * (1 + mods.atk / 100)));
+  stats.def = Math.max(1, Math.floor(stats.def * (1 + mods.def / 100)));
+  stats.spd = Math.max(1, Math.floor(stats.spd * (1 + mods.spd / 100)));
+  stats.acc = Math.max(0, Math.floor(stats.acc * (1 + mods.acc / 100)));
+  stats.res = Math.max(0, Math.floor(stats.res * (1 + mods.res / 100)));
+  // Crit stats — additive (already in percentage points).
+  stats.critRate = Math.max(0, Math.floor(stats.critRate + mods.critRate));
+  stats.critDmg = Math.max(50, Math.floor(stats.critDmg + mods.critDmg));
   stats.hp = Math.max(1, stats.hp);
 
   return stats;
@@ -324,8 +310,16 @@ export function getCCState(mon: BattleMon): CCResult {
 export function advanceToNextActor(state: BattleState): string {
   const allMons = [...state.playerTeam, ...state.enemyTeam].filter(m => m.isAlive);
 
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
+  // Caller is expected to run checkBattleEnd before this; if both teams are wiped
+  // we have nothing to iterate and the while loop would spin forever.
+  if (allMons.length === 0) {
+    throw new Error('advanceToNextActor called with no living mons');
+  }
+
+  // Hard cap to surface logic bugs instead of hanging the server/client. With
+  // speeds in the 50-500 range and a 1000 gauge threshold, we should always
+  // produce a ready actor well under 100 ticks.
+  for (let i = 0; i < 10_000; i++) {
     for (const mon of allMons) {
       const effectiveStats = getEffectiveStats(mon);
       mon.actionGauge += effectiveStats.spd;
@@ -340,6 +334,7 @@ export function advanceToNextActor(state: BattleState): string {
       return actor.instanceId;
     }
   }
+  throw new Error('advanceToNextActor: no ready actor after 10k ticks — invalid state');
 }
 
 // ---------------------------------------------------------------------------

@@ -5,6 +5,7 @@ import { loadPcAutoSend, savePcAutoSend, setGrantedFlag } from '../services/stor
 import { useTutorialStore } from './tutorialStore';
 import { createPlayerOnServer, loadPlayerFromServer, checkNameAvailable } from '../services/server-player.service';
 import * as serverApi from '../services/server-api.service';
+import { reportError } from '../utils/report-error';
 
 export interface OwnedPokemon {
   instance: PokemonInstance;
@@ -58,6 +59,27 @@ async function reloadFromServer(set: any, get: any) {
   if (player) { syncGrantedFlags(player); set({ player }); }
   get().loadCollection();
   get().loadHeldItems();
+}
+
+/**
+ * Serializes mutate-then-reload pairs through a single promise chain.
+ *
+ * The previous pattern (`serverApi.foo().then(() => reloadFromServer(...))`)
+ * fired without awaiting, so two rapid taps could race: reload A starts,
+ * mutation B mutates, reload A resolves with pre-B state, reload B then
+ * resolves with the correct state — net result was a stale snapshot
+ * lingering until the next manual refresh. The chain below ensures every
+ * reload sees the database state produced by the mutation that triggered it,
+ * and that mutations never overlap.
+ */
+let mutationChain: Promise<void> = Promise.resolve();
+
+function runMutation(work: () => Promise<unknown>): Promise<void> {
+  const next = mutationChain.then(() => work().then(() => undefined, err => {
+    reportError('gameStore.runMutation', err);
+  }));
+  mutationChain = next;
+  return next;
 }
 
 export const useGameStore = create<GameState>((set, get) => ({
@@ -166,27 +188,31 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   mergePokemon: (baseId: string, fodderId: string) => {
-    serverApi.performMerge(baseId, fodderId).then(() => {
-      reloadFromServer(set, get);
+    runMutation(async () => {
+      await serverApi.performMerge(baseId, fodderId);
+      await reloadFromServer(set, get);
     });
   },
 
   altarFeed: (baseId: string, fodderIds: string[]) => {
-    serverApi.performAltarFeed(baseId, fodderIds).then(() => {
-      reloadFromServer(set, get);
+    runMutation(async () => {
+      await serverApi.performAltarFeed(baseId, fodderIds);
+      await reloadFromServer(set, get);
       get().loadPcBox();
     });
   },
 
   evolvePokemon: (instanceId: string, targetTemplateId: number) => {
-    serverApi.performEvolution(instanceId, targetTemplateId).then(() => {
-      reloadFromServer(set, get);
+    runMutation(async () => {
+      await serverApi.performEvolution(instanceId, targetTemplateId);
+      await reloadFromServer(set, get);
     });
   },
 
   changeType: (instanceId: string, targetTemplateId: number) => {
-    serverApi.performTypeChange(instanceId, targetTemplateId).then(() => {
-      reloadFromServer(set, get);
+    runMutation(async () => {
+      await serverApi.performTypeChange(instanceId, targetTemplateId);
+      await reloadFromServer(set, get);
     });
   },
 
@@ -195,7 +221,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       const items = res.items ?? res;
       const count = Array.isArray(items) ? items.filter((i: any) => !i.claimed).length : 0;
       set({ inboxUnreadCount: count });
-    }).catch(() => {});
+    }).catch(err => reportError('gameStore.refreshInbox', err));
   },
 
   refreshRewards: () => {
@@ -220,7 +246,7 @@ export const useGameStore = create<GameState>((set, get) => ({
         }
       }
       set({ unclaimedRewardCount: unclaimedMissions + unclaimedTrophies });
-    }).catch(() => {});
+    }).catch(err => reportError('gameStore.refreshRewards', err));
     get().refreshInbox();
   },
 
@@ -237,8 +263,9 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   unequipItem: (itemId: string) => {
-    serverApi.unequipItem(itemId).then(() => {
-      reloadFromServer(set, get);
+    runMutation(async () => {
+      await serverApi.unequipItem(itemId);
+      await reloadFromServer(set, get);
     });
   },
 

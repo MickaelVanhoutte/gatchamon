@@ -9,6 +9,7 @@ import { GameIcon } from '../components/icons';
 import { SUMMON_COSTS } from '../services/gacha.service';
 import { assetUrl } from '../utils/asset-url';
 import type { PokeballType } from '@gatchamon/shared';
+import { haptic } from '../utils/haptics';
 import './SummonPage.css';
 
 type Phase = 'idle' | 'summoning' | 'revealing' | 'done';
@@ -54,6 +55,7 @@ export function SummonPage() {
     setError('');
     setResultsReady(false);
     setPhase('summoning');
+    haptic.medium();
 
     try {
       const newPokemon = await summon(count, activeBall);
@@ -184,7 +186,7 @@ export function SummonPage() {
               <button
                 className={`summon-btn summon-single ${inTutorial ? 'tutorial-target' : ''}`}
                 data-tutorial-id="summon-btn-single"
-                onClick={() => handleSummon(1)}
+                onPointerDown={(e) => { e.preventDefault(); handleSummon(1); }}
                 disabled={currency < costs.single}
               >
                 <GameIcon id={iconId} size={18} />
@@ -196,7 +198,7 @@ export function SummonPage() {
               {!inTutorial && selectedBall !== 'legendary' && 'multi' in costs && (
                 <button
                   className="summon-btn summon-multi"
-                  onClick={() => handleSummon(10)}
+                  onPointerDown={(e) => { e.preventDefault(); handleSummon(10); }}
                   disabled={currency < (costs as any).multi}
                 >
                   <GameIcon id={iconId} size={18} />

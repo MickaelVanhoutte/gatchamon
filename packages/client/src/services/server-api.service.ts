@@ -37,10 +37,6 @@ export async function summon(count: 1 | 10, type: PokeballType, forcedTemplateId
   return api.post<SummonResultServer>('/summon', { playerId: pid(), count, type, forcedTemplateId });
 }
 
-export async function shopSummon(type: 'premium_multi' | 'legendary_single'): Promise<SummonResultServer> {
-  return api.post<SummonResultServer>('/summon/shop', { playerId: pid(), type });
-}
-
 // ── Collection ────────────────────────────────────────────────────────
 
 export interface CollectionResponse {

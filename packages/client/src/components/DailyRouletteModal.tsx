@@ -4,6 +4,7 @@ import { ROULETTE_SLOTS } from '@gatchamon/shared';
 import { useGameStore } from '../stores/gameStore';
 import * as serverApi from '../services/server-api.service';
 import { GameIcon } from './icons';
+import { haptic } from '../utils/haptics';
 import './DailyRouletteModal.css';
 
 type Phase = 'idle' | 'spinning' | 'result';
@@ -48,6 +49,7 @@ export function DailyRouletteModal({ onClose }: DailyRouletteModalProps) {
   const handleSpin = useCallback(async () => {
     if (remaining <= 0 || phase !== 'idle') return;
 
+    haptic.medium();
     let slotIndex: number;
     let slot: typeof ROULETTE_SLOTS[number];
 
@@ -74,6 +76,7 @@ export function DailyRouletteModal({ onClose }: DailyRouletteModalProps) {
       if (step > totalSteps) {
         if (intervalRef.current) clearInterval(intervalRef.current);
         setPhase('result');
+        haptic.success();
         serverApi.getRoulette().then((res: any) => {
           setRemaining(res.remaining ?? 0);
         }).catch(() => {});

@@ -1,3 +1,4 @@
+import { REGIONS, TOTAL_REGIONS } from '@gatchamon/shared';
 import type { BattleState } from '@gatchamon/shared';
 
 export function assetUrl(path: string): string {
@@ -29,6 +30,25 @@ const REGION_BACKGROUNDS: Record<number, string> = {
   19: 'backgrounds/underground-arena.png',
   20: 'backgrounds/colosseum-arena.png',
 };
+
+// Dev-time guardrail: every shared REGIONS entry must have a background. Fires
+// once on module load — caught instantly during dev/test, ignored in prod.
+if (import.meta.env?.DEV) {
+  const validIds = new Set(REGIONS.map(r => r.id));
+  for (const idStr of Object.keys(REGION_BACKGROUNDS)) {
+    const id = Number(idStr);
+    if (!validIds.has(id)) {
+      // eslint-disable-next-line no-console
+      console.warn(`[asset-url] REGION_BACKGROUNDS has unknown region id ${id} — drift from @gatchamon/shared/REGIONS`);
+    }
+  }
+  for (let id = 1; id <= TOTAL_REGIONS; id++) {
+    if (!(id in REGION_BACKGROUNDS)) {
+      // eslint-disable-next-line no-console
+      console.warn(`[asset-url] region ${id} has no background — falls back to forest-arena.png`);
+    }
+  }
+}
 
 /* ── Dungeon ID → background (essence & item dungeons) ── */
 const DUNGEON_BACKGROUNDS: Record<number, string> = {

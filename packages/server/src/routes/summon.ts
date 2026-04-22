@@ -4,7 +4,6 @@ import {
   summonSinglePremium, summonMultiPremium,
   summonSingleLegendary,
   summonSingleGlowing, summonMultiGlowing,
-  shopSummonMultiPremium, shopSummonSingleLegendary,
   SUMMON_COSTS,
 } from '../services/gacha.service.js';
 import { incrementMission, trackTrophyStat } from '../services/daily.service.js';
@@ -37,29 +36,6 @@ summonRouter.post('/', (req, res) => {
   } catch (err: any) {
     const status = err.message === 'Player not found' ? 404 : 400;
     res.status(status).json({ error: err.message });
-  }
-});
-
-// Shop summons (bypass pokeball costs, used after stardust purchase)
-summonRouter.post('/shop', (req, res) => {
-  const { playerId, type } = req.body;
-  if (!playerId || !type) {
-    res.status(400).json({ error: 'playerId and type required' });
-    return;
-  }
-
-  try {
-    if (type === 'premium_multi') {
-      const results = shopSummonMultiPremium(playerId);
-      res.json({ results });
-    } else if (type === 'legendary_single') {
-      const result = shopSummonSingleLegendary(playerId);
-      res.json({ results: [result] });
-    } else {
-      res.status(400).json({ error: 'Unknown shop summon type' });
-    }
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
   }
 });
 

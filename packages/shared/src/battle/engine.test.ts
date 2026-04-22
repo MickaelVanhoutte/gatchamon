@@ -1014,6 +1014,14 @@ describe('advanceToNextActor', () => {
     const firstActor = advanceToNextActor(state);
     expect(firstActor).toBe('buffed');
   });
+
+  it('throws instead of looping forever when both teams are wiped', () => {
+    const deadAlly = makeMon({ instanceId: 'dead-ally', isAlive: false });
+    const deadEnemy = makeMon({ instanceId: 'dead-enemy', isPlayerOwned: false, templateId: 4, isAlive: false });
+    const state = makeState({ playerTeam: [deadAlly], enemyTeam: [deadEnemy] });
+
+    expect(() => advanceToNextActor(state)).toThrow(/no living mons/);
+  });
 });
 
 // ---------------------------------------------------------------------------

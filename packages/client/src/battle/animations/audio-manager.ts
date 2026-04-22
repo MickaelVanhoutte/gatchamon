@@ -1,5 +1,22 @@
 import { getMoveSFXPath, getBattleSFXPath } from './audio-sync';
 
+// Module-level registry so a single `visibilitychange` listener can silence
+// every live AudioManager when the user switches tabs / backgrounds the app.
+// Using a Set of WeakRefs prevents the registry from keeping managers alive.
+const liveManagers = new Set<AudioManager>();
+
+if (typeof document !== 'undefined') {
+	document.addEventListener('visibilitychange', () => {
+		if (document.hidden) {
+			liveManagers.forEach(mgr => mgr.stopAll());
+		}
+	});
+	// Some mobile browsers fire pagehide instead of visibilitychange.
+	window.addEventListener('pagehide', () => {
+		liveManagers.forEach(mgr => mgr.stopAll());
+	});
+}
+
 export class AudioManager {
 	private audioPool: HTMLAudioElement[];
 	private currentIndex: number = 0;
@@ -13,9 +30,20 @@ export class AudioManager {
 			audio.volume = volume;
 			this.audioPool.push(audio);
 		}
+		liveManagers.add(this);
+	}
+
+	/** Release this manager from the visibility-pause registry. Call when the battle ends. */
+	dispose(): void {
+		this.stopAll();
+		liveManagers.delete(this);
 	}
 
 	async play(path: string): Promise<void> {
+		// Don't queue audio while the page is hidden; battle SFX for a
+		// backgrounded game is noise pollution.
+		if (typeof document !== 'undefined' && document.hidden) return;
+
 		const audio = this.audioPool[this.currentIndex];
 		this.currentIndex = (this.currentIndex + 1) % this.audioPool.length;
 
