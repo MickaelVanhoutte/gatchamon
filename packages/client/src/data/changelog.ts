@@ -7,6 +7,15 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.8.3',
+    date: '2026-04-23',
+    changes: [
+      'Feature: Homunculus Altar — new dedicated screen reachable from the Summon page. Craft Typenull from essences (30 high magic), then fuse it into a typed Homunculus, then grow its skill tree, all in one place.',
+      'Change: Typenull is no longer auto-granted. It is now crafted on the Homunculus Altar for 30 high magic essences.',
+      'Fix: Typenull and Homunculus forms were hidden by the Gen 1/2 filter and invisible in collection, team select, arena, home, and PC — they now always appear regardless of the active generation restriction.',
+    ],
+  },
+  {
     version: '0.8.2',
     date: '2026-04-23',
     changes: [

@@ -1,0 +1,213 @@
+.homunculus-page {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 12px;
+  color: var(--text-primary);
+  overflow-y: auto;
+}
+
+.hmc-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+.hmc-back {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+
+.hmc-back:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.hmc-title {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.hmc-intro {
+  font-size: 0.8rem;
+  opacity: 0.85;
+  line-height: 1.4;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+
+.hmc-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  background: var(--bg-secondary, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--card-border, rgba(255, 255, 255, 0.1));
+  border-radius: 10px;
+}
+
+.hmc-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hmc-panel-sprite {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.hmc-panel-titlecol {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hmc-panel-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.hmc-panel-sub {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.hmc-reqs {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+.hmc-req-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  gap: 8px;
+}
+
+.hmc-req-row > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.9;
+}
+
+.hmc-req-row .req-met {
+  color: #4ade80;
+  font-weight: 600;
+}
+
+.hmc-req-row .req-unmet {
+  color: #f87171;
+  font-weight: 600;
+}
+
+.hmc-cta {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #4f46e5, #3730a3);
+  color: #fff;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+
+.hmc-cta:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.hmc-cta:disabled {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.45);
+  cursor: not-allowed;
+}
+
+.hmc-fusion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.hmc-fusion-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.hmc-fusion-card.hmc-type-fire   { border-color: rgba(239, 68, 68, 0.45); }
+.hmc-fusion-card.hmc-type-water  { border-color: rgba(59, 130, 246, 0.45); }
+.hmc-fusion-card.hmc-type-grass  { border-color: rgba(34, 197, 94, 0.45); }
+
+.hmc-fusion-sprite {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  align-self: center;
+}
+
+.hmc-fusion-name {
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.hmc-type-chip {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.hmc-type-chip.hmc-type-fire   { background: rgba(239, 68, 68, 0.25); color: #fca5a5; }
+.hmc-type-chip.hmc-type-water  { background: rgba(59, 130, 246, 0.25); color: #93c5fd; }
+.hmc-type-chip.hmc-type-grass  { background: rgba(34, 197, 94, 0.25); color: #86efac; }
+
+.hmc-manage-hint {
+  font-size: 0.8rem;
+  opacity: 0.85;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.hmc-toast {
+  position: fixed;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  z-index: 100;
+  pointer-events: none;
+}

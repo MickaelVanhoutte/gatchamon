@@ -19,7 +19,10 @@ import type { HomunculusType, HomunculusInstanceState, PokemonInstance } from '@
 import { hasGrantedFlag, setGrantedFlag } from './daily.service.js';
 
 const TYPENULL_GRANTED_FLAG = 'typenull_granted';
+const TYPENULL_CRAFTED_FLAG = 'typenull_crafted';
 const HOMUNCULUS_FUSED_FLAG = 'homunculus_fused';
+
+const TYPENULL_CRAFT_COST: Record<string, number> = { magic_high: 30 };
 
 function loadInstance(instanceId: string, ownerId: string): any {
   return getDb().prepare(
@@ -35,30 +38,78 @@ function parseMaterials(row: any): Record<string, number> {
   return row.materials ? JSON.parse(row.materials) : {};
 }
 
-/**
- * Grant 1 Typenull to players who haven't received it yet.
- * Idempotent: keyed on the `typenull_granted` flag. Skipped entirely if the
- * player already owns a Typenull (handles legacy accounts where Typenull was
- * summonable before this feature shipped).
- */
-export function grantTypenullIfEligible(playerId: string): void {
-  if (hasGrantedFlag(playerId, TYPENULL_GRANTED_FLAG)) return;
+export function getTypenullCraftCost(): Record<string, number> {
+  return { ...TYPENULL_CRAFT_COST };
+}
 
+/**
+ * Craft a Typenull by spending essences. One-time per player — tracked via
+ * `typenull_crafted` flag. Also blocked if the player already owns a Typenull
+ * (legacy `typenull_granted` accounts) or has already fused a Homunculus.
+ */
+export function performCraftTypenull(playerId: string): PokemonInstance {
   const db = getDb();
+
+  if (hasGrantedFlag(playerId, HOMUNCULUS_FUSED_FLAG)) {
+    throw new Error('You already have a Homunculus');
+  }
+  if (hasGrantedFlag(playerId, TYPENULL_CRAFTED_FLAG) || hasGrantedFlag(playerId, TYPENULL_GRANTED_FLAG)) {
+    throw new Error('You already crafted a Typenull');
+  }
+
   const existing = db.prepare(
     'SELECT 1 FROM pokemon_instances WHERE owner_id = ? AND template_id = ?'
   ).get(playerId, TYPENULL_TEMPLATE_ID);
+  if (existing) {
+    throw new Error('You already own a Typenull');
+  }
 
-  if (!existing) {
-    const instanceId = uuidv4();
+  const playerRow = loadPlayerRow(playerId);
+  if (!playerRow) throw new Error('Player not found');
+  const materials = parseMaterials(playerRow);
+
+  for (const [essId, needed] of Object.entries(TYPENULL_CRAFT_COST)) {
+    if ((materials[essId] ?? 0) < needed) {
+      throw new Error(`Not enough ${essId}`);
+    }
+  }
+
+  const instanceId = uuidv4();
+  let created: PokemonInstance | null = null;
+
+  const txn = db.transaction(() => {
+    for (const [essId, needed] of Object.entries(TYPENULL_CRAFT_COST)) {
+      materials[essId] = (materials[essId] ?? 0) - needed;
+      if (materials[essId] <= 0) delete materials[essId];
+    }
+    db.prepare('UPDATE players SET materials = ? WHERE id = ?')
+      .run(JSON.stringify(materials), playerId);
+
     db.prepare(
       `INSERT INTO pokemon_instances
         (instance_id, template_id, owner_id, level, stars, exp, is_shiny, skill_levels, selected_passive, is_locked, show_on_home, location)
        VALUES (?, ?, ?, 1, 5, 0, 0, '[1,1,1]', 0, 0, 0, 'collection')`
     ).run(instanceId, TYPENULL_TEMPLATE_ID, playerId);
-  }
 
-  setGrantedFlag(playerId, TYPENULL_GRANTED_FLAG);
+    setGrantedFlag(playerId, TYPENULL_CRAFTED_FLAG);
+
+    created = {
+      instanceId,
+      templateId: TYPENULL_TEMPLATE_ID,
+      ownerId: playerId,
+      level: 1,
+      stars: 5,
+      exp: 0,
+      isShiny: false,
+      skillLevels: [1, 1, 1],
+      selectedPassive: 0,
+      isLocked: false,
+      showOnHome: false,
+    };
+  });
+  txn();
+
+  return created!;
 }
 
 export function performFusion(
@@ -290,4 +341,4 @@ export function getHomunculusState(
   };
 }
 
-export { isHomunculusForm, HOMUNCULUS_FUSED_FLAG, TYPENULL_GRANTED_FLAG };
+export { isHomunculusForm, HOMUNCULUS_FUSED_FLAG, TYPENULL_GRANTED_FLAG, TYPENULL_CRAFTED_FLAG };

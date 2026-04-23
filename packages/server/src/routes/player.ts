@@ -5,7 +5,6 @@ import type { Player, TrainerSkills } from '@gatchamon/shared';
 import { defaultTrainerSkills } from '@gatchamon/shared';
 import { computeAndUpdateEnergy, computeAndUpdateArenaTickets, allocateTrainerSkill } from '../services/player.service.js';
 import { sendInboxItem } from '../services/daily.service.js';
-import { grantTypenullIfEligible } from '../services/homunculus.service.js';
 
 export const playerRouter = Router();
 
@@ -103,7 +102,6 @@ playerRouter.get('/:id', (req, res) => {
   try {
     computeAndUpdateEnergy(req.params.id);
     computeAndUpdateArenaTickets(req.params.id);
-    grantTypenullIfEligible(req.params.id);
   } catch {
     // Player may not exist yet, handled below
   }

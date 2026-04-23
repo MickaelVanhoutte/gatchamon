@@ -13,6 +13,8 @@ import {
   performResetTree,
   performSwitchType,
   getHomunculusState,
+  performCraftTypenull,
+  getTypenullCraftCost,
 } from '../services/homunculus.service.js';
 import { HOMUNCULUS_TYPES } from '@gatchamon/shared';
 import type { HomunculusType } from '@gatchamon/shared';
@@ -180,6 +182,24 @@ monsterManagementRouter.post('/switch-passive', (req, res) => {
 });
 
 // ── Homunculus Fusion ──────────────────────────────────────────────────
+
+monsterManagementRouter.get('/homunculus/craft-cost', (_req, res) => {
+  res.json({ cost: getTypenullCraftCost() });
+});
+
+monsterManagementRouter.post('/homunculus/craft', (req, res) => {
+  try {
+    const { playerId } = req.body as { playerId: string };
+    if (!playerId) {
+      res.status(400).json({ error: 'playerId required' });
+      return;
+    }
+    const instance = performCraftTypenull(playerId);
+    res.json({ instance });
+  } catch (e: any) {
+    res.status(400).json({ error: e.message });
+  }
+});
 
 monsterManagementRouter.post('/homunculus/fuse', (req, res) => {
   try {

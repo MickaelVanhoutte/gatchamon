@@ -88,6 +88,14 @@ export async function performTypeChange(instanceId: string, targetTemplateId: nu
   return api.post('/type-change/perform', { playerId: pid(), instanceId, targetTemplateId });
 }
 
+export async function getTypenullCraftCost(): Promise<{ cost: Record<string, number> }> {
+  return api.get('/homunculus/craft-cost');
+}
+
+export async function craftTypenull(): Promise<{ instance: PokemonInstance }> {
+  return api.post('/homunculus/craft', { playerId: pid() });
+}
+
 export async function fuseHomunculus(instanceId: string, targetType: HomunculusType): Promise<{ instance: PokemonInstance }> {
   return api.post('/homunculus/fuse', { playerId: pid(), instanceId, targetType });
 }

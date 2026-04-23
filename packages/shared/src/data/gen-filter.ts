@@ -2,6 +2,7 @@ import { GEN1 } from './pokedex/gen1.js';
 import { GEN2 } from './pokedex/gen2.js';
 import { POKEDEX } from './pokedex/index.js';
 import { EVOLUTION_CHAINS } from './evolutions.js';
+import { TYPENULL_TEMPLATE_ID, HOMUNCULUS_FORMS } from './type-changes.js';
 import type { PokemonTemplate } from '../types/pokemon.js';
 import type { EvolutionChain } from '../types/evolution.js';
 
@@ -12,6 +13,12 @@ export const GEN_RESTRICTION_ENABLED = true;
 const GEN1_IDS = new Set(GEN1.map(p => p.id));
 const GEN2_IDS = new Set(GEN2.map(p => p.id));
 const ACTIVE_GEN_IDS = new Set([...GEN1_IDS, ...GEN2_IDS]);
+
+// Templates that bypass the gen restriction (craftable/fusable endgame mons).
+const ALWAYS_ACTIVE_IDS = new Set<number>([
+  TYPENULL_TEMPLATE_ID,
+  ...Object.values(HOMUNCULUS_FORMS),
+]);
 
 /** Check whether a template ID is a Gen 1 Pokemon or a Mega form of one. */
 export function isGen1Pokemon(id: number): boolean {
@@ -32,6 +39,7 @@ export function isGen2Pokemon(id: number): boolean {
 /** Check whether a template ID is currently available for gameplay. */
 export function isActivePokemon(id: number): boolean {
   if (!GEN_RESTRICTION_ENABLED) return true;
+  if (ALWAYS_ACTIVE_IDS.has(id)) return true;
   if (id < 10000) return ACTIVE_GEN_IDS.has(id);
   // Forms use encoding: variantPrefix * 1000 + baseId
   // Only allow Mega forms (10xxx), not regional forms (11xxx Alola, 12xxx Galar, 13xxx Hisui)

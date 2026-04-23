@@ -38,6 +38,7 @@ interface GameState {
   altarFeed: (baseId: string, fodderIds: string[]) => void;
   evolvePokemon: (instanceId: string, targetTemplateId: number) => void;
   changeType: (instanceId: string, targetTemplateId: number) => void;
+  craftTypenull: () => Promise<void>;
   fuseHomunculus: (instanceId: string, targetType: HomunculusType) => void;
   unlockHomunculusNode: (instanceId: string, nodeId: string) => Promise<void>;
   resetHomunculusTree: (instanceId: string) => Promise<Record<string, number>>;
@@ -217,6 +218,13 @@ export const useGameStore = create<GameState>((set, get) => ({
   changeType: (instanceId: string, targetTemplateId: number) => {
     runMutation(async () => {
       await serverApi.performTypeChange(instanceId, targetTemplateId);
+      await reloadFromServer(set, get);
+    });
+  },
+
+  craftTypenull: () => {
+    return runMutation(async () => {
+      await serverApi.craftTypenull();
       await reloadFromServer(set, get);
     });
   },

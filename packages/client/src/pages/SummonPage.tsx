@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useGameStore, type OwnedPokemon } from '../stores/gameStore';
 import { useTutorialStore } from '../stores/tutorialStore';
 import { SummonPortal } from '../components/summon/SummonPortal';
@@ -15,6 +16,7 @@ import './SummonPage.css';
 type Phase = 'idle' | 'summoning' | 'revealing' | 'done';
 
 export function SummonPage() {
+  const navigate = useNavigate();
   const { player, summon, pcAutoSend, togglePcAutoSend } = useGameStore();
   const tutorialStep = useTutorialStore(s => s.step);
   const advanceStep = useTutorialStore(s => s.advanceStep);
@@ -259,6 +261,18 @@ export function SummonPage() {
           )}
 
           {error && <p className="summon-error">{error}</p>}
+
+          {!inTutorial && selectedBall !== 'pieces' && (
+            <div className="summon-homunculus-entry">
+              <button
+                className="summon-homunculus-btn"
+                onClick={() => navigate('/homunculus')}
+              >
+                <GameIcon id="sparkles" size={14} />
+                <span>Homunculus Altar</span>
+              </button>
+            </div>
+          )}
         </div>
       )}
 

@@ -42,6 +42,7 @@ const WorldBossPage = lazy(() => import('./pages/WorldBossPage').then(m => ({ de
 const WorldBossTeamSelectPage = lazy(() => import('./pages/WorldBossTeamSelectPage').then(m => ({ default: m.WorldBossTeamSelectPage })));
 const WorldBossResultPage = lazy(() => import('./pages/WorldBossResultPage').then(m => ({ default: m.WorldBossResultPage })));
 const SkillTreePage = lazy(() => import('./pages/SkillTreePage').then(m => ({ default: m.SkillTreePage })));
+const HomunculusPage = lazy(() => import('./pages/HomunculusPage').then(m => ({ default: m.HomunculusPage })));
 
 export function App() {
   const location = useLocation();
@@ -256,6 +257,7 @@ export function App() {
             <Route path="/world-boss" element={<WorldBossPage />} />
             <Route path="/world-boss/team" element={<WorldBossTeamSelectPage />} />
             <Route path="/world-boss/result" element={<WorldBossResultPage />} />
+            <Route path="/homunculus" element={<HomunculusPage />} />
             <Route path="/homunculus/:instanceId" element={<SkillTreePage />} />
           </Routes>
         </Suspense>
