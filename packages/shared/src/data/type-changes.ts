@@ -1,5 +1,6 @@
 import type { TypeChangeDefinition, TypeChangeCost } from '../types/type-change.js';
 import type { PokemonType } from '../types/pokemon.js';
+import type { HomunculusType, HomunculusFusionCost } from '../types/homunculus.js';
 
 const TYPED_FORMS_ORDER: PokemonType[] = [
   'bug', 'dark', 'dragon', 'electric', 'fairy', 'fighting',
@@ -73,4 +74,45 @@ export function getAvailableTypeChanges(
   }
 
   return results;
+}
+
+// ── Homunculus fusion (Typenull → typed Homunculus) ───────────────────
+
+export const TYPENULL_TEMPLATE_ID = 772;
+
+export const HOMUNCULUS_FORMS: Record<HomunculusType, number> = {
+  fire: 15990,
+  water: 15991,
+  grass: 15992,
+};
+
+export const HOMUNCULUS_TYPES: HomunculusType[] = ['fire', 'water', 'grass'];
+
+export function getHomunculusType(templateId: number): HomunculusType | null {
+  for (const type of HOMUNCULUS_TYPES) {
+    if (HOMUNCULUS_FORMS[type] === templateId) return type;
+  }
+  return null;
+}
+
+export function isHomunculusForm(templateId: number): boolean {
+  return getHomunculusType(templateId) !== null;
+}
+
+export function getFusionCost(targetType: HomunculusType): HomunculusFusionCost {
+  return {
+    essences: {
+      [`${targetType}_high`]: 15,
+      magic_high: 10,
+    },
+  };
+}
+
+export function getHomunculusSwitchCost(targetType: HomunculusType): HomunculusFusionCost {
+  return {
+    essences: {
+      [`${targetType}_high`]: 10,
+      magic_high: 5,
+    },
+  };
 }

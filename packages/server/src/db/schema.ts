@@ -80,8 +80,15 @@ export function initDb(): void {
   migrateAddSelectedPassive(database);
   migrateAddLockAndHome(database);
   migrateWorldBoss(database);
+  migrateAddHomunculusTree(database);
 
   console.log('Database initialized');
+}
+
+function migrateAddHomunculusTree(database: Database.Database): void {
+  try {
+    database.exec('ALTER TABLE pokemon_instances ADD COLUMN homunculus_tree TEXT');
+  } catch { /* already exists */ }
 }
 
 function migrateAddShiny(database: Database.Database): void {

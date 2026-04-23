@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { GameIcon, StarRating } from '../components/icons';
 import type { OwnedPokemon } from '../stores/gameStore';
-import { computeStats, computeStatsWithItems, getSkillsForPokemon, getEffectiveSkillIds, getShinyAlternatePassive, MAX_LEVEL_BY_STARS, isMaxLevel, getTemplate, ESSENCES, getActiveEvolutionsFrom, getTypeChangeDef, getAvailableTypeChanges, isActivePokemon, describeLeaderSkill } from '@gatchamon/shared';
+import { computeStats, computeStatsWithItems, getSkillsForPokemon, getEffectiveSkillIds, getShinyAlternatePassive, MAX_LEVEL_BY_STARS, isMaxLevel, getTemplate, ESSENCES, getActiveEvolutionsFrom, getTypeChangeDef, getAvailableTypeChanges, isActivePokemon, describeLeaderSkill, TYPENULL_TEMPLATE_ID, HOMUNCULUS_TYPES, HOMUNCULUS_FORMS, getFusionCost, isHomunculusForm } from '@gatchamon/shared';
+import type { HomunculusType } from '@gatchamon/shared';
 import { canEvolveInstance } from '../services/evolution.service';
 import { canChangeType } from '../services/type-change.service';
 import type { PokemonType, BaseStats } from '@gatchamon/shared';
@@ -55,7 +56,7 @@ const STAT_LABELS: Record<keyof BaseStats, string> = {
 
 export function CollectionPage() {
   const navigate = useNavigate();
-  const { collection, loadCollection, evolvePokemon, changeType, player, heldItems, loadHeldItems, updateInstance, isLoading, transferToPC } = useGameStore();
+  const { collection, loadCollection, evolvePokemon, changeType, fuseHomunculus, player, heldItems, loadHeldItems, updateInstance, isLoading, transferToPC } = useGameStore();
   const [typeFilter, setTypeFilter] = useState<PokemonType | null>(null);
   const [shinyFilter, setShinyFilter] = useState<'all' | 'shiny'>('all');
   const [sortBy, setSortBy] = useState<SortBy>('stars');
@@ -140,6 +141,13 @@ export function CollectionPage() {
     ? getAvailableTypeChanges(typeChangeDef, selected.instance.templateId)
     : [];
   const hasTypeChange = typeChangeOptions.length > 0;
+
+  // Homunculus fusion: only raw Typenull can be fused, and only if the player hasn't
+  // already fused one (server enforces; we gate the UI from grantedFlags for UX).
+  const isTypenull = selected?.instance.templateId === TYPENULL_TEMPLATE_ID;
+  const alreadyFused = player?.grantedFlags?.includes('homunculus_fused') ?? false;
+  const canShowFusion = isTypenull && !alreadyFused;
+  const isFusedHomunculus = selected ? isHomunculusForm(selected.instance.templateId) : false;
 
   return (
     <div className="page collection-page">
@@ -523,6 +531,72 @@ export function CollectionPage() {
                               }}
                             >
                               {validation.valid ? 'Change Type' : 'Requirements not met'}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Homunculus Skill Tree button (on a fused Homunculus) */}
+                  {isFusedHomunculus && selected && (
+                    <div className="box-evolution">
+                      <span className="box-evo-label">Homunculus</span>
+                      <button
+                        className="box-evo-btn"
+                        onClick={() => navigate(`/homunculus/${selected.instance.instanceId}`)}
+                      >
+                        Open Skill Tree
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Homunculus Fusion section (only on raw Typenull, pre-fusion) */}
+                  {canShowFusion && player && (
+                    <div className="box-evolution">
+                      <span className="box-evo-label">Homunculus Fusion</span>
+                      <p className="box-evo-hint">
+                        Fuse Typenull into a typed Homunculus. The choice can be changed later.
+                      </p>
+                      {HOMUNCULUS_TYPES.map(targetType => {
+                        const targetTemplate = getTemplate(HOMUNCULUS_FORMS[targetType]);
+                        if (!targetTemplate) return null;
+                        const cost = getFusionCost(targetType);
+                        const materials = player.materials ?? {};
+                        const canAfford = Object.entries(cost.essences).every(
+                          ([essId, needed]) => (materials[essId] ?? 0) >= needed,
+                        );
+                        return (
+                          <div key={targetType} className="box-evo-option">
+                            <div className="box-evo-header">
+                              <img src={assetUrl(targetTemplate.spriteUrl)} alt={targetTemplate.name} className="box-evo-sprite" />
+                              <span className="box-evo-name">{targetTemplate.name}</span>
+                            </div>
+                            <div className="box-evo-reqs">
+                              {Object.entries(cost.essences).map(([essId, needed]) => {
+                                const ess = ESSENCES[essId];
+                                const owned = materials[essId] ?? 0;
+                                return (
+                                  <div key={essId} className="box-evo-req-row">
+                                    <span><GameIcon id={ess?.icon} size={14} /> {ess?.name ?? essId}</span>
+                                    <span className={owned >= needed ? 'req-met' : 'req-unmet'}>
+                                      {owned}/{needed}
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            <button
+                              className="box-evo-btn"
+                              disabled={!canAfford}
+                              onClick={() => {
+                                if (confirm(`Fuse Typenull into ${targetTemplate.name}? This consumes the essences shown.`)) {
+                                  fuseHomunculus(selected.instance.instanceId, targetType as HomunculusType);
+                                  setSelectedId(selected.instance.instanceId);
+                                }
+                              }}
+                            >
+                              {canAfford ? 'Fuse' : 'Requirements not met'}
                             </button>
                           </div>
                         );

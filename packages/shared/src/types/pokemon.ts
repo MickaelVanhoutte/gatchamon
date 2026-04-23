@@ -52,6 +52,7 @@ export interface PokemonInstance {
   selectedPassive?: 0 | 1;
   isLocked?: boolean;
   showOnHome?: boolean;
+  homunculusTree?: import('./homunculus.js').HomunculusInstanceState;
 }
 
 export type SkillTarget =

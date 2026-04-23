@@ -964,6 +964,7 @@ export const GEN7: PokemonTemplate[] = [
     spriteUrl: 'monsters/ani/typenull.gif',
     skillIds: ['typenull_skill1', 'typenull_skill2', 'typenull_skill3'],
     height: 1.9,
+    summonable: false,
     baseStats: {
       hp: 640,
       atk: 107,

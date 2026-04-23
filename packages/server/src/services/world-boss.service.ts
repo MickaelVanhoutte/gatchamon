@@ -75,7 +75,7 @@ function loadAttackerTeam(playerId: string, instanceIds: string[]): BattleMon[] 
   const team: BattleMon[] = [];
   for (const id of instanceIds) {
     const row = db.prepare(
-      'SELECT instance_id, template_id, level, stars, skill_levels, is_shiny, selected_passive FROM pokemon_instances WHERE instance_id = ? AND owner_id = ?',
+      'SELECT instance_id, template_id, level, stars, skill_levels, is_shiny, selected_passive, homunculus_tree FROM pokemon_instances WHERE instance_id = ? AND owner_id = ?',
     ).get(id, playerId) as any;
     if (!row) throw new Error(`Pokemon ${id} not found in your collection`);
     const template = getTemplate(row.template_id);
@@ -84,6 +84,7 @@ function loadAttackerTeam(playerId: string, instanceIds: string[]): BattleMon[] 
     let stats = computeStatsWithItems(template, row.level, row.stars, items);
     stats = applyTrainerBonuses(stats, trainerSkills);
     const skillLevels = row.skill_levels ? JSON.parse(row.skill_levels) : [1, 1, 1];
+    const homunculusTree = row.homunculus_tree ? JSON.parse(row.homunculus_tree) : undefined;
     team.push({
       instanceId: row.instance_id,
       templateId: row.template_id,
@@ -99,6 +100,7 @@ function loadAttackerTeam(playerId: string, instanceIds: string[]): BattleMon[] 
       isShiny: !!row.is_shiny,
       selectedPassive: (row.selected_passive ?? 0) as 0 | 1,
       skillLevels,
+      homunculusTree,
     });
   }
   return team;

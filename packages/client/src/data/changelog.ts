@@ -7,6 +7,24 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.8.2',
+    date: '2026-04-23',
+    changes: [
+      'Feature: Homunculus skill tree — each Homunculus now has a per-type skill tree (Fire burn-focus, Water freeze + ATB, Grass damage + brand). Open the "Skill Tree" button on your Homunculus detail to spend essences on tree nodes that replace its active / passive skills. 6 nodes per type, branching at tier 2.',
+      'Feature: Type switch post-fusion — on the Skill Tree page, switching to a different type refunds all unlocked nodes then charges a smaller swap cost. Your tree starts fresh on the new type.',
+      'Feature: Reset Skill Tree — full essence refund, no penalty. Encouraged to experiment.',
+      'Change: Battle engine now resolves Homunculus skills through its tree: unlocked nodes replace the placeholder basic skills in real battles (story, dungeon, tower, arena, world boss).',
+    ],
+  },
+  {
+    version: '0.8.1',
+    date: '2026-04-23',
+    changes: [
+      'Feature: Homunculus fusion — every trainer now receives a free Typenull. Open its detail screen in the collection to fuse it into a typed Homunculus (Fire / Water / Grass) by spending magic and type essences. Only one Homunculus per account for now; skill tree customization coming in the next release.',
+      'Change: Typenull is no longer summonable from any pool — it is granted once per account as the Homunculus base.',
+    ],
+  },
+  {
     version: '0.8.0',
     date: '2026-04-23',
     changes: [

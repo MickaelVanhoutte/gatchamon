@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Player, PokemonInstance, PokemonTemplate, HeldItemInstance, TrainerSkills, PokeballType } from '@gatchamon/shared';
+import type { Player, PokemonInstance, PokemonTemplate, HeldItemInstance, TrainerSkills, PokeballType, HomunculusType } from '@gatchamon/shared';
 import { getTemplate } from '@gatchamon/shared';
 import { loadPcAutoSend, savePcAutoSend, setGrantedFlag } from '../services/storage';
 import { useTutorialStore } from './tutorialStore';
@@ -38,6 +38,10 @@ interface GameState {
   altarFeed: (baseId: string, fodderIds: string[]) => void;
   evolvePokemon: (instanceId: string, targetTemplateId: number) => void;
   changeType: (instanceId: string, targetTemplateId: number) => void;
+  fuseHomunculus: (instanceId: string, targetType: HomunculusType) => void;
+  unlockHomunculusNode: (instanceId: string, nodeId: string) => Promise<void>;
+  resetHomunculusTree: (instanceId: string) => Promise<Record<string, number>>;
+  switchHomunculusType: (instanceId: string, targetType: HomunculusType) => Promise<Record<string, number>>;
   refreshRewards: () => void;
   loadHeldItems: () => void;
   equipItem: (itemId: string, pokemonInstanceId: string) => void;
@@ -215,6 +219,40 @@ export const useGameStore = create<GameState>((set, get) => ({
       await serverApi.performTypeChange(instanceId, targetTemplateId);
       await reloadFromServer(set, get);
     });
+  },
+
+  fuseHomunculus: (instanceId: string, targetType: HomunculusType) => {
+    runMutation(async () => {
+      await serverApi.fuseHomunculus(instanceId, targetType);
+      await reloadFromServer(set, get);
+    });
+  },
+
+  unlockHomunculusNode: (instanceId: string, nodeId: string) => {
+    return runMutation(async () => {
+      await serverApi.unlockHomunculusNode(instanceId, nodeId);
+      await reloadFromServer(set, get);
+    });
+  },
+
+  resetHomunculusTree: async (instanceId: string) => {
+    let refunded: Record<string, number> = {};
+    await runMutation(async () => {
+      const res = await serverApi.resetHomunculusTree(instanceId);
+      refunded = res.refunded;
+      await reloadFromServer(set, get);
+    });
+    return refunded;
+  },
+
+  switchHomunculusType: async (instanceId: string, targetType: HomunculusType) => {
+    let refunded: Record<string, number> = {};
+    await runMutation(async () => {
+      const res = await serverApi.switchHomunculusType(instanceId, targetType);
+      refunded = res.refunded;
+      await reloadFromServer(set, get);
+    });
+    return refunded;
   },
 
   refreshInbox: () => {

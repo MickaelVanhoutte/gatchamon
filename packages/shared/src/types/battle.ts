@@ -1,5 +1,6 @@
 import type { BaseStats, EffectId } from './pokemon.js';
 import type { Difficulty } from './player.js';
+import type { HomunculusInstanceState } from './homunculus.js';
 
 export interface ActiveEffect {
   id: EffectId;               // e.g., 'atk_buff', 'poison', 'shield'
@@ -27,6 +28,7 @@ export interface BattleMon {
   skillLevels?: [number, number, number];
   isShiny?: boolean;
   selectedPassive?: 0 | 1;
+  homunculusTree?: HomunculusInstanceState;
 }
 
 export interface BattleState {

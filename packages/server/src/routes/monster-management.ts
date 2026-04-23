@@ -8,6 +8,15 @@ import {
   performEssenceMerge,
 } from '../services/monster-management.service.js';
 import {
+  performFusion,
+  performUnlockNode,
+  performResetTree,
+  performSwitchType,
+  getHomunculusState,
+} from '../services/homunculus.service.js';
+import { HOMUNCULUS_TYPES } from '@gatchamon/shared';
+import type { HomunculusType } from '@gatchamon/shared';
+import {
   getActiveEvolutionsFrom,
   getTypeChangeDef,
   getAvailableTypeChanges,
@@ -165,6 +174,94 @@ monsterManagementRouter.post('/switch-passive', (req, res) => {
       'UPDATE pokemon_instances SET selected_passive = ? WHERE instance_id = ? AND owner_id = ?'
     ).run(selectedPassive, instanceId, playerId);
     res.json({ ok: true, selectedPassive });
+  } catch (e: any) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+// ── Homunculus Fusion ──────────────────────────────────────────────────
+
+monsterManagementRouter.post('/homunculus/fuse', (req, res) => {
+  try {
+    const { playerId, instanceId, targetType } = req.body as {
+      playerId: string; instanceId: string; targetType: HomunculusType;
+    };
+    if (!playerId || !instanceId || !targetType) {
+      res.status(400).json({ error: 'playerId, instanceId, and targetType required' });
+      return;
+    }
+    if (!HOMUNCULUS_TYPES.includes(targetType)) {
+      res.status(400).json({ error: 'Invalid targetType' });
+      return;
+    }
+    const result = performFusion(playerId, instanceId, targetType);
+    res.json({ instance: result });
+  } catch (e: any) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+monsterManagementRouter.post('/homunculus/unlock-node', (req, res) => {
+  try {
+    const { playerId, instanceId, nodeId } = req.body as {
+      playerId: string; instanceId: string; nodeId: string;
+    };
+    if (!playerId || !instanceId || !nodeId) {
+      res.status(400).json({ error: 'playerId, instanceId, and nodeId required' });
+      return;
+    }
+    const result = performUnlockNode(playerId, instanceId, nodeId);
+    res.json({ instance: result });
+  } catch (e: any) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+monsterManagementRouter.post('/homunculus/reset-tree', (req, res) => {
+  try {
+    const { playerId, instanceId } = req.body as {
+      playerId: string; instanceId: string;
+    };
+    if (!playerId || !instanceId) {
+      res.status(400).json({ error: 'playerId and instanceId required' });
+      return;
+    }
+    const result = performResetTree(playerId, instanceId);
+    res.json(result);
+  } catch (e: any) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+monsterManagementRouter.post('/homunculus/switch-type', (req, res) => {
+  try {
+    const { playerId, instanceId, targetType } = req.body as {
+      playerId: string; instanceId: string; targetType: HomunculusType;
+    };
+    if (!playerId || !instanceId || !targetType) {
+      res.status(400).json({ error: 'playerId, instanceId, and targetType required' });
+      return;
+    }
+    if (!HOMUNCULUS_TYPES.includes(targetType)) {
+      res.status(400).json({ error: 'Invalid targetType' });
+      return;
+    }
+    const result = performSwitchType(playerId, instanceId, targetType);
+    res.json(result);
+  } catch (e: any) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+monsterManagementRouter.get('/homunculus/state/:instanceId', (req, res) => {
+  try {
+    const { playerId } = req.query as { playerId: string };
+    if (!playerId) {
+      res.status(400).json({ error: 'playerId query param required' });
+      return;
+    }
+    const result = getHomunculusState(playerId, req.params.instanceId);
+    res.json(result);
   } catch (e: any) {
     res.status(400).json({ error: e.message });
   }

@@ -7,7 +7,7 @@ export * from './constants/effects.js';
 export * from './battle/index.js';
 export * from './types/evolution.js';
 export { POKEDEX, POKEDEX_MAP, getTemplate } from './data/pokedex/index.js';
-export { SKILLS, getSkillsForPokemon, getShinyAlternatePassive, getEffectiveSkillIds } from './data/skills/index.js';
+export { SKILLS, getSkillsForPokemon, getShinyAlternatePassive, getEffectiveSkillIds, resolveInstanceSkills } from './data/skills/index.js';
 export { REGIONS, TOTAL_REGIONS, getFloorCount, isLeagueRegion, STORY_ARCS, getArcForRegion, getNextRegionInArc } from './data/regions.js';
 export type { RegionDef, StoryArc } from './data/regions.js';
 export { GYM_LEADERS, LEAGUE_CHAMPIONS, getGymLeader, getLeagueChampion, getGymLeaderTeam, getBossDialogue } from './data/gym-leaders.js';
@@ -29,7 +29,29 @@ export { MISSION_POOL, ALL_DAILIES_BONUS, DAILY_MISSION_COUNT, selectDailyMissio
 export { TROPHIES, getTrophyStat } from './data/trophies.js';
 export * from './types/type-change.js';
 export * from './types/inbox.js';
-export { TYPE_CHANGE_DEFS, getTypeChangeDef, getCurrentFormType, getAvailableTypeChanges, getTypeChangeCost } from './data/type-changes.js';
+export * from './types/homunculus.js';
+export {
+  TYPE_CHANGE_DEFS,
+  getTypeChangeDef,
+  getCurrentFormType,
+  getAvailableTypeChanges,
+  getTypeChangeCost,
+  TYPENULL_TEMPLATE_ID,
+  HOMUNCULUS_FORMS,
+  HOMUNCULUS_TYPES,
+  getHomunculusType,
+  isHomunculusForm,
+  getFusionCost,
+  getHomunculusSwitchCost,
+} from './data/type-changes.js';
+export {
+  HOMUNCULUS_TREES,
+  getHomunculusTree,
+  getHomunculusNode,
+  resolveHomunculusSkills,
+  validateNodeUnlock,
+  sumTreeCost,
+} from './data/homunculus-tree.js';
 export { LOGIN_CALENDAR_REWARDS, LOGIN_CALENDAR_DAYS } from './data/login-calendar.js';
 export { ROULETTE_SLOTS } from './data/daily-roulette.js';
 export type { RouletteSlot } from './data/daily-roulette.js';

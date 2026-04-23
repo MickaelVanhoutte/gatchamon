@@ -23,6 +23,7 @@ export function rowToInstance(row: any): PokemonInstance {
     selectedPassive: (row.selected_passive ?? 0) as 0 | 1,
     isLocked: !!row.is_locked,
     showOnHome: !!row.show_on_home,
+    homunculusTree: row.homunculus_tree ? JSON.parse(row.homunculus_tree) : undefined,
   };
 }
 

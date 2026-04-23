@@ -11,6 +11,7 @@ import type {
   WorldBossLadderResponse,
   WorldBossAttackResult,
   WorldBossState,
+  HomunculusType,
 } from '@gatchamon/shared';
 import { api } from './api';
 import { getPlayerId } from '../config';
@@ -85,6 +86,33 @@ export async function performEvolution(instanceId: string, targetTemplateId: num
 
 export async function performTypeChange(instanceId: string, targetTemplateId: number): Promise<{ instance: PokemonInstance }> {
   return api.post('/type-change/perform', { playerId: pid(), instanceId, targetTemplateId });
+}
+
+export async function fuseHomunculus(instanceId: string, targetType: HomunculusType): Promise<{ instance: PokemonInstance }> {
+  return api.post('/homunculus/fuse', { playerId: pid(), instanceId, targetType });
+}
+
+export async function unlockHomunculusNode(instanceId: string, nodeId: string): Promise<{ instance: PokemonInstance }> {
+  return api.post('/homunculus/unlock-node', { playerId: pid(), instanceId, nodeId });
+}
+
+export async function resetHomunculusTree(instanceId: string): Promise<{ instance: PokemonInstance; refunded: Record<string, number> }> {
+  return api.post('/homunculus/reset-tree', { playerId: pid(), instanceId });
+}
+
+export async function switchHomunculusType(instanceId: string, targetType: HomunculusType): Promise<{ instance: PokemonInstance; refunded: Record<string, number> }> {
+  return api.post('/homunculus/switch-type', { playerId: pid(), instanceId, targetType });
+}
+
+export interface HomunculusStateResponse {
+  type: HomunculusType;
+  unlocked: string[];
+  effectiveSkills: [string, string, string];
+  tree: import('@gatchamon/shared').HomunculusTreeDef;
+}
+
+export async function getHomunculusState(instanceId: string): Promise<HomunculusStateResponse> {
+  return api.get<HomunculusStateResponse>(`/homunculus/state/${instanceId}?playerId=${pid()}`);
 }
 
 export async function performEssenceMerge(element: string, targetTier: string, targetCount: number): Promise<{ materials: Record<string, number> }> {

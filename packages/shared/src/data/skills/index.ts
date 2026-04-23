@@ -1,4 +1,7 @@
 import type { SkillDefinition, PokemonTemplate } from '../../types/pokemon.js';
+import type { HomunculusInstanceState } from '../../types/homunculus.js';
+import { getHomunculusType } from '../type-changes.js';
+import { resolveHomunculusSkills } from '../homunculus-tree.js';
 import { GEN1_SKILLS } from './gen1.js';
 import { GEN2_SKILLS } from './gen2.js';
 import { GEN3_SKILLS } from './gen3.js';
@@ -19,6 +22,7 @@ import { GEN7_SHINY_SKILLS } from './gen7-shiny.js';
 import { GEN8_SHINY_SKILLS } from './gen8-shiny.js';
 import { GEN9_SHINY_SKILLS } from './gen9-shiny.js';
 import { FORMS_SHINY_SKILLS } from './forms-shiny.js';
+import { HOMUNCULUS_SKILLS } from './homunculus.js';
 
 export const SKILLS: Record<string, SkillDefinition> = {
   ...GEN1_SKILLS,
@@ -41,6 +45,7 @@ export const SKILLS: Record<string, SkillDefinition> = {
   ...GEN8_SHINY_SKILLS,
   ...GEN9_SHINY_SKILLS,
   ...FORMS_SHINY_SKILLS,
+  ...HOMUNCULUS_SKILLS,
 };
 
 export function getSkillsForPokemon(skillIds: [string, string, string]): SkillDefinition[] {
@@ -63,4 +68,23 @@ export function getEffectiveSkillIds(
     }
   }
   return template.skillIds;
+}
+
+/**
+ * Resolve the effective skill ids for a specific instance. Extends
+ * `getEffectiveSkillIds` with Homunculus skill-tree overlays: when the template
+ * is a Homunculus form and the instance has a tree, the tree's deepest-unlocked
+ * replacement per slot wins. Otherwise falls back to the template defaults +
+ * the shiny alternate-passive selection.
+ */
+export function resolveInstanceSkills(
+  template: PokemonTemplate,
+  selectedPassive?: 0 | 1,
+  homunculusTree?: HomunculusInstanceState,
+): [string, string, string] {
+  const hType = getHomunculusType(template.id);
+  if (hType && homunculusTree) {
+    return resolveHomunculusSkills(hType, homunculusTree.unlocked);
+  }
+  return getEffectiveSkillIds(template, selectedPassive);
 }
