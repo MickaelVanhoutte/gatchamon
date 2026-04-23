@@ -1,4 +1,5 @@
 import { getMoveSFXPath, getBattleSFXPath } from './audio-sync';
+import { isSoundEnabled } from '../../utils/audio-settings';
 
 // Module-level registry so a single `visibilitychange` listener can silence
 // every live AudioManager when the user switches tabs / backgrounds the app.
@@ -40,6 +41,8 @@ export class AudioManager {
 	}
 
 	async play(path: string): Promise<void> {
+		// Respect the user's global sound preference.
+		if (!isSoundEnabled()) return;
 		// Don't queue audio while the page is hidden; battle SFX for a
 		// backgrounded game is noise pollution.
 		if (typeof document !== 'undefined' && document.hidden) return;

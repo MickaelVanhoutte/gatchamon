@@ -5,6 +5,9 @@ import { useGameStore } from '../stores/gameStore';
 import { useTutorialStore } from '../stores/tutorialStore';
 import { CityScene } from '../components/city/CityScene';
 import { LoginCalendarModal } from '../components/LoginCalendarModal';
+import { OptionsModal } from '../components/OptionsModal';
+import { GameIcon } from '../components/icons';
+import { haptic } from '../utils/haptics';
 import * as serverApi from '../services/server-api.service';
 import { ChatPanel } from '../components/chat/ChatPanel';
 import { useForaging } from '../hooks/useForaging';
@@ -18,6 +21,7 @@ export function HomePage() {
   const tutorialStep = useTutorialStore(s => s.step);
   const navigate = useNavigate();
   const [showCalendar, setShowCalendar] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
 
   useEffect(() => {
     if (player) loadCollection();
@@ -59,7 +63,15 @@ export function HomePage() {
         pendingFinds={pendingFinds}
         onClaimFind={claimFind}
       />
+      <button
+        className="home-options-btn"
+        aria-label="Options"
+        onClick={() => { haptic.tap(); setShowOptions(true); }}
+      >
+        <GameIcon id="gear" size={20} />
+      </button>
       {showCalendar && <LoginCalendarModal onClose={() => setShowCalendar(false)} />}
+      {showOptions && <OptionsModal onClose={() => setShowOptions(false)} />}
       <ChatPanel />
     </div>
   );

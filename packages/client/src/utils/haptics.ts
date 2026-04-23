@@ -6,24 +6,25 @@
  *   calls are a no-op there. Don't gate behavior on haptic feedback.
  * - Keep durations short and deliberate. 300ms+ rattles feel cheap; 8-25ms
  *   matches mobile-game touch feedback conventions.
- * - A user preference to disable haptics lives in localStorage. Respect it.
+ * - Haptics are opt-in — disabled by default. Users enable from the options
+ *   modal on the home screen.
  */
 
-const STORAGE_KEY = 'gatchamon_haptics_disabled';
+const STORAGE_KEY = 'gatchamon_haptics_enabled';
 
 function enabled(): boolean {
   if (typeof navigator === 'undefined' || !('vibrate' in navigator)) return false;
   try {
-    return localStorage.getItem(STORAGE_KEY) !== '1';
+    return localStorage.getItem(STORAGE_KEY) === '1';
   } catch {
-    return true;
+    return false;
   }
 }
 
 export function setHapticsEnabled(on: boolean): void {
   try {
-    if (on) localStorage.removeItem(STORAGE_KEY);
-    else localStorage.setItem(STORAGE_KEY, '1');
+    if (on) localStorage.setItem(STORAGE_KEY, '1');
+    else localStorage.removeItem(STORAGE_KEY);
   } catch {
     // localStorage unavailable; swallow
   }

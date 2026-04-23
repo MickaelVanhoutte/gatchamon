@@ -7,6 +7,14 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.7.5',
+    date: '2026-04-23',
+    changes: [
+      'Feature: options modal on the home screen — tap the gear icon in the top-right to toggle Sound and Haptics.',
+      'Change: haptics are now opt-in (off by default). Enable them in the new options modal if you want tactile feedback.',
+    ],
+  },
+  {
     version: '0.7.4',
     date: '2026-04-22',
     changes: [
