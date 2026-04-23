@@ -38,6 +38,9 @@ const ShopPage = lazy(() => import('./pages/ShopPage').then(m => ({ default: m.S
 const ArenaPage = lazy(() => import('./pages/ArenaPage').then(m => ({ default: m.ArenaPage })));
 const ArenaDefensePage = lazy(() => import('./pages/ArenaDefensePage').then(m => ({ default: m.ArenaDefensePage })));
 const AdminPage = lazy(() => import('./pages/admin/AdminPage').then(m => ({ default: m.AdminPage })));
+const WorldBossPage = lazy(() => import('./pages/WorldBossPage').then(m => ({ default: m.WorldBossPage })));
+const WorldBossTeamSelectPage = lazy(() => import('./pages/WorldBossTeamSelectPage').then(m => ({ default: m.WorldBossTeamSelectPage })));
+const WorldBossResultPage = lazy(() => import('./pages/WorldBossResultPage').then(m => ({ default: m.WorldBossResultPage })));
 
 export function App() {
   const location = useLocation();
@@ -249,6 +252,9 @@ export function App() {
             <Route path="/retry-summon" element={<RetrySummonPage />} />
             <Route path="/battle/team-select" element={<TeamSelectPage />} />
             <Route path="/battle/:battleId" element={<BattlePage />} />
+            <Route path="/world-boss" element={<WorldBossPage />} />
+            <Route path="/world-boss/team" element={<WorldBossTeamSelectPage />} />
+            <Route path="/world-boss/result" element={<WorldBossResultPage />} />
           </Routes>
         </Suspense>
       </div>

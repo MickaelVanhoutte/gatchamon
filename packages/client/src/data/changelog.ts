@@ -7,6 +7,14 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.8.0',
+    date: '2026-04-23',
+    changes: [
+      'Feature: World Boss (Eternatus) — every Monday a fresh Eternatus appears with server-shared HP. Send your top 20 monsters once per day to chip away at it. Instant drop on every attack plus percentile-tier rewards (Top 1% / 10% / 25% / 50% / Participant) delivered via Inbox when the boss falls or the week ends.',
+      'Added a World Boss entry in the bottom navigation (skull icon).',
+    ],
+  },
+  {
     version: '0.7.5',
     date: '2026-04-23',
     changes: [

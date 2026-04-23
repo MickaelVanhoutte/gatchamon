@@ -14,6 +14,7 @@ import { arenaRouter } from './routes/arena.js';
 import { chatRouter } from './routes/chat.js';
 import { retrySummonRouter } from './routes/retry-summon.js';
 import { authRouter } from './routes/auth.js';
+import { worldBossRouter } from './routes/world-boss.js';
 import { requireAuth } from './auth/middleware.js';
 import { requireAdmin } from './auth/admin.js';
 import { initDb } from './db/schema.js';
@@ -47,6 +48,7 @@ app.use('/api/daily', dailyRouter);
 app.use('/api/arena', arenaRouter);
 app.use('/api/chat', chatRouter);
 app.use('/api/retry-summon', retrySummonRouter);
+app.use('/api/world-boss', worldBossRouter);
 app.use('/api/admin', requireAdmin, adminRouter);
 
 // In production, serve the client's built static files

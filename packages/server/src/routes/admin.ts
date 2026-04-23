@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { getDb } from '../db/schema.js';
 import { sendInboxItem } from '../services/daily.service.js';
+import { adminForceSpawn, adminForceSettle, adminDebug } from '../services/world-boss.service.js';
 import { POKEDEX_MAP } from '@gatchamon/shared';
 
 export const adminRouter = Router();
@@ -316,6 +317,34 @@ adminRouter.post('/inbox/broadcast', (req, res) => {
     res.json({ ok: true, sent });
   } catch (e: any) {
     console.error('[Admin] Inbox broadcast error:', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ── World Boss ────────────────────────────────────────────────────────
+
+adminRouter.post('/world-boss/spawn', (_req, res) => {
+  try {
+    const boss = adminForceSpawn();
+    res.json({ ok: true, boss });
+  } catch (e: any) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+adminRouter.post('/world-boss/settle', (_req, res) => {
+  try {
+    const result = adminForceSettle();
+    res.json({ ok: true, ...result });
+  } catch (e: any) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+adminRouter.get('/world-boss/debug', (_req, res) => {
+  try {
+    res.json(adminDebug());
+  } catch (e: any) {
     res.status(500).json({ error: e.message });
   }
 });

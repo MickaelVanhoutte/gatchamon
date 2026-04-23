@@ -48,6 +48,7 @@ interface GameState {
   updateInstance: (instanceId: string, updates: Partial<PokemonInstance>) => void;
   allocateTrainerSkill: (skill: keyof TrainerSkills) => void;
   mergeEssences: (element: string, targetTier: 'mid' | 'high', count: number) => void;
+  attackWorldBoss: (instanceIds: string[]) => Promise<import('@gatchamon/shared').WorldBossAttackResult>;
 }
 
 function syncGrantedFlags(player: Player) {
@@ -307,5 +308,11 @@ export const useGameStore = create<GameState>((set, get) => ({
     serverApi.performEssenceMerge(element, targetTier, count).then(() => {
       get().refreshPlayer();
     });
+  },
+
+  attackWorldBoss: async (instanceIds: string[]) => {
+    const result = await serverApi.attackWorldBoss(instanceIds);
+    await reloadFromServer(set, get);
+    return result;
   },
 }));

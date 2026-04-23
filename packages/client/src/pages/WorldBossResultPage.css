@@ -1,0 +1,205 @@
+.wb-result-page {
+  padding: 0;
+  height: 100%;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(170, 70, 220, 0.35), transparent 50%),
+    linear-gradient(180deg, #0a0b1c 0%, #14152c 100%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.wb-result-stage {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.wb-result-status {
+  margin-top: 60px;
+  color: #ffdf5d;
+  font-size: 1rem;
+  letter-spacing: 0.8px;
+}
+
+.wb-result-boss-wrap {
+  margin-top: 12px;
+  width: 180px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.wb-result-boss-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(220, 80, 220, 0.45), transparent 70%);
+  filter: blur(8px);
+  pointer-events: none;
+}
+.wb-result-boss {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 14px rgba(220, 80, 220, 0.8));
+  z-index: 2;
+  position: relative;
+}
+
+.wb-result-damage-counter {
+  margin-top: 12px;
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: #ff6a6a;
+  text-shadow: 0 0 16px rgba(255, 60, 80, 0.6);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 1px;
+}
+
+.wb-result-hp-ministrip {
+  width: 70%;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.wb-result-hp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff5577, #ffb347);
+  transition: width 0.4s ease-out;
+}
+
+.wb-result-mons {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 4px;
+  margin-top: 16px;
+  width: 100%;
+}
+.wb-result-mon {
+  aspect-ratio: 1 / 1;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 216, 77, 0.25);
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wb-result-mon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.wb-result-summary {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 0;
+}
+
+.wb-kill-badge {
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffd84d, #ff8b3e);
+  color: #2a1a00;
+  border-radius: 30px;
+  letter-spacing: 1px;
+  animation: wb-kill-glow 1.4s ease-in-out infinite;
+}
+@keyframes wb-kill-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 216, 77, 0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(255, 216, 77, 0); }
+}
+
+.wb-result-headline {
+  font-size: 1.15rem;
+  color: #fff;
+}
+.wb-result-damage-big {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #ff6a6a;
+  margin: 0 4px;
+  font-variant-numeric: tabular-nums;
+}
+.wb-result-damage-label { color: #c0c0d0; }
+
+.wb-result-rank {
+  font-size: 0.9rem;
+  color: #d0d0d8;
+}
+.wb-result-rank b { color: #ffdf5d; font-weight: 800; }
+
+.wb-result-reward-block {
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+.wb-result-reward-block h3 {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  color: #ffdf5d;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+.wb-result-reward-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.wb-result-reward-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 14px;
+  background: rgba(255, 216, 77, 0.1);
+  border: 1px solid rgba(255, 216, 77, 0.25);
+  font-size: 0.78rem;
+  color: #fff;
+}
+.wb-reward-label { color: #b0b0c0; }
+
+.wb-result-killed-msg {
+  font-size: 0.85rem;
+  color: #ffb8c0;
+  text-align: center;
+}
+
+.wb-return-btn {
+  padding: 12px 24px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #ff3e6a, #ff8b3e);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(255, 70, 110, 0.4);
+}
+
+.wb-result-error {
+  padding: 40px 20px;
+  text-align: center;
+  color: #fff;
+}
+.wb-result-error h2 { color: #ff6a6a; margin-bottom: 10px; }
+.wb-result-error p { color: #c0c0d0; margin-bottom: 20px; }

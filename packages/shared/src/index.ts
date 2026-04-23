@@ -39,3 +39,15 @@ export type { ShopItemId } from './constants/shop.js';
 export { GEN_RESTRICTION_ENABLED, isActivePokemon, ACTIVE_POKEDEX, ACTIVE_POKEDEX_MAP, getActiveEvolutionsFrom, canActiveEvolve, resolveActiveId, isGen2Pokemon } from './data/gen-filter.js';
 export { getMysteryDungeonDef, getMysteryDungeonDateKey, getMysteryDungeonResetTime, PIECE_COST } from './data/mystery-dungeon.js';
 export { generateLeaderSkill, describeLeaderSkill } from './data/leader-skills.js';
+export * from './types/world-boss.js';
+export {
+  WORLD_BOSS_CONFIG,
+  WORLD_BOSS_TIER_THRESHOLDS,
+  WORLD_BOSS_TIER_LABELS,
+  WORLD_BOSS_TIER_REWARDS,
+  WORLD_BOSS_ATTACK_DROP,
+  getWeekStartUtc,
+  getWeekEndUtc,
+  tierForRank,
+} from './data/world-boss.js';
+export { simulateWorldBossAttack } from './battle/world-boss-sim.js';

@@ -1,7 +1,17 @@
 /**
  * Server API calls for all game operations.
  */
-import type { Player, PokemonInstance, PokemonTemplate, HeldItemInstance, PokeballType } from '@gatchamon/shared';
+import type {
+  Player,
+  PokemonInstance,
+  PokemonTemplate,
+  HeldItemInstance,
+  PokeballType,
+  WorldBossStatusResponse,
+  WorldBossLadderResponse,
+  WorldBossAttackResult,
+  WorldBossState,
+} from '@gatchamon/shared';
 import { api } from './api';
 import { getPlayerId } from '../config';
 
@@ -307,6 +317,24 @@ export async function retrySummonConfirm(choice: 'current' | 'backup'): Promise<
 
 export async function resetPlayer(): Promise<void> {
   await api.post(`/player/${pid()}/reset`);
+}
+
+// ── World Boss ────────────────────────────────────────────────────────
+
+export async function getWorldBossStatus(): Promise<WorldBossStatusResponse> {
+  return api.get<WorldBossStatusResponse>('/world-boss/status');
+}
+
+export async function attackWorldBoss(instanceIds: string[]): Promise<WorldBossAttackResult> {
+  return api.post<WorldBossAttackResult>('/world-boss/attack', { instanceIds });
+}
+
+export async function getWorldBossLadder(limit = 100): Promise<WorldBossLadderResponse & { entries: any[] }> {
+  return api.get(`/world-boss/ladder?limit=${limit}`);
+}
+
+export async function getWorldBossHistory(weeks = 4): Promise<{ past: WorldBossState[] }> {
+  return api.get(`/world-boss/history?weeks=${weeks}`);
 }
 
 // ── Admin ─────────────────────────────────────────────────────────────

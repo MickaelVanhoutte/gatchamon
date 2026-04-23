@@ -509,7 +509,7 @@ export function saveDungeonRecord(playerId: string, key: string, floor: number, 
 
 // ── Generic reward application ─────────────────────────────────────────
 
-function applyReward(playerId: string, reward: MissionReward): void {
+export function applyReward(playerId: string, reward: MissionReward): void {
   const db = getDb();
   if (reward.regularPokeballs) {
     db.prepare('UPDATE players SET regular_pokeballs = regular_pokeballs + ? WHERE id = ?')

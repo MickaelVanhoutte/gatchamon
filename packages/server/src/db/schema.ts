@@ -79,6 +79,7 @@ export function initDb(): void {
   migrateChat(database);
   migrateAddSelectedPassive(database);
   migrateAddLockAndHome(database);
+  migrateWorldBoss(database);
 
   console.log('Database initialized');
 }
@@ -403,6 +404,37 @@ function migrateAddLockAndHome(database: Database.Database): void {
   try {
     database.exec('ALTER TABLE pokemon_instances ADD COLUMN show_on_home INTEGER NOT NULL DEFAULT 0');
   } catch { /* already exists */ }
+}
+
+function migrateWorldBoss(database: Database.Database): void {
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS world_boss (
+      boss_id TEXT PRIMARY KEY,
+      template_id INTEGER NOT NULL,
+      week_start TEXT NOT NULL UNIQUE,
+      week_end TEXT NOT NULL,
+      max_hp INTEGER NOT NULL,
+      current_hp INTEGER NOT NULL,
+      defeated INTEGER NOT NULL DEFAULT 0,
+      defeated_at TEXT,
+      settled INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS world_boss_attacks (
+      boss_id TEXT NOT NULL,
+      player_id TEXT NOT NULL,
+      total_damage INTEGER NOT NULL DEFAULT 0,
+      attacks INTEGER NOT NULL DEFAULT 0,
+      last_attack_date TEXT,
+      last_attack_at TEXT,
+      PRIMARY KEY (boss_id, player_id),
+      FOREIGN KEY (boss_id) REFERENCES world_boss(boss_id),
+      FOREIGN KEY (player_id) REFERENCES players(id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_world_boss_attacks_damage ON world_boss_attacks(boss_id, total_damage DESC);
+  `);
 }
 
 function migrateStoryProgress(database: Database.Database): void {

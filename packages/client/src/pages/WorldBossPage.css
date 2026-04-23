@@ -1,0 +1,271 @@
+.world-boss-page {
+  padding: 12px 14px 80px;
+  color: #fff;
+  background:
+    radial-gradient(circle at 20% -10%, rgba(170, 70, 220, 0.45), transparent 55%),
+    radial-gradient(circle at 80% 10%, rgba(120, 30, 60, 0.4), transparent 50%),
+    linear-gradient(180deg, #0a0b1c 0%, #14152c 100%);
+  min-height: 100%;
+}
+
+.wb-loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted, #aaa);
+}
+
+.wb-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+.wb-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0;
+  color: #ffdf5d;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 12px rgba(255, 223, 93, 0.35);
+}
+.wb-countdown {
+  font-size: 0.85rem;
+  color: #ffb8c0;
+  font-weight: 600;
+}
+
+.wb-boss-card {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(90, 10, 90, 0.55), rgba(30, 5, 50, 0.75));
+  border: 1px solid rgba(255, 200, 255, 0.18);
+  box-shadow: 0 4px 28px rgba(170, 70, 220, 0.18);
+  margin-bottom: 12px;
+}
+.wb-boss-portrait {
+  position: relative;
+  flex: 0 0 110px;
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wb-boss-sprite {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 0 10px rgba(220, 80, 220, 0.8));
+  animation: wb-float 3.5s ease-in-out infinite;
+}
+.wb-boss-aura {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(220, 80, 220, 0.5) 0%, transparent 65%);
+  filter: blur(6px);
+  animation: wb-pulse 2s ease-in-out infinite;
+}
+@keyframes wb-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes wb-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 0.95; transform: scale(1.08); }
+}
+
+.wb-boss-info { flex: 1; min-width: 0; }
+.wb-boss-name {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+  letter-spacing: 0.4px;
+}
+.wb-boss-types {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.wb-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.wb-hp-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+.wb-hp-bar {
+  height: 14px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 7px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.wb-hp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff5577, #ffb347);
+  transition: width 0.6s ease-out;
+  box-shadow: 0 0 10px rgba(255, 100, 100, 0.5);
+}
+.wb-hp-numbers {
+  font-size: 0.78rem;
+  color: #ffd4d4;
+  font-variant-numeric: tabular-nums;
+}
+.wb-boss-participants {
+  font-size: 0.72rem;
+  color: #c0a8d0;
+}
+
+.wb-my-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.wb-stat-cell {
+  padding: 10px 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.wb-stat-label {
+  font-size: 0.72rem;
+  color: #b0b0c0;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.wb-stat-value {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+.wb-tier-top1 { border-color: #ffd84d; background: linear-gradient(135deg, rgba(255, 216, 77, 0.15), rgba(255, 170, 40, 0.1)); }
+.wb-tier-top10 { border-color: #c39cff; background: rgba(195, 156, 255, 0.12); }
+.wb-tier-top25 { border-color: #6ec2ff; background: rgba(110, 194, 255, 0.1); }
+.wb-tier-top50 { border-color: #8ee29c; background: rgba(142, 226, 156, 0.08); }
+.wb-tier-participant { border-color: rgba(255, 255, 255, 0.15); }
+.wb-tier-none { border-color: rgba(255, 255, 255, 0.08); color: #888; }
+
+.wb-attack-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #ff3e6a, #ff8b3e);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  box-shadow: 0 4px 16px rgba(255, 70, 110, 0.4);
+  cursor: pointer;
+  margin-bottom: 16px;
+  transition: transform 0.1s, filter 0.15s;
+}
+.wb-attack-btn:active { transform: scale(0.98); }
+.wb-attack-disabled {
+  background: rgba(255, 255, 255, 0.08);
+  color: #7c7c8c;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.wb-section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: #ffdf5d;
+}
+.wb-empty { color: #b0b0c0; font-size: 0.85rem; padding: 10px; }
+
+.wb-ladder {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.wb-ladder-row {
+  display: grid;
+  grid-template-columns: 34px 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+.wb-ladder-row.wb-tier-top1 {
+  background: linear-gradient(90deg, rgba(255, 216, 77, 0.18), rgba(255, 170, 40, 0.08));
+  border-color: rgba(255, 216, 77, 0.4);
+}
+.wb-rank { color: #ffdf5d; font-weight: 700; }
+.wb-player { color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wb-tier-badge {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffb8c0;
+}
+.wb-damage {
+  font-weight: 700;
+  color: #ff9b7a;
+  font-variant-numeric: tabular-nums;
+}
+
+.wb-rewards-panel { margin-bottom: 24px; }
+.wb-rewards-toggle {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.wb-rewards-list {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.wb-reward-row {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.8rem;
+}
+.wb-reward-tier { font-weight: 700; color: #ffdf5d; flex: 0 0 80px; }
+.wb-reward-items { color: #d0d0d8; flex: 1; }
