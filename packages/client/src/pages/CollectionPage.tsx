@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../stores/gameStore';
 import { GameIcon, StarRating } from '../components/icons';
 import type { OwnedPokemon } from '../stores/gameStore';
-import { computeStats, computeStatsWithItems, getSkillsForPokemon, getEffectiveSkillIds, getShinyAlternatePassive, MAX_LEVEL_BY_STARS, isMaxLevel, getTemplate, ESSENCES, getActiveEvolutionsFrom, getTypeChangeDef, getAvailableTypeChanges, isActivePokemon, describeLeaderSkill, isHomunculusForm } from '@gatchamon/shared';
+import { computeStats, computeStatsWithItems, getSkillsForPokemon, resolveInstanceSkills, getShinyAlternatePassive, MAX_LEVEL_BY_STARS, isMaxLevel, getTemplate, ESSENCES, getActiveEvolutionsFrom, getTypeChangeDef, getAvailableTypeChanges, isActivePokemon, describeLeaderSkill, isHomunculusForm } from '@gatchamon/shared';
 import { canEvolveInstance } from '../services/evolution.service';
 import { canChangeType } from '../services/type-change.service';
 import type { PokemonType, BaseStats } from '@gatchamon/shared';
@@ -123,7 +123,7 @@ export function CollectionPage() {
     : null;
 
   const selectedSkills = selected
-    ? getSkillsForPokemon(getEffectiveSkillIds(selected.template, selected.instance.selectedPassive))
+    ? getSkillsForPokemon(resolveInstanceSkills(selected.template, selected.instance.selectedPassive, selected.instance.homunculusTree))
     : [];
   const shinyAltPassive = selected ? getShinyAlternatePassive(selected.template) : null;
 

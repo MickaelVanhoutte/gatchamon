@@ -4,7 +4,7 @@ import { useGameStore } from '../stores/gameStore';
 import * as serverApi from '../services/server-api.service';
 import { useBattleAnimation } from '../battle/useBattleAnimation';
 import { useAutoBattle } from '../battle/useAutoBattle';
-import { getTemplate, SKILLS, getTypeEffectiveness, ESSENCES, ITEM_SETS, getBossDialogue, EFFECT_REGISTRY, simulateTimeline, getEffectiveSkillIds } from '@gatchamon/shared';
+import { getTemplate, SKILLS, getTypeEffectiveness, ESSENCES, ITEM_SETS, getBossDialogue, EFFECT_REGISTRY, simulateTimeline, resolveInstanceSkills } from '@gatchamon/shared';
 import type { BattleState, BattleMon, BattleLogEntry, BattleResult, PokemonType, EffectId, ActiveEffect, SkillDefinition, TimelineEntry } from '@gatchamon/shared';
 import { assetUrl, getBattleBackground } from '../utils/asset-url';
 import { getSpriteBoost } from '../utils/sprite-scale';
@@ -118,7 +118,7 @@ function SkillPanel({ actor, selectedSkill, onSkillSelect, onCancelSelect, onSki
   const didLongPress = useRef(false);
 
   const tmpl = getTemplate(actor.templateId);
-  const allSkillIds = tmpl ? getEffectiveSkillIds(tmpl, actor.selectedPassive) : [];
+  const allSkillIds = tmpl ? resolveInstanceSkills(tmpl, actor.selectedPassive, actor.homunculusTree) : [];
 
   const handlePointerDown = useCallback((skill: SkillDefinition) => {
     didLongPress.current = false;

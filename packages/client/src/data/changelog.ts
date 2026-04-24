@@ -7,6 +7,13 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.8.8',
+    date: '2026-04-24',
+    changes: [
+      'Fix: Pokémon summary (Collection detail, MonsterDetailModal) and battle skill panel now show the Homunculus skill-tree overlay. Previously these views used the template default skills and ignored unlocked tree nodes, so fused homunculi kept displaying their basic skills even after unlocking replacements. Battle resolution was already correct — only the UI display was wrong.',
+    ],
+  },
+  {
     version: '0.8.7',
     date: '2026-04-24',
     changes: [
