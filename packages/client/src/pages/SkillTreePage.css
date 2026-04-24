@@ -105,6 +105,7 @@
 
 .skilltree-body {
   display: flex;
+  flex-direction: column;
   flex: 1;
   min-height: 0;
   overflow: hidden;
@@ -115,9 +116,7 @@
   min-width: 0;
   overflow: auto;
   padding: 12px;
-  background:
-    radial-gradient(ellipse at top, rgba(120, 72, 28, 0.08), transparent 70%),
-    linear-gradient(180deg, rgba(40, 20, 6, 0.35), rgba(20, 10, 4, 0.45));
+  background: var(--bg-primary);
 }
 
 .skilltree-panels {
@@ -126,45 +125,47 @@
   gap: 0;
   align-items: stretch;
   min-height: 100%;
-  border: 2px solid #4a2e17;
+  width: 100%;
+  border: 1px solid var(--card-border);
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) inset;
-  width: fit-content;
+  box-shadow: var(--card-shadow);
 }
 
 .skilltree-panel {
   display: flex;
   flex-direction: column;
-  padding: 8px 4px 12px;
+  padding: 10px 6px 14px;
   position: relative;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .skilltree-panel + .skilltree-panel {
-  border-left: 2px solid rgba(255, 210, 150, 0.15);
+  border-left: 1px solid rgba(247, 209, 23, 0.18);
 }
 
 .skilltree-panel-1 {
-  background: linear-gradient(180deg, #3f2814 0%, #2b1b0d 100%);
+  background: linear-gradient(180deg, rgba(7, 64, 68, 0.85) 0%, rgba(7, 50, 54, 0.9) 100%);
 }
 
 .skilltree-panel-2 {
-  background: linear-gradient(180deg, #553820 0%, #3a2614 100%);
+  background: linear-gradient(180deg, rgba(11, 77, 83, 0.65) 0%, rgba(9, 65, 70, 0.75) 100%);
 }
 
 .skilltree-panel-3 {
-  background: linear-gradient(180deg, #6b4a2c 0%, #4c351e 100%);
+  background: linear-gradient(180deg, rgba(14, 96, 104, 0.5) 0%, rgba(11, 80, 87, 0.6) 100%);
 }
 
 .skilltree-panel-title {
   text-align: center;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #f5d6a2;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-  margin-bottom: 4px;
+  color: var(--accent);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+  margin-bottom: 6px;
 }
 
 .skilltree-panel-canvas {
@@ -179,18 +180,18 @@
 }
 
 .skilltree-connector {
-  stroke: rgba(255, 210, 150, 0.18);
+  stroke: rgba(242, 249, 240, 0.18);
   stroke-width: 3;
   stroke-linecap: round;
 }
 
 .skilltree-connector.unlocked {
-  stroke: #f5c14b;
+  stroke: var(--accent);
   stroke-width: 4;
-  filter: drop-shadow(0 0 3px rgba(245, 193, 75, 0.6));
+  filter: drop-shadow(0 0 3px rgba(247, 209, 23, 0.55));
 }
 .skilltree-connector.unlockable {
-  stroke: #c88a3a;
+  stroke: rgba(247, 209, 23, 0.55);
   stroke-width: 3;
   stroke-dasharray: 5 4;
 }
@@ -201,45 +202,45 @@
   align-items: center;
   justify-content: center;
   gap: 2px;
-  background: linear-gradient(180deg, #5a3d22 0%, #3a2612 100%);
-  border: 2px solid #2a1a0a;
-  color: #f5d6a2;
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
+  color: var(--text-primary);
   padding: 6px 6px;
   border-radius: 6px;
   cursor: pointer;
   text-align: center;
   transition: all 0.15s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
 }
 
 .skilltree-node:hover {
-  background: linear-gradient(180deg, #6f4a2a 0%, #4a301a 100%);
-  border-color: #8a5a2e;
+  background: var(--bg-panel-alt);
+  border-color: rgba(247, 209, 23, 0.35);
 }
 
 .skilltree-node.unlocked {
-  background: linear-gradient(180deg, #b07a34 0%, #7a4e1c 100%);
-  border-color: #f5c14b;
-  color: #fff;
+  background: linear-gradient(180deg, rgba(247, 209, 23, 0.28) 0%, rgba(247, 209, 23, 0.14) 100%);
+  border-color: var(--accent);
+  color: var(--text-primary);
   box-shadow:
-    0 0 8px rgba(245, 193, 75, 0.55),
-    0 2px 4px rgba(0, 0, 0, 0.4);
+    0 0 10px rgba(247, 209, 23, 0.45),
+    0 2px 4px rgba(0, 0, 0, 0.35);
 }
 
 .skilltree-node.always-on {
-  background: linear-gradient(180deg, #8a5c2a 0%, #5a3c1a 100%);
-  border-color: #d49a3c;
-  color: #fff;
+  background: linear-gradient(180deg, rgba(247, 209, 23, 0.2) 0%, rgba(247, 209, 23, 0.08) 100%);
+  border-color: rgba(247, 209, 23, 0.6);
+  color: var(--text-primary);
 }
 
 .skilltree-node.affordable:not(.unlocked) {
-  border-color: #e8b060;
+  border-color: var(--accent-hover);
   animation: skilltree-pulse 1.6s ease-in-out infinite;
 }
 
 @keyframes skilltree-pulse {
-  0%, 100% { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); }
-  50%      { box-shadow: 0 0 6px rgba(232, 176, 96, 0.55), 0 2px 4px rgba(0, 0, 0, 0.4); }
+  0%, 100% { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35); }
+  50%      { box-shadow: 0 0 8px rgba(249, 220, 77, 0.55), 0 2px 4px rgba(0, 0, 0, 0.35); }
 }
 
 .skilltree-node.parent-locked {
@@ -252,12 +253,12 @@
 }
 
 .skilltree-node-kind-gate:not(.unlocked) {
-  background: linear-gradient(180deg, #4c3520 0%, #2e1f10 100%);
+  background: rgba(7, 64, 68, 0.5);
   border-style: dashed;
 }
 
 .skilltree-node.selected {
-  outline: 2px solid #f9d176;
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -272,16 +273,32 @@
 }
 
 .skilltree-detail {
-  width: 260px;
-  max-width: 38%;
+  width: 100%;
   flex-shrink: 0;
-  padding: 12px;
+  padding: 10px 14px;
   background: var(--bg-secondary);
-  border-left: 1px solid var(--card-border);
+  border-top: 1px solid var(--card-border);
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px;
   overflow-y: auto;
+  max-height: 40%;
+}
+
+.skilltree-detail > .skilltree-detail-label,
+.skilltree-detail > .skilltree-detail-desc,
+.skilltree-detail > .skilltree-detail-hint,
+.skilltree-detail > .skilltree-skill-preview,
+.skilltree-detail > .skilltree-detail-reqs,
+.skilltree-detail > .skilltree-unlock-btn {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.skilltree-detail > .skilltree-detail-label {
+  flex-basis: 100%;
+  margin-top: 2px;
 }
 
 .skilltree-detail-label {
@@ -548,7 +565,6 @@
 
   .skilltree-body {
     flex: 0 0 auto;
-    flex-direction: column;
     overflow: visible;
   }
 
@@ -560,14 +576,10 @@
   }
 
   .skilltree-detail {
-    width: 100%;
-    max-width: none;
-    flex-shrink: 0;
-    border-left: none;
-    border-top: 1px solid var(--card-border);
     padding: 10px;
-    gap: 6px;
+    gap: 8px;
     overflow-y: visible;
+    max-height: none;
   }
 
   .skilltree-detail-hint {
