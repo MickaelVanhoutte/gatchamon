@@ -7,6 +7,13 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.8.4',
+    date: '2026-04-23',
+    changes: [
+      'Admin: every player currency is now editable — all 57 essences (19 elements × 3 tiers), other materials, mystery pieces, and trainer skills are editable via inputs alongside the existing pokeballs / stardust / pokedollars / energy fields.',
+    ],
+  },
+  {
     version: '0.8.3',
     date: '2026-04-23',
     changes: [

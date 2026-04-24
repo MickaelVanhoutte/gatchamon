@@ -185,6 +185,16 @@ const EDITABLE_FIELDS: Record<string, string> = {
   trainerSkillPoints: 'trainer_skill_points',
 };
 
+function sanitizeIntRecord(input: unknown): Record<string, number> | null {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return null;
+  const out: Record<string, number> = {};
+  for (const [k, v] of Object.entries(input as Record<string, unknown>)) {
+    const num = Math.trunc(Number(v));
+    if (!isNaN(num) && num > 0) out[k] = num;
+  }
+  return out;
+}
+
 adminRouter.patch('/players/:id', (req, res) => {
   try {
     const db = getDb();
@@ -200,6 +210,34 @@ adminRouter.patch('/players/:id', (req, res) => {
         sets.push(`${column} = ?`);
         values.push(num);
       }
+    }
+
+    if (req.body.materials !== undefined) {
+      const materials = sanitizeIntRecord(req.body.materials);
+      if (materials) {
+        sets.push('materials = ?');
+        values.push(JSON.stringify(materials));
+      }
+    }
+
+    if (req.body.mysteryPieces !== undefined) {
+      const pieces = sanitizeIntRecord(req.body.mysteryPieces);
+      if (pieces) {
+        sets.push('mystery_pieces = ?');
+        values.push(JSON.stringify(pieces));
+      }
+    }
+
+    if (req.body.trainerSkills !== undefined && req.body.trainerSkills && typeof req.body.trainerSkills === 'object') {
+      const existingRow = db.prepare('SELECT trainer_skills FROM players WHERE id = ?').get(req.params.id) as any;
+      const existing = existingRow?.trainer_skills ? JSON.parse(existingRow.trainer_skills) : {};
+      const merged = { ...existing };
+      for (const [k, v] of Object.entries(req.body.trainerSkills as Record<string, unknown>)) {
+        const num = Math.trunc(Number(v));
+        if (!isNaN(num) && num >= 0) merged[k] = num;
+      }
+      sets.push('trainer_skills = ?');
+      values.push(JSON.stringify(merged));
     }
 
     if (sets.length === 0) {

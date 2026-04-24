@@ -1616,6 +1616,46 @@
   box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.2);
 }
 
+/* Essence Grid */
+
+.admin-db-essence-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 8px;
+}
+
+.admin-db-essence-row {
+  display: grid;
+  grid-template-columns: 80px repeat(3, 1fr);
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--bg-primary);
+  border-radius: 6px;
+}
+
+.admin-db-essence-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: capitalize;
+  letter-spacing: 0.03em;
+}
+
+.admin-db-essence-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.admin-db-essence-tier {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
 /* Story Progress */
 
 .admin-db-story-grid {

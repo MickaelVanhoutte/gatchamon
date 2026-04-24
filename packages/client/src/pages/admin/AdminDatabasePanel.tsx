@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { api } from '../../services/api';
-import { POKEDEX, type MissionReward } from '@gatchamon/shared';
+import { POKEDEX, POKEDEX_MAP, ESSENCES, ELEMENTS, TIERS, TIER_LABELS, type MissionReward } from '@gatchamon/shared';
 import { assetUrl } from '../../utils/asset-url';
 import { STAR_COLORS } from './constants';
 
@@ -169,6 +169,9 @@ export function AdminDatabasePanel() {
   // ── Edit mode ──
   const [editing, setEditing] = useState(false);
   const [editValues, setEditValues] = useState<Record<string, number>>({});
+  const [editMaterials, setEditMaterials] = useState<Record<string, number>>({});
+  const [editMysteryPieces, setEditMysteryPieces] = useState<Record<string, number>>({});
+  const [editTrainerSkills, setEditTrainerSkills] = useState<Record<string, number>>({});
   const [saveStatus, setSaveStatus] = useState('');
 
   // ── Add pokemon ──
@@ -254,6 +257,11 @@ export function AdminDatabasePanel() {
       trainerExp: p.trainerExp,
       trainerSkillPoints: p.trainerSkillPoints,
     });
+    setEditMaterials({ ...p.materials });
+    setEditMysteryPieces(
+      Object.fromEntries(Object.entries(p.mysteryPieces).map(([k, v]) => [String(k), Number(v)]))
+    );
+    setEditTrainerSkills({ ...p.trainerSkills });
     setEditing(true);
     setSaveStatus('');
   }
@@ -262,14 +270,46 @@ export function AdminDatabasePanel() {
     if (!selectedPlayer) return;
     setSaveStatus('Saving...');
     try {
-      await api.patch(`/admin/players/${selectedPlayer.player.id}`, editValues, ADMIN_API_OPTS);
+      await api.patch(`/admin/players/${selectedPlayer.player.id}`, {
+        ...editValues,
+        materials: editMaterials,
+        mysteryPieces: editMysteryPieces,
+        trainerSkills: editTrainerSkills,
+      }, ADMIN_API_OPTS);
       setSaveStatus('Saved!');
       setEditing(false);
-      // Refresh
       await selectPlayer(selectedPlayer.player.id);
     } catch (e: any) {
       setSaveStatus(`Error: ${e.message}`);
     }
+  }
+
+  function setMaterial(key: string, raw: string) {
+    const num = parseInt(raw, 10);
+    setEditMaterials(prev => {
+      const next = { ...prev };
+      if (!raw || isNaN(num) || num <= 0) delete next[key];
+      else next[key] = num;
+      return next;
+    });
+  }
+
+  function setMysteryPiece(key: string, raw: string) {
+    const num = parseInt(raw, 10);
+    setEditMysteryPieces(prev => {
+      const next = { ...prev };
+      if (!raw || isNaN(num) || num <= 0) delete next[key];
+      else next[key] = num;
+      return next;
+    });
+  }
+
+  function setTrainerSkill(key: string, raw: string) {
+    const num = parseInt(raw, 10);
+    setEditTrainerSkills(prev => ({
+      ...prev,
+      [key]: !raw || isNaN(num) || num < 0 ? 0 : num,
+    }));
   }
 
   // ── Add pokemon ──
@@ -585,25 +625,116 @@ export function AdminDatabasePanel() {
               {Object.entries(selectedPlayer.player.trainerSkills).map(([key, value]) => (
                 <div key={key} className="admin-db-player-field">
                   <span className="admin-db-field-label">{SKILL_LABELS[key] ?? key}</span>
-                  <span className="admin-db-field-value">{value}</span>
+                  {editing ? (
+                    <input
+                      className="admin-db-edit-input"
+                      type="number"
+                      min={0}
+                      value={editTrainerSkills[key] ?? 0}
+                      onChange={e => setTrainerSkill(key, e.target.value)}
+                    />
+                  ) : (
+                    <span className="admin-db-field-value">{value}</span>
+                  )}
                 </div>
               ))}
             </div>
 
-            {/* Materials */}
-            {Object.keys(selectedPlayer.player.materials).length > 0 && (
-              <>
-                <h3 className="admin-db-subsection-title">Materials</h3>
-                <div className="admin-db-player-grid">
-                  {Object.entries(selectedPlayer.player.materials).map(([key, value]) => (
-                    <div key={key} className="admin-db-player-field">
-                      <span className="admin-db-field-label">{key}</span>
-                      <span className="admin-db-field-value">{value}</span>
-                    </div>
-                  ))}
+            {/* Essences — grouped by element, one row per element, 3 tiers */}
+            <h3 className="admin-db-subsection-title">Essences</h3>
+            <div className="admin-db-essence-grid">
+              {ELEMENTS.map(element => (
+                <div key={element} className="admin-db-essence-row">
+                  <span className="admin-db-essence-label">{element}</span>
+                  {TIERS.map(tier => {
+                    const id = `${element}_${tier}`;
+                    const currentValue = editing
+                      ? (editMaterials[id] ?? 0)
+                      : (selectedPlayer.player.materials[id] ?? 0);
+                    return (
+                      <div key={tier} className="admin-db-essence-field">
+                        <span className="admin-db-essence-tier">{TIER_LABELS[tier]}</span>
+                        {editing ? (
+                          <input
+                            className="admin-db-edit-input"
+                            type="number"
+                            min={0}
+                            value={currentValue}
+                            onChange={e => setMaterial(id, e.target.value)}
+                          />
+                        ) : (
+                          <span className="admin-db-field-value">{currentValue}</span>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-              </>
-            )}
+              ))}
+            </div>
+
+            {/* Other materials (non-essence keys) */}
+            {(() => {
+              const source = editing ? editMaterials : selectedPlayer.player.materials;
+              const otherKeys = Object.keys(source).filter(k => !ESSENCES[k]);
+              if (otherKeys.length === 0 && !editing) return null;
+              return (
+                <>
+                  <h3 className="admin-db-subsection-title">Other Materials</h3>
+                  <div className="admin-db-player-grid">
+                    {otherKeys.map(key => (
+                      <div key={key} className="admin-db-player-field">
+                        <span className="admin-db-field-label">{key}</span>
+                        {editing ? (
+                          <input
+                            className="admin-db-edit-input"
+                            type="number"
+                            min={0}
+                            value={editMaterials[key] ?? 0}
+                            onChange={e => setMaterial(key, e.target.value)}
+                          />
+                        ) : (
+                          <span className="admin-db-field-value">{source[key]}</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              );
+            })()}
+
+            {/* Mystery Pieces (keyed by templateId) */}
+            {(() => {
+              const source = editing ? editMysteryPieces : selectedPlayer.player.mysteryPieces;
+              const keys = Object.keys(source);
+              if (keys.length === 0) return null;
+              return (
+                <>
+                  <h3 className="admin-db-subsection-title">Mystery Pieces</h3>
+                  <div className="admin-db-player-grid">
+                    {keys.map(key => {
+                      const tmpl = POKEDEX_MAP.get(Number(key));
+                      const label = tmpl ? `${tmpl.name} #${key}` : `#${key}`;
+                      return (
+                        <div key={key} className="admin-db-player-field">
+                          <span className="admin-db-field-label">{label}</span>
+                          {editing ? (
+                            <input
+                              className="admin-db-edit-input"
+                              type="number"
+                              min={0}
+                              value={editMysteryPieces[key] ?? 0}
+                              onChange={e => setMysteryPiece(key, e.target.value)}
+                            />
+                          ) : (
+                            <span className="admin-db-field-value">{(source as Record<string, number>)[key]}</span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              );
+            })()}
 
             {/* Story Progress */}
             <h3 className="admin-db-subsection-title">Story Progress</h3>
