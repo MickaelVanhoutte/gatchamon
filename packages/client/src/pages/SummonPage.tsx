@@ -139,6 +139,13 @@ export function SummonPage() {
                   <GameIcon id="sparkles" size={16} />
                   <span>Pieces</span>
                 </button>
+                <button
+                  className="pokeball-type-tab"
+                  onClick={() => navigate('/homunculus')}
+                >
+                  <GameIcon id="magic" size={16} />
+                  <span>Homunculus</span>
+                </button>
               </div>
               {selectedBall !== 'pieces' && (
                 <label className="pc-auto-toggle">
@@ -261,18 +268,6 @@ export function SummonPage() {
           )}
 
           {error && <p className="summon-error">{error}</p>}
-
-          {!inTutorial && selectedBall !== 'pieces' && (
-            <div className="summon-homunculus-entry">
-              <button
-                className="summon-homunculus-btn"
-                onClick={() => navigate('/homunculus')}
-              >
-                <GameIcon id="sparkles" size={14} />
-                <span>Homunculus Altar</span>
-              </button>
-            </div>
-          )}
         </div>
       )}
 

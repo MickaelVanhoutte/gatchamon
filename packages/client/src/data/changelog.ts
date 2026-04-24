@@ -7,6 +7,13 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.8.5',
+    date: '2026-04-24',
+    changes: [
+      'UX: Homunculus Altar is now reachable directly from the summoning type tabs (after Pieces), replacing the small bottom-of-page entry button.',
+    ],
+  },
+  {
     version: '0.8.4',
     date: '2026-04-23',
     changes: [
