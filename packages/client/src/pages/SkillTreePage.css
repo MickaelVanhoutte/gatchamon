@@ -87,21 +87,53 @@
 }
 
 .skilltree-typechip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
   cursor: pointer;
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-size: 0.75rem;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.72rem;
   font-weight: 700;
   border: 1px solid rgba(255, 255, 255, 0.25);
   text-transform: capitalize;
   flex-shrink: 0;
-  opacity: 0.9;
+  opacity: 0.95;
   transition: all 0.15s;
+  line-height: 1.1;
 }
 
 .skilltree-typechip:not(:disabled):hover { opacity: 1; }
-.skilltree-typechip:disabled { opacity: 0.5; cursor: default; }
-.skilltree-typechip.current { outline: 2px solid #fbbf24; }
+.skilltree-typechip:disabled { cursor: default; }
+.skilltree-typechip.current {
+  outline: 2px solid var(--accent);
+  opacity: 1;
+}
+.skilltree-typechip.unaffordable {
+  opacity: 0.7;
+}
+
+.skilltree-typechip-name {
+  font-weight: 700;
+}
+
+.skilltree-typechip-cost {
+  display: inline-flex;
+  gap: 6px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: none;
+}
+
+.skilltree-typechip-req {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.skilltree-typechip-req.req-met { color: #a7f3d0; }
+.skilltree-typechip-req.req-unmet { color: #fca5a5; }
 
 .skilltree-body {
   display: flex;

@@ -210,10 +210,11 @@ export function SkillTreePage() {
           const cost = getHomunculusSwitchCost(t).essences;
           const affordable = t === hType || canAfford(cost);
           const isCurrent = t === hType;
+          const costEntries_ = Object.entries(cost);
           return (
             <button
               key={t}
-              className={`skilltree-typechip skilltree-type-${t} ${isCurrent ? 'current' : ''}`}
+              className={`skilltree-typechip skilltree-type-${t} ${isCurrent ? 'current' : ''} ${!isCurrent && !affordable ? 'unaffordable' : ''}`}
               disabled={isCurrent || !affordable || !!switching}
               onClick={() => {
                 if (isCurrent) return;
@@ -221,9 +222,25 @@ export function SkillTreePage() {
                   handleSwitch(t);
                 }
               }}
-              title={isCurrent ? 'Current type' : Object.entries(cost).map(([k, v]) => `${v}× ${essenceLabel(k)}`).join(', ')}
             >
-              {t}{isCurrent ? ' (current)' : ''}
+              <span className="skilltree-typechip-name">{t}{isCurrent ? ' (current)' : ''}</span>
+              {!isCurrent && (
+                <span className="skilltree-typechip-cost">
+                  {costEntries_.map(([essId, needed]) => {
+                    const owned = materials[essId] ?? 0;
+                    const ess = ESSENCES[essId];
+                    return (
+                      <span
+                        key={essId}
+                        className={`skilltree-typechip-req ${owned >= needed ? 'req-met' : 'req-unmet'}`}
+                      >
+                        <GameIcon id={ess?.icon} size={12} />
+                        {owned}/{needed}
+                      </span>
+                    );
+                  })}
+                </span>
+              )}
             </button>
           );
         })}
