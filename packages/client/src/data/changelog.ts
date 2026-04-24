@@ -7,6 +7,13 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.8.6',
+    date: '2026-04-24',
+    changes: [
+      'Fix: Homunculus skill tree page is now usable on mobile — the detail panel stacks below the tree instead of eating 40% of the horizontal space, the tree gets a proper scrollable height, and the reset button clears the floating menu button.',
+    ],
+  },
+  {
     version: '0.8.5',
     date: '2026-04-24',
     changes: [
