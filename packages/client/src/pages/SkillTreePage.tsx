@@ -26,6 +26,16 @@ function costEntries(cost: Record<string, number>): Array<[string, number]> {
   return Object.entries(cost);
 }
 
+// Tree cell geometry (absolute positioning inside each panel).
+const CELL_W = 110;
+const CELL_H = 84;
+const PADDING = 18;
+const NODE_W = CELL_W - 16;
+const NODE_H = CELL_H - 16;
+
+// Which grid columns belong to which SW-style panel (col 1 / col 2 / col 3).
+const PANEL_COLS: Record<number, 1 | 2 | 3> = { 0: 1, 1: 2, 2: 2, 3: 3 };
+
 export function SkillTreePage() {
   const { instanceId } = useParams<{ instanceId: string }>();
   const navigate = useNavigate();
@@ -48,7 +58,13 @@ export function SkillTreePage() {
   const hType = owned ? getHomunculusType(owned.instance.templateId) : null;
   const tree = hType ? getHomunculusTree(hType) : null;
   const unlocked = owned?.instance.homunculusTree?.unlocked ?? [];
-  const unlockedSet = useMemo(() => new Set(unlocked), [unlocked]);
+  const unlockedSet = useMemo(() => {
+    const s = new Set(unlocked);
+    if (tree) {
+      for (const n of tree.nodes) if (n.alwaysUnlocked) s.add(n.id);
+    }
+    return s;
+  }, [unlocked, tree]);
 
   const effectiveSkillIds = useMemo(() => {
     return hType ? resolveHomunculusSkills(hType, unlocked) : null;
@@ -58,12 +74,18 @@ export function SkillTreePage() {
     return effectiveSkillIds ? getSkillsForPokemon(effectiveSkillIds) : [];
   }, [effectiveSkillIds]);
 
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 2500);
+    return () => clearTimeout(t);
+  }, [toast]);
+
   if (!owned) {
     return (
       <div className="skilltree-page">
         <div className="skilltree-header">
           <button className="skilltree-back" onClick={() => navigate('/collection')}>← Back</button>
-          <span className="skilltree-title">Homunculus not found</span>
+          <span className="skilltree-title">Silvally not found</span>
         </div>
       </div>
     );
@@ -74,7 +96,7 @@ export function SkillTreePage() {
       <div className="skilltree-page">
         <div className="skilltree-header">
           <button className="skilltree-back" onClick={() => navigate('/collection')}>← Back</button>
-          <span className="skilltree-title">This monster is not a fused Homunculus</span>
+          <span className="skilltree-title">This monster is not a fused Silvally</span>
         </div>
       </div>
     );
@@ -93,10 +115,18 @@ export function SkillTreePage() {
     return !node.parent || unlockedSet.has(node.parent);
   }
 
+  function mutexBlocker(node: HomunculusNode): HomunculusNode | null {
+    if (!tree || !node.mutexGroup) return null;
+    return tree.nodes.find(
+      n => n.id !== node.id && n.mutexGroup === node.mutexGroup && unlockedSet.has(n.id),
+    ) ?? null;
+  }
+
   async function handleUnlock() {
     if (!selectedNode || !owned) return;
     if (unlockedSet.has(selectedNode.id)) return;
     if (!parentIsUnlocked(selectedNode)) { setToast('Unlock the prerequisite first'); return; }
+    if (mutexBlocker(selectedNode)) { setToast('Another path in this branch is active — reset first'); return; }
     if (!canAfford(selectedNode.cost)) { setToast('Not enough essences'); return; }
     await unlockHomunculusNode(owned.instance.instanceId, selectedNode.id);
     setToast(`Unlocked: ${selectedNode.label}`);
@@ -129,44 +159,36 @@ export function SkillTreePage() {
     }
   }
 
-  useEffect(() => {
-    if (!toast) return;
-    const t = setTimeout(() => setToast(null), 2500);
-    return () => clearTimeout(t);
-  }, [toast]);
-
   const template = getTemplate(owned.instance.templateId);
 
-  // Tree layout constants — absolute positioning + SVG overlay
-  const CELL_W = 130;
-  const CELL_H = 86;
-  const PADDING = 16;
-  const maxCol = tree.nodes.reduce((m, n) => Math.max(m, n.col), 0);
-  const maxRow = tree.nodes.reduce((m, n) => Math.max(m, n.row), 0);
-  const treeWidth = (maxCol + 1) * CELL_W + PADDING * 2;
-  const treeHeight = (maxRow + 1) * CELL_H + PADDING * 2;
-  const nodeW = CELL_W - 16;
-  const nodeH = CELL_H - 16;
+  // Split nodes into 3 panels.
+  const panels: { id: 1 | 2 | 3; title: string; nodes: HomunculusNode[] }[] = [
+    { id: 1, title: 'Skill 1', nodes: [] },
+    { id: 2, title: 'Skill 2', nodes: [] },
+    { id: 3, title: 'Skill 3', nodes: [] },
+  ];
+  for (const node of tree.nodes) {
+    const panelId = PANEL_COLS[node.col] ?? 1;
+    panels.find(p => p.id === panelId)!.nodes.push(node);
+  }
 
-  function nodeCenter(node: HomunculusNode): { cx: number; cy: number } {
+  function panelGeometry(nodes: HomunculusNode[]) {
+    const cols = Math.max(...nodes.map(n => n.col)) - Math.min(...nodes.map(n => n.col)) + 1;
+    const rows = Math.max(...nodes.map(n => n.row)) + 1;
     return {
-      cx: PADDING + node.col * CELL_W + CELL_W / 2,
-      cy: PADDING + node.row * CELL_H + CELL_H / 2,
+      cols,
+      width: cols * CELL_W + PADDING * 2,
+      height: rows * CELL_H + PADDING * 2,
+      minCol: Math.min(...nodes.map(n => n.col)),
     };
   }
 
-  const connectors = tree.nodes
-    .filter(n => n.parent !== null)
-    .map(child => {
-      const parent = tree.nodes.find(p => p.id === child.parent);
-      if (!parent) return null;
-      const p = nodeCenter(parent);
-      const c = nodeCenter(child);
-      const bothUnlocked = unlockedSet.has(parent.id) && unlockedSet.has(child.id);
-      const parentOnly = unlockedSet.has(parent.id) && !unlockedSet.has(child.id);
-      return { id: `${parent.id}-${child.id}`, p, c, bothUnlocked, parentOnly };
-    })
-    .filter(Boolean);
+  function nodeCenter(node: HomunculusNode, minCol: number): { cx: number; cy: number } {
+    return {
+      cx: PADDING + (node.col - minCol) * CELL_W + CELL_W / 2,
+      cy: PADDING + node.row * CELL_H + CELL_H / 2,
+    };
+  }
 
   return (
     <div className="skilltree-page">
@@ -176,7 +198,7 @@ export function SkillTreePage() {
           <img src={assetUrl(template.spriteUrl)} alt={template.name} className="skilltree-sprite" />
         )}
         <div className="skilltree-titlecol">
-          <span className="skilltree-title">{template?.name ?? 'Homunculus'}</span>
+          <span className="skilltree-title">{template?.name ?? 'Silvally'}</span>
           <span className="skilltree-subtitle">Type: <span className={`skilltree-type skilltree-type-${hType}`}>{hType}</span></span>
         </div>
       </div>
@@ -207,59 +229,100 @@ export function SkillTreePage() {
         })}
       </div>
 
-      {/* Tree */}
+      {/* Tree: 3 brown-shaded panels */}
       <div className="skilltree-body">
         <div className="skilltree-tree-scroll">
-          <div className="skilltree-tree-canvas" style={{ width: treeWidth, height: treeHeight }}>
-            <svg
-              className="skilltree-connectors"
-              width={treeWidth}
-              height={treeHeight}
-              viewBox={`0 0 ${treeWidth} ${treeHeight}`}
-              aria-hidden
-            >
-              {connectors.map(con => con && (
-                <line
-                  key={con.id}
-                  x1={con.p.cx}
-                  y1={con.p.cy}
-                  x2={con.c.cx}
-                  y2={con.c.cy}
-                  className={
-                    'skilltree-connector ' +
-                    (con.bothUnlocked ? 'unlocked ' : '') +
-                    (con.parentOnly ? 'unlockable' : '')
-                  }
-                />
-              ))}
-            </svg>
-            {tree.nodes.map(node => {
-              const { cx, cy } = nodeCenter(node);
-              const isUnlocked = unlockedSet.has(node.id);
-              const canUnlock = !isUnlocked && parentIsUnlocked(node) && canAfford(node.cost);
-              const parentLocked = !parentIsUnlocked(node);
+          <div className="skilltree-panels">
+            {panels.map(panel => {
+              const geo = panelGeometry(panel.nodes);
+              const connectors = panel.nodes
+                .filter(n => n.parent !== null)
+                .map(child => {
+                  const parent = panel.nodes.find(p => p.id === child.parent)
+                    ?? tree.nodes.find(p => p.id === child.parent);
+                  if (!parent) return null;
+                  // Only draw connectors when the parent is inside the same panel,
+                  // otherwise the line would escape the panel and look broken.
+                  if (!panel.nodes.find(p => p.id === parent.id)) return null;
+                  const p = nodeCenter(parent, geo.minCol);
+                  const c = nodeCenter(child, geo.minCol);
+                  const bothUnlocked = unlockedSet.has(parent.id) && unlockedSet.has(child.id);
+                  const parentOnly = unlockedSet.has(parent.id) && !unlockedSet.has(child.id);
+                  return { id: `${parent.id}-${child.id}`, p, c, bothUnlocked, parentOnly };
+                })
+                .filter(Boolean);
+
               return (
-                <button
-                  key={node.id}
-                  className={
-                    'skilltree-node ' +
-                    (isUnlocked ? 'unlocked ' : '') +
-                    (canUnlock ? 'affordable ' : '') +
-                    (parentLocked ? 'parent-locked ' : '') +
-                    (selectedNodeId === node.id ? 'selected' : '')
-                  }
-                  style={{
-                    position: 'absolute',
-                    left: cx - nodeW / 2,
-                    top: cy - nodeH / 2,
-                    width: nodeW,
-                    height: nodeH,
-                  }}
-                  onClick={() => setSelectedNodeId(node.id)}
+                <div
+                  key={panel.id}
+                  className={`skilltree-panel skilltree-panel-${panel.id}`}
                 >
-                  <span className="skilltree-node-label">{node.label}</span>
-                  <span className="skilltree-node-slot">T{node.tier} · slot {node.slot + 1}</span>
-                </button>
+                  <div className="skilltree-panel-title">{panel.title}</div>
+                  <div
+                    className="skilltree-panel-canvas"
+                    style={{ width: geo.width, height: geo.height }}
+                  >
+                    <svg
+                      className="skilltree-connectors"
+                      width={geo.width}
+                      height={geo.height}
+                      viewBox={`0 0 ${geo.width} ${geo.height}`}
+                      aria-hidden
+                    >
+                      {connectors.map(con => con && (
+                        <line
+                          key={con.id}
+                          x1={con.p.cx} y1={con.p.cy}
+                          x2={con.c.cx} y2={con.c.cy}
+                          className={
+                            'skilltree-connector ' +
+                            (con.bothUnlocked ? 'unlocked ' : '') +
+                            (con.parentOnly ? 'unlockable' : '')
+                          }
+                        />
+                      ))}
+                    </svg>
+                    {panel.nodes.map(node => {
+                      const { cx, cy } = nodeCenter(node, geo.minCol);
+                      const isUnlocked = unlockedSet.has(node.id);
+                      const blocker = mutexBlocker(node);
+                      const parentLocked = !parentIsUnlocked(node);
+                      const canUnlock = !isUnlocked && !blocker && !parentLocked && !node.alwaysUnlocked && canAfford(node.cost);
+                      const classes = [
+                        'skilltree-node',
+                        `skilltree-node-kind-${node.kind}`,
+                        isUnlocked ? 'unlocked' : '',
+                        canUnlock ? 'affordable' : '',
+                        parentLocked ? 'parent-locked' : '',
+                        blocker && !isUnlocked ? 'mutex-blocked' : '',
+                        node.alwaysUnlocked ? 'always-on' : '',
+                        selectedNodeId === node.id ? 'selected' : '',
+                      ].filter(Boolean).join(' ');
+                      return (
+                        <button
+                          key={node.id}
+                          className={classes}
+                          style={{
+                            position: 'absolute',
+                            left: cx - NODE_W / 2,
+                            top: cy - NODE_H / 2,
+                            width: NODE_W,
+                            height: NODE_H,
+                          }}
+                          onClick={() => setSelectedNodeId(node.id)}
+                        >
+                          <span className="skilltree-node-label">{node.label}</span>
+                          {node.kind === 'gate' && (
+                            <span className="skilltree-node-slot">gate</span>
+                          )}
+                          {node.alwaysUnlocked && (
+                            <span className="skilltree-node-slot">always on</span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               );
             })}
           </div>
@@ -277,27 +340,46 @@ export function SkillTreePage() {
                   <span className="skilltree-skill-desc">{SKILLS[selectedNode.replaceSkillId].description}</span>
                 </div>
               )}
-              <div className="skilltree-detail-reqs">
-                {costEntries(selectedNode.cost).map(([essId, needed]) => {
-                  const owned = materials[essId] ?? 0;
-                  const ess = ESSENCES[essId];
-                  return (
-                    <div key={essId} className="skilltree-detail-req">
-                      <span><GameIcon id={ess?.icon} size={14} /> {essenceLabel(essId)}</span>
-                      <span className={owned >= needed ? 'req-met' : 'req-unmet'}>{owned}/{needed}</span>
-                    </div>
-                  );
-                })}
-              </div>
-              {unlockedSet.has(selectedNode.id) ? (
-                <button className="skilltree-unlock-btn" disabled>Already unlocked</button>
-              ) : !parentIsUnlocked(selectedNode) ? (
-                <button className="skilltree-unlock-btn" disabled>Prerequisite locked</button>
-              ) : !canAfford(selectedNode.cost) ? (
-                <button className="skilltree-unlock-btn" disabled>Not enough essences</button>
-              ) : (
-                <button className="skilltree-unlock-btn" onClick={handleUnlock}>Unlock</button>
+              {selectedNode.kind === 'gate' && (
+                <div className="skilltree-skill-preview">
+                  <span className="skilltree-skill-desc">
+                    Gate node — unlocking this grants access to the two leaves below but doesn't grant a skill on its own.
+                  </span>
+                </div>
               )}
+              {costEntries(selectedNode.cost).length > 0 && (
+                <div className="skilltree-detail-reqs">
+                  {costEntries(selectedNode.cost).map(([essId, needed]) => {
+                    const ownedAmt = materials[essId] ?? 0;
+                    const ess = ESSENCES[essId];
+                    return (
+                      <div key={essId} className="skilltree-detail-req">
+                        <span><GameIcon id={ess?.icon} size={14} /> {essenceLabel(essId)}</span>
+                        <span className={ownedAmt >= needed ? 'req-met' : 'req-unmet'}>{ownedAmt}/{needed}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {(() => {
+                const blocker = mutexBlocker(selectedNode);
+                if (selectedNode.alwaysUnlocked) {
+                  return <button className="skilltree-unlock-btn" disabled>Always unlocked</button>;
+                }
+                if (unlockedSet.has(selectedNode.id)) {
+                  return <button className="skilltree-unlock-btn" disabled>Already unlocked</button>;
+                }
+                if (blocker) {
+                  return <button className="skilltree-unlock-btn" disabled>Blocked by "{blocker.label}" — reset to switch</button>;
+                }
+                if (!parentIsUnlocked(selectedNode)) {
+                  return <button className="skilltree-unlock-btn" disabled>Prerequisite locked</button>;
+                }
+                if (!canAfford(selectedNode.cost)) {
+                  return <button className="skilltree-unlock-btn" disabled>Not enough essences</button>;
+                }
+                return <button className="skilltree-unlock-btn" onClick={handleUnlock}>Unlock</button>;
+              })()}
             </>
           ) : (
             <p className="skilltree-detail-hint">Select a node to see its effect and cost.</p>

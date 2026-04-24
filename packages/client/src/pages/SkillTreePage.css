@@ -66,6 +66,8 @@
 .skilltree-type-fire { background: #ef4444; color: #fff; }
 .skilltree-type-water { background: #3b82f6; color: #fff; }
 .skilltree-type-grass { background: #22c55e; color: #fff; }
+.skilltree-type-psychic { background: #ec4899; color: #fff; }
+.skilltree-type-dark { background: #1f2937; color: #fff; }
 
 .skilltree-typeswitch {
   display: flex;
@@ -113,9 +115,59 @@
   min-width: 0;
   overflow: auto;
   padding: 12px;
+  background:
+    radial-gradient(ellipse at top, rgba(120, 72, 28, 0.08), transparent 70%),
+    linear-gradient(180deg, rgba(40, 20, 6, 0.35), rgba(20, 10, 4, 0.45));
 }
 
-.skilltree-tree-canvas {
+.skilltree-panels {
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  align-items: stretch;
+  min-height: 100%;
+  border: 2px solid #4a2e17;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) inset;
+  width: fit-content;
+}
+
+.skilltree-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 4px 12px;
+  position: relative;
+}
+
+.skilltree-panel + .skilltree-panel {
+  border-left: 2px solid rgba(255, 210, 150, 0.15);
+}
+
+.skilltree-panel-1 {
+  background: linear-gradient(180deg, #3f2814 0%, #2b1b0d 100%);
+}
+
+.skilltree-panel-2 {
+  background: linear-gradient(180deg, #553820 0%, #3a2614 100%);
+}
+
+.skilltree-panel-3 {
+  background: linear-gradient(180deg, #6b4a2c 0%, #4c351e 100%);
+}
+
+.skilltree-panel-title {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f5d6a2;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  margin-bottom: 4px;
+}
+
+.skilltree-panel-canvas {
   position: relative;
   margin: 0 auto;
 }
@@ -127,13 +179,21 @@
 }
 
 .skilltree-connector {
-  stroke: rgba(255, 255, 255, 0.18);
-  stroke-width: 2;
+  stroke: rgba(255, 210, 150, 0.18);
+  stroke-width: 3;
   stroke-linecap: round;
 }
 
-.skilltree-connector.unlocked { stroke: #22c55e; stroke-width: 3; }
-.skilltree-connector.unlockable { stroke: #fbbf24; stroke-width: 2.5; stroke-dasharray: 4 4; }
+.skilltree-connector.unlocked {
+  stroke: #f5c14b;
+  stroke-width: 4;
+  filter: drop-shadow(0 0 3px rgba(245, 193, 75, 0.6));
+}
+.skilltree-connector.unlockable {
+  stroke: #c88a3a;
+  stroke-width: 3;
+  stroke-dasharray: 5 4;
+}
 
 .skilltree-node {
   display: flex;
@@ -141,36 +201,63 @@
   align-items: center;
   justify-content: center;
   gap: 2px;
-  background: rgba(60, 60, 70, 0.85);
-  border: 2px solid rgba(255, 255, 255, 0.18);
-  color: var(--text-primary);
-  padding: 6px 8px;
-  border-radius: 8px;
+  background: linear-gradient(180deg, #5a3d22 0%, #3a2612 100%);
+  border: 2px solid #2a1a0a;
+  color: #f5d6a2;
+  padding: 6px 6px;
+  border-radius: 6px;
   cursor: pointer;
   text-align: center;
   transition: all 0.15s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 .skilltree-node:hover {
-  background: rgba(80, 80, 95, 0.7);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: linear-gradient(180deg, #6f4a2a 0%, #4a301a 100%);
+  border-color: #8a5a2e;
 }
 
 .skilltree-node.unlocked {
-  background: rgba(34, 197, 94, 0.25);
-  border-color: #22c55e;
+  background: linear-gradient(180deg, #b07a34 0%, #7a4e1c 100%);
+  border-color: #f5c14b;
+  color: #fff;
+  box-shadow:
+    0 0 8px rgba(245, 193, 75, 0.55),
+    0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.skilltree-node.always-on {
+  background: linear-gradient(180deg, #8a5c2a 0%, #5a3c1a 100%);
+  border-color: #d49a3c;
+  color: #fff;
 }
 
 .skilltree-node.affordable:not(.unlocked) {
-  border-color: #fbbf24;
+  border-color: #e8b060;
+  animation: skilltree-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes skilltree-pulse {
+  0%, 100% { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); }
+  50%      { box-shadow: 0 0 6px rgba(232, 176, 96, 0.55), 0 2px 4px rgba(0, 0, 0, 0.4); }
 }
 
 .skilltree-node.parent-locked {
   opacity: 0.45;
 }
 
+.skilltree-node.mutex-blocked {
+  opacity: 0.4;
+  filter: saturate(0.4);
+}
+
+.skilltree-node-kind-gate:not(.unlocked) {
+  background: linear-gradient(180deg, #4c3520 0%, #2e1f10 100%);
+  border-style: dashed;
+}
+
 .skilltree-node.selected {
-  outline: 2px solid #60a5fa;
+  outline: 2px solid #f9d176;
   outline-offset: 2px;
 }
 
@@ -300,7 +387,7 @@
 
 .skilltree-current-list {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 6px;
 }
 

@@ -64,42 +64,57 @@ describe('homunculus-tree', () => {
         }
       },
     );
+
+    it.each(HOMUNCULUS_TYPES as HomunculusType[])(
+      '%s tree has exactly 13 nodes (1 basic + 2 upgrades + 2 parents + 4 leaves + 4 passives)',
+      (type) => {
+        expect(getHomunculusTree(type).nodes).toHaveLength(13);
+      },
+    );
   });
 
   describe('resolveHomunculusSkills', () => {
-    it('returns the base skill ids when nothing is unlocked', () => {
+    it('returns the base skill ids when nothing is unlocked (basic auto-on)', () => {
       const result = resolveHomunculusSkills('fire', []);
-      expect(result).toEqual(HOMUNCULUS_TREES.fire.baseSkillIds);
-    });
-
-    it('replaces the slot-1 skill when only the T1 root is unlocked', () => {
-      const result = resolveHomunculusSkills('fire', ['fire_a1']);
-      expect(result[1]).toBe('homunculus_fire_a1');
-      // slot 0 and 2 untouched
       expect(result[0]).toBe(HOMUNCULUS_TREES.fire.baseSkillIds[0]);
+      expect(result[1]).toBe(HOMUNCULUS_TREES.fire.baseSkillIds[1]);
       expect(result[2]).toBe(HOMUNCULUS_TREES.fire.baseSkillIds[2]);
     });
 
-    it('prefers the deepest-tier node when multiple on the same slot are unlocked', () => {
-      const result = resolveHomunculusSkills('fire', ['fire_a1', 'fire_a2a']);
-      expect(result[1]).toBe('homunculus_fire_a2a');
+    it('replaces slot 0 when a base upgrade is unlocked', () => {
+      const result = resolveHomunculusSkills('fire', ['fire_base_a']);
+      expect(result[0]).toBe('homunculus_fire_base_a');
     });
 
-    it('when two siblings at the same tier are unlocked, the first in nodes array wins (deterministic)', () => {
-      // a2a precedes a2b in the nodes array
-      const result = resolveHomunculusSkills('fire', ['fire_a1', 'fire_a2a', 'fire_a2b']);
-      expect(result[1]).toBe('homunculus_fire_a2a');
+    it('replaces the active slot when a col-2 leaf is unlocked', () => {
+      const result = resolveHomunculusSkills('fire', ['fire_s2_p2', 'fire_s2_2a']);
+      expect(result[1]).toBe('homunculus_fire_s2_2a');
     });
 
-    it('resolves both slot tracks independently', () => {
-      const result = resolveHomunculusSkills('water', ['water_a1', 'water_b1']);
-      expect(result[1]).toBe('homunculus_water_a1');
-      expect(result[2]).toBe('homunculus_water_b1');
+    it('stacks every unlocked passive into the resolved skill list', () => {
+      const result = resolveHomunculusSkills('fire', ['fire_p_1a', 'fire_p_1b', 'fire_p_2b']);
+      // [basic, active, ...passives]
+      expect(result.slice(2).sort()).toEqual([
+        'homunculus_fire_p_1a',
+        'homunculus_fire_p_1b',
+        'homunculus_fire_p_2b',
+      ].sort());
+    });
+
+    it('resolves each column independently', () => {
+      const result = resolveHomunculusSkills('water', [
+        'water_base_a', 'water_s2_p1', 'water_s2_1b', 'water_p_2a',
+      ]);
+      expect(result[0]).toBe('homunculus_water_base_a');
+      expect(result[1]).toBe('homunculus_water_s2_1b');
+      expect(result.slice(2)).toContain('homunculus_water_p_2a');
     });
 
     it('returns basics if only an unknown node id is in unlocked', () => {
       const result = resolveHomunculusSkills('grass', ['nonexistent_node']);
-      expect(result).toEqual(HOMUNCULUS_TREES.grass.baseSkillIds);
+      expect(result[0]).toBe(HOMUNCULUS_TREES.grass.baseSkillIds[0]);
+      expect(result[1]).toBe(HOMUNCULUS_TREES.grass.baseSkillIds[1]);
+      expect(result[2]).toBe(HOMUNCULUS_TREES.grass.baseSkillIds[2]);
     });
   });
 
@@ -108,30 +123,52 @@ describe('homunculus-tree', () => {
       expect(validateNodeUnlock('fire', { unlocked: [] }, 'bogus')).toBeTruthy();
     });
 
-    it('rejects a node whose parent is locked', () => {
-      const err = validateNodeUnlock('fire', { unlocked: [] }, 'fire_a2a');
-      expect(err).toBeTruthy();
+    it('rejects a col-2 leaf whose branch parent is locked', () => {
+      expect(validateNodeUnlock('fire', { unlocked: [] }, 'fire_s2_1a')).toBeTruthy();
     });
 
-    it('allows a root node (parent=null)', () => {
-      expect(validateNodeUnlock('fire', { unlocked: [] }, 'fire_a1')).toBeUndefined();
+    it('allows a col-2 branch parent (no prereq)', () => {
+      expect(validateNodeUnlock('fire', { unlocked: [] }, 'fire_s2_p1')).toBeUndefined();
     });
 
-    it('allows a child when the parent is unlocked', () => {
-      expect(validateNodeUnlock('fire', { unlocked: ['fire_a1'] }, 'fire_a2a')).toBeUndefined();
+    it('allows a leaf once its branch parent is unlocked', () => {
+      expect(validateNodeUnlock('fire', { unlocked: ['fire_s2_p1'] }, 'fire_s2_1a')).toBeUndefined();
     });
 
     it('rejects re-unlocking an already-unlocked node', () => {
-      expect(validateNodeUnlock('fire', { unlocked: ['fire_a1'] }, 'fire_a1')).toBeTruthy();
+      expect(validateNodeUnlock('fire', { unlocked: ['fire_s2_p1'] }, 'fire_s2_p1')).toBeTruthy();
+    });
+
+    it('refuses the always-unlocked basic node (cannot be re-unlocked)', () => {
+      expect(validateNodeUnlock('fire', { unlocked: [] }, 'fire_basic')).toBeTruthy();
+    });
+
+    it('rejects a col-1 upgrade when its mutex sibling is already unlocked', () => {
+      const err = validateNodeUnlock('fire', { unlocked: ['fire_base_a'] }, 'fire_base_b');
+      expect(err).toMatch(/conflict/i);
+    });
+
+    it('rejects a col-2 leaf in a different branch when another branch leaf is already unlocked', () => {
+      const err = validateNodeUnlock(
+        'fire',
+        { unlocked: ['fire_s2_p1', 'fire_s2_1a', 'fire_s2_p2'] },
+        'fire_s2_2a',
+      );
+      expect(err).toMatch(/conflict/i);
+    });
+
+    it('allows all four col-3 passives together (no mutex)', () => {
+      const state = { unlocked: ['fire_p_1a', 'fire_p_1b', 'fire_p_2a'] };
+      expect(validateNodeUnlock('fire', state, 'fire_p_2b')).toBeUndefined();
     });
   });
 
   describe('sumTreeCost', () => {
     it('sums cost across unlocked nodes', () => {
-      const refund = sumTreeCost('fire', ['fire_a1', 'fire_a2a']);
-      // a1 = {fire_high:1}, a2a = {fire_high:2, magic_high:1}
-      expect(refund.fire_high).toBe(3);
-      expect(refund.magic_high).toBe(1);
+      const refund = sumTreeCost('fire', ['fire_base_a', 'fire_s2_p1']);
+      // base_a = {fire_high:2, magic_high:1}, s2_p1 = {fire_high:3, magic_high:1}
+      expect(refund.fire_high).toBe(5);
+      expect(refund.magic_high).toBe(2);
     });
 
     it('returns an empty object for an empty set', () => {
@@ -139,15 +176,15 @@ describe('homunculus-tree', () => {
     });
 
     it('ignores unknown node ids silently', () => {
-      const refund = sumTreeCost('fire', ['fire_a1', 'unknown_node']);
-      expect(refund.fire_high).toBe(1);
+      const refund = sumTreeCost('fire', ['fire_base_a', 'unknown_node']);
+      expect(refund.fire_high).toBe(2);
     });
   });
 
   describe('getHomunculusNode', () => {
     it('returns a node by id', () => {
-      const node = getHomunculusNode('fire', 'fire_a1');
-      expect(node?.id).toBe('fire_a1');
+      const node = getHomunculusNode('fire', 'fire_base_a');
+      expect(node?.id).toBe('fire_base_a');
     });
 
     it('returns undefined for unknown ids', () => {

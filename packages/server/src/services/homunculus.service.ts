@@ -329,7 +329,7 @@ export function getHomunculusState(
 ): {
   type: HomunculusType;
   unlocked: string[];
-  effectiveSkills: [string, string, string];
+  effectiveSkills: string[];
   tree: import('@gatchamon/shared').HomunculusTreeDef;
 } {
   const { type, tree } = requireHomunculus(playerId, instanceId);

@@ -532,10 +532,10 @@ export function CollectionPage() {
                     </div>
                   )}
 
-                  {/* Homunculus Skill Tree button (on a fused Homunculus) */}
+                  {/* Skill tree button (fused Silvally) */}
                   {isFusedHomunculus && selected && (
                     <div className="box-evolution">
-                      <span className="box-evo-label">Homunculus</span>
+                      <span className="box-evo-label">Silvally</span>
                       <button
                         className="box-evo-btn"
                         onClick={() => navigate(`/homunculus/${selected.instance.instanceId}`)}

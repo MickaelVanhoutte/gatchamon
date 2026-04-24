@@ -144,7 +144,7 @@ export function SummonPage() {
                   onClick={() => navigate('/homunculus')}
                 >
                   <GameIcon id="magic" size={16} />
-                  <span>Homunculus</span>
+                  <span>Silvally</span>
                 </button>
               </div>
               {selectedBall !== 'pieces' && (

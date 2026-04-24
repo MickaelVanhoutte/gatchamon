@@ -84,9 +84,11 @@ export const HOMUNCULUS_FORMS: Record<HomunculusType, number> = {
   fire: 15990,
   water: 15991,
   grass: 15992,
+  psychic: 15993,
+  dark: 15994,
 };
 
-export const HOMUNCULUS_TYPES: HomunculusType[] = ['fire', 'water', 'grass'];
+export const HOMUNCULUS_TYPES: HomunculusType[] = ['fire', 'water', 'grass', 'psychic', 'dark'];
 
 export function getHomunculusType(templateId: number): HomunculusType | null {
   for (const type of HOMUNCULUS_TYPES) {

@@ -48,7 +48,7 @@ export const SKILLS: Record<string, SkillDefinition> = {
   ...HOMUNCULUS_SKILLS,
 };
 
-export function getSkillsForPokemon(skillIds: [string, string, string]): SkillDefinition[] {
+export function getSkillsForPokemon(skillIds: readonly string[]): SkillDefinition[] {
   return skillIds.map(id => SKILLS[id]).filter(Boolean);
 }
 
@@ -81,10 +81,12 @@ export function resolveInstanceSkills(
   template: PokemonTemplate,
   selectedPassive?: 0 | 1,
   homunculusTree?: HomunculusInstanceState,
-): [string, string, string] {
+): string[] {
   const hType = getHomunculusType(template.id);
-  if (hType && homunculusTree) {
-    return resolveHomunculusSkills(hType, homunculusTree.unlocked);
+  if (hType) {
+    // Silvally always resolves via its tree — even with no nodes unlocked the
+    // basic-attack root yields the default [basic, active, passive] fallback.
+    return resolveHomunculusSkills(hType, homunculusTree?.unlocked ?? []);
   }
-  return getEffectiveSkillIds(template, selectedPassive);
+  return [...getEffectiveSkillIds(template, selectedPassive)];
 }

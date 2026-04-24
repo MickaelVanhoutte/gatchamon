@@ -104,11 +104,11 @@ export function HomunculusPage() {
     <div className="page homunculus-page">
       <div className="hmc-header">
         <button className="hmc-back" onClick={() => navigate(-1)}>← Back</button>
-        <span className="hmc-title">Homunculus</span>
+        <span className="hmc-title">Silvally Altar</span>
       </div>
 
       <div className="hmc-intro">
-        Craft a Typenull from essences, then fuse it into a typed Homunculus and grow its skill tree.
+        Craft a Typenull from essences, then fuse it into a typed Silvally and grow its skill tree.
       </div>
 
       {/* ── Stage: craft ── */}
@@ -120,7 +120,7 @@ export function HomunculusPage() {
             )}
             <div className="hmc-panel-titlecol">
               <span className="hmc-panel-title">Craft Typenull</span>
-              <span className="hmc-panel-sub">A blank-slate 5★ monster you can fuse into a typed Homunculus.</span>
+              <span className="hmc-panel-sub">A blank-slate 5★ monster you can fuse into a typed Silvally.</span>
             </div>
           </div>
 
@@ -158,7 +158,7 @@ export function HomunculusPage() {
             )}
             <div className="hmc-panel-titlecol">
               <span className="hmc-panel-title">Choose a Fusion</span>
-              <span className="hmc-panel-sub">Pick a type for your Homunculus. You can switch type later.</span>
+              <span className="hmc-panel-sub">Pick a type for your Silvally. You can switch type later.</span>
             </div>
           </div>
 
@@ -213,7 +213,7 @@ export function HomunculusPage() {
             </div>
           </div>
           <p className="hmc-manage-hint">
-            Your Homunculus is ready. Open the skill tree to unlock nodes, switch type, or reset.
+            Your Silvally is ready. Open the skill tree to unlock nodes, switch type, or reset.
           </p>
           <button
             className="hmc-cta"
@@ -228,7 +228,7 @@ export function HomunculusPage() {
       {stage === 'manage' && !homunculusInstance && (
         <div className="hmc-panel">
           <p className="hmc-manage-hint">
-            You've already fused a Homunculus but it isn't in your collection right now. Check your PC box.
+            You've already fused a Silvally but it isn't in your collection right now. Check your PC box.
           </p>
         </div>
       )}

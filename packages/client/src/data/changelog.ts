@@ -7,6 +7,17 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.9.0',
+    date: '2026-04-24',
+    changes: [
+      'Rework: Silvally skill tree overhauled to mirror Summoners War\'s 3-column layout. Column 1 holds the basic attack (always active) plus two mutually-exclusive upgrades; column 2 has two branches (focus / area) each gated behind a parent and ending in two mutex leaves; column 3 has four fully independent passives that all stack simultaneously. 13 nodes per element.',
+      'New variants: Silvally-Psychic (silence + buff-strip) and Silvally-Dark (bleed + lifesteal + execution) join the existing Fire/Water/Grass options. 5 total fusion targets.',
+      'Rebalance: Silvally base stats lowered from a straight 5★ stat block to a between-4★-and-5★ block (HP 580 / ATK 95 / DEF 90 / SPD 104). Power budget has shifted into the skill tree — fully upgraded skill leaves exceed native 5★ skills in both multipliers and effect chances.',
+      'Rename: the internal "Homunculus" codename has been removed from every user-facing surface. Forms now read "Silvally-Fire/Water/Grass/Psychic/Dark" (matching the sprite), the Summon tab is "Silvally", and the altar / manage screens use the same term. Internal code, DB columns, and API routes keep the old name for stability.',
+      'Mutex path rule: within a column 1 upgrade and column 2 leaves, choosing one path now locks out its siblings until the tree is reset. Column 3 passives remain fully independent.',
+    ],
+  },
+  {
     version: '0.8.8',
     date: '2026-04-24',
     changes: [

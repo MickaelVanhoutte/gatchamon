@@ -159,9 +159,11 @@
   border-radius: 8px;
 }
 
-.hmc-fusion-card.hmc-type-fire   { border-color: rgba(239, 68, 68, 0.45); }
-.hmc-fusion-card.hmc-type-water  { border-color: rgba(59, 130, 246, 0.45); }
-.hmc-fusion-card.hmc-type-grass  { border-color: rgba(34, 197, 94, 0.45); }
+.hmc-fusion-card.hmc-type-fire    { border-color: rgba(239, 68, 68, 0.45); }
+.hmc-fusion-card.hmc-type-water   { border-color: rgba(59, 130, 246, 0.45); }
+.hmc-fusion-card.hmc-type-grass   { border-color: rgba(34, 197, 94, 0.45); }
+.hmc-fusion-card.hmc-type-psychic { border-color: rgba(236, 72, 153, 0.45); }
+.hmc-fusion-card.hmc-type-dark    { border-color: rgba(75, 85, 99, 0.55); }
 
 .hmc-fusion-sprite {
   width: 72px;
@@ -186,9 +188,11 @@
   text-transform: capitalize;
 }
 
-.hmc-type-chip.hmc-type-fire   { background: rgba(239, 68, 68, 0.25); color: #fca5a5; }
-.hmc-type-chip.hmc-type-water  { background: rgba(59, 130, 246, 0.25); color: #93c5fd; }
-.hmc-type-chip.hmc-type-grass  { background: rgba(34, 197, 94, 0.25); color: #86efac; }
+.hmc-type-chip.hmc-type-fire    { background: rgba(239, 68, 68, 0.25); color: #fca5a5; }
+.hmc-type-chip.hmc-type-water   { background: rgba(59, 130, 246, 0.25); color: #93c5fd; }
+.hmc-type-chip.hmc-type-grass   { background: rgba(34, 197, 94, 0.25); color: #86efac; }
+.hmc-type-chip.hmc-type-psychic { background: rgba(236, 72, 153, 0.25); color: #f9a8d4; }
+.hmc-type-chip.hmc-type-dark    { background: rgba(31, 41, 55, 0.45); color: #cbd5e1; }
 
 .hmc-manage-hint {
   font-size: 0.8rem;

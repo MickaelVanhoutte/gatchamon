@@ -5,117 +5,213 @@ import type {
   HomunculusInstanceState,
 } from '../types/homunculus.js';
 
-/**
- * Tree shape (per type): 6 nodes, 2 tiers, 2 branches off each of 2 roots.
- * Columns (col) are 0..3 for visual layout; rows correspond to tiers.
- *
- *           A (T1, slot 1)              B (T1, slot 2)
- *           /       \                    /       \
- *      A-2a         A-2b            B-2a         B-2b
- *     (slot1)       (slot1)        (slot2)      (slot2)
- *
- * Unlock rule: a node can be unlocked only if its parent is unlocked (or parent === null).
- * Resolver picks the deepest unlocked node per slot as the effective skill; ties (multiple
- * unlocked at the same tier on the same slot) resolve by order in the `nodes` array.
- */
+// ══════════════════════════════════════════════════════════════════════════
+// Silvally skill tree (internal codename "homunculus")
+//
+// Layout — 3 columns, 13 nodes per element:
+//
+//   Col 1 (Skill 1, basic)         Col 2 (Skill 2, active)       Col 3 (Skill 3, passives)
+//   ─────────────────────          ─────────────────────         ─────────────────────
+//   basic (always on, free)
+//                                  [p1] ── 1a
+//          base_a  ◇ mutex              └── 1b              p_1a   ·   p_1b  (pair 1)
+//          base_b  ◇ mutex
+//                                  [p2] ── 2a              p_2a   ·   p_2b  (pair 2)
+//                                       └── 2b
+//
+// Mutex rules:
+//   · Col 1 upgrades (base_a, base_b) are in group "col1"   → pick one
+//   · Col 2 leaves across both branches share group "col2_leaf" → pick one
+//   · Col 3 passives are fully independent (no mutex) — all four stack
+//
+// Col-2 parents (s2_p1, s2_p2) are gate-only nodes: they cost essence, unlock
+// their child leaves, but never surface as a skill themselves.
+// ══════════════════════════════════════════════════════════════════════════
 
-const TIER1_COST = (type: HomunculusType): Record<string, number> => ({
-  [`${type}_high`]: 1,
-});
-
-const TIER2_COST = (type: HomunculusType): Record<string, number> => ({
+const BASE_UPGRADE_COST = (type: HomunculusType): Record<string, number> => ({
   [`${type}_high`]: 2,
   magic_high: 1,
 });
 
+const S2_PARENT_COST = (type: HomunculusType): Record<string, number> => ({
+  [`${type}_high`]: 3,
+  magic_high: 1,
+});
+
+const S2_LEAF_COST = (type: HomunculusType): Record<string, number> => ({
+  [`${type}_high`]: 4,
+  magic_high: 2,
+});
+
+const PASSIVE_COST = (type: HomunculusType): Record<string, number> => ({
+  [`${type}_high`]: 5,
+  magic_high: 3,
+});
+
 function buildTree(type: HomunculusType): HomunculusTreeDef {
+  const prefix = `homunculus_${type}`;
   const nodes: HomunculusNode[] = [
-    // Slot 1 track (active)
+    // ── Column 1 · Slot 0 (basic) ──────────────────────────────────────
     {
-      id: `${type}_a1`,
+      id: `${type}_basic`,
       parent: null,
-      cost: TIER1_COST(type),
-      slot: 1,
+      cost: {},
+      slot: 0,
       kind: 'replace',
-      replaceSkillId: `homunculus_${type}_a1`,
-      label: 'Surge',
-      description: 'Empowered active skill. Prerequisite for the slot-1 branches.',
-      tier: 1,
-      row: 0,
-      col: 0,
+      replaceSkillId: `${prefix}_basic`,
+      alwaysUnlocked: true,
+      label: 'Base Strike',
+      description: 'The default basic attack. Always unlocked.',
+      tier: 1, row: 1, col: 0,
     },
     {
-      id: `${type}_a2a`,
-      parent: `${type}_a1`,
-      cost: TIER2_COST(type),
-      slot: 1,
+      id: `${type}_base_a`,
+      parent: `${type}_basic`,
+      cost: BASE_UPGRADE_COST(type),
+      slot: 0,
       kind: 'replace',
-      replaceSkillId: `homunculus_${type}_a2a`,
-      label: 'Focused Strike',
-      description: 'Heavy single-target variant of the active skill.',
-      tier: 2,
-      row: 1,
-      col: 0,
+      replaceSkillId: `${prefix}_base_a`,
+      mutexGroup: 'col1',
+      label: 'Focused Upgrade',
+      description: 'Single-target upgrade to the basic attack.',
+      tier: 2, row: 0, col: 0,
     },
     {
-      id: `${type}_a2b`,
-      parent: `${type}_a1`,
-      cost: TIER2_COST(type),
-      slot: 1,
+      id: `${type}_base_b`,
+      parent: `${type}_basic`,
+      cost: BASE_UPGRADE_COST(type),
+      slot: 0,
       kind: 'replace',
-      replaceSkillId: `homunculus_${type}_a2b`,
-      label: 'Wide Sweep',
-      description: 'AoE variant of the active skill.',
-      tier: 2,
-      row: 1,
-      col: 1,
+      replaceSkillId: `${prefix}_base_b`,
+      mutexGroup: 'col1',
+      label: 'Spread Upgrade',
+      description: 'AoE variant of the basic attack.',
+      tier: 2, row: 2, col: 0,
     },
-    // Slot 2 track (passive)
+
+    // ── Column 2 · Slot 1 (active) — branch 1 (focus) ──────────────────
     {
-      id: `${type}_b1`,
+      id: `${type}_s2_p1`,
       parent: null,
-      cost: TIER1_COST(type),
-      slot: 2,
-      kind: 'replace',
-      replaceSkillId: `homunculus_${type}_b1`,
-      label: 'Aura',
-      description: 'Empowered passive. Prerequisite for the slot-2 branches.',
-      tier: 1,
-      row: 0,
-      col: 3,
+      cost: S2_PARENT_COST(type),
+      slot: 1,
+      kind: 'gate',
+      label: 'Focus Branch',
+      description: 'Unlocks the focused (single-target) active-skill leaves.',
+      tier: 1, row: 0, col: 1,
     },
     {
-      id: `${type}_b2a`,
-      parent: `${type}_b1`,
-      cost: TIER2_COST(type),
-      slot: 2,
+      id: `${type}_s2_1a`,
+      parent: `${type}_s2_p1`,
+      cost: S2_LEAF_COST(type),
+      slot: 1,
       kind: 'replace',
-      replaceSkillId: `homunculus_${type}_b2a`,
-      label: 'Offense Focus',
-      description: 'Passive that scales with offense (on-attack effects).',
-      tier: 2,
-      row: 1,
-      col: 3,
+      replaceSkillId: `${prefix}_s2_1a`,
+      mutexGroup: 'col2_leaf',
+      label: 'Path A',
+      description: 'Maximum single-target damage.',
+      tier: 2, row: 0, col: 2,
     },
     {
-      id: `${type}_b2b`,
-      parent: `${type}_b1`,
-      cost: TIER2_COST(type),
+      id: `${type}_s2_1b`,
+      parent: `${type}_s2_p1`,
+      cost: S2_LEAF_COST(type),
+      slot: 1,
+      kind: 'replace',
+      replaceSkillId: `${prefix}_s2_1b`,
+      mutexGroup: 'col2_leaf',
+      label: 'Path B',
+      description: 'Single-target with a utility twist.',
+      tier: 2, row: 1, col: 2,
+    },
+
+    // ── Column 2 · Slot 1 (active) — branch 2 (area) ───────────────────
+    {
+      id: `${type}_s2_p2`,
+      parent: null,
+      cost: S2_PARENT_COST(type),
+      slot: 1,
+      kind: 'gate',
+      label: 'Area Branch',
+      description: 'Unlocks the area (all-enemy) active-skill leaves.',
+      tier: 1, row: 2, col: 1,
+    },
+    {
+      id: `${type}_s2_2a`,
+      parent: `${type}_s2_p2`,
+      cost: S2_LEAF_COST(type),
+      slot: 1,
+      kind: 'replace',
+      replaceSkillId: `${prefix}_s2_2a`,
+      mutexGroup: 'col2_leaf',
+      label: 'Path A',
+      description: 'AoE with strong offensive pressure.',
+      tier: 2, row: 2, col: 2,
+    },
+    {
+      id: `${type}_s2_2b`,
+      parent: `${type}_s2_p2`,
+      cost: S2_LEAF_COST(type),
+      slot: 1,
+      kind: 'replace',
+      replaceSkillId: `${prefix}_s2_2b`,
+      mutexGroup: 'col2_leaf',
+      label: 'Path B',
+      description: 'AoE with debuff utility.',
+      tier: 2, row: 3, col: 2,
+    },
+
+    // ── Column 3 · Slot 2 (passives) — all independent ─────────────────
+    {
+      id: `${type}_p_1a`,
+      parent: null,
+      cost: PASSIVE_COST(type),
       slot: 2,
       kind: 'replace',
-      replaceSkillId: `homunculus_${type}_b2b`,
-      label: 'Defense Focus',
-      description: 'Passive that scales with survivability (on-hit / on-crit effects).',
-      tier: 2,
-      row: 1,
-      col: 4,
+      replaceSkillId: `${prefix}_p_1a`,
+      label: 'Passive 1A',
+      description: 'Trigger-style passive (pair 1).',
+      tier: 3, row: 0, col: 3,
+    },
+    {
+      id: `${type}_p_1b`,
+      parent: null,
+      cost: PASSIVE_COST(type),
+      slot: 2,
+      kind: 'replace',
+      replaceSkillId: `${prefix}_p_1b`,
+      label: 'Passive 1B',
+      description: 'Trigger-style passive (pair 1).',
+      tier: 3, row: 1, col: 3,
+    },
+    {
+      id: `${type}_p_2a`,
+      parent: null,
+      cost: PASSIVE_COST(type),
+      slot: 2,
+      kind: 'replace',
+      replaceSkillId: `${prefix}_p_2a`,
+      label: 'Passive 2A',
+      description: 'Aura-style passive (pair 2).',
+      tier: 3, row: 2, col: 3,
+    },
+    {
+      id: `${type}_p_2b`,
+      parent: null,
+      cost: PASSIVE_COST(type),
+      slot: 2,
+      kind: 'replace',
+      replaceSkillId: `${prefix}_p_2b`,
+      label: 'Passive 2B',
+      description: 'Aura-style passive (pair 2).',
+      tier: 3, row: 3, col: 3,
     },
   ];
 
   const baseSkillIds: [string, string, string] = [
-    `homunculus_${type}_basic_1`,
-    `homunculus_${type}_basic_2`,
-    `homunculus_${type}_basic_3`,
+    `${prefix}_basic`,
+    `${prefix}_s2_1a`,
+    `${prefix}_p_1a`,
   ];
 
   return { type, baseSkillIds, nodes };
@@ -125,6 +221,8 @@ export const HOMUNCULUS_TREES: Record<HomunculusType, HomunculusTreeDef> = {
   fire: buildTree('fire'),
   water: buildTree('water'),
   grass: buildTree('grass'),
+  psychic: buildTree('psychic'),
+  dark: buildTree('dark'),
 };
 
 export function getHomunculusTree(type: HomunculusType): HomunculusTreeDef {
@@ -136,33 +234,49 @@ export function getHomunculusNode(type: HomunculusType, nodeId: string): Homuncu
 }
 
 /**
- * Returns the effective [slot0, slot1, slot2] skill ids given the unlocked nodes.
- * Falls back to `baseSkillIds` when no tree node targets a given slot.
+ * Returns the effective skill ids the battle engine should load. Always starts
+ * with [basic, active, ...passives]. The basic slot collapses col-1 mutex
+ * upgrades onto a single id; the active slot picks the one col-2 leaf that's
+ * unlocked (mutex across branches); col-3 passives are independent so every
+ * unlocked passive is appended.
  */
 export function resolveHomunculusSkills(
   type: HomunculusType,
   unlocked: readonly string[],
-): [string, string, string] {
+): string[] {
   const def = HOMUNCULUS_TREES[type];
-  const result: [string, string, string] = [...def.baseSkillIds];
-  const unlockedSet = new Set(unlocked);
+  const unlockedSet = new Set<string>(unlocked);
+  // col-1 base is always unlocked, even if the client didn't persist it.
+  const basicNode = def.nodes.find(n => n.slot === 0 && n.alwaysUnlocked);
+  if (basicNode) unlockedSet.add(basicNode.id);
 
-  for (const slot of [0, 1, 2] as const) {
-    const candidates = def.nodes
-      .filter(n => n.slot === slot && n.kind === 'replace' && unlockedSet.has(n.id))
-      .sort((a, b) => b.tier - a.tier);
-    const deepest = candidates[0];
-    if (deepest?.replaceSkillId) {
-      result[slot] = deepest.replaceSkillId;
-    }
-  }
+  // Slot 0: deepest unlocked wins (base_a/base_b override basic).
+  const slot0Node =
+    def.nodes
+      .filter(n => n.slot === 0 && n.kind === 'replace' && unlockedSet.has(n.id))
+      .sort((a, b) => b.tier - a.tier)[0];
+  const slot0Id = slot0Node?.replaceSkillId ?? def.baseSkillIds[0];
 
-  return result;
+  // Slot 1: pick the single unlocked leaf (mutex across col-2 leaves).
+  const slot1Node = def.nodes.find(
+    n => n.slot === 1 && n.kind === 'replace' && unlockedSet.has(n.id),
+  );
+  const slot1Id = slot1Node?.replaceSkillId ?? def.baseSkillIds[1];
+
+  // Slot 2+: every unlocked passive is active simultaneously.
+  const passiveIds = def.nodes
+    .filter(n => n.slot === 2 && n.kind === 'replace' && unlockedSet.has(n.id))
+    .map(n => n.replaceSkillId!)
+    .filter(Boolean);
+  const slot2Ids = passiveIds.length > 0 ? passiveIds : [def.baseSkillIds[2]];
+
+  return [slot0Id, slot1Id, ...slot2Ids];
 }
 
 /**
- * Validates that a node can be unlocked: it exists, isn't already unlocked, and its
- * parent (if any) is unlocked. Returns an error message if invalid, undefined if OK.
+ * Validates that a node can be unlocked: it exists, isn't already unlocked,
+ * its parent (if any) is unlocked, and no sibling in its mutex group has been
+ * claimed already.
  */
 export function validateNodeUnlock(
   type: HomunculusType,
@@ -171,9 +285,21 @@ export function validateNodeUnlock(
 ): string | undefined {
   const node = getHomunculusNode(type, nodeId);
   if (!node) return 'Node not found';
+  if (node.alwaysUnlocked) return 'Node is always unlocked';
   if (state.unlocked.includes(nodeId)) return 'Node already unlocked';
-  if (node.parent && !state.unlocked.includes(node.parent)) {
-    return 'Prerequisite node is locked';
+  if (node.parent) {
+    const parent = getHomunculusNode(type, node.parent);
+    const parentUnlocked = parent?.alwaysUnlocked || state.unlocked.includes(node.parent);
+    if (!parentUnlocked) return 'Prerequisite node is locked';
+  }
+  if (node.mutexGroup) {
+    const tree = HOMUNCULUS_TREES[type];
+    const rival = tree.nodes.find(
+      n => n.id !== nodeId
+        && n.mutexGroup === node.mutexGroup
+        && state.unlocked.includes(n.id),
+    );
+    if (rival) return `Conflicts with "${rival.label}" — reset the tree to switch paths`;
   }
   return undefined;
 }
