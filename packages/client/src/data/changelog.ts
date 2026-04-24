@@ -7,6 +7,13 @@ export interface ChangelogEntry {
 // Newest first.
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.8.7',
+    date: '2026-04-24',
+    changes: [
+      'Fix: Homunculus skill tree page is now actually usable on phones. The previous mobile breakpoint (max-width: 720px) never matched because the app force-rotates portrait to landscape, so the effective CSS width is always ~800–900px. Switched to a height-based breakpoint and let the whole page scroll so the tree, detail panel, current skills, and reset button stack properly.',
+    ],
+  },
+  {
     version: '0.8.6',
     date: '2026-04-24',
     changes: [

@@ -411,32 +411,65 @@
   border-color: #ef4444 !important;
 }
 
-@media (max-width: 720px) {
+/* Phones: the app force-rotates portrait to landscape (see global.css),
+   so the effective CSS width is always the device's long edge (~800–900px)
+   and height is the short edge (~380–450px). Key off height, not width. */
+@media (max-height: 600px), (max-width: 720px) {
+  .skilltree-page {
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+  }
+
   .skilltree-header {
     flex-wrap: wrap;
-    row-gap: 6px;
-    padding: 8px 10px;
+    row-gap: 4px;
+    padding: 6px 10px;
+  }
+
+  .skilltree-back {
+    padding: 4px 8px;
+    font-size: 0.7rem;
   }
 
   .skilltree-sprite {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .skilltree-title {
+    font-size: 0.85rem;
+  }
+
+  .skilltree-subtitle {
+    font-size: 0.7rem;
   }
 
   .skilltree-typeswitch {
     padding: 6px 10px;
+    gap: 6px;
+  }
+
+  .skilltree-typeswitch-label {
+    font-size: 0.7rem;
+  }
+
+  .skilltree-typechip {
+    padding: 3px 8px;
+    font-size: 0.7rem;
   }
 
   .skilltree-body {
+    flex: 0 0 auto;
     flex-direction: column;
-    overflow: auto;
+    overflow: visible;
   }
 
   .skilltree-tree-scroll {
     flex: 0 0 auto;
-    min-height: 240px;
-    max-height: 55vh;
-    padding: 10px;
+    min-height: 280px;
+    max-height: none;
+    padding: 8px;
   }
 
   .skilltree-detail {
@@ -446,12 +479,17 @@
     border-left: none;
     border-top: 1px solid var(--card-border);
     padding: 10px;
-    gap: 8px;
+    gap: 6px;
+    overflow-y: visible;
   }
 
   .skilltree-detail-hint {
-    padding-top: 6px;
+    padding-top: 4px;
     text-align: left;
+  }
+
+  .skilltree-currentskills {
+    padding: 6px 10px;
   }
 
   .skilltree-current-list {
@@ -461,7 +499,6 @@
   .skilltree-footer {
     justify-content: stretch;
     padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
-    padding-right: 72px;
   }
 
   .skilltree-reset-btn {
